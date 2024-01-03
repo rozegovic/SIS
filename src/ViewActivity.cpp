@@ -5,7 +5,7 @@
 #include "WindowMessages.h"
 #include "SendMessage.h"
 
-
+//random comment
 td::INT4 ViewActivity::findMaxID() // Eminina funkcija :-D
 {
     dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select ifnull(max(ID_Aktivnosti), 0) as maxid from Aktivnosti");
