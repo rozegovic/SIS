@@ -1,6 +1,8 @@
 #include "ViewAttendance.h"
 #include "Globals.h"
-
+#include "SendMessage.h"
+#include <iostream>
+#include <math.h>
 
 ViewAttendance::ViewAttendance(td::INT4 SubjectID):
 _LblSubjName(tr("AttSubj")),
@@ -8,9 +10,9 @@ _LblDate(tr("AttDate")),
 _LblTime(tr("AttTime"))
 ,_LblType(tr("AttType"))
 , _btnAdd(tr("add"), tr("AddTT"))
-//, _btnUpdate(tr("Update"), tr("UpdateTT"))
+, _btnUpdate(tr("Update"), tr("UpdateTT"))
 , _btnDelete(tr("Delete"), tr("DeleteTT"))
-,_btnSave(tr("Save"), tr("SaveTT"))
+//,_btnSave(tr("Save"), tr("SaveTT"))
 , _type(td::int4)
 , _hlBtnsDB(5)
 ,_gl(6, 2)
@@ -20,14 +22,14 @@ _LblTime(tr("AttTime"))
     
     _hlBtnsDB.appendSpacer();
     _hlBtnsDB.append(_btnDelete);
-   // _hlBtnsDB.append(_btnUpdate); 
-    _hlBtnsDB.append(_btnSave);
+    _hlBtnsDB.append(_btnUpdate);
+ //   _hlBtnsDB.append(_btnSave);
     _hlBtnsDB.append(_btnAdd);
     _hlBtnsDB.appendSpacer();
    
     
-  //  _btnUpdate.setType(gui::Button::Type::Default);
-    _btnSave.setType(gui::Button::Type::Default);
+    _btnUpdate.setType(gui::Button::Type::Default);
+    //_btnSave.setType(gui::Button::Type::Default);
     _btnDelete.setType(gui::Button::Type::Destructive);
     _btnAdd.setType(gui::Button::Type::Constructive);
 
@@ -196,20 +198,17 @@ bool ViewAttendance::onClick(gui::Button* pBtn)
         _table.beginUpdate();
         _table.removeRow(iRow);
         _table.endUpdate();
-     //   saveData();
+        saveData();
+        if(CheckTime())
+            SendMsg(2);
        // _table.reload();
         return true;
     }
-   /* if (pBtn == &_btnUpdate)
+   if (pBtn == &_btnUpdate)
     {
         td::Variant val1, val2;
         _date.getValue(val1);
         _time.getValue(val2);
-        if (doesItDexist(val1.dateVal(), val2.timeVal()))
-        {
-            showAlert(tr("alert"), tr("alertAttTxt"));
-            return true;
-        }
         int iRow = _table.getFirstSelectedRow();
         if (iRow < 0)
             return true;
@@ -218,9 +217,11 @@ bool ViewAttendance::onClick(gui::Button* pBtn)
         populateDSRow(row);
         _table.updateRow(iRow);
         _table.endUpdate();
-      
+        saveData();
+        if(CheckTime())
+            SendMsg(3);
         return true;
-    }*/
+    }
 
     if (pBtn == &_btnAdd)
     {
@@ -239,12 +240,14 @@ bool ViewAttendance::onClick(gui::Button* pBtn)
         populateDSRow(row);
         _table.push_back();
         _table.endUpdate();
+        saveData();
+        if(CheckTime())
+            SendMsg(1);
         return true;
     }
-    if(pBtn == &_btnSave){
+  /*  if(pBtn == &_btnSave){
         saveData();
-      //  _table.reload();
-    }
+    }*/
 
     return false;
 }
@@ -258,4 +261,64 @@ bool ViewAttendance::doesItDexist(td::Date d, td::Time t)
             return true;
     }
     return false;
+}
+
+void ViewAttendance::SendMsg(td::INT4 MsgType){
+    
+    std::vector<td::INT4> userIDs;
+    dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select c.ID  from Korisnici c, Upis a, Predmet b WHERE a.ID_Smjera = b.ID_Smjera AND b.Semestar = a.Semestar AND c.Indeks = a.Indeks AND b.ID_Predmeta = ?");
+    dp::Params pParams(pSelect->allocParams());
+    pParams << _SubjectID;
+    dp::Columns pCols = pSelect->allocBindColumns(1);
+    td::INT4 id;
+    pCols << "ID" << id;
+    if (!pSelect->execute())
+        return;
+    while (pSelect->moveNext())
+    {
+        userIDs.push_back(id);
+    }
+    dp::IStatementPtr pSelect1 = dp::getMainDatabase()->createStatement("select Naziv_Predmeta FROM Predmet WHERE ID_Predmeta = ?");
+    dp::Params pParams1(pSelect1->allocParams());
+    pParams1 << _SubjectID;
+    dp::Columns pCols1 = pSelect1->allocBindColumns(1);
+    td::String predmet;
+    pCols1 << "Naziv_Predmeta" << predmet;
+    if (!pSelect1->execute())
+        return;
+    if(!pSelect1->moveNext())
+        return;
+    //std::cout << predmet;
+    td::String naslov;
+    td::String poruka;
+    if(MsgType == 2){
+        naslov = "Uklonjen termin nastave!";
+        poruka = "Uklonjen termin nastave za predmet ";
+    }
+    else if(MsgType == 1){
+        naslov = "Novi termin nastave!";
+        poruka = "Dodan je novi termin nastave za predmet ";
+    }
+    else if (MsgType == 3){
+        naslov = "Promjena termina nastave!";
+        poruka = "Promijenjen termin nastave za predmet ";
+    }
+    
+    poruka += predmet;
+
+    MsgSender za_poruke;
+    za_poruke.sendSystemMsgtoUsers(naslov, poruka, userIDs);
+    td::Time t(true);
+    td::Date d(true);
+    LastMsgTime = t;
+    LastMsgDate = d;
+}
+bool ViewAttendance::CheckTime(){
+    if(LastMsgTime == 0 && LastMsgDate == 0 )
+        return true;
+    td::Time currTime(true);
+    td::Date currDate(true);
+    if(currDate == LastMsgDate && std::fabs((LastMsgTime.getMinute() - currTime .getMinute())) <= 1)
+        return false;
+    return true;
 }
