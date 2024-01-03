@@ -1,0 +1,227 @@
+
+CREATE TABLE "Pozicija" (
+	"ID"	INTEGER NOT NULL,
+	"Naziv"	TEXT NOT NULL,
+	PRIMARY KEY("ID")
+);
+
+CREATE TABLE "Korisnici" (
+	"ID"	INTEGER NOT NULL,
+	"Prezime"	TEXT NOT NULL,
+	"Ime"	TEXT NOT NULL,
+	"DatumUpisa"	INTEGER NOT NULL,
+	"PozicijaID"	INTEGER NOT NULL,
+	"JMBG"	TEXT NOT NULL,
+	"Adresa"	TEXT NOT NULL,
+	"DatumRodjenja"	INTEGER NOT NULL,
+	"Indeks"	TEXT NOT NULL ,
+	FOREIGN KEY("PozicijaID") REFERENCES "Pozicija"("ID"),
+	PRIMARY KEY("ID")
+);
+
+CREATE TABLE "KorisniciPozicija" (
+	"ID"	INTEGER NOT NULL,
+	"IDKorisnici"	INTEGER NOT NULL,
+	"IDPozicija"	INTEGER NOT NULL,
+	PRIMARY KEY("ID"),
+	FOREIGN KEY("IDPozicija") REFERENCES "Pozicija"("ID"),
+	FOREIGN KEY("IDKorisnici") REFERENCES "Korisnici"("ID")
+);
+
+
+
+CREATE TABLE "Smjer" (
+	"ID_Smjera"	INTEGER NOT NULL,
+	"Naziv_Smjera"	TEXT NOT NULL,
+	"Skr_Naziv_Smjera"	TEXT NOT NULL,
+	PRIMARY KEY("ID_Smjera")
+);
+
+
+
+
+
+
+
+
+
+CREATE TABLE "Upis" (
+	"ID"	INTEGER NOT NULL,
+	"Indeks"	TEXT NOT NULL,
+	"ID_Smjera"	INTEGER NOT NULL,
+	"Semestar"	INTEGER NOT NULL,
+	PRIMARY KEY("ID"),
+	FOREIGN KEY("ID_Smjera") REFERENCES "Smjer"("ID_Smjera"),
+	FOREIGN KEY("Indeks") REFERENCES "Korisnici"("Indeks")
+);
+
+
+
+CREATE TABLE "ClassRoles" (
+           	"ID"    	INTEGER NOT NULL,
+           	"Type"   TEXT NOT NULL,
+PRIMARY KEY("ID")
+);
+ CREATE TABLE "TipPredavanja" (
+	"ID"	INTEGER NOT NULL,
+	"Naziv"	TEXT NOT NULL,
+	PRIMARY KEY("ID")
+);
+CREATE TABLE "Classrooms" (
+           	"ID"    	INTEGER NOT NULL,
+           	"Name" TEXT NOT NULL,
+           	"Location"       	TEXT NOT NULL,
+           	"Type"   INTEGER NOT NULL,
+           	"NumSeats"    	INTEGER NOT NULL,
+           	FOREIGN KEY("Type") REFERENCES "ClassRoles"("ID"),
+           	PRIMARY KEY("ID")
+);
+CREATE TABLE "UserLogin" (
+           	"ID"    	INTEGER NOT NULL,
+           	"Username"    	TEXT NOT NULL UNIQUE,
+           	"Password"     	TEXT NOT NULL,
+           	PRIMARY KEY("ID"),
+           	FOREIGN KEY("ID") REFERENCES "Korisnici"("ID")
+);
+CREATE TABLE "Predmet" (
+	"ID_Predmeta"	INTEGER NOT NULL UNIQUE,
+	"Naziv_Predmeta"	TEXT NOT NULL,
+	"Sifra_Predmeta"	TEXT NOT NULL,
+	"ID_Smjera"	INTEGER NOT NULL,
+	"Semestar"	INTEGER NOT NULL,
+	"ECTS_bodovi"	INTEGER NOT NULL,
+	"Izborni"	INTEGER NOT NULL,
+	"Max_Broj_Polaznika"	INTEGER NOT NULL,
+	PRIMARY KEY("ID_Predmeta"),
+	FOREIGN KEY("ID_Smjera") REFERENCES "Smjer"("ID_Smjera")
+);
+
+CREATE TABLE "Termini" (
+"ID" INTEGER NOT NULL,
+"Datum" INTEGER NOT NULL,
+"TipPredavanjaID" INTEGER NOT NULL,
+"Predmet_ID" INTEGER NOT NULL,
+"Vrijeme" INTEGER NOT NULL,
+CONSTRAINT "PK_Termini" PRIMARY KEY("ID"),
+FOREIGN KEY("Predmet_ID") REFERENCES "Predmet"("ID_Predmeta"),
+FOREIGN KEY("TipPredavanjaID") REFERENCES "TipPredavanja"("ID")
+);
+
+CREATE TABLE "Prisustvo" (
+	"ID_termina"	INTEGER NOT NULL,
+	"ID_studenta"	INTEGER NOT NULL,
+	FOREIGN KEY("ID_termina") REFERENCES "Termini"("ID"),
+	FOREIGN KEY("ID_studenta") REFERENCES "Korisnici"("ID")
+);
+
+
+CREATE TABLE "PredmetStaff" (
+	"ID_Korisnika"	INTEGER NOT NULL,
+	"ID_Predmeta"	INTEGER NOT NULL,
+	PRIMARY KEY("ID_Korisnika","ID_Predmeta"),
+	FOREIGN KEY("ID_Korisnika") REFERENCES "Korisnici"("ID"),
+	FOREIGN KEY("ID_Predmeta") REFERENCES "Predmet"("ID_Predmeta")
+);
+
+CREATE TABLE "VrstaAktivnosti" (
+	"ID"	INTEGER NOT NULL,
+	"Naziv"	TEXT,
+	PRIMARY KEY("ID")
+);
+
+CREATE TABLE "Aktivnosti" (
+	"ID_Aktivnosti"	INTEGER NOT NULL,
+	"ID_Predmeta"	INTEGER NOT NULL,
+	"Procenat"	INTEGER NOT NULL,
+	"Naziv_Aktivnosti"	TEXT NOT NULL,
+	"Opis_Aktivnosti"	INTEGER NOT NULL,
+	"Tip_Aktivnosti"	INTEGER NOT NULL,
+	FOREIGN KEY("ID_Predmeta") REFERENCES "Predmet"("ID_Predmeta"),
+	FOREIGN KEY("Tip_Aktivnosti") REFERENCES "VrstaAktivnosti"("ID"),
+	PRIMARY KEY("ID_Aktivnosti")
+);
+
+CREATE TABLE "PolazniciAktivnosti" (
+	"ID_Korisnika"	INTEGER NOT NULL,
+	"ID_Aktivnosti"	INTEGER NOT NULL,
+	PRIMARY KEY("ID_Aktivnosti","ID_Korisnika")
+);
+
+
+
+
+
+
+
+
+
+
+CREATE TABLE "Messages" (
+	"ID"	INTEGER NOT NULL,
+	"AuthorID"	INTEGER NOT NULL,
+	"Subject"	TEXT NOT NULL,
+	"Poruke"	TEXT NOT NULL,
+	"Datum"	INTEGER NOT NULL,
+	"Vrijeme"	INTEGER NOT NULL,
+	FOREIGN KEY("AuthorID") REFERENCES "Korisnici"("ID"),
+	PRIMARY KEY("ID")
+);
+
+CREATE TABLE "MsgReceivers" (
+	"UserID"	INTEGER NOT NULL,
+	"MsgID"	INTEGER NOT NULL,
+	FOREIGN KEY("MsgID") REFERENCES "Messages"("ID"),
+	FOREIGN KEY("UserID") REFERENCES "Korisnici"("ID"),
+	PRIMARY KEY("UserID","MsgID")
+);
+
+CREATE TABLE "Curriculum" (
+	"ID_Smjera"	INTEGER NOT NULL,
+	"ID_Predmeta"	INTEGER NOT NULL,
+	"Shortname"	TEXT NOT NULL,
+	"ECTS"	INTEGER NOT NULL,
+	FOREIGN KEY("ID_Smjera") REFERENCES "Smjer"("ID_Smjera"),
+	FOREIGN KEY("ID_Predmeta") REFERENCES "Predmet"("ID_Predmeta"),
+	PRIMARY KEY("ID_Smjera","ID_Predmeta")
+);
+
+
+CREATE TABLE Polozeni_Predmeti (
+"ID" INTEGER NOT NULL,
+"ID_Predmeta" INTEGER NOT NULL,
+"ID_Studenta" INTEGER NOT NULL,
+"Polozen" INTEGER NOT NULL,
+"Prijavljen" INTEGER NOT NULL,
+FOREIGN KEY("ID_Predmeta") REFERENCES "Predmet"("ID_Predmeta"),
+FOREIGN KEY("ID_Studenta") REFERENCES "Korisnici"("ID"),
+PRIMARY KEY ("ID")
+);
+
+
+
+
+
+CREATE TABLE "SAOStudentTicket" (
+	"ID"	INTEGER,
+	"Indeks"	TEXT NOT NULL,
+	"ID_Ticket"	INTEGER NOT NULL,
+	"Req_Title" TEXT,
+	"Request"	TEXT,
+	FOREIGN KEY("ID_Ticket") REFERENCES "SAOTicket"("ID"),
+	PRIMARY KEY("ID" AUTOINCREMENT)
+);
+
+CREATE TABLE "UpisPredmet" (
+    "ID" INTEGER PRIMARY KEY AUTOINCREMENT,
+    "Indeks" TEXT NOT NULL,
+    "ID_Predmeta" INTEGER,
+    FOREIGN KEY("ID_Predmeta") REFERENCES "Predmet"("ID_Predmeta")
+);
+
+CREATE TABLE "SAOTicket" (
+	"ID"	INTEGER NOT NULL,
+	"Ticket"	TEXT NOT NULL,
+	PRIMARY KEY("ID")
+);
+
+

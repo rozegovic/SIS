@@ -1,0 +1,158 @@
+#pragma once
+#include "ViewCourse.h"
+#include "ViewIDs.h"
+
+ViewCourse::ViewCourse(): _db(dp::getMainDatabase())
+, _lblID(tr("id"))
+, _id(td::int4)
+, _lblName(tr("name"))
+, _lblIDCODE(tr("code"))
+, _idCode(td::int4)
+, _lblIDDEP(tr("dep"))
+, _idDep(td::int4)
+, _yearStudy(tr("year"))
+, _year(td::int4)
+, _lblEcts(tr("ects"))
+, _lblElective(tr("elective"))
+, _elective(td::int4)
+, _lblTeachingStaff(tr("TStaff"))
+, _lblMaxNum(tr("maxatt"))
+, _maxNum(td::int4)
+, _btnAdd(tr("add"))
+, _btnSave(tr("save"))
+, _hlBtns(3)
+, _gl(6, 4)
+, _paramFrom(0)
+, _paramTo(100)
+
+
+//...
+{
+    setVisualID(View_COURSE);
+    _hlBtns.appendSpacer();
+    _hlBtns.append(_btnSave, td::HAlignment::Right);
+    _hlBtns.append(_btnAdd, td::HAlignment::Right);
+    _btnAdd.setAsDefault();
+
+    gui::GridComposer gc(_gl);
+    gc.appendRow(_lblID);
+    gc.appendCol(_id);
+    gc.appendCol(_lblName);
+    gc.appendCol(_name);
+    gc.appendRow(_lblIDCODE);
+    gc.appendCol(_idCode);
+    gc.appendCol(_lblIDDEP);
+    gc.appendCol(_idDep);
+    gc.appendRow(_yearStudy);
+    gc.appendCol(_year);
+    gc.appendCol(_lblEcts);
+    gc.appendCol(_ects);
+    gc.appendRow(_lblElective);
+    gc.appendCol(_elective);
+    gc.appendCol(_lblTeachingStaff);
+    gc.appendCol(_teachingStaff);
+    gc.appendRow(_table, 0);
+    gc.appendRow(_hlBtns, 0);
+    gui::View::setLayout(&_gl);
+
+    populateData();
+
+}
+
+ViewCourse::~ViewCourse()
+{
+    if (_pDS)
+        _pDS->release();
+}
+
+void ViewCourse::populateData()
+{
+}
+
+bool ViewCourse::loadComboBox(td::String select, gui::DBComboBox& combo)
+{
+    return false;
+}
+
+bool ViewCourse::onChangedSelection(gui::TableEdit* pTE)
+{
+    return false;
+}
+
+void ViewCourse::populateDSRow(dp::IDataSet::Row& row)
+{
+}
+
+bool ViewCourse::onClick(gui::Button* pBtn)
+{
+    return false;
+}
+
+bool ViewCourse::insertCourse()
+{
+    dp::IStatementPtr pInsertCourseP(_db->createStatement("insert into Predmet(ID_Predmeta, Naziv_Predmeta, Sifra_Predmeta, ID_Smjera, Godina_Studija, ECTS_bodovi, Izborni, Max_Broj_Polaznika) values(?,?,?,?,?,?,?,?)"));
+    /*Napomene za rad sa tippovima:
+        1. idpredmeta, naziv, sifrapredmeta, ects bodovi, max broj polaznika unosi korisnik
+        2. idsmjera unos kao combobox (izlistati sve prethodno uneseno smjerove)
+        3. izbodni kao combobox (da ili ne, pri cemu se da u bazu unosi kao 1, ne kao 0)
+        4. kako ispravno realizovati unos nastavnog osoblja?
+            -mozda mogucnost upisa broja clanova ansambla, pa na osnovu toga kreirati polja za unos
+        5. godina studija (potencijalno poraviti i razdvojiti na ciklus i godinu na ciklusu)
+        6. da li idkorisnika i iduser trebaju biti combobox (mora biti neko vec unesen u bazu podataka)
+    */
+
+    // ubacivanje u tabelu Predmet
+    dp::Params pParams2(pInsertCourseP->allocParams());
+    td::INT4 id, idCode, idDep, year, elective, maxNum;
+    td::String name, ects;
+    pParams2 << id << dp::toNCh(name, 100) << idCode << idDep << year << dp::toNCh(ects, 100) << elective << maxNum;
+
+    dp::IDataSet* pDS = _table.getDataSet();
+    auto rowCnt = pDS->getNumberOfRows();
+    for (size_t iRow = 0; iRow < rowCnt; ++iRow)
+    {
+        // pod pretpostavkom da populateData ucitava podatke analogno redoslijedu u bazi podataka
+        auto& row = pDS->getRow(iRow);
+        id = row[0].i4Val();
+        if (std::find(_itemsToInsert.begin(), _itemsToInsert.end(), id) == _itemsToInsert.end())//this item is not marked to insert, go next
+            continue;
+        name = row[1];
+        idCode = row[2].i4Val();
+        idDep = row[3].i4Val();
+        year = row[4].i4Val();
+        ects = row[5];
+        elective = row[6].i4Val();
+        maxNum = row[7].i4Val();
+
+        if (!pInsertCourseP->execute())
+        {
+            return false;
+        }
+    }
+
+    // ubacivanje u tabelu PredmetStaff
+    dp::IStatementPtr pInsertCoursePS(_db->createStatement("insert into PredmetStaff(ID_Korisnika, ID_predmeta ID_User) values(?,?,?)"));
+    dp::Params pParams(pInsertCoursePS->allocParams());
+    td::INT4 idk, idp, idu;
+    pParams << idk << idp << idu;
+
+    dp::IDataSet* pDS1 = _table.getDataSet();
+    auto rowCnt1 = pDS1->getNumberOfRows();
+    for (size_t iRow = 0; iRow < rowCnt1; ++iRow)
+    {
+        // pod pretpostavkom da populateData ucitava podatke analogno redoslijedu u bazi podataka
+        auto& row = pDS1->getRow(iRow);
+        idk = row[0].i4Val();
+        if (std::find(_itemsToInsert.begin(), _itemsToInsert.end(), id) == _itemsToInsert.end())//this item is not marked to insert, go next
+            continue;
+        idp = row[1].i4Val();
+        idu = row[2].i4Val();
+
+        if (!pInsertCoursePS->execute())
+        {
+            return false;
+        }
+    }
+
+    return true;
+}

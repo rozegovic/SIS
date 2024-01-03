@@ -1,0 +1,89 @@
+Insert into ClassRoles values (1, 'Laboratorija');
+Insert into ClassRoles values (2, 'Specijalna laboratorija');
+Insert into ClassRoles values (3, 'Ucionica');
+Insert into ClassRoles values (4, 'Amfiteatar');
+
+insert into TipPredavanja values (1, 'Predavanje');
+insert into TipPredavanja values (2, 'Tutorijal');
+insert into TipPredavanja values (3, 'Laboratorijska vježba');
+ 
+ 
+ 
+insert into Pozicija values (1, 'Profesor');
+insert into Pozicija values (5, 'Student');
+insert into Pozicija values (3, 'Asistent');
+insert into Pozicija values (4, 'Studentska sluzba');
+insert into Pozicija values (2, 'Demonstrator');
+insert into Pozicija values (6, 'Administrator');
+
+
+
+insert into Smjer (ID_Smjera, Naziv_Smjera, Skr_Naziv_Smjera) values (1,'Automatika i elektronika', 'AE');
+insert into Smjer (ID_Smjera, Naziv_Smjera, Skr_Naziv_Smjera) values (2, 'Elektroenergetika','EE');
+insert into Smjer (ID_Smjera, Naziv_Smjera, Skr_Naziv_Smjera) values (3, 'Telekomunikacije', 'TK');
+insert into Smjer (ID_Smjera, Naziv_Smjera, Skr_Naziv_Smjera) values (4, 'Racunarstvo i informatika', 'RI');
+
+
+insert into Predmet (ID_Predmeta, Naziv_Predmeta, Sifra_Predmeta,ID_Smjera,Semestar,ECTS_bodovi,izborni, Max_Broj_Polaznika) values (1, 'Senzori i mjerenja', 'SiM',1,3,5,0,50);
+insert into Predmet (ID_Predmeta, Naziv_Predmeta, Sifra_Predmeta,ID_Smjera,Semestar,ECTS_bodovi,izborni, Max_Broj_Polaznika) values (2, 'Inzenjerska matematika 3', 'IM3',2,7,5,0,50);
+insert into Predmet (ID_Predmeta, Naziv_Predmeta, Sifra_Predmeta,ID_Smjera,Semestar,ECTS_bodovi,izborni, Max_Broj_Polaznika) values (3, 'Programiranje za inzenjere', 'PZI',1,3,7,1,20);
+insert into Predmet (ID_Predmeta, Naziv_Predmeta, Sifra_Predmeta,ID_Smjera,Semestar,ECTS_bodovi,izborni, Max_Broj_Polaznika) values (4, 'Tehnike programiranja', 'TP',1,2,4,1,40);
+
+
+INSERT INTO "Korisnici" (ID, Prezime, Ime, DatumUpisa, PozicijaID, JMBG, Adresa, DatumRodjenja, Indeks)
+VALUES (-1, 'Sistem', '.', 0000000, 6, '.', '.', 0000000, '0');
+
+INSERT INTO "Korisnici" (ID, Prezime, Ime, DatumUpisa, PozicijaID, JMBG, Adresa, DatumRodjenja, Indeks)
+VALUES (2, 'Mickey', 'Mouse', 1036184, 1, '111111111111', '122 Disneyland', 1036184, '1');
+
+INSERT INTO "Korisnici" (ID, Prezime, Ime, DatumUpisa, PozicijaID, JMBG, Adresa, DatumRodjenja, Indeks)
+VALUES (1, 'Donald', 'Trump', 1036184, 1, '123123123123', 'New York', 1036184, '2');
+insert into Korisnici values (5,'Mouse','Mini', 11112022, 5,'644851584555', 'Disneyland 221', 10041922, '5542');
+insert into Korisnici values (6,'Bobica','Jagodica', 11112022, 5,'644851584555', 'Disneyland 221', 10041922, '5543');
+insert into Korisnici values (7,'Zvonko','Nodi', 11112022, 5,'644851584555', 'Disneyland 221', 10041922, '5544');
+insert into Korisnici values (8,'Cooper','Sheldon', 11112022, 5,'644851584555', 'Disneyland 221', 10041922, '15557');
+
+insert into UserLogin values (-1,'admin','admin');
+insert into UserLogin values (1,'donald','donald');
+insert into UserLogin values (5,'mini','mini');
+
+insert into PredmetStaff(ID_Korisnika,ID_Predmeta) values(1,2);
+insert into PredmetStaff(ID_Korisnika,ID_Predmeta) values(1,4);
+insert into PredmetStaff(ID_Korisnika,ID_Predmeta)values(2,2);
+insert into PredmetStaff(ID_Korisnika,ID_Predmeta) values(1,1);
+insert into PredmetStaff(ID_Korisnika,ID_Predmeta) values(2,3);
+
+insert into VrstaAktivnosti values (1,'Ispit');
+insert into VrstaAktivnosti values (2,'Zadaca');
+insert into VrstaAktivnosti values (3,'Projekat');
+insert into VrstaAktivnosti values (4,'Ostalo');
+
+insert into Aktivnosti (ID_Aktivnosti,ID_Predmeta,Procenat, Naziv_Aktivnosti,Opis_Aktivnosti, Tip_Aktivnosti) values (2, 4, 20, 'drugi parcijalni', 'nesto1',1);
+insert into Aktivnosti (ID_Aktivnosti,ID_Predmeta,Procenat, Naziv_Aktivnosti,Opis_Aktivnosti, Tip_Aktivnosti) values (3, 2, 26, 'zadaca 1', 'nesto2', 2);
+insert into Aktivnosti (ID_Aktivnosti,ID_Predmeta,Procenat, Naziv_Aktivnosti,Opis_Aktivnosti, Tip_Aktivnosti) values (4, 1, 5, 'prisustvo', 'nesto3', 4);
+insert into Aktivnosti (ID_Aktivnosti,ID_Predmeta,Procenat, Naziv_Aktivnosti,Opis_Aktivnosti, Tip_Aktivnosti) values (5, 1, 90, 'integralni', 'nesto4', 1);
+insert into Aktivnosti (ID_Aktivnosti,ID_Predmeta,Procenat, Naziv_Aktivnosti,Opis_Aktivnosti, Tip_Aktivnosti) values (1, 3, 50, 'prvi parcijalni', 'nesto5', 1);
+insert into Aktivnosti values(6, 3, 40, 'Projekat Zamger', 'Izrada studentskog sistema', 3);
+
+insert into PolazniciAktivnosti values (2,4);
+insert into PolazniciAktivnosti values (2,1);
+insert into PolazniciAktivnosti values (2,2);
+insert into PolazniciAktivnosti values (4,4);
+insert into PolazniciAktivnosti values (4,3);
+insert into PolazniciAktivnosti values (4,5);
+
+
+
+INSERT INTO Polozeni_Predmeti VALUES(1,1,5,0,0);
+INSERT INTO Polozeni_Predmeti VALUES(2,2,5,0,1);
+INSERT INTO Polozeni_Predmeti VALUES(3,3,5,1,0);
+INSERT INTO Polozeni_Predmeti VALUES(4,4,5,1,1);
+
+INSERT INTO SAOTicket (ID,Ticket) VALUES (1,'Molba');
+INSERT INTO SAOTicket  (ID,Ticket) VALUES (2,'Žalba');
+INSERT INTO SAOTicket  (ID,Ticket) VALUES (3,'Pitanje');
+
+
+
+
+

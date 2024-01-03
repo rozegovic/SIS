@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DevRes>
+	<Translations>
+		<Res id="Pos" tr="Rbr"/>
+		
+		<Res id="ime" tr="Ime"/>
+		<Res id="prezime" tr="Prezime"/>
+		<Res id="indeks" tr="Indeks"/>
+		<Res id="NameAktivnosti" tr="Vrsta provjere"/>
+
+	</Translations>
+</DevRes>
