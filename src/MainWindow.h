@@ -4,10 +4,11 @@
 //
 #pragma once
 #include <gui/Window.h>
-#include "MenuBar.h"
-#include "DynTabView.h"
 #include "Globals.h"
 #include "NavigatorView.h"
+#include "MenuBar.h"
+#include "DynTabView.h"
+#include "StatusBar.h"
 
 class MainWindow : public gui::Window
 {
@@ -27,7 +28,7 @@ protected:
     gui::Image _imgExamAtt;
     gui::Image _imgTicket;
     gui::Image _imgCourseenr;
-
+    StatusBar _statBar;
 
 
 protected:
@@ -36,7 +37,7 @@ protected:
         showLogin();
     }
 
-    
+
 public:
     MainWindow();
 public:
@@ -45,6 +46,7 @@ public:
     bool showMySubjectChoose();
     bool showAllSubjectChoose();
     bool showSubjectChooseActivty();
+    bool showCurriculum();
 
 
 protected:
@@ -60,6 +62,7 @@ protected:
     bool showEnrollView();
     bool showAttendanceView(td::INT4 SubjectID);
     bool showCurriculumView();
+    bool showCurriculumView(td::INT4 _departmentID, td::INT4 _semesterID);
     bool showExamSignUpView();
     bool showTicketView();
     bool showCourseEnrollView();
