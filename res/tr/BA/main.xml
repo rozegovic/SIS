@@ -49,8 +49,9 @@
 		<Res id="viewAttendance" tr="Prisustvo"/>
 		<Res id="viewCurriculum" tr="Kurikulum"/>
 		<Res id="viewExamAtt" tr="Prijave na ispit"/>
-				<Res id="viewTicket" tr="Karta"></Res>
+		<Res id="viewTicket" tr="Karta"></Res>
 		<Res id="viewCourseEnroll" tr="Predmeti upis"/>
+		<Res id="Withdraw" tr="Ispiši"/>
 
 		<Res id="ExamAttendanceRep" tr="Prijave na ispit"/>
 
@@ -172,10 +173,18 @@
 		<Res id="courselbl" tr="Predmet:"/>
 		<Res id="WithdrawCourseTT" tr="Ispiši studenta sa predmeta"/>
 		
+		
+		
 		<Res id="saveSureTicket" tr="Jeste li sigurni da želite poslati zahtjev?"/>
 		<Res id="alertPB" tr="Već postoji korisnik sa unesenom šifrom."/>
+		<Res id="typeOfMessage" tr="Vrsta zahtjeva:"/>
+		<Res id="subject" tr="Naslov:"/>
+		<Res id="send" tr="Pošalji"/>
+		<Res id="sendRequestTT" tr="Pošalji trenutni zahtjev"/>
+		<Res id="OnHold" tr="Na Čekanju"/>
 		
-		<Res id="AccessNoAllowed" tr="Nemate pravo pristupa"/>
+		
+		<Res id="AccessNotAllowed" tr="Nemate pravo pristupa"/>
 
 		
 		<Res id="Options" tr="Opcije"/>

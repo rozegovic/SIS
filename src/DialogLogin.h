@@ -88,15 +88,15 @@ protected:
                 Globals::isAdmin = false;
                 Globals::isProfessor = false;
                 Globals::isAssistant = false;
-                Globals::isStudent = true;
-                Globals::isSAO = false;
+                Globals::isStudent = false;
+                Globals::isSAO = true;
             }
             if (Globals::_currentUserRole == 5) {
                 Globals::isAdmin = false;
                 Globals::isProfessor = false;
                 Globals::isAssistant = false;
-                Globals::isStudent = false;
-                Globals::isSAO = true;
+                Globals::isStudent = true;
+                Globals::isSAO = false;
             }
 
         }
