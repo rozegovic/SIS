@@ -67,7 +67,7 @@ protected:
     td::INT4 findMaxID();
 public:
     ViewActivity(td::INT4 SubjectID);
-    ViewActivity();
+  //  ViewActivity();
     ~ViewActivity();
 protected:
     td::INT4 getIDfromTable(int rowID);
@@ -78,7 +78,7 @@ protected:
     bool doesIDexist(td::INT4 id);
     bool existsInActivity(td::INT4 id);
     //bool existsInDepartment(td::INT4 id);  //ne treba da se provjerava jer se ne koristi Dep
-    bool existsInCourse(td::INT4 id);// ne bi rekao da treba
+    //bool existsInCourse(td::INT4 id);// ne bi rekao da treba
     bool canUpdate(int iRow);       //adnan
     void populateData();
     bool updateActivity();

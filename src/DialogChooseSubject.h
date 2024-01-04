@@ -14,7 +14,7 @@ protected:
           //  Globals::_IDSubjectSelection = _viewAttendance.getSubjectID();
             return true;
         }
-        
+        return false;
     }
 
 public:
@@ -30,10 +30,15 @@ public:
     }
 
     bool loadComboBox(td::String select, gui::DBComboBox& combo) {
-        dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement(select.c_str());
-        dp::Params pParams(pSelect->allocParams());
-        pParams << Globals::_currentUserID;
-
+        dp::IStatementPtr pSelect;
+        if (Globals::_currentUserRole == 6) {
+            pSelect = dp::getMainDatabase()->createStatement("Select Naziv_Predmeta AS Naziv, ID_Predmeta AS ID FROM Predmet");
+        }
+        else {
+             pSelect = dp::getMainDatabase()->createStatement(select.c_str());
+                 dp::Params pParams(pSelect->allocParams());
+                 pParams << Globals::_currentUserID;
+        }
         dp::Columns pCols = pSelect->allocBindColumns(2);
         td::String name;
         td::INT4 id;

@@ -44,12 +44,15 @@ protected:
     gui::HorizontalLayout _hlBtnsDB;
     gui::Button _btnAdd;
     gui::Button _btnDelete;
-  //  gui::Button _btnUpdate;
-    gui::Button _btnSave;
+    gui::Button _btnUpdate;
+   // gui::Button _btnSave;
     
     gui::GridLayout _gl;
     dp::IDataSetPtr _pDS;
+    
     td::INT4 _SubjectID;
+    td::Time LastMsgTime;
+    td::Date LastMsgDate;
     
     gui::TableEdit _table;
 public:
@@ -63,6 +66,9 @@ protected:
     bool onClick(gui::Button* pBtn);
     void saveData();
     void SetCurrentSubject();
+    //void SendAddMsg();
+    void SendMsg(td::INT4 MsgType);
+    bool CheckTime();
 };
 
 

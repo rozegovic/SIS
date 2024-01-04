@@ -24,32 +24,32 @@ bool ViewTeachingStaff::insertPositionInDSRow(dp::IDataSet::Row& row)
 	return true;
 }
 
-ViewTeachingStaff::ViewTeachingStaff(td::INT4 SubjectID): 
-_db(dp::getMainDatabase())
-, _lblCode(tr("courseCode:"))
-, _lblCourseID(tr("courseID:"))
-, _courseID(td::int4)
-, _lblCourseName(tr("courseName:"))
-, _lblUserID(tr("userID:"))
-, _userID(td::int4, gui::LineEdit::Messages::Send)
-, _lblUserName(tr("userName:"))
-, _lblUserLN(tr("userLName:"))
-, _btnAdd(tr("add"))
-, _btnSave(tr("save"))
-, _btnReload(tr("Reload"))
-, _btnDelete(tr("Delete"))
-, _btnInsert(tr("Insert"))
-, _btnRemoveAll(tr("deleteAll"))
-, _hlBtns(11)
-, _gl(10, 6)
-, _SubjectID(SubjectID)
+ViewTeachingStaff::ViewTeachingStaff(td::INT4 SubjectID) :
+	_db(dp::getMainDatabase())
+	, _lblCode(tr("courseCode:"))
+	, _lblCourseID(tr("courseID:"))
+	, _courseID(td::int4)
+	, _lblCourseName(tr("courseName:"))
+	, _lblUserID(tr("userID:"))
+	, _userID(td::int4, gui::LineEdit::Messages::Send)
+	, _lblUserName(tr("userName:"))
+	, _lblUserLN(tr("userLName:"))
+	, _btnAdd(tr("add"))
+	, _btnSave(tr("save"))
+	, _btnReload(tr("Reload"))
+	, _btnDelete(tr("Delete"))
+	, _btnInsert(tr("Insert"))
+	, _btnRemoveAll(tr("deleteAll"))
+	, _hlBtns(11)
+	, _gl(10, 6)
+	, _SubjectID(SubjectID)
 {
 	SetCurrentSubject();
 	_userName.setAsReadOnly();
 	_userLName.setAsReadOnly();
 	_courseName.setAsReadOnly();
-	_courseID.setAsReadOnly(); 
-	_code.setAsReadOnly(); 
+	_courseID.setAsReadOnly();
+	_code.setAsReadOnly();
 
 	_hlBtns.appendSpace(3);
 	_hlBtns.append(_btnSave, td::HAlignment::Left);
@@ -239,6 +239,24 @@ bool ViewTeachingStaff::canAdd()
 		}
 	}
 
+	//--------------DODATI U NAJNOVIJI FAJL
+	td::Variant val;
+	_userID.getValue(val);
+	td::INT4 idk;
+	val.getValue(idk);
+	dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select a.Naziv, b.PozicijaID from Pozicija a, Korisnici b where b.PozicijaID = a.ID and b.ID = ?");
+	dp::Params pParams(pSelect->allocParams());
+	pParams << idk;
+
+	dp::Columns pColumns = pSelect->allocBindColumns(2);
+	td::String s; td::INT4 a;
+	pColumns << "Naziv" << s << "PozicijaID" << a;
+	if (!pSelect->execute())
+		return false;
+	if (!pSelect->moveNext())
+		return false;
+	if (a != 1 && a != 2 && a != 3)
+		return false;
 
 
 	return true;
@@ -430,7 +448,7 @@ void ViewTeachingStaff::SetCurrentSubject() {
 	parDS << _SubjectID;
 	dp::Columns pCols = pSelect->allocBindColumns(2);
 	td::String Predmet, Sifra;
-	pCols << "Naziv_Predmeta" << Predmet<< "Sifra_Predmeta"<< Sifra;
+	pCols << "Naziv_Predmeta" << Predmet << "Sifra_Predmeta" << Sifra;
 	if (!pSelect->execute()) {
 		return;
 	}

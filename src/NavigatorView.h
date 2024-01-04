@@ -43,8 +43,8 @@ public:
     NavigatorView(td::INT4 ViewID, td::INT4 subjectID)
         : _hl(2)
         , _navigator(2, true)
-        , _imgAttendance(":imgAttendance")
-        , _imgSubject(":imgSubject")
+        , _imgAttendance(":imgSubject")
+        , _imgSubject("C:/Users/Korisnik/Work/Common/Icons/imgAttendance.JPG")
         , _switcherView(subjectID)
 
     {

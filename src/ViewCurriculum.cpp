@@ -1,25 +1,27 @@
 #pragma once
 #include "ViewCurriculum.h"
 #include "ViewIDs.h"
+#include "ViewCurriculumDialog.h"
 
 
-ViewCurriculum::ViewCurriculum() : _db(dp::getMainDatabase())
-    , _lblDepartment(tr("Department"))
-    , _lblSemester(tr("Semester"))
-    , _semester(td::int4)
-    , _lblCourse(tr("Course"))
-    , _lblShortname(tr("Shortname"))
-    , _lblECTS(tr("ECTS"))
-    , _ECTS(td::int4)
-    , _department(td::int4)
-    , _course(td::int4)
-    , _shortname(td::int4)
-    , _hlBtnsDB(8)
-    , _btnSave(tr("Save"), tr("SaveTT"))
-    , _btnDelete(tr("Delete"), tr("DeleteTT"))
-    , _btnUpdate(tr("Update"), tr("UpdateTT"))
-    , _btnPushBack(tr("PushBack"), tr("PushBackTT"))
-    , _gl(5, 4)
+ViewCurriculum::ViewCurriculum(td::INT4 _departmentID, td::INT4 _semesterID) : _db(dp::getMainDatabase())
+, _lblDepartment(tr("Department"))
+, _lblSemester(tr("Semester"))
+, _semester(td::int4)
+, _lblCourse(tr("Course"))
+, _lblShortname(tr("Shortname"))
+, _lblECTS(tr("ECTS"))
+, _ECTS(td::int4)
+, _course(td::int4)
+, _shortname(td::int4)
+, _hlBtnsDB(8)
+, _btnSave(tr("Save"), tr("SaveTT"))
+, _btnDelete(tr("Delete"), tr("DeleteTT"))
+, _btnUpdate(tr("Update"), tr("UpdateTT"))
+, _btnPushBack(tr("PushBack"), tr("PushBackTT"))
+, _departmentID(_departmentID)
+, _semesterID(_semesterID)
+, _gl(5, 4)
 {
     setVisualID(View_CURRICULUM);
     // buttons in last row
@@ -65,16 +67,22 @@ ViewCurriculum::ViewCurriculum() : _db(dp::getMainDatabase())
    // populateRoleCombo(_type);
     populateData();
 
-    loadComboBox("select ID_Smjera as ID, Naziv_Smjera as Name from Smjer", _department);
+    SetCurrentDepartment();
+    SetCurrentSemester();
+    _department.setAsReadOnly();
+    _semester.setAsReadOnly();
     loadComboBox("select ID_Predmeta as ID, Naziv_Predmeta as Name from Predmet", _course);
     loadComboBox("select ID_Predmeta as ID, Sifra_Predmeta as Name from Predmet", _shortname);
+    _table.init(_pDS, { 0, 1, 2 });
+    if (_pDS->getNumberOfRows())
+    {
+        _table.selectRow(0, true);
+    }
 }
 
 
 ViewCurriculum::~ViewCurriculum()
 {
-    if (_pDS)
-        _pDS->release();
 }
 td::INT4 ViewCurriculum::getIDfromTable(int rowID)
 {
@@ -84,40 +92,54 @@ bool ViewCurriculum::canDelete(int iRow)
 {
     return false;
 }
-bool ViewCurriculum::eraseCurriculum()
+//bool ViewCurriculum::eraseCurriculum()
+//{
+//    dp::IStatementPtr pDeleteItem(_db->createStatement("delete from Curriculum where ID_Predmeta = ?"));
+//    dp::Params pParams2(pDeleteItem->allocParams());
+//
+//    for (auto idPredmeta : _itemsToDelete)
+//    {
+//        pParams2 << idPredmeta;
+//
+//        if (!pDeleteItem->execute())
+//        {
+//            return false;
+//        }
+//    }
+//    return true;
+//}
+//
+bool ViewCurriculum::saveData()
 {
-    td::INT4 id;
-    dp::IStatementPtr pDeleteItem(_db->createStatement("delete from Predmet where ID_Predmeta = ?"));
-    dp::Params pParams2(pDeleteItem->allocParams());
-    pParams2 << id;
+    dp::IStatementPtr pInsStat(dp::getMainDatabase()->createStatement("INSERT INTO Curriculum (ID_Smjera, Semestar, ID_Predmeta, Shortname, ECTS) VALUES(?,?,?,?,?)"));
+    dp::Params parDS(pInsStat->allocParams());
+    dp::Transaction tr(dp::getMainDatabase());
 
-    for (auto itd : _itemsToDelete)
+    td::INT4 predmet, ects, smjer, semestar;
+    td::String shortname;
+    td::Variant val;
+    parDS << smjer << semestar << predmet << dp::toNCh(shortname, MESSAGE_HEADER_LEN) << ects;
+    dp::IStatementPtr pDel(dp::getMainDatabase()->createStatement("DELETE FROM Curriculum"));
+    if (!pDel->execute())
+        return false;
+    size_t nRows = _pDS->getNumberOfRows();
+    for (size_t i = 0; i < nRows; ++i)
     {
-        id = itd;
-        if (!pDeleteItem->execute())
-        {
+        auto row = _pDS->getRow(i);
+        predmet = row[0].i4Val();
+        shortname = row[1];
+        ects = row[2].i4Val();
+        smjer = _departmentID;
+        semestar = _semesterID;
+
+
+        if (!pInsStat->execute())
             return false;
-        }
     }
+    tr.commit();
     return true;
-}
 
-bool  ViewCurriculum::saveData()
-{
-    dp::Transaction tran(_db);
-    if (!eraseCurriculum())
-        return false;
 
-    if (!insertCurriculum())
-        return false;
-
-    if (tran.commit())
-    {
-        _itemsToDelete.clear();
-        _itemsToInsert.clear();
-        _itemsToUpdate.clear();
-    }
-    return true;
 }
 
 bool ViewCurriculum::existsInDepartment(td::INT4 id)
@@ -147,13 +169,13 @@ bool ViewCurriculum::canUpdate(int iRow)
 void ViewCurriculum::populateData()
 {
 
-    _pDS = _db->createDataSet("select n.ID_Smjera a.Naziv_Smjera, n.Naziv_Predmeta, n.Sifra_Predmeta, n.ECTS_bodovi from Predmet n, Smjer a where n.ID_Smjera = a.ID_Smjera ", dp::IDataSet::Execution::EX_MULT);
-   // dp::Params params(_pDS->allocParams());
-   // params << _paramFrom << _paramTo;
+
+    _pDS = _db->createDataSet("SELECT Predmet.ID_Predmeta, Curriculum.Shortname, Curriculum.ECTS from Curriculum, Predmet WHERE Curriculum.ID_Predmeta=Predmet.ID_Predmeta", dp::IDataSet::Execution::EX_MULT);
+
 
     //specify columns to obtain from the data provider
-    dp::DSColumns cols(_pDS->allocBindColumns(5));
-    cols << "ID_Smjera" << td::int4 << "Naziv_Smjera" << td::string8 << "Naziv_Predmeta" << td::string8 << "Sifra_Predmeta" << td::string8
+    dp::DSColumns cols(_pDS->allocBindColumns(3));
+    cols << "ID_Predmeta" << td::int4 << "Shortname" << td::string8
         << "ECTS" << td::int4;
 
     if (!_pDS->execute())
@@ -162,14 +184,12 @@ void ViewCurriculum::populateData()
         _pDS = nullptr;
         return;
     }
-
-    _table.init(_pDS, 0);
 }
 
-bool ViewCurriculum::updateCourse()
-{
-    return false;
-}
+//bool ViewCurriculum::updateCourse()
+//{
+//    return false;
+//}
 
 
 bool ViewCurriculum::loadComboBox(td::String select, gui::DBComboBox& combo)
@@ -193,31 +213,22 @@ bool ViewCurriculum::loadComboBox(td::String select, gui::DBComboBox& combo)
 
 bool ViewCurriculum::onChangedSelection(gui::TableEdit* pTE)
 {
-    if (pTE == &_table)
-    {
+    if (pTE == &_table) {
         int iRow = _table.getFirstSelectedRow();
-        if (iRow < 0)
-        {
-            _department.toZero();
-            _semester.toZero();
-            _course.toZero();
-            _shortname.toZero();
-            _ECTS.toZero();
+        if (iRow < 0) {
             return true;
         }
-        /*
-        rows moraju odgovarati
-
+        td::Variant val;
         dp::IDataSet* pDS = _table.getDataSet();
-        auto& row = pDS->getRow(iRow);
-        _id.setValue(row[0]);
-        _name.setValue(row[1]);
-        _idCode.setValue(row[6]);
-        _year.setValue(row[2].i4Val());
-        _ects.setValue(row[3].i4Val());
-        _teachingStaff.setValue();*/
+        auto& row = _pDS->getRow(iRow);
+        val = row[0];
+        _course.setValue(val);
 
+        /* val = row[1];
+         _shortname.setValue(val);*/
 
+        val = row[2];
+        _ECTS.setValue(val);
         return true;
     }
     return false;
@@ -226,16 +237,16 @@ bool ViewCurriculum::onChangedSelection(gui::TableEdit* pTE)
 void ViewCurriculum::populateDSRow(dp::IDataSet::Row& row)
 {
     td::Variant val;
-    _department.getValue(val);
-    row[0].setValue(val);
-    _semester.getValue(val);
-    row[1].setValue(val);
+
     _course.getValue(val);
-    row[2].setValue(val);
+    row[0] = val.i4Val();
+    // row[1].setValue(_course.getSelectedText());
+
     _shortname.getValue(val);
-    row[3].setValue(val);
+    row[1].setValue(_shortname.getSelectedText());
+
     _ECTS.getValue(val);
-    row[4].setValue(val);
+    row[2].setValue(val);
 }
 
 bool ViewCurriculum::onClick(gui::Button* pBtn)
@@ -253,61 +264,70 @@ bool ViewCurriculum::onClick(gui::Button* pBtn)
     if (pBtn == &_btnUpdate)
     {
         td::Variant val;
-        _semester.getValue(val);
-        if (!doesIDexist(val.i4Val()))
-        {
-            showAlert(tr("alert"), tr("alertU"));
-            return true;
-        }
+        //   _semester.getValue(val);
+          // if (!doesIDexist(val.i4Val()))
+           //{
+            //   showAlert(tr("alert"), tr("alertU"));
+             //  return true;
+           //}
         int iRow = _table.getFirstSelectedRow();
         if (iRow < 0)
             return true;
+        //  td::INT4 itemid = getIDfromTable(iRow);
+
         _table.beginUpdate();
         auto& row = _table.getCurrentRow();
         populateDSRow(row);
         _table.updateRow(iRow);
+        int sRow = iRow + 1;
+        _table.selectRow(sRow);
+        _table.selectRow(iRow);
         _table.endUpdate();
+
+        //  if (std::find(_itemsToInsert.begin(), _itemsToInsert.end(), itemid) == _itemsToInsert.end())
+        //      _itemsToUpdate.push_back(itemid);
+
         return true;
     }
     //dodaj ispod u tabelu
     if (pBtn == &_btnPushBack)
     {
-        td::Variant val;
-        _semester.getValue(val);
-        if (doesIDexist(val.i4Val()))
-        {
-            showAlert(tr("alert"), tr("alertPB"));
-            return true;
-        }
+        // td::Variant val;
+       //  _semester.getValue(val);
+       //  if (doesIDexist(val.i4Val()))
+         //{
+           //  showAlert(tr("alert"), tr("alertPB"));
+             //return true;
+         //}
         _table.beginUpdate();
         auto& row = _table.getEmptyRow();
         populateDSRow(row);
         _table.push_back();
         _table.endUpdate();
         return true;
-        
+
     }
 
     if (pBtn == &_btnSave)
     {
 
-        //showYesNoQuestionAsync(QuestionID::Save, this, tr("alert"), tr("saveSure"), tr("Yes"), tr("No"));
 
         showYesNoQuestionAsync(tr("alert"), tr("saveSure"), tr("Yes"), tr("No"), [this](gui::Alert::Answer answer)
             {
                 if (answer == gui::Alert::Answer::Yes)
                     saveData();
+                showAlert(tr("succes"), tr("succesEE"));
             });
-        //return true;
+        return true;
     }
 
     return false;
 }
-
-bool ViewCurriculum::insertCurriculum()
-{
-    return false;
-}
+//
+//bool ViewCurriculum::insertCurriculum()
+//{
+//    return false;
+//}
 
 
 
@@ -315,98 +335,11 @@ bool ViewCurriculum::canAdd() {
     return true;
 }
 
-/*bool ViewCurriculum::onClick(gui::Button* pBtn)
-{
-    if (pBtn == &_btnAdd)
-    {
-        td::INT4 itemid = _id.getValue().i4Val();
-        if (!canAdd())
-            return true;
-        _table.beginUpdate();
-        auto& row = _table.getEmptyRow();
-        populateDSRow(row);
-        _table.push_back();
-        _table.endUpdate();
-
-
-        _itemsToUpdate.erase(std::remove(_itemsToUpdate.begin(), _itemsToUpdate.end(), itemid), _itemsToUpdate.end());
-        _itemsToInsert.push_back(itemid);
-        //neka ostaje za brisanje, mozda je pobrisanoriginalni artikal sa sifrom itemid, i sada dodajemo novi sa istom sifrom
-        return true;
-    }
-    if (pBtn == &_btnSave)
-    {
-        saveData();
-        return true;
-    }
-    return false;
-}
-
-
-bool ViewCourse::insertCourse()
-{
-    dp::IStatementPtr pInsertCourseP(_db->createStatement("insert into Predmet(ID_Predmeta, Naziv_Predmeta, Sifra_Predmeta, ID_Smjera, Godina_Studija, ECTS_bodovi, Izborni, Max_Broj_Polaznika, Ciklus) values(?,?,?,?,?,?,?,?,?)"));
-
-    // ubacivanje u tabelu Predmet
-    dp::Params pParams2(pInsertCourseP->allocParams());
-    td::INT4 id, idCode, idDep, year, elective, maxNum, ciklus, ects;
-    td::String name, idPredmeta;
-
-    pParams2 << id << dp::toNCh(name, 100) << dp::toNCh(idPredmeta, 100) << idDep << year << ects << elective << maxNum << ciklus;
-
-    dp::IDataSet* pDS = _table.getDataSet();
-    auto rowCnt = pDS->getNumberOfRows();
-    for (size_t iRow = 0; iRow < rowCnt; ++iRow)
-    {
-        // pod pretpostavkom da populateData ucitava podatke analogno redoslijedu u bazi podataka
-        auto& row = pDS->getRow(iRow);
-        id = row[0].i4Val();
-        if (std::find(_itemsToInsert.begin(), _itemsToInsert.end(), id) == _itemsToInsert.end())//this item is not marked to insert, go next
-            continue;
-        name = row[1];
-        idPredmeta = row[2];
-        idDep = row[3].i4Val();
-        year = row[4].i4Val();
-        ects = row[5].i4Val();
-        elective = row[6].i4Val();
-        maxNum = row[7].i4Val();
-        ciklus = row[8].i4Val();
-
-        if (!pInsertCourseP->execute())
-        {
-            return false;
-        }
-    }
-
-    // ubacivanje u tabelu PredmetStaff
-    dp::IStatementPtr pInsertCoursePS(_db->createStatement("insert into PredmetStaff(ID_Korisnika, ID_predmeta) values(?,?)"));
-    dp::Params pParams(pInsertCoursePS->allocParams());
-    td::INT4 idk, idp;
-    pParams << idk << idp;
-
-    dp::IDataSet* pDS1 = _table.getDataSet();
-    auto rowCnt1 = pDS1->getNumberOfRows();
-    for (size_t iRow = 0; iRow < rowCnt1; ++iRow)
-    {
-        // pod pretpostavkom da populateData ucitava podatke analogno redoslijedu u bazi podataka
-        auto& row = pDS1->getRow(iRow);
-        idk = row[0].i4Val();
-        if (std::find(_itemsToInsert.begin(), _itemsToInsert.end(), id) == _itemsToInsert.end())//this item is not marked to insert, go next
-            continue;
-        idp = row[1].i4Val();
-
-        if (!pInsertCoursePS->execute())
-        {
-            return false;
-        }
-    }
-
-    return true;
-}
 
 
 
-*/
+
+
 bool ViewCurriculum::doesIDexist(td::INT4 id)
 {
     size_t nRows = _pDS->getNumberOfRows();
@@ -417,4 +350,35 @@ bool ViewCurriculum::doesIDexist(td::INT4 id)
             return true;
     }
     return false;
+}
+
+
+void ViewCurriculum::SetCurrentDepartment() {
+    dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT Naziv_Smjera FROM Smjer WHERE ID_Smjera = ?");
+    dp::Params parDS(pSelect->allocParams());
+    //d::INT4 IDPredmeta = Globals::_IDSubjectSelection;
+    parDS << _departmentID;
+    dp::Columns pCols = pSelect->allocBindColumns(1);
+    td::String Smjer;
+    pCols << "Naziv_Smjera" << Smjer;
+    if (!pSelect->execute()) {
+        Smjer = "Greska";
+    }
+    while (pSelect->moveNext())
+    {
+        td::Variant val;
+        val = Smjer;
+        _department.setValue(val);
+
+    }
+
+}
+
+void ViewCurriculum::SetCurrentSemester() {
+    if (_semesterID < 30 && _semesterID != 0) {
+        td::Variant val;
+        val = _semesterID;
+        _semester.setValue(val);
+    }
+    else _semester.setValue(1);
 }

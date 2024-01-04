@@ -24,6 +24,7 @@
 #include <fo/FileOperations.h>
 #include <gui/ImageView.h>
 #include <gui/Color.h>
+#include "ViewCurriculumDialog.h"
 
 //enum class QuestionID : td::UINT2 { Save };
 class ViewCurriculum : public gui::View
@@ -32,7 +33,7 @@ private:
 protected:
     // first row
     gui::Label _lblDepartment;
-    gui::DBComboBox _department;
+    gui::LineEdit _department;
     gui::Label _lblSemester;
     gui::NumericEdit _semester;
     gui::Label _lblCourse;
@@ -51,15 +52,16 @@ protected:
     gui::Button _btnPushBack;
     gui::GridLayout _gl;
     //dp::IDatabase* _db;
-    dp::IDatabase* _db;
-    dp::IDataSet* _pDS = nullptr;
-  //  td::INT4 _paramFrom;
-   // td::INT4 _paramTo;
-
+    dp::IDatabasePtr _db;
+    dp::IDataSetPtr _pDS;
+    //  td::INT4 _paramFrom;
+     // td::INT4 _paramTo;
+    td::INT4 _departmentID;
+    td::INT4 _semesterID;
     std::vector<td::INT4> _itemsToDelete, _itemsToInsert, _itemsToUpdate;
 
 public:
-    ViewCurriculum();
+    ViewCurriculum(td::INT4 _departmentID, td::INT4 _semesterID);
     ~ViewCurriculum();
 protected:
     td::INT4 getIDfromTable(int rowID);
@@ -72,11 +74,13 @@ protected:
     void populateData();
     bool updateCourse();
     bool loadComboBox(td::String select, gui::DBComboBox& combo);
-    virtual bool onChangedSelection(gui::TableEdit* pTE);
+    bool onChangedSelection(gui::TableEdit* pTE);
     void populateDSRow(dp::IDataSet::Row& row);
     //bool canAdd();    //trenutno ne treba 
     virtual bool onClick(gui::Button* pBtn);
     bool insertCurriculum();
     bool doesIDexist(td::INT4 id);
     //bool onAnswer(td::UINT4 questionID, gui::Alert::Answer answer);
+    void SetCurrentDepartment();
+    void SetCurrentSemester();
 };

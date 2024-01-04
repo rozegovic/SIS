@@ -6,6 +6,10 @@
 #include "SendMessage.h"
 
 
+
+//random edit za pokazivanje rada sa GitHubom
+
+
 td::INT4 ViewActivity::findMaxID() // Eminina funkcija :-D
 {
     dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select ifnull(max(ID_Aktivnosti), 0) as maxid from Aktivnosti");
@@ -197,7 +201,7 @@ void ViewActivity::SetCurrentSubject() {
     {
         auto pDB = dp::getMainDatabase();
 
-        _pDS = _db->createDataSet("select a.ID_Aktivnosti, a.Naziv_Aktivnosti, p.Naziv_Predmeta, a.Procenat, a.Opis_Aktivnosti, a.Tip_Aktivnosti, a.ID_Predmeta from Aktivnosti a, Predmet p where p.ID_Predmeta=a.ID_Predmeta and p.ID_Predmeta = ?", dp::IDataSet::Execution::EX_MULT);
+        _pDS = _db->createDataSet("select a.ID_Aktivnosti, a.Naziv_Aktivnosti, p.Naziv_Predmeta, a.Procenat, a.Opis_Aktivnosti, v.Naziv ,a.Tip_Aktivnosti, a.ID_Predmeta from Aktivnosti a, Predmet p, VrstaAktivnosti v where v.ID= p.ID_Predmeta=a.ID_Predmeta and p.ID_Predmeta = ?", dp::IDataSet::Execution::EX_MULT);
         dp::Params params(_pDS->allocParams());
         params << _idP;
 

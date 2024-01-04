@@ -16,6 +16,8 @@
 #include "ViewExamSignUp.h"
 #include "ViewCourseEnroll.h"
 #include "ViewTicket.h"
+#include "ViewCurriculumDialog.h"
+#include "DialogCurriculum.h"
 
 
 #include <rpt/IResources.h>
@@ -40,6 +42,7 @@ MainWindow::MainWindow()
     setTitle(tr("SIS"));
     _mainMenuBar.setAsMain(this);
     setCentralView(&_mainView);
+    setStatusBar(&_statBar);
 
     //load report resources
     rpt::IResources* pRes = rpt::IResources::getManager();
@@ -65,7 +68,8 @@ void MainWindow::showLogin()
         {
             auto btnID = pDlg->getClickedButtonID();
             if (btnID == gui::Dialog::Button::ID::OK) {
-                //UpdateMenu();
+                _statBar.UpdateStatusBar();
+                return true;
             }
             else
                 close();
@@ -115,6 +119,25 @@ bool MainWindow::showSubjectChoose()
     return false;
 }
 
+bool MainWindow::showCurriculum()
+{
+    DialogCurriculum* pDlg = new DialogCurriculum(this);
+    pDlg->setTitle(tr("Choose semester and department"));
+    pDlg->openModalWithID(DlgID::Curriculum, [this](gui::Dialog::Button::ID btn, gui::Dialog* pDlg)
+        {
+            auto btnID = pDlg->getClickedButtonID();
+            if (btnID == gui::Dialog::Button::ID::OK) {
+                auto dlgCS = static_cast<DialogCurriculum*> (pDlg);
+                showCurriculumView(dlgCS->getDepartmentID(), dlgCS->getSemester());
+            }
+            else return true;
+        });
+
+    //pDlg->openModalWithID(DlgID::Login, this);
+    return false;
+}
+
+
 bool MainWindow::showSubjectChooseActivty()
 {
     DialogChooseSubject* pDlg = new DialogChooseSubject(this);
@@ -126,7 +149,7 @@ bool MainWindow::showSubjectChooseActivty()
                 auto dlgCS = static_cast<DialogChooseSubject*> (pDlg);
                 showActivityView(dlgCS->getSubjectID());
             }
-            else return true;
+            return true;
         });
 
     //pDlg->openModal(DlgID::Login, this);
@@ -164,7 +187,7 @@ bool MainWindow::showAllSubjectChoose()
                 auto dlgCS = static_cast<DialogChooseSubject*> (pDlg);
                 showTStaffView(dlgCS->getSubjectID());
             }
-            else return true;
+            else  return true;
         });
 
     return false;
@@ -211,7 +234,7 @@ bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc)
         break; case 60: return showSubjectChooseActivty();
         break; case 70: return showEnrollView();
         break; case 80: return showSubjectChoose();
-        break; case 90: return showCurriculumView();
+        break; case 90: return showCurriculum();
         break; case 100: showMySubjectChoose(); return true;
         break; case 110: return showExamSignUpView();
         break; case 120: return showCourseEnrollView();
@@ -354,17 +377,32 @@ bool MainWindow::showAttendanceView(td::INT4 SubjectID)
         return true;
 
     NavigatorView* pView = new NavigatorView(ViewID, SubjectID);
-    _mainView.addView(pView, tr("viewAttendance"), &_imgAttendance);
+    td::String a = (tr("viewAttendance"));
+    dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select a.Naziv_Predmeta AS Naziv FROM Predmet a WHERE a.ID_Predmeta = ?");
+    dp::Params pParams(pSelect->allocParams());
+    pParams << SubjectID;
+    dp::Columns pCols = pSelect->allocBindColumns(1);
+    td::String name;
+    pCols << "Naziv" << name;
+    if (!pSelect->execute())
+        return false;
+
+    if (!pSelect->moveNext())
+        return false;
+    a += " - ";
+    a += name;
+
+    _mainView.addView(pView, a, &_imgAttendance);
     return true;
 }
 
-bool MainWindow::showCurriculumView()
+bool MainWindow::showCurriculumView(td::INT4 _departmentID, td::INT4 _semesterID)
 {
     //showSubjectChoose();
     if (focusOnViewPositionWithID(View_CURRICULUM))
         return true;
 
-    ViewCurriculum* pView = new ViewCurriculum;
+    ViewCurriculum* pView = new ViewCurriculum(_departmentID, _semesterID);
     _mainView.addView(pView, tr("viewCurriculum"), &_imgCurr);
     return true;
 }
