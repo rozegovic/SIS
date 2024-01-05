@@ -44,7 +44,7 @@ public:
         : _hl(2)
         , _navigator(2, true)
         , _imgAttendance(":imgSubject")
-        , _imgSubject("C:/Users/Korisnik/Work/Common/Icons/imgAttendance.JPG")
+        , _imgSubject(":imgAttendance")
         , _switcherView(subjectID)
 
     {
