@@ -49,8 +49,9 @@
 		<Res id="viewAttendance" tr="Prisustvo"/>
 		<Res id="viewCurriculum" tr="Kurikulum"/>
 		<Res id="viewExamAtt" tr="Prijave na ispit"/>
-				<Res id="viewTicket" tr="Karta"></Res>
+		<Res id="viewTicket" tr="Karta"></Res>
 		<Res id="viewCourseEnroll" tr="Predmeti upis"/>
+		<Res id="Withdraw" tr="Ispiši"/>
 
 		<Res id="ExamAttendanceRep" tr="Prijave na ispit"/>
 
@@ -129,7 +130,29 @@
 		<Res id="succesEE" tr="Uspješno registrovane promjene u sistem."/>
 		<Res id="alertIND" tr="Indeks korisnika nije ispravno unesen."/>
 		
-		
+		<Res id="succes" tr="Uspješna registracija!"/>
+		<Res id="newF" tr="Novi fakultet"/>
+		<Res id="Yes" tr="Da"/>
+		<Res id="No" tr="Ne"/>
+                        <Res id="username" tr="Korisničko ime:"/>
+                        <Res id="password" tr="Šifra:"/>
+                        <Res id="viewAttendance" tr="Prisustvo"/>
+                        <Res id="NumSeats" tr="Broj mjesta"/>
+                        <Res id="Location" tr="Lokacija"/>
+                        <Res id="Type" tr="Tip"/>
+                        <Res id="Update" tr="Ažuriraj"/>
+                        <Res id="Attendance" tr="Prisustvo"/>
+                        <Res id="Login" tr="Prijava"/>
+                        <Res id="Name" tr="Ime"/>
+                         <Res id="Surname" tr="Prezime"/>
+                         <Res id="Date" tr="Datum"/>
+                         <Res id="Time" tr="Vrijeme"/>
+                         <Res id="Present" tr="Prisutan"/>
+                          <Res id="NotPresent" tr="Nije prisutan"/>
+                          <Res id="StatUser" tr="Korisnik:"/>
+                         <Res id="StatRole" tr="Uloga:"/>
+                         <Res id="Subject" tr="Predmet"/>
+                            <Res id="alertPr" tr="Vec ste unijeli prisustvo ovog studenta za ovaj termin"/>
 		
 		<Res id="succes" tr="Uspješna registracija!"/>
 		<Res id="newF" tr="Novi fakultet"/>
@@ -172,10 +195,18 @@
 		<Res id="courselbl" tr="Predmet:"/>
 		<Res id="WithdrawCourseTT" tr="Ispiši studenta sa predmeta"/>
 		
+		
+		
 		<Res id="saveSureTicket" tr="Jeste li sigurni da želite poslati zahtjev?"/>
 		<Res id="alertPB" tr="Već postoji korisnik sa unesenom šifrom."/>
+		<Res id="typeOfMessage" tr="Vrsta zahtjeva:"/>
+		<Res id="subject" tr="Naslov:"/>
+		<Res id="send" tr="Pošalji"/>
+		<Res id="sendRequestTT" tr="Pošalji trenutni zahtjev"/>
+		<Res id="OnHold" tr="Na Čekanju"/>
 		
-		<Res id="AccessNoAllowed" tr="Nemate pravo pristupa"/>
+		
+		<Res id="AccessNotAllowed" tr="Nemate pravo pristupa"/>
 
 		
 		<Res id="Options" tr="Opcije"/>

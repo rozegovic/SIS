@@ -10,6 +10,9 @@
 		<Res id="UNSA" path = "Work/Common/Icons/UNSA/UNSA_Logo.png"/>
 		<Res id="Home" path = "Work/Common/Icons/Traditional-HomeXL.png"/>
 		<Res id="TransCost" path = "Work/Common/Icons/transportCostXL.png"/>
+
+		<Res id="imgAttendance" path = "Work/Common/Icons/imgAttendance.jpg"/>
+			<Res id="imgSubject" path = "Work/Common/Icons/imgSubject.png"/>
 		
 		<Res id="complex" path = "Work/Common/Icons/bh_flag.png"/>
 		<Res id="pencil" path = "Work/Common/Icons/update64.png"/>
