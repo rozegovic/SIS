@@ -224,4 +224,30 @@ CREATE TABLE "SAOTicket" (
 	PRIMARY KEY("ID")
 );
 
+CREATE TABLE "Rokovi" (
+	"ID_Roka"	INTEGER NOT NULL,
+	"ID_Aktivnosti"	INTEGER NOT NULL,
+	"Datum_Pocetka"	INTEGER NOT NULL,
+	"Vrijeme_Pocetka"	INTEGER NOT NULL,
+	"Datum_Kraja"	INTEGER NOT NULL,
+	"Vrijeme_Kraja"	INTEGER NOT NULL,
+	"Datum_Prijave"	INTEGER NOT NULL,
+	"Vrijeme_Prijave"	INTEGER NOT NULL,
+	"ID_Predmeta"	INTEGER NOT NULL,
+	PRIMARY KEY("ID_Roka"),
+	FOREIGN KEY("ID_Predmeta") REFERENCES "Predmet"("ID_Predmeta"),
+	FOREIGN KEY("ID_Aktivnosti") REFERENCES "Aktivnosti"("ID_Aktivnosti")
+);
 
+
+
+CREATE TABLE "SAOStudentTicket" (
+	"ID"	INTEGER,
+	"Indeks"	TEXT NOT NULL,
+	"Ticket_Tip"	TEXT NOT NULL,
+	"Req_Title"	TEXT NOT NULL,
+	"Request"	TEXT,
+	"Attachment"	BLOB,
+	"Status"	TEXT,
+	PRIMARY KEY("ID" AUTOINCREMENT)
+);

@@ -123,7 +123,7 @@ bool MainWindow::showCurriculum()
 {
     DialogCurriculum* pDlg = new DialogCurriculum(this);
     pDlg->setTitle(tr("Choose semester and department"));
-    pDlg->openModalWithID(DlgID::Curriculum, [this](gui::Dialog::Button::ID btn, gui::Dialog* pDlg)
+    pDlg->openModal([this](gui::Dialog::Button::ID btn, gui::Dialog* pDlg)
         {
             auto btnID = pDlg->getClickedButtonID();
             if (btnID == gui::Dialog::Button::ID::OK) {
@@ -142,7 +142,7 @@ bool MainWindow::showSubjectChooseActivty()
 {
     DialogChooseSubject* pDlg = new DialogChooseSubject(this);
     pDlg->setTitle(tr("SubjectChoose"));
-    pDlg->openModalWithID(DlgID::Login, [this](gui::Dialog::Button::ID btn, gui::Dialog* pDlg)
+    pDlg->openModal([this](gui::Dialog::Button::ID btn, gui::Dialog* pDlg)
         {
             auto btnID = pDlg->getClickedButtonID();
             if (btnID == gui::Dialog::Button::ID::OK) {

@@ -26,6 +26,8 @@
 #include <gui/ImageView.h>
 #include <rnd/MinMax.h>
 
+
+
 class ViewSubject : public gui::View
 {
     gui::Label _lblName;
@@ -44,6 +46,7 @@ class ViewSubject : public gui::View
     dp::IDataSetPtr _pDS;
     dp::IDataSetPtr _pDSPos;
     td::INT4 _SubjectID;
+    
 
 public:
     ViewSubject(td::INT4 SubjectID);
@@ -54,8 +57,9 @@ protected:
     void populateData();
     void populateDateCombo(gui::DBComboBox& combo);
     void populateTimeCombo(gui::DBComboBox& combo, td::Date date);
-    void saveData();
+    bool saveData();
     bool onClick(gui::Button* pBtn);
-    bool doesIDexist(td::INT4 ID);
+    bool doesIDexist(td::INT4 ID_stud, td::INT4 ID_term);
+   
 };
 
