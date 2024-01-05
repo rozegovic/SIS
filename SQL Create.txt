@@ -239,3 +239,15 @@ CREATE TABLE "Rokovi" (
 	FOREIGN KEY("ID_Aktivnosti") REFERENCES "Aktivnosti"("ID_Aktivnosti")
 );
 
+
+
+CREATE TABLE "SAOStudentTicket" (
+	"ID"	INTEGER,
+	"Indeks"	TEXT NOT NULL,
+	"Ticket_Tip"	TEXT NOT NULL,
+	"Req_Title"	TEXT NOT NULL,
+	"Request"	TEXT,
+	"Attachment"	BLOB,
+	"Status"	TEXT,
+	PRIMARY KEY("ID" AUTOINCREMENT)
+);
