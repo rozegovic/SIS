@@ -126,9 +126,8 @@ ViewActivity::ViewActivity(td::INT4 SubjectID) : _db(dp::getMainDatabase()) //ov
 , _btnDelete(tr("Delete"))
 , _btnUpdate(tr("Update"))
 , _btnInsert(tr("Insert"))
-, _btnShowWindow(tr("Messages"))
 , _hlBtns(8) //nisam siguran koliko ce biti dugmadi
-, _gl(6, 4)
+, _gl(5, 4)
 , _paramFrom(0)
 , _paramTo(100)
 //ne bi trebalo da jos ista fali
@@ -159,7 +158,6 @@ ViewActivity::ViewActivity(td::INT4 SubjectID) : _db(dp::getMainDatabase()) //ov
     gc.appendCol(_desAct);
     gc.appendCol(_lblPoints);
     gc.appendCol(_points);
-    gc.appendRow(_btnShowWindow);
 
     
     gc.appendRow(_table, 0);
@@ -492,20 +490,8 @@ void ViewActivity::SetCurrentSubject() {
         {
             showYesNoQuestionAsync(QuestionIDDDAAA::Saveee, this, tr("alert"), tr("saveSure"), tr("Yes"), tr("No"));
 
-
-
             return true;
         }
-
-        if (&_btnShowWindow) {
-            gui::Window* pParentWnd = getParentWindow();
-            auto pWnd = new WindowMessages(pParentWnd);
-            pWnd->keepOnTopOfParent();
-            pWnd->open();
-            return true;
-        }
-
-
         return false;
     }
 
@@ -536,7 +522,7 @@ void ViewActivity::SetCurrentSubject() {
                     td::String naslov = "Aktivnost!";
                     td::String poruka = "Registrovana je promjena za odredjenu aktivnost! ";
                     MsgSender msg;
-                    msg.sendSystemMsgtoUsers(naslov, poruka, userIDs);
+                    msg.sendMsgtoUsers(naslov, poruka, userIDs);
                 }
             }
             return true;

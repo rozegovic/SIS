@@ -51,6 +51,7 @@
 		<Res id="viewExamAtt" tr="Prijave na ispit"/>
 				<Res id="viewTicket" tr="Karta"></Res>
 		<Res id="viewCourseEnroll" tr="Predmeti upis"/>
+		<Res id="viewMessages" tr="Obavještenja"/>
 
 		<Res id="ExamAttendanceRep" tr="Prijave na ispit"/>
 
