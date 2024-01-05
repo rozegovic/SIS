@@ -606,7 +606,7 @@ void ViewActivity::SetCurrentSubject() {
     {
         dp::IDataSet* pDS = _table.getDataSet();
         auto& row = pDS->getRow(rowID);
-        return row[8].i4Val();
+        return row[0].i4Val();
     }
 
     bool ViewActivity::canDelete(int iRow) // ne iskoristeno ali trebalo bi da radi ako treba negdje implementirati...

@@ -83,6 +83,10 @@ INSERT INTO SAOTicket (ID,Ticket) VALUES (1,'Molba');
 INSERT INTO SAOTicket  (ID,Ticket) VALUES (2,'Žalba');
 INSERT INTO SAOTicket  (ID,Ticket) VALUES (3,'Pitanje');
 
+INSERT into Rokovi (ID_Roka, ID_Aktivnosti, Datum_Pocetka, Vrijeme_Pocetka, Datum_Kraja, Vrijeme_Kraja,Datum_Prijave, Vrijeme_Prijave, ID_Predmeta) values(1,5,20231229,090000,20231231,235959,2555562,111427,1);
+INSERT into Rokovi (ID_Roka, ID_Aktivnosti, Datum_Pocetka, Vrijeme_Pocetka, Datum_Kraja, Vrijeme_Kraja,Datum_Prijave, Vrijeme_Prijave, ID_Predmeta)values(2,1,20220609,113000,20220610,235959,545256,112023,2);
+INSERT into Rokovi (ID_Roka, ID_Aktivnosti, Datum_Pocetka, Vrijeme_Pocetka, Datum_Kraja, Vrijeme_Kraja,Datum_Prijave, Vrijeme_Prijave, ID_Predmeta)values(3,2,20230210,090000,20230211,235959,515245,090705,3);
+INSERT into Rokovi (ID_Roka, ID_Aktivnosti, Datum_Pocetka, Vrijeme_Pocetka, Datum_Kraja, Vrijeme_Kraja,Datum_Prijave, Vrijeme_Prijave, ID_Predmeta)values(4,5,20230303,090000,20230303,235959,515585,111111,4);
 
 
 

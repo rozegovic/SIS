@@ -1,20 +1,15 @@
-#pragma once
-#pragma once
+ï»¿#pragma once
 #include "ViewTicket.h"
 #include "ViewIDs.h"
 
 ViewTicket::ViewTicket()
-	: _namelbl(tr("nameUser"))
-	, _surnamelbl(tr("surnameUser"))
-	, _indexlbl(tr("indexUserL"))
-	, _typelbl(tr("typeOfMessage"))
-	, _type(td::int4)
+	: _typelbl(tr("typeOfMessage"))
 	, _subjectlbl(tr("subject"))
-	, _bodylbl(tr("body"))
+	, _bodylbl(tr(""))
 	, _hlBtnsDB(2)
-	, _btnSend(tr("Send"))
+	, _btnSend(tr("send"),tr("sendRequestTT"))
 	, _gl(5, 6)
-	, _db(dp::getMainDatabase())
+	, _db(dp::create(dp::IDatabase::ConnType::CT_SQLITE, dp::IDatabase::ServerType::SER_SQLITE3))
 {
 	_hlBtnsDB.appendSpacer();
 	_hlBtnsDB.append(_btnSend); 
@@ -23,48 +18,21 @@ ViewTicket::ViewTicket()
 
 	gui::GridComposer gc(_gl);
 
-	gc.appendRow(_namelbl);
-	gc.appendCol(_name);
-	gc.appendCol(_surnamelbl);
-	gc.appendCol(_surname);
-	gc.appendCol(_indexlbl);
-	gc.appendCol(_index);
-
 	gc.appendRow(_typelbl);
 	gc.appendCol(_type);
 	gc.appendCol(_subjectlbl);
 	gc.appendCol(_subject);
 	gc.appendRow(_bodylbl);
 	gc.appendRow(_body,0);
+	gc.appendRow(_tableTickets,0);
 	gc.appendRow(_hlBtnsDB, 0);
 	gui::View::setLayout(&_gl);
 
-	populateTypeCombo(_type);
-	
-	/*td::INT4 ticket = _type.getSelectedIndex();
-	switch (ticket) {
-	case 0: _bodylbl = tr("Molba");
-	case 1: _bodylbl = tr("Pitanje");
-	case 2: _bodylbl = tr("Žalba");
-	}*/
+	_db = dp::getMainDatabase();
 
+	populateTableData();
 }
 
-
-void ViewTicket::populateTypeCombo(gui::DBComboBox& combo)
-{
-	dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT ID,Ticket FROM SAOTicket");
-	dp::Columns pCols = pSelect->allocBindColumns(2);
-	td::String name;
-	td::INT4 id;
-	pCols << "ID" << id << "Ticket" << name;
-	pSelect->execute();
-
-	while (pSelect->moveNext())
-	{
-		combo.addItem(name,id);
-	}
-}
 
 
 bool ViewTicket::onClick(gui::Button* pBtn)
@@ -82,21 +50,20 @@ bool ViewTicket::onClick(gui::Button* pBtn)
 
 bool ViewTicket::sendTicket() {
 
-	dp::IStatementPtr pInsStat(_db->createStatement("INSERT INTO SAOStudentTicket (Indeks,ID_Ticket,Req_Title,Request) VALUES (?,?,?,?)"));
+	dp::IStatementPtr pInsStat(_db->createStatement("INSERT INTO SAOStudentTicket (Indeks,Ticket_Tip,Req_Title,Request,Status) VALUES (?,?,?,?,?)"));
 	dp::Params parDS(pInsStat->allocParams());
-	td::String index, request,requestTitle;
-	td::INT4 idticket;
-	parDS << dp::toNCh(index, 30) << idticket <<dp::toNCh(requestTitle,100)<< dp::toNCh(request, 1000);
+	td::String index, request,requestTitle,Ticket_Name,status;
+	parDS << dp::toNCh(index, 30) << dp::toNCh(Ticket_Name,30) <<dp::toNCh(requestTitle,100)<< dp::toNCh(request, 5000)<<dp::toNCh(status,50);
 
 
 	td::Variant var;
 
-	_index.getValue(var);
-	index = var.getConstStr();
+	status = tr("OnHold");
+	index = GetStudentIndeks().getConstStr();
 	_subject.getValue(var);
 	requestTitle = var.getConstStr();
 	request =_body.getText();
-	idticket =_type.getSelectedIndex()+ 1;
+	Ticket_Name =_type.getText();
 
 	dp::Transaction tr(_db);
 
@@ -112,48 +79,15 @@ bool ViewTicket::sendTicket() {
 	}
 	tr.commit();
 
+	_tableTickets.reload();
+
 	return true;
-
-}
-
-bool ViewTicket::IsIndexInUsersTable() {
-
-	dp::IDataSetPtr pompDS = dp::getMainDatabase()->createDataSet("SELECT Korisnici.Indeks as indeks FROM Korisnici WHERE Korisnici.ID!=0 AND Korisnici.ID!=-1;", dp::IDataSet::Execution::EX_MULT);
-	dp::DSColumns cols(pompDS->allocBindColumns(1));
-	cols << "indeks" << td::string8;
-	if (!pompDS->execute())
-	{
-		showAlert(tr("errorReadingUsers"), "");
-		pompDS = nullptr;
-		return false;
-	}
-
-	bool returnVal=false;
-
-	int n=pompDS->getNumberOfRows();
-
-	td::String index = _index.getText();
-
-	for (int i = 0;i < n;i++)
-	{
-		auto& row = pompDS->getRow(i);
-		if (row[0] == index)
-			returnVal = true;
-	}
-
-	return returnVal;
 
 }
 
 bool ViewTicket::onAnswer(td::UINT4 questionID, gui::Alert::Answer answer) {
 	if ((QuestionID)questionID == QuestionID::Save)
 	{
-		if (!IsIndexInUsersTable())
-		{
-			showAlert(tr("errorNoIndexInUsers"),"");
-			return false;
-
-		}
 		if (answer == gui::Alert::Answer::Yes) {
 			sendTicket();
 			showAlert(tr("succes"), tr("succesEE"));
@@ -163,12 +97,57 @@ bool ViewTicket::onAnswer(td::UINT4 questionID, gui::Alert::Answer answer) {
 	return false;
 }
 
-bool ViewTicket::onChangedSelection(gui::DBComboBox* pCmb) {
-	if (pCmb == &_type)
+
+td::Variant ViewTicket::GetStudentIndeks() {
+
+	td::INT4 userid = Globals::_currentUserID;
+
+	auto pomDS = dp::getMainDatabase()->createDataSet("SELECT Korisnici.ID as ID, Korisnici.Indeks as indeks FROM Korisnici WHERE ID!=0 AND ID!=-1", dp::IDataSet::Execution::EX_MULT);
+	dp::DSColumns cols(pomDS->allocBindColumns(2));
+	cols << "ID" << td::int4<<"indeks" << td::string8;
+
+	if (!pomDS->execute())
 	{
-		td::String ticket = pCmb->getSelectedText();
-		_bodylbl.setTitle(ticket);
-		return true;
+		pomDS = nullptr;
+		return td::Variant("errorGettingIndex");
 	}
-	return false;
+
+	int n = pomDS->getNumberOfRows();
+
+	for (int i = 0;i < n;i++) {
+
+		auto& row = pomDS->getRow(i);
+		if (row[0] == userid)
+			return row[1];
+	   }
+
+
+
+	return td::Variant("Index ne postoji u bazi");
+
+}
+
+void ViewTicket::populateTableData() {
+
+	td::String setstr = "SELECT SAOStudentTicket.Ticket_Tip as type, SAOStudentTicket.Req_Title as title, SAOStudentTicket.Status as status FROM SAOStudentTicket WHERE SAOStudentTicket.Indeks=";
+	setstr.append(GetStudentIndeks().getConstStr());
+
+	_pDS = dp::getMainDatabase()->createDataSet(setstr, dp::IDataSet::Execution::EX_MULT);
+	dp::DSColumns cols(_pDS->allocBindColumns(3));
+	cols << "type" << td::string8 << "title" << td::string8 << "status" << td::string8;
+	if (!_pDS->execute())
+	{
+		_pDS = nullptr;
+		showAlert("errorReadingTable", "");
+		return;
+	}
+	//showAlert(std::to_string(_pDS->getNumberOfRows()), "");
+
+	gui::Columns visCols(_tableTickets.allocBindColumns(3));
+	visCols << gui::ThSep::DoNotShowThSep << gui::Header(0, tr("typeOfMessage"), "", 610) << gui::Header(1, tr("subject"), "", 610) << gui::Header(2, tr("Status:"), "", 610);
+	  _tableTickets.init(_pDS);
+		if (_pDS->getNumberOfRows()) {
+			_tableTickets.selectRow(0, true);
+             }
+		
 }
