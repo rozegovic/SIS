@@ -18,7 +18,7 @@
 #include "ViewTicket.h"
 #include "ViewCurriculumDialog.h"
 #include "DialogCurriculum.h"
-
+#include "ViewMessages.h"
 
 #include <rpt/IResources.h>
 #include "NavigatorViewActivity.h"
@@ -239,6 +239,7 @@ bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc)
         break; case 110: return showExamSignUpView();
         break; case 120: return showCourseEnrollView();
         break; case 130: return showTicketView();
+        break; case 140: return showMessagesView();
 
 
 
@@ -446,6 +447,22 @@ bool MainWindow::showCourseEnrollView() {
 
     ViewCourseEnroll* pView = new ViewCourseEnroll;
     _mainView.addView(pView, tr("viewCourseEnroll"), &_imgCourseenr);
+    return true;
+}
+
+bool MainWindow::showMessagesView() {
+
+    if (!Globals::isAdmin && !Globals::isSAO)
+    {
+        showAlert(tr("AccessNotAllowed"), "");
+        return true;
+    }
+
+    if (focusOnViewPositionWithID(View_MESSAGES))
+        return true;
+
+    ViewMessages* pView = new ViewMessages;
+    _mainView.addView(pView, tr("viewMessages"), &_imgMessages);
     return true;
 }
 

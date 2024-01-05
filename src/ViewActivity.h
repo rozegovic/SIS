@@ -51,7 +51,6 @@ protected:
     gui::Button _btnSave;
     gui::Button _btnReload;
     //gui::Button _btnRemoveAll;
-    gui::Button _btnShowWindow;
     gui::Button _btnDelete;
     gui::Button _btnUpdate;
     gui::Button _btnInsert;   //jedna    ove       mozda    treba
