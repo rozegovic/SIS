@@ -130,7 +130,29 @@
 		<Res id="succesEE" tr="Uspješno registrovane promjene u sistem."/>
 		<Res id="alertIND" tr="Indeks korisnika nije ispravno unesen."/>
 		
-		
+		<Res id="succes" tr="Uspješna registracija!"/>
+		<Res id="newF" tr="Novi fakultet"/>
+		<Res id="Yes" tr="Da"/>
+		<Res id="No" tr="Ne"/>
+                        <Res id="username" tr="Korisničko ime:"/>
+                        <Res id="password" tr="Šifra:"/>
+                        <Res id="viewAttendance" tr="Prisustvo"/>
+                        <Res id="NumSeats" tr="Broj mjesta"/>
+                        <Res id="Location" tr="Lokacija"/>
+                        <Res id="Type" tr="Tip"/>
+                        <Res id="Update" tr="Ažuriraj"/>
+                        <Res id="Attendance" tr="Prisustvo"/>
+                        <Res id="Login" tr="Prijava"/>
+                        <Res id="Name" tr="Ime"/>
+                         <Res id="Surname" tr="Prezime"/>
+                         <Res id="Date" tr="Datum"/>
+                         <Res id="Time" tr="Vrijeme"/>
+                         <Res id="Present" tr="Prisutan"/>
+                          <Res id="NotPresent" tr="Nije prisutan"/>
+                          <Res id="StatUser" tr="Korisnik:"/>
+                         <Res id="StatRole" tr="Uloga:"/>
+                         <Res id="Subject" tr="Predmet"/>
+                            <Res id="alertPr" tr="Vec ste unijeli prisustvo ovog studenta za ovaj termin"/>
 		
 		<Res id="succes" tr="Uspješna registracija!"/>
 		<Res id="newF" tr="Novi fakultet"/>
