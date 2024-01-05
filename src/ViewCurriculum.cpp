@@ -135,6 +135,7 @@ bool ViewCurriculum::saveData()
 
         if (!pInsStat->execute())
             return false;
+        ++smjer;
     }
     tr.commit();
     return true;
@@ -224,8 +225,7 @@ bool ViewCurriculum::onChangedSelection(gui::TableEdit* pTE)
         val = row[0];
         _course.setValue(val);
 
-        /* val = row[1];
-         _shortname.setValue(val);*/
+         _shortname.setValue(val);
 
         val = row[2];
         _ECTS.setValue(val);
