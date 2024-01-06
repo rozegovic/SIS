@@ -19,6 +19,7 @@
 #include "ViewCurriculumDialog.h"
 #include "DialogCurriculum.h"
 #include "ViewMessages.h"
+#include "ViewGradeExams.h"
 
 #include <rpt/IResources.h>
 #include "NavigatorViewActivity.h"
@@ -38,6 +39,7 @@ MainWindow::MainWindow()
     , _imgExamAtt(":complex")
     , _imgTicket(":pencil")
     , _imgCourseenr(":plus")
+    , _imgExamGrades(":complex")
 {
     setTitle(tr("SIS"));
     _mainMenuBar.setAsMain(this);
@@ -193,6 +195,29 @@ bool MainWindow::showAllSubjectChoose()
     return false;
 }
 
+bool MainWindow::showSomeSubjectChoose()
+{
+    auto x = Globals::_currentUserRole;
+    if (x!=1)
+    {
+        showAlert(tr("AccessNotAllowed"), "");
+        return true;
+    }
+    DialogChooseSubject* pDlg = new DialogChooseSubject(this);
+    pDlg->setTitle(tr("SubjectChoose"));
+    pDlg->openModal([this](gui::Dialog::Button::ID btn, gui::Dialog* pDlg)
+        {
+            auto btnID = pDlg->getClickedButtonID();
+            if (btnID == gui::Dialog::Button::ID::OK) {
+                auto dlgCS = static_cast<DialogChooseSubject*> (pDlg);
+                showGradeExamView(dlgCS->getSubjectID());
+            }
+            else return true;
+        });
+
+    return false;
+}
+
 
 
 bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc) 
@@ -240,6 +265,7 @@ bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc)
         break; case 120: return showCourseEnrollView();
         break; case 130: return showTicketView();
         break; case 140: return showMessagesView();
+        break; case 150: return showSomeSubjectChoose();
 
 
 
@@ -466,3 +492,14 @@ bool MainWindow::showMessagesView() {
     return true;
 }
 
+bool MainWindow::showGradeExamView(td::INT4 SubjectID)
+{
+    td::INT4 ViewID = (View_GRADE << 24) | SubjectID;
+    if (focusOnViewPositionWithID(ViewID))
+        return true;
+
+    ViewGradeExams* pView = new ViewGradeExams(SubjectID);
+    _mainView.addView(pView, tr("viewGradeExam"), &_imgExamGrades);
+
+    return true;
+}

@@ -38,13 +38,15 @@ public:
         items[11].initAsActionItem(tr("viewCourseEnroll"), 120);
         items[12].initAsActionItem(tr("viewTicket"), 130);
         items[13].initAsActionItem(tr("viewMessages"), 140);
+        items[14].initAsActionItem(tr("viewExamGrade"), 150);
+
     }
    
 public:
     MenuBar()
     : gui::MenuBar(2) 
     , application(10, tr("App"), 2)
-    , sifarnici(20, tr("Sif"), 14)
+    , sifarnici(20, tr("Sif"), 15)
 
     {
         populateAppMenu();

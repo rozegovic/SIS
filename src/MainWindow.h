@@ -29,6 +29,8 @@ protected:
     gui::Image _imgTicket;
     gui::Image _imgCourseenr;
     gui::Image _imgMessages;
+    gui::Image _imgExamGrades;
+
     StatusBar _statBar;
 
 
@@ -47,6 +49,7 @@ public:
     bool showMySubjectChoose();
     bool showAllSubjectChoose();
     bool showSubjectChooseActivty();
+    bool showSomeSubjectChoose();
     bool showCurriculum();
 
 
@@ -66,6 +69,8 @@ protected:
     bool showTicketView();
     bool showCourseEnrollView();
     bool showMessagesView();
+    bool showGradeExamView(td::INT4 SubjectID);
+    
     //bool onClick(gui::Dialog* pDlg, td::UINT4 dlgID) override;
 
 

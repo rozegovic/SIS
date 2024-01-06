@@ -279,3 +279,14 @@ CREATE TABLE "Predaja" (
 	FOREIGN KEY("ID_Studenta") REFERENCES "Korisnici"("ID"),
 	PRIMARY KEY("ID_Predaje")
 );
+
+
+CREATE TABLE "OcjeneIspita" (
+	"ID"	INTEGER NOT NULL,
+	"ID_Korisnika"	INTEGER NOT NULL,
+	"ID_Aktivnosti"	INTEGER NOT NULL,
+	"Ocjena"	TEXT,
+	FOREIGN KEY("ID_Korisnika") REFERENCES "Korisnici"("ID"),
+	FOREIGN KEY("ID_Aktivnosti") REFERENCES "Aktivnosti"("ID_Aktivnosti"),
+	PRIMARY KEY("ID")
+);
