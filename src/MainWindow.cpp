@@ -41,7 +41,6 @@ MainWindow::MainWindow()
     , _imgCourseenr(":plus")
     , _imgMessages(":complex")
     , _imgExamGrades(":complex")
-    , _imgMessages(":complex")
 {
     setTitle(tr("SIS"));
     _mainMenuBar.setAsMain(this);
