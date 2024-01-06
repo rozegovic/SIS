@@ -88,6 +88,7 @@ protected:
     bool insertActivity();   
     void SetCurrentSubject();
     bool onAnswer(td::UINT4 questionID, gui::Alert::Answer answer);
+    void SetActivityTypeName(td::Variant& val, td::INT4 br);
 };
 
 
