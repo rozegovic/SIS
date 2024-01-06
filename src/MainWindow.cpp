@@ -40,6 +40,7 @@ MainWindow::MainWindow()
     , _imgTicket(":pencil")
     , _imgCourseenr(":plus")
     , _imgExamGrades(":complex")
+    , _imgMessages(":complex")
 {
     setTitle(tr("SIS"));
     _mainMenuBar.setAsMain(this);
