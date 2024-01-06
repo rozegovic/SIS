@@ -39,6 +39,7 @@ MainWindow::MainWindow()
     , _imgExamAtt(":complex")
     , _imgTicket(":pencil")
     , _imgCourseenr(":plus")
+    , _imgMessages(":complex")
     , _imgExamGrades(":complex")
 {
     setTitle(tr("SIS"));
@@ -478,7 +479,7 @@ bool MainWindow::showCourseEnrollView() {
 
 bool MainWindow::showMessagesView() {
 
-    if (!Globals::isAdmin && !Globals::isSAO)
+    if (!Globals::isStudent)
     {
         showAlert(tr("AccessNotAllowed"), "");
         return true;
