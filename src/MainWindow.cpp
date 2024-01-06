@@ -39,6 +39,7 @@ MainWindow::MainWindow()
     , _imgExamAtt(":complex")
     , _imgTicket(":pencil")
     , _imgCourseenr(":plus")
+    , _imgMessages(":complex")
     , _imgExamGrades(":complex")
     , _imgMessages(":complex")
 {
