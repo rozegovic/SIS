@@ -58,7 +58,6 @@ MainWindow::MainWindow()
     }
 }
 
-
 void MainWindow::showLogin()
 {
  
@@ -143,6 +142,13 @@ bool MainWindow::showCurriculum()
 
 bool MainWindow::showSubjectChooseActivty()
 {
+    auto x = Globals::_currentUserRole;
+    if (x != 1 && x != 3 && x != 6)
+    {
+        showAlert(tr("AccessNotAllowed"), "");
+        return true;
+    }
+
     DialogChooseSubject* pDlg = new DialogChooseSubject(this);
     pDlg->setTitle(tr("SubjectChoose"));
     pDlg->openModal([this](gui::Dialog::Button::ID btn, gui::Dialog* pDlg)
@@ -162,7 +168,12 @@ bool MainWindow::showSubjectChooseActivty()
 
 bool MainWindow::showMySubjectChoose()
 {
-
+    auto x = Globals::_currentUserRole;
+    if (x != 1 && x != 3 && x != 6)
+    {
+        showAlert(tr("AccessNotAllowed"), "");
+        return true;
+    }
     DialogChooseSubject* pDlg = new DialogChooseSubject(this);
     pDlg->setTitle(tr("SubjectChoose"));
     pDlg->openModal([this](gui::Dialog::Button::ID btn, gui::Dialog* pDlg)
@@ -181,17 +192,24 @@ bool MainWindow::showMySubjectChoose()
 
 bool MainWindow::showAllSubjectChoose()
 {
-    DialogChooseAllSubjects* pDlg = new DialogChooseAllSubjects(this);
-    pDlg->setTitle(tr("SubjectChoose"));
-    pDlg->openModal([this](gui::Dialog::Button::ID btn, gui::Dialog* pDlg)
-        {
-            auto btnID = pDlg->getClickedButtonID();
-            if (btnID == gui::Dialog::Button::ID::OK) {
-                auto dlgCS = static_cast<DialogChooseSubject*> (pDlg);
-                showTStaffView(dlgCS->getSubjectID());
-            }
-            else  return true;
-        });
+    auto x = Globals::_currentUserRole;
+    if (x != 1 && x != 3 && x != 6)
+    {
+        showAlert(tr("AccessNotAllowed"), "");
+        return true;
+    }
+
+        DialogChooseSubject* pDlg = new DialogChooseSubject(this);
+        pDlg->setTitle(tr("SubjectChoose"));
+        pDlg->openModal([this](gui::Dialog::Button::ID btn, gui::Dialog* pDlg)
+            {
+                auto btnID = pDlg->getClickedButtonID();
+                if (btnID == gui::Dialog::Button::ID::OK) {
+                    auto dlgCS = static_cast<DialogChooseSubject*> (pDlg);
+                    showTStaffView(dlgCS->getSubjectID());
+                }
+                else return true;
+            });
 
     return false;
 }
@@ -324,6 +342,12 @@ bool MainWindow::showUsersView()
 
 bool MainWindow::showDepartmentsView()
 {
+    auto x = Globals::_currentUserRole;
+    if (x != 6)
+    {
+        showAlert(tr("AccessNotAllowed"), "");
+        return true;
+    }
     if (focusOnViewPositionWithID(View_DEPARTMENT))
         return true;
 
@@ -334,6 +358,12 @@ bool MainWindow::showDepartmentsView()
 
 bool MainWindow::showCoursesView()
 {
+    auto x = Globals::_currentUserRole;
+    if (x != 6)
+    {
+        showAlert(tr("AccessNotAllowed"), "");
+        return true;
+    }
     if (focusOnViewPositionWithID(View_COURSE))
         return true;
 
