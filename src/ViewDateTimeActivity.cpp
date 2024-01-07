@@ -74,6 +74,7 @@ _btnAdd(tr("add"), tr("AddTT"))
 
     gui::View::setLayout(&_gl);
     populateData();
+    onChangedSelection(&_table);
     loadComboBox("select ID_Aktivnosti as ID, Naziv_Aktivnosti as Naziv From Aktivnosti where Tip_Aktivnosti=1 and ID_Predmeta=?", _type);
 
     /* if (_pDS->getNumberOfRows())
