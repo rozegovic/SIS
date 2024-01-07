@@ -1,29 +1,252 @@
 <?xml version='1.0'?>
 <DevRes>
-	<Images>
-		<Res id="add" path="Work/CPProjects/SiS_v_Zadnji/res/Icons/Add48.png"/>
-		<Res id="mvLeft" path="Work/CPProjects/SiS_v_Zadnji/res/Icons/arrow_left.png"/>
-		<Res id="mvRight" path="Work/CPProjects/SiS_v_Zadnji/res/Icons/arrow_right.png"/>
-		<Res id="rem" path="Work/CPProjects/SiS_v_Zadnji/res/Icons/Del64.png"/>
-		<Res id="remAll" path="Work/CPProjects/SiS_v_Zadnji/res/Icons/delete48.png"/>
-		<Res id="ETF" path = "Work/CPProjects/SiS_v_Zadnji/res/Icons/UNSA/ETF_Logo.png"/>
-		<Res id="UNSA" path = "Work/CPProjects/SiS_v_Zadnji/res/Icons/UNSA/UNSA_Logo.png"/>
-		<Res id="Home" path = "Work/CPProjects/SiS_v_Zadnji/res/Icons/Traditional-HomeXL.png"/>
-		<Res id="TransCost" path = "Work/CPProjects/SiS_v_Zadnji/res/Icons/transportCostXL.png"/>
-
-		<Res id="imgAttendance" path = "Work/CPProjects/SiS_v_Zadnji/res/Icons/imgAttendance.png"/>
-		<Res id="imgSubject" path = "Work/CPProjects/SiS_v_Zadnji/res/Icons/imgSubject.png"/>
-		<Res id="imgActivity" path = "Work/CPProjects/SiS_v_Zadnji/res/Icons/imgActivity.png"/>
+	<Translations>
 		
-		<Res id="complex" path = "Work/CPProjects/SiS_v_Zadnji/res/Icons/bh_flag.png"/>
-		<Res id="pencil" path = "Work/CPProjects/SiS_v_Zadnji/res/Icons/update64.png"/>
-		<Res id="plus" path = "Work/CPProjects/SiS_v_Zadnji/res/Icons/add48.png"/>
-		<Res id="scroll" path = "Work/CPProjects/SiS_v_Zadnji/res/Icons/Assortment64.png"/>
-		<Res id="table" path = "Work/CPProjects/SiS_v_Zadnji/res/Icons/connOK.png"/>
-		<Res id="horiz" path = "Work/CPProjects/SiS_v_Zadnji/res/Icons/Sestar64.png"/>
-		<Res id="vert" path = "Work/CPProjects/SiS_v_Zadnji/res/Icons/SettingsBlue48.png"/>
-		<Res id="standard" path = "Work/CPProjects/SiS_v_Zadnji/res/Icons/Sync_ON64.png"/>
-		<Res id="navigator" path = "Work/CPProjects/SiS_v_Zadnji/res/Icons/time.png"/>
-	</Images>
-	
+		<Res id="addView" tr="Dodaj tab"/>
+		<Res id="addViewTT" tr="Dodaj tab view"/>
+		<Res id="remView" tr="Izbriši tab"/>
+		<Res id="remViewTT" tr="Izbriši tab view"/>
+		<Res id="mvvLeft" tr="Pomjeri ulijevo"/>
+		<Res id="mvvLeftTT" tr="Pomjeri tab jednu poziciju u lijevo"/>
+		<Res id="mvvRight" tr="Pomjeri udesno"/>
+		<Res id="mvvRightTT" tr="Pomjeri tab jednu poziciju u desno"/>
+		<Res id="remAllViews" tr="Zatvori sve"/>
+		<Res id="remAllViewsTT" tr="Zatvori sve tabove"/>
+		
+		<Res id = "AttSubj" tr = "Predmet:"/>
+
+        <Res id = "AttDate" tr = "Datum:"/>
+
+        <Res id = "AttTime" tr = "Vrijeme:"/>
+
+        <Res id = "AttType" tr = "Tip predavanja:"/>
+
+        <Res id = "AttDelBtn" tr = "Izbriši"/>
+
+        <Res id = "AttAddBtn" tr = "Dodaj"/>
+
+        <Res id = "AttUpdate" tr = "Ažuriraj"/>
+
+        <Res id = "AttDelBtnTT" tr = "Izbriši odabrani termin iz baze podataka"/>
+
+        <Res id = "AttAddBtnTT" tr = "Dodaj uneseni termin u bazu podataka"/>
+
+        <Res id = "AttUpdateTT" tr = "Ažuriraj termine"/>
+
+        <Res id = "alertAttTxt" tr = "Već postoji termin za odabrani datum i vrijeme"/>
+		
+		
+		<Res id="SubjectChoose" tr="Izbor predmeta"/>
+		
+		
+		<Res id="viewUsers" tr="Korisnici"/>
+		<Res id="viewDeps" tr="Odsjeci"/>
+		<Res id="viewCourse" tr="Predmeti"/>	
+		<Res id="viewClassroom" tr="Učionice"/>	
+		<Res id="viewTStaff" tr="Nastavno osoblje"/>	
+		<Res id="viewActivity" tr="Aktivnost"/>
+		<Res id="viewEnroll" tr="Upis studenta"/>
+		<Res id="viewAttendance" tr="Prisustvo"/>
+		<Res id="viewCurriculum" tr="Kurikulum"/>
+		<Res id="viewExamAtt" tr="Prijave na ispit"/>
+		<Res id="viewTicket" tr="Karta"></Res>
+		<Res id="viewCourseEnroll" tr="Predmeti upis"/>
+		<Res id="viewMessages" tr="Obavještenja"/>
+		<Res id="Withdraw" tr="Ispiši"/>
+
+		<Res id="ExamAttendanceRep" tr="Prijave na ispit"/>
+
+<Res id="Department" tr="Smjer"/>
+        <Res id="Semester" tr="Semestar"/>
+        <Res id="Course" tr="Predmet"/>
+        <Res id="Shortname" tr="Skraćenica"/>
+        <Res id="ECTS" tr="ECTS"/>
+		
+		<Res id="SIS" tr="Studentski informacioni sistem"/>
+		<Res id="Sif" tr="Šifarnici"/>
+		<Res id="id:" tr="Šifra:"/>
+		<Res id="name:" tr="Naziv:"/>
+		<Res id="code:" tr="Kod:"/>
+		<Res id="dep:" tr="Smjer:"/>
+		<Res id="id" tr="Šifra"/>
+		<Res id="add" tr="Dodaj"/>
+		<Res id="name" tr="Naziv"/>
+		<Res id="save" tr="Snimi"/>
+		<Res id="Enroll" tr="Upiši"/>
+		<Res id="EnrollTT" tr="Upiši studenta"/>
+		
+		<Res id="code" tr="Kod"/>
+		<Res id="dep" tr="Smjer"/>
+		<Res id="year" tr="Godina studija:"/>
+		
+		<Res id="TStaff" tr="Nastavno osoblje"/>
+		<Res id="maxatt" tr="Maksimalan broj studenata"/>
+		<Res id="elective" tr="Izborni"/>
+		<Res id="sprint1" tr="Sprint 1"/>
+		<Res id="g1" tr="Grupa 1"/>
+		<Res id="g3" tr="Grupa 3"/>
+		<Res id="IDUserL" tr="Šifra:"/>
+		<Res id="nameUserL" tr="Ime:"/>
+		<Res id="addressUserL" tr="Adresa:"/>
+		<Res id="surnameUserL" tr="Prezime:"/>
+		<Res id="roleUserL" tr="Pozicija:"/>
+		<Res id="jmbgUserL" tr="JMBG:"/>
+		<Res id="indeksUserL" tr="Indeks:"/>
+		<Res id="indexUserL" tr="Indeks:"/>
+		<Res id="dateEUserL" tr="Datum upisa:"/>
+		<Res id="dateBUserL" tr="Datum rođenja:"/>
+		<Res id="departmentUserL" tr="Odsjek:"/>
+		<Res id="semesterUserL" tr="Semestar:"/>
+		<Res id="cycleUserL" tr="Ciklus:"/>
+		<Res id="semesterFalse" tr="Pogrešno odabran semestar."/>
+		
+		
+		
+		<Res id="nameUser" tr="Ime"/>
+		<Res id="addressUser" tr="Adresa"/>
+		<Res id="surnameUser" tr="Prezime"/>
+		<Res id="roleUser" tr="Pozicija"/>
+		<Res id="jmbgUser" tr="JMBG"/>
+		<Res id="indeksUser" tr="Indeks"/>
+		<Res id="indexUser" tr="Indeks"/>
+		<Res id="dateEUser" tr="Datum upisa"/>
+		<Res id="dateBUser" tr="Datum rođenja"/>
+		<Res id="IDUser" tr="Šifra"/>
+		<Res id="alert" tr="Napomena!"/>
+		<Res id="error" tr="Greška!"/>
+		<Res id="saveSure" tr="Jeste li sigurni da želite spasiti promjene?"/>
+		<Res id="alertPB" tr="Već postoji korisnik sa unesenom šifrom."/>
+		<Res id="alertI" tr="Već postoji korisnik sa istim brojem indeksa."/>
+		<Res id="alertMB" tr="Neispravan JMBG korisnika."/>
+		<Res id="alertDR" tr="Neispravan datum rođenja korisnika."/>
+		<Res id="alertU" tr="Nije moguće ažurirati korisnika koji nije unesen."/>
+		<Res id="alertNEG" tr="Nije moguće unijeti negativan ID."/>
+		<Res id="alertDEPE" tr="ID smjera već postoji."/>
+		<Res id="alertDEPN" tr="Ime smjera već postoji."/>
+		<Res id="alertDEPSH" tr="Skraćeno ime smjera već postoji."/>
+		<Res id="alertCRSS" tr="Nije moguće unijeti semestar manji od 1."/>
+		<Res id="alertCRSE" tr="Nije moguće unijeti ECTS manji od 1."/>
+		<Res id="alertCRSM" tr="Nije moguće unijeti maksimalan broj posjetilaca manji od 1."/>
+		<Res id="alertTSTF" tr="ID osoblja već postoji."/>
+		<Res id="succesEE" tr="Uspješno registrovane promjene u sistem."/>
+		<Res id="alertIND" tr="Indeks korisnika nije ispravno unesen."/>
+		
+		<Res id="succes" tr="Uspješna registracija!"/>
+		<Res id="newF" tr="Novi fakultet"/>
+		<Res id="Yes" tr="Da"/>
+		<Res id="No" tr="Ne"/>
+                        <Res id="username" tr="Korisničko ime:"/>
+                        <Res id="password" tr="Šifra:"/>
+                       
+                        <Res id="NumSeats" tr="Broj mjesta"/>
+                        <Res id="Location" tr="Lokacija"/>
+                        <Res id="Type" tr="Tip"/>
+                        <Res id="Update" tr="Ažuriraj"/>
+                        <Res id="Attendance" tr="Prisustvo"/>
+                        <Res id="Login" tr="Prijava"/>
+                        <Res id="Name" tr="Ime"/>
+                         <Res id="Surname" tr="Prezime"/>
+                         <Res id="Date" tr="Datum"/>
+                         <Res id="Time" tr="Vrijeme"/>
+                         <Res id="Present" tr="Prisutan"/>
+                          <Res id="NotPresent" tr="Nije prisutan"/>
+                          <Res id="StatUser" tr="Korisnik:"/>
+                         <Res id="StatRole" tr="Uloga:"/>
+                         <Res id="Subject" tr="Predmet"/>
+                            <Res id="alertPr" tr="Vec ste unijeli prisustvo ovog studenta za ovaj termin"/>
+		
+		
+		
+		
+		<Res id="courseCode:" tr="Šifra predmeta:"/>
+		<Res id="courseID:" tr="ID predmeta:"/>
+		<Res id="courseName:" tr="Naziv predmeta:"/>
+		<Res id="userID:" tr="ID korisnika:"/>
+		<Res id="userName:" tr="Ime:"/>
+		<Res id="userLName:" tr="Prezime:"/>
+		<Res id="deleteAll" tr="Izbriši sve"/>
+		
+		<Res id="nameC:" tr="Naziv:"/>
+		<Res id="sifraP:" tr="Šifra predmeta:"/>
+		
+		<Res id="semestar:" tr="Semestar:"/>
+		<Res id="ects:" tr="ECTS bodovi:"/>
+		<Res id="elective:" tr="Izborni:"/>
+		<Res id="maxatt:" tr="Maksimalan broj:"/>
+		<Res id="mnd" tr="Obavezni"/>
+		<Res id="elctv" tr="Izborni"/>
+		<Res id="nazivP" tr="Naziv"/>
+		<Res id="smjer" tr="Smjer"/>
+		<Res id="semestar" tr="Semestar"/>
+		<Res id="ects" tr="ECTS bodovi"/>
+		<Res id="izborni" tr="Izborni"/>
+		<Res id="maxBr" tr="Maksimalan broj studenata"/>
+		<Res id="nazivPTT" tr="Naziv predmeta"/>
+		<Res id="smjerTT" tr="Smjer"/>
+		<Res id="semestarTT" tr="Semestar"/>
+		<Res id="ectsTT" tr="ECTS bodovi"/>
+		<Res id="izborniTT" tr="Izborni"/>
+		<Res id="maxbrTT" tr="Maksinalan broj studenata na predmetu"/>
+		
+		
+		<Res id="tobeenrolledtocourse" tr="Studenti koji imaju mogućnost upisa"/>
+		<Res id="enrolledtocourse" tr="Studenti upisani na predmet"/>
+		<Res id="courselbl" tr="Predmet:"/>
+		<Res id="WithdrawCourseTT" tr="Ispiši studenta sa predmeta"/>
+		
+		
+		
+		<Res id="saveSureTicket" tr="Jeste li sigurni da želite poslati zahtjev?"/>
+		
+		<Res id="typeOfMessage" tr="Vrsta zahtjeva:"/>
+		<Res id="subject" tr="Naslov:"/>
+		<Res id="send" tr="Pošalji"/>
+		<Res id="sendRequestTT" tr="Pošalji trenutni zahtjev"/>
+		<Res id="OnHold" tr="Na Čekanju"/>
+		
+		
+		<Res id="AccessNotAllowed" tr="Nemate pravo pristupa"/>
+
+		
+		<Res id="Options" tr="Opcije"/>
+		<Res id="Active:" tr="Aktivno:"/>
+		<Res id="Committed:" tr="Predano:"/>
+		<Res id="Send" tr="Posalji"/>
+		<Res id="viewUpload" tr="Predaja zadace/lab"/>
+		<!--Login-->
+        <Res id = "WrongPass" tr = "Pogresna sifra!"/>
+		<Res id = "EnterCorrPass" tr = "Ukucajte isravnu sifru"/>
+		<!--Logout-->
+        <Res id = "logout" tr = "Odjava"/>
+		<Res id = "App" tr = "Aplikacija"/>
+		<Res id="namee:" tr="Ime:"/>
+		<Res id="surname:" tr="Prezime:"/>
+		<Res id="indeksUser:" tr="Indeks:"/>
+		<Res id="nenrolled:" tr="Neprijavljeni ispiti:"/>
+		<Res id="enrolled:" tr="Prijavljeni ispiti:"/>
+		
+		<Res id="DEnroll" tr="Odjavi"/>
+
+
+
+		
+		<Res id="viewExamSignUp" tr="Prijava ispita"/>
+		
+		<Res id="Activity:" tr="Aktivnost:"/>
+		<Res id="ActivityType:" tr="Tip aktivnost:"/>
+		<Res id="ActivityDes:" tr="Opis aktivnost:"/>
+		<Res id="ActivityPoints:" tr="Poeni:"/>
+		<Res id="Course:" tr="Predmet:"/>
+
+		<Res id="Name:" tr="Ime:"/>
+		<Res id="Last Name:" tr="Prezime:"/>
+		<Res id="Index:" tr="Indeks:"/>
+		<Res id="Messages:" tr="Poruke:"/>
+		<Res id="Messages" tr="Poruke"/>
+
+
+	</Translations>
 </DevRes>
+
+
+
