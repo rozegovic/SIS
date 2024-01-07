@@ -62,12 +62,13 @@ ViewGradeExams::ViewGradeExams(td::INT4 SubjectID) : _db(dp::getMainDatabase())
 	gui::View::setLayout(&_gl);
 	insertValues(_SubjectID);
 	populateData();
+	onChangedSelection(&_table);
 }
 
 void ViewGradeExams::populateData()
 {
-	
-	_pDS = _db->createDataSet("SELECT DISTINCT a.ID_Korisnika, a.ID_Aktivnosti, b.Naziv_Aktivnosti, c.Indeks, c.Ime, c.Prezime, d.Ocjena,d.ID FROM PolazniciAktivnosti a, Aktivnosti b, Korisnici c, OcjeneIspita d WHERE a.ID_Aktivnosti = b.ID_Aktivnosti AND a.ID_Korisnika = c.ID AND b.ID_Predmeta = ? AND b.Tip_Aktivnosti = 1 ORDER BY b.Naziv_Aktivnosti DESC", dp::IDataSet::Execution::EX_MULT);
+
+	_pDS = _db->createDataSet("SELECT a.ID_Korisnika, a.ID_Aktivnosti, b.Naziv_Aktivnosti, c.Indeks, c.Ime, c.Prezime, d.Ocjena, d.ID FROM PolazniciAktivnosti a, Aktivnosti b, Korisnici c, OcjeneIspita d WHERE a.ID_Aktivnosti = b.ID_Aktivnosti AND d.ID_Korisnika=a.ID_Korisnika AND d.ID_Aktivnosti=b.ID_Aktivnosti AND a.ID_Korisnika = c.ID AND b.ID_Predmeta = ? AND b.Tip_Aktivnosti = 1 ORDER BY b.Naziv_Aktivnosti DESC", dp::IDataSet::Execution::EX_MULT);
 
 	dp::Params parDS(_pDS->allocParams());
 
@@ -255,6 +256,9 @@ bool ViewGradeExams::onClick(gui::Button* pBtn)
 {
 	if (pBtn == &_btnDelete)
 	{
+
+
+		
 		int iRow = _table.getFirstSelectedRow();
 		if (iRow < 0)
 			return true;
@@ -292,13 +296,12 @@ bool ViewGradeExams::onClick(gui::Button* pBtn)
 	}
 	if (pBtn == &_btnAdd)
 	{
-		td::INT4 itemid = findMaxID();
-		if (!canAdd())
-			return true;
+		int iRow = _table.getFirstSelectedRow();
+		td::INT4 itemid = getIDfromTable(iRow);
 		_table.beginUpdate();
-		auto& row = _table.getEmptyRow();
+		auto& row = _table.getCurrentRow();
 		populateDSRow(row, itemid);
-		_table.push_back();
+		_table.updateRow(iRow);
 		_table.endUpdate();
 
 		_itemsToUpdate.erase(std::remove(_itemsToUpdate.begin(), _itemsToUpdate.end(), itemid), _itemsToUpdate.end());
@@ -338,7 +341,7 @@ td::INT4 ViewGradeExams::getIDfromTable(int rowID)
 	dp::IDataSet* pDS = _table.getDataSet();
 	auto& row = pDS->getRow(rowID);
 	//---------------------pod pretpostavkom da je ucitano kao 0---provjeriti poslije
-	return row[0].i4Val();
+	return row[7].i4Val();
 }
 
 td::INT4 ViewGradeExams::findMaxID()
@@ -387,4 +390,3 @@ void ViewGradeExams::insertValues(td::INT4 subjectID)
 	if (!pSelect->moveNext())
 		return;
 }
-
