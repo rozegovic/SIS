@@ -51,6 +51,8 @@ protected:
     gui::GridLayout _gl;
     dp::IDataSetPtr _pDS;
     td::INT4 _SubjectID;
+    td::INT4 _ActivityID;
+    td::INT4 _UserID;
 
     gui::TableEdit _table;
     std::vector<td::INT4> _itemsToDelete, _itemsToInsert, _itemsToUpdate;
