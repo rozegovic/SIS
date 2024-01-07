@@ -20,7 +20,7 @@
 #include "DialogCurriculum.h"
 #include "ViewMessages.h"
 #include "ViewGradeExams.h"
-
+#include "upload.h"
 #include <rpt/IResources.h>
 #include "NavigatorViewActivity.h"
 
@@ -285,6 +285,7 @@ bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc)
         break; case 130: return showTicketView();
         break; case 140: return showMessagesView();
         break; case 150: return showSomeSubjectChoose();
+        break; case 160: return showUploadView();
 
 
 
@@ -533,4 +534,39 @@ bool MainWindow::showGradeExamView(td::INT4 SubjectID)
     _mainView.addView(pView, tr("viewGradeExam"), &_imgExamGrades);
 
     return true;
+}
+bool MainWindow::showUploadView()
+{
+    //Globals::isStudent;
+    //Treba vidjeti kako postaviti zabranu pristupa
+
+    /*if (!Globals::isSAO || !Globals::isProfessor || !Globals::isStudent  || !Globals::isAdmin)
+    {
+        showAlert(tr("AccessNotAllowed"), "");
+        return true;
+    }*/
+    if (focusOnViewPositionWithID(View_Predaja))
+        return true;
+
+    ViewUpload* pView = new ViewUpload();
+    _mainView.addView(pView, tr("viewUpload"), &_imgCurr);
+    return true;
+    /*if (!Globals::isStudent) {
+        if (focusOnViewPositionWithID(View_Predaja))
+            return true;
+
+        ViewUpload* pView = new ViewUpload();
+        _mainView.addView(pView, tr("viewPredaja"), &_imgCurr); // treba promijeniti sliku
+        return true;
+    }
+    else {
+        showAlert(tr("AccessNotAllowed"), "");
+        return true;
+    }*/
+
+    //else{
+        //showAlert(tr("AccessNotAllowed"), "");
+       // return true;
+    //}
+    //return true;
 }
