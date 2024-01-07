@@ -86,9 +86,10 @@ void ViewSubject::populateDateCombo(gui::DBComboBox& combo)
 	vekt.push_back(date);
 		combo.addItem(pom, id);
 	}
-	combo.selectIndex(0);
+	
 	if (vekt.size() == 0)
-		return;
+        return;
+    combo.selectIndex(0);
 	populateTimeCombo(_time, vekt.at(0));
 }
 void ViewSubject::populateTimeCombo(gui::DBComboBox& combo, td::Date date)
