@@ -34,6 +34,9 @@ ViewGradeExams::ViewGradeExams(td::INT4 SubjectID) : _db(dp::getMainDatabase())
 	_btnAdd.setType(gui::Button::Type::Constructive);
 	gui::GridComposer gc(_gl);
 
+	SetCurrentSubject();
+	_cName.setAsReadOnly();  // postavlja se u funkciji setcurrentsubject
+
 	gc.appendRow(_lblActivityName);
 	gc.appendCol(_activityName);
 
@@ -54,39 +57,35 @@ ViewGradeExams::ViewGradeExams(td::INT4 SubjectID) : _db(dp::getMainDatabase())
 
 
 	gc.appendRow(_table, 0);
+
 	gc.appendRow(_hlBtns, 0);
 	gui::View::setLayout(&_gl);
-	SetCurrentSubject();
-	_cName.setAsReadOnly();  // postavlja se u funkciji setcurrentsubject
+	insertValues(_SubjectID);
 	populateData();
 }
 
 void ViewGradeExams::populateData()
 {
-	
-
 	//VAŽNO!!!!
 	////// Ne radi SELECT problem je pronadjen al ne znam zasto je problem u dijelu WHERE tacnije a.ID_Korisnika = b.ID_Korisnika kada se izbaci ovaj uslov select radi////
 
-
-	auto pDB = dp::getMainDatabase();
-	_pDS = pDB->createDataSet("SELECT a.ID AS ocjeneid,a.ID_Korisnika AS korisnikid, a.ID_Aktivnosti AS aktivnostid, a.Ocjena AS ocjena,  b.Ime AS ime, b.Prezime AS prezime,b.Indeks AS indeks, c.Naziv_Aktivnosti AS nazivakt, d.Naziv_Predmeta FROM OcjeneIspita a, Korisnici b, Aktivnosti c, Predmet d  WHERE c.ID_Predmeta=? and a.ID_Korisnika = b.ID_Korisnika and a.ID_Aktivnosti=c.ID_Aktivnosti and a.ID_Predmeta=d.ID_Predmeta", dp::IDataSet::Execution::EX_MULT);
+	//auto pDB = dp::getMainDatabase();
+	_pDS = _db->createDataSet("SELECT DISTINCT a.ID_Korisnika, a.ID_Aktivnosti, b.Naziv_Aktivnosti, c.Indeks, c.Ime, c.Prezime, d.Ocjena FROM PolazniciAktivnosti a, Aktivnosti b, Korisnici c, OcjeneIspita d WHERE a.ID_Aktivnosti = b.ID_Aktivnosti AND a.ID_Korisnika = c.ID AND b.ID_Predmeta = ? AND b.Tip_Aktivnosti = 1 ORDER BY b.Naziv_Aktivnosti DESC", dp::IDataSet::Execution::EX_MULT);
 
 	dp::Params parDS(_pDS->allocParams());
 	//td::INT4 IDPredmeta = Globals::_IDSubjectSelection;
 
 	//u parDS ce se ucitavati Globals::CurrentActivity
 	parDS << _SubjectID;
-	td::String Predmet;
-	dp::DSColumns cols(_pDS->allocBindColumns(10));
-	cols << "ocjeneid" << td::int4 << "korisnikid" << td::int4 << "aktivnostid" << td::int4 << "ocjena" << td::string8 << "ime" << td::string8 << "prezime" << td::string8 << "indeks" << td::int4 << "nazivakt" << td::string8 << "ID_Predmeta" << td::int4 << "Naziv_Predmeta" << td::string8;
+	dp::DSColumns cols(_pDS->allocBindColumns(7));
+	cols << "ID_Korisnika" << td::int4 << "ID_Aktivnosti" << td::int4  << "Naziv_Aktivnosti" << td::string8 << "Indeks" << td::string8 << "Ime" << td::string8 << "Prezime" << td::string8 << "Ocjena" << td::string8;
 
 	if (!_pDS->execute())
 	{
 		_pDS = nullptr;
 		return;
 	}
-	_table.init(_pDS, { 4,5,6,7,3 });
+	_table.init(_pDS, { 2,3,4,5,6 });
 }
 
 bool ViewGradeExams::onChangedSelection(gui::TableEdit* pTE)
@@ -328,5 +327,10 @@ td::INT4 ViewGradeExams::findMaxID()
 	if (*y >= maxID && (*y) >= (*x)) return ++p2;
 
 	return ++maxID;
+}
+
+void ViewGradeExams::insertValues(td::INT4 subjectID)
+{
+	//ovo cu dodati ja - Emina
 }
 

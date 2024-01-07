@@ -16,7 +16,7 @@ public:
     SwitcherViewActivity(td::UINT4 subjectid)
         : gui::ViewSwitcher(1)
         , _viewActivity(subjectid)
-
+        , _viewDateTime(subjectid) 
     {
         addView(&_viewActivity, true);
         addView(&_viewDateTime);

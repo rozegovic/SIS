@@ -55,6 +55,7 @@ protected:
     td::INT4 _UserID;
 
     gui::TableEdit _table;
+
     std::vector<td::INT4> _itemsToDelete, _itemsToInsert, _itemsToUpdate;
 public:
 	ViewGradeExams(td::INT4 SubjectID);   // Adnan
@@ -72,4 +73,5 @@ protected:
    // void SetActivityName(td::Variant& val, td::INT4 br);    //---------Adnan-----moze se iskoristiti nesto poput ove funkcije za  ucitavanje ovih naziva
     td::INT4 getIDfromTable(int rowID);    // uradjeno + provjera
     td::INT4 findMaxID();     // uradjeno
+    void insertValues(td::INT4 subjectID);
 };
