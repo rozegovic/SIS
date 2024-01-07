@@ -66,19 +66,14 @@ ViewGradeExams::ViewGradeExams(td::INT4 SubjectID) : _db(dp::getMainDatabase())
 
 void ViewGradeExams::populateData()
 {
-	//VAŽNO!!!!
-	////// Ne radi SELECT problem je pronadjen al ne znam zasto je problem u dijelu WHERE tacnije a.ID_Korisnika = b.ID_Korisnika kada se izbaci ovaj uslov select radi////
-
-	//auto pDB = dp::getMainDatabase();
-	_pDS = _db->createDataSet("SELECT DISTINCT a.ID_Korisnika, a.ID_Aktivnosti, b.Naziv_Aktivnosti, c.Indeks, c.Ime, c.Prezime, d.Ocjena FROM PolazniciAktivnosti a, Aktivnosti b, Korisnici c, OcjeneIspita d WHERE a.ID_Aktivnosti = b.ID_Aktivnosti AND a.ID_Korisnika = c.ID AND b.ID_Predmeta = ? AND b.Tip_Aktivnosti = 1 ORDER BY b.Naziv_Aktivnosti DESC", dp::IDataSet::Execution::EX_MULT);
+	
+	_pDS = _db->createDataSet("SELECT DISTINCT a.ID_Korisnika, a.ID_Aktivnosti, b.Naziv_Aktivnosti, c.Indeks, c.Ime, c.Prezime, d.Ocjena,d.ID FROM PolazniciAktivnosti a, Aktivnosti b, Korisnici c, OcjeneIspita d WHERE a.ID_Aktivnosti = b.ID_Aktivnosti AND a.ID_Korisnika = c.ID AND b.ID_Predmeta = ? AND b.Tip_Aktivnosti = 1 ORDER BY b.Naziv_Aktivnosti DESC", dp::IDataSet::Execution::EX_MULT);
 
 	dp::Params parDS(_pDS->allocParams());
-	//td::INT4 IDPredmeta = Globals::_IDSubjectSelection;
 
-	//u parDS ce se ucitavati Globals::CurrentActivity
 	parDS << _SubjectID;
-	dp::DSColumns cols(_pDS->allocBindColumns(7));
-	cols << "ID_Korisnika" << td::int4 << "ID_Aktivnosti" << td::int4  << "Naziv_Aktivnosti" << td::string8 << "Indeks" << td::string8 << "Ime" << td::string8 << "Prezime" << td::string8 << "Ocjena" << td::string8;
+	dp::DSColumns cols(_pDS->allocBindColumns(8));
+	cols << "ID_Korisnika" << td::int4 << "ID_Aktivnosti" << td::int4 << "Naziv_Aktivnosti" << td::string8 << "Indeks" << td::string8 << "Ime" << td::string8 << "Prezime" << td::string8 << "Ocjena" << td::string8 << "ID" << td::int4;
 
 	if (!_pDS->execute())
 	{
@@ -101,7 +96,7 @@ bool ViewGradeExams::onChangedSelection(gui::TableEdit* pTE)
 
 		/*_Aktivnost.setValue(val);*/
 
-		val = row[3];
+		val = row[6];
 		_grade.setValue(val);
 
 		val = row[4];
@@ -110,14 +105,11 @@ bool ViewGradeExams::onChangedSelection(gui::TableEdit* pTE)
 		val = row[5];
 		_lName.setValue(val);
 
-		val = row[6];
+		val = row[3];
 		_index.setValue(val);
 
-		val = row[7];
+		val = row[2];
 		_activityName.setValue(val);
-
-		val = row[9];
-		_cName.setValue(val);
 
 		return true;
 	}
@@ -128,7 +120,7 @@ void ViewGradeExams::populateDSRow(dp::IDataSet::Row& row, td::INT4 id)
 {
 	td::Variant val;
 	_grade.getValue(val);
-	row[3].setValue(val);
+	row[6].setValue(val);
 
 	_name.getValue(val);
 	row[4].setValue(val);
@@ -137,28 +129,24 @@ void ViewGradeExams::populateDSRow(dp::IDataSet::Row& row, td::INT4 id)
 	row[5].setValue(val);
 
 	_index.getValue(val);
-	row[6].setValue(val);
+	row[3].setValue(val);
 
 	_activityName.getValue(val);
-	row[7].setValue(val);
-
-	_cName.getValue(val);
-	row[8].setValue(val);
-
-	td::Variant x = id;
-	row[0].setValue(x);
-
-	val = _UserID;
-	row[1].setValue(val);
-
-	val = _ActivityID;
 	row[2].setValue(val);
 
-	val = _SubjectID;
-	row[9].setValue(val);
-	
-}
+	/*_cName.getValue(val);
+	row[8].setValue(val);*/
 
+	td::Variant x = id;
+	row[7].setValue(x);
+
+	val = _UserID;
+	row[0].setValue(val);
+
+	val = _ActivityID;
+	row[1].setValue(val);
+
+}
 bool ViewGradeExams::canAdd()
 {
 	// nema provjera za sada
@@ -393,6 +381,9 @@ td::INT4 ViewGradeExams::findMaxID()
 
 void ViewGradeExams::insertValues(td::INT4 subjectID)
 {
-	//ovo cu dodati ja - Emina
+	dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("INSERT INTO OcjeneIspita (ID_Korisnika, ID_Aktivnosti) SELECT a.ID_Korisnika, a.ID_Aktivnosti FROM PolazniciAktivnosti a WHERE NOT EXISTS( SELECT 1 FROM OcjeneIspita WHERE OcjeneIspita.ID_Korisnika = a.ID_Korisnika AND OcjeneIspita.ID_Aktivnosti = a.ID_Aktivnosti);");
+	if (!pSelect->execute())
+		return;
+	if (!pSelect->moveNext())
+		return;
 }
-
