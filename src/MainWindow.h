@@ -70,7 +70,6 @@ protected:
     bool showCourseEnrollView();
     bool showMessagesView();
     bool showGradeExamView(td::INT4 SubjectID);
-    bool showUploadView();
     
     //bool onClick(gui::Dialog* pDlg, td::UINT4 dlgID) override;
 

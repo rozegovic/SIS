@@ -70,7 +70,7 @@ void ViewGradeExams::populateData()
 	////// Ne radi SELECT problem je pronadjen al ne znam zasto je problem u dijelu WHERE tacnije a.ID_Korisnika = b.ID_Korisnika kada se izbaci ovaj uslov select radi////
 
 	//auto pDB = dp::getMainDatabase();
-	_pDS = _db->createDataSet("SELECT a.ID_Korisnika, a.ID_Aktivnosti, b.Naziv_Aktivnosti, c.Indeks, c.Ime, c.Prezime, d.Ocjena FROM PolazniciAktivnosti a JOIN Aktivnosti b ON a.ID_Aktivnosti = b.ID_Aktivnosti JOIN Korisnici c ON a.ID_Korisnika = c.ID JOIN OcjeneIspita d ON b.ID_Aktivnosti = d.ID_Aktivnosti AND a.ID_Korisnika = d.ID_Korisnika WHERE b.ID_Predmeta = ? AND b.Tip_Aktivnosti = 1", dp::IDataSet::Execution::EX_MULT);
+	_pDS = _db->createDataSet("SELECT DISTINCT a.ID_Korisnika, a.ID_Aktivnosti, b.Naziv_Aktivnosti, c.Indeks, c.Ime, c.Prezime, d.Ocjena FROM PolazniciAktivnosti a, Aktivnosti b, Korisnici c, OcjeneIspita d WHERE a.ID_Aktivnosti = b.ID_Aktivnosti AND a.ID_Korisnika = c.ID AND b.ID_Predmeta = ? AND b.Tip_Aktivnosti = 1 ORDER BY b.Naziv_Aktivnosti DESC", dp::IDataSet::Execution::EX_MULT);
 
 	dp::Params parDS(_pDS->allocParams());
 	//td::INT4 IDPredmeta = Globals::_IDSubjectSelection;
@@ -393,10 +393,6 @@ td::INT4 ViewGradeExams::findMaxID()
 
 void ViewGradeExams::insertValues(td::INT4 subjectID)
 {
-	dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("INSERT INTO OcjeneIspita (ID_Korisnika, ID_Aktivnosti) SELECT a.ID_Korisnika, a.ID_Aktivnosti FROM PolazniciAktivnosti a WHERE NOT EXISTS( SELECT 1 FROM OcjeneIspita WHERE OcjeneIspita.ID_Korisnika = a.ID_Korisnika AND OcjeneIspita.ID_Aktivnosti = a.ID_Aktivnosti);");
-	if (!pSelect->execute())
-		return;
-	if (!pSelect->moveNext())
-		return;
+	//ovo cu dodati ja - Emina
 }
 
