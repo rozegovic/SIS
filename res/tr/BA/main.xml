@@ -154,6 +154,8 @@
                          <Res id="StatRole" tr="Uloga:"/>
                          <Res id="Subject" tr="Predmet"/>
                             <Res id="alertPr" tr="Vec ste unijeli prisustvo ovog studenta za ovaj termin"/>
+							<Res id="tablePresent" tr="Prisutni za ovaj termin:"/>
+							<Res id="alertNoTerm" tr="Niste odabrali ni jedan termin"/>
 		
 		
 		
@@ -211,7 +213,7 @@
 		<Res id="Options" tr="Opcije"/>
 		<!--Login-->
         <Res id = "WrongPass" tr = "Pogresna sifra!"/>
-		<Res id = "EnterCorrPass" tr = "Ukucajte isravnu sifru"/>
+		<Res id = "EnterCorrPass" tr = "Ukucajte ispravnu sifru"/>
 		<!--Logout-->
         <Res id = "logout" tr = "Odjava"/>
 		<Res id = "App" tr = "Aplikacija"/>
