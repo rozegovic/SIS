@@ -33,6 +33,8 @@ class ViewSubject : public gui::View
     gui::Label _lblSurname;
     gui::LineEdit _surname;
     gui::TableEdit _table;
+    gui::Label _lblTablePresent;
+    gui::TableEdit _tablePresent;
     gui::Label _lblTime;
     gui::DBComboBox _time;
     gui::Label _lblDate;
@@ -42,16 +44,23 @@ class ViewSubject : public gui::View
     gui::Button _btnNotPresent;
     gui::GridLayout _gl;
     dp::IDataSetPtr _pDS;
+    dp::IDataSetPtr _pDS2;
     dp::IDataSetPtr _pDSPos;
     td::INT4 _SubjectID;
+<<<<<<< Updated upstream
+=======
+    td::INT4 _TerminID;
+>>>>>>> Stashed changes
 
 public:
     ViewSubject(td::INT4 SubjectID);
 
 protected:
+    td::INT4 getCurrentTerminID();
      bool onChangedSelection(gui::TableEdit* pTE);
      bool onChangedSelection(gui::DBComboBox* pCB);
     void populateData();
+    void populateTablePresent();
     void populateDateCombo(gui::DBComboBox& combo);
     void populateTimeCombo(gui::DBComboBox& combo, td::Date date);
     void saveData();
