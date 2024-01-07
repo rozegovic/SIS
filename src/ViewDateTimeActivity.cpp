@@ -119,7 +119,7 @@ void ViewDateTimeActivity::populateData()
         _pDS = nullptr;
         return;
     }
-    _table.init(_pDS, { 9, 0, 1, 2, 3, 4 ,5, 6 });
+    _table.init(_pDS, { 9, 0, 1, 2, 3, 4 ,5});
 }
 void ViewDateTimeActivity::SetCurrentSubject() {
     dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT Naziv_Predmeta FROM Predmet WHERE ID_Predmeta = ?");
