@@ -85,7 +85,7 @@ void ViewGradeExams::populateData()
 		_pDS = nullptr;
 		return;
 	}
-	_table.init(_pDS, { 2,3,4,5,6 });
+	_table.init(_pDS, { 4,5,3,2,6 });
 }
 
 bool ViewGradeExams::onChangedSelection(gui::TableEdit* pTE)
