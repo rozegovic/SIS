@@ -16,7 +16,6 @@
 #define View_COURSEENROLL 111u
 #define View_MESSAGES 112u
 #define View_GRADE 113u
-#define View_Predaja 114u
 
 
 #define USER_STUDENT 4
