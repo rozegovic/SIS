@@ -47,10 +47,9 @@ class ViewSubject : public gui::View
     dp::IDataSetPtr _pDS2;
     dp::IDataSetPtr _pDSPos;
     td::INT4 _SubjectID;
-<<<<<<< Updated upstream
-=======
+
     td::INT4 _TerminID;
->>>>>>> Stashed changes
+
 
 public:
     ViewSubject(td::INT4 SubjectID);
@@ -63,7 +62,7 @@ protected:
     void populateTablePresent();
     void populateDateCombo(gui::DBComboBox& combo);
     void populateTimeCombo(gui::DBComboBox& combo, td::Date date);
-    void saveData();
+    bool saveData();
     bool onClick(gui::Button* pBtn);
     bool doesIDexist(td::INT4 ID);
 };

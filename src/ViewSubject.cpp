@@ -46,14 +46,12 @@ ViewSubject::ViewSubject(td::INT4 SubjectID) :
 	gui::View::setLayout(&_gl);
 	populateDateCombo(_date);
 	populateData();
-<<<<<<< Updated upstream
-	_table.init(_pDS, { 0,1 });
-=======
+
 	_TerminID = getCurrentTerminID();
 	populateTablePresent();
 	
 	_table.init(_pDS, { 0,1});
->>>>>>> Stashed changes
+
 	if (_pDS->getNumberOfRows())
 	{
 		_table.selectRow(0, true);
@@ -130,26 +128,8 @@ void ViewSubject::populateData()
 		return;
 	}
 }
-<<<<<<< Updated upstream
-void ViewSubject::saveData()
-{
-	dp::IStatementPtr pInsStat1(dp::getMainDatabase()->createStatement("Select ID from Termini where Termin.Datum = ? and Termin:Time = ?"));
-	td::Date date;
-	td::String str = _date.getSelectedText();
-	date.fromString(str);
-	td::Time time;
-	td::String str2 = _time.getSelectedText();
-	time.fromString(str2);
-	dp::Params parDS1(pInsStat1->allocParams());
-	parDS1 << date << time;
-	
-	dp::Columns pCols = pInsStat1->allocBindColumns(1);
-	td::INT4 ID;
-	pCols << "ID" << ID;
-	if (!pInsStat1->execute())
-		return;
 
-=======
+
 void ViewSubject::populateTablePresent() 
 {
 	auto pDB = dp::getMainDatabase();
@@ -176,42 +156,27 @@ void ViewSubject::populateTablePresent()
 }
 bool ViewSubject::saveData()
 {   
->>>>>>> Stashed changes
+
 
 	td::INT4 _TerminID = getCurrentTerminID();
  
 	dp::IStatementPtr pInsStat(dp::getMainDatabase()->createStatement("INSERT INTO Prisustvo (ID_termina,ID_studenta) VALUES(?,?)"));
 	dp::Params parDS(pInsStat->allocParams());
 	td::INT4 tID, pID;
-<<<<<<< Updated upstream
 	parDS <<tID << pID;
-	dp::Transaction tr(dp::getMainDatabase());
-=======
 	tID = _TerminID;
-	parDS <<tID << pID;
->>>>>>> Stashed changes
 	td::INT4 curRow = _pDS->getCurrentRowNo();
-
 		auto row = _pDS->getRow(curRow);
 		pID = row[2].i4Val();
-<<<<<<< Updated upstream
-		tID = ID;
-		
-=======
-		if (doesIDexist(pID, tID)==true)
+		if (doesIDexist(pID)==true)
 		{    
 			return false;
 		}
->>>>>>> Stashed changes
 		if (!pInsStat->execute())
-			return;
+			return false;
 
-<<<<<<< Updated upstream
-	tr.commit();
-	return;
-=======
 	return true; 
->>>>>>> Stashed changes
+
 }
 bool ViewSubject::onChangedSelection(gui::TableEdit* pTE) {
 
@@ -248,18 +213,13 @@ bool ViewSubject::onClick(gui::Button* pBtn)
 		if (doesIDexist(curID))
 		{
 			showAlert(tr("alert"), tr("alertPr"));
-			if (curRow < _pDS->getNumberOfRows()-1)
+			if (curRow < _pDS->getNumberOfRows() - 1)
 				curRow++;
 
 			_table.selectRow(curRow, true);
 			return true;
 		}
-<<<<<<< Updated upstream
 		saveData();
-=======
-		
-		
->>>>>>> Stashed changes
 		if(curRow<_pDS->getNumberOfRows()-1)
 		curRow++;
 		
@@ -276,48 +236,33 @@ bool ViewSubject::onClick(gui::Button* pBtn)
 	{
 		if (_pDS->getNumberOfRows() == 0)
 			return false;
+		
 		td::INT4 curRow = _pDS->getCurrentRowNo();
 		dp::IDataSet* pDS = _table.getDataSet();
 		auto& row = pDS->getRow(curRow);
-<<<<<<< Updated upstream
 		td::INT4 curID = row[2].i4Val();
-		if (doesIDexist(curID))
-		{
-			showAlert(tr("alert"), tr("alertPr"));
-			if (curRow < _pDS->getNumberOfRows() - 1)
-				curRow++;
-
-			_table.selectRow(curRow, true);
-			return true;
-=======
-		td::INT4 ID_stud = row[2].i4Val();
-
 		_TerminID = getCurrentTerminID();
 
-		if (doesIDexist(ID_stud,_TerminID ))
+		if (doesIDexist(curID))
 		{
 			dp::Transaction tr(dp::getMainDatabase());
 			dp::IStatementPtr pInsStat(dp::getMainDatabase()->createStatement("Delete from prisustvo where ID_termina=? and ID_studenta=? "));
 			dp::Params parDS(pInsStat->allocParams());
-			parDS<<_TerminID<<ID_stud;
+			parDS<<_TerminID<<curID;
 			if (!pInsStat->execute())
 				return false;
 			while (pInsStat->moveNext());
 			tr.commit();
->>>>>>> Stashed changes
 		}
 		
 		if (curRow < _pDS->getNumberOfRows()-1)
 		curRow++;
 		_table.selectRow(curRow, true);
-<<<<<<< Updated upstream
-=======
 
 	//_pDS2 = nullptr;
 	//_tablePresent.clean();
 	//populateTablePresent();
 	//_tablePresent.reload();
->>>>>>> Stashed changes
 		return true;
 	}
 
@@ -327,6 +272,7 @@ bool ViewSubject::onClick(gui::Button* pBtn)
 
 bool ViewSubject::doesIDexist(td::INT4 ID)
 {
+	_TerminID = getCurrentTerminID();
 	auto pDB = dp::getMainDatabase();
 	_pDSPos = pDB->createDataSet("SELECT ID_studenta  FROM Prisustvo", dp::IDataSet::Execution::EX_MULT);
 	dp::DSColumns cols(_pDSPos->allocBindColumns(1));
@@ -359,10 +305,8 @@ bool ViewSubject::onChangedSelection(gui::DBComboBox* pCB) {
 	}
 	return false;
 
-<<<<<<< Updated upstream
 }
-=======
-}
+
 td::INT4 ViewSubject::getCurrentTerminID()
 {
 	dp::Transaction tr(dp::getMainDatabase());
@@ -386,4 +330,4 @@ td::INT4 ViewSubject::getCurrentTerminID()
 	return ID_term;
 
 }
->>>>>>> Stashed changes
+
