@@ -167,17 +167,79 @@ bool ViewGradeExams::canAdd()
 
 bool ViewGradeExams::eraseExamGrade()
 {
-	return false;
+	td::INT4 id;
+	dp::IStatementPtr pDeleteGrade(_db->createStatement("delete from OcjeneIspita where ID = ?"));
+	dp::Params pParams2(pDeleteGrade->allocParams());
+	pParams2 << id;
+
+	for (auto itd : _itemsToDelete)
+	{
+		id = itd;
+		if (!pDeleteGrade->execute())
+		{
+			// showAlert(tr("alert"), tr("alertDR")); ??? 
+			return false;
+		}
+	}
+	return true;
+
 }
 
 bool ViewGradeExams::insertExamGrade()
 {
-	return false;
+	dp::IStatementPtr pInsertGrade(_db->createStatement("insert into OcjeneIspita (ID, ID_Korisnika, ID_Aktivnosti, Ocjena) values (?,?,?,?)"));
+	dp::Params pParams(pInsertGrade->allocParams());
+	td::INT4 id, user_id, activity_id;
+	td::String grade;
+
+	pParams << id << user_id << activity_id << dp::toNCh(grade, 100);
+
+	dp::IDataSet* pDS = _table.getDataSet();
+	auto rowCnt = pDS->getNumberOfRows();
+	for (size_t iRow = 0; iRow < rowCnt; ++iRow)
+	{
+		auto& row = pDS->getRow(iRow);
+		id = row[0].i4Val();
+		if (std::find(_itemsToInsert.begin(), _itemsToInsert.end(), id) == _itemsToInsert.end())
+			continue;
+		user_id = row[1].i4Val();
+		activity_id = row[2].i4Val();
+		grade = row[3];
+
+		if (!pInsertGrade->execute())
+		{
+			//showAlert(tr("alert"), tr("alertDR")); ???
+			return false;
+		}
+	}
+	return true;
 }
 
 bool ViewGradeExams::updateExamGrade()
 {
-	return false;
+	dp::IStatementPtr pUpdateGrade(_db->createStatement("UPDATE OcjeneIspita SET Ocjena=? WHERE ID=?"));
+	dp::Params pParams2(pUpdateGrade->allocParams());
+	td::String grade;
+	pParams2 << dp::toNCh(grade, 100);
+	td::INT4 id;
+
+	dp::IDataSet* pDS = _table.getDataSet();
+	auto rowCnt = pDS->getNumberOfRows();
+	for (size_t iRow = 0; iRow < rowCnt; ++iRow)
+	{
+		auto& row = pDS->getRow(iRow);
+		id = row[0].i4Val();
+		if (std::find(_itemsToUpdate.begin(), _itemsToUpdate.end(), id) == _itemsToUpdate.end())
+			continue;
+
+		grade = row[3];
+
+		if (!pUpdateGrade->execute())
+		{
+			return false;
+		}
+	}
+	return true;
 }
 
 bool ViewGradeExams::saveData()
