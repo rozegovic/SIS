@@ -26,7 +26,7 @@
 #include <gui/ImageView.h>
 #include <rnd/MinMax.h>
 
-class ViewDateTimeActivity : public gui::View
+class ViewTasks : public gui::View
 {
 private:
 protected:
@@ -70,7 +70,7 @@ protected:
     gui::TableEdit _table;
     std::vector<td::INT4> _itemsToDelete, _itemsToInsert, _itemsToUpdate;
 public:
-    ViewDateTimeActivity(td::INT4 SubjectID);
+    ViewTasks(td::INT4 SubjectID);
 protected:
     bool loadComboBox(td::String select, gui::DBComboBox& combo);
     void populateData();

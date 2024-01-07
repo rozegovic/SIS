@@ -1,26 +1,26 @@
-#include "ViewDateTimeActivity.h"
+#include "ViewTasks.h"
 //#include "Globals.h"
 
 
-ViewDateTimeActivity::ViewDateTimeActivity(td::INT4 SubjectID) :
-_db(dp::getMainDatabase()),
-_LblActName(tr("Activity")),
-_LblDateBegin(tr("ActivityDateB")),
-_LblTimeBegin(tr("ActivityTimeB")),
-_LblDateEnd(tr("ActivityDateE")),
-_LblTimeEnd(tr("ActivityTimeE")),
-_LblDateFinal(tr("ActivityDateF")),
-_LblTimeFinal(tr("ActivityTimeF")),
-_lblType(tr("ActivityNameForDateTime")),
-_type(td::int4),
-_lblCName(tr("Course:")),
-_btnAdd(tr("add"), tr("AddTT"))
-//, _btnUpdate(tr("Update"), tr("UpdateTT"))
-, _btnDelete(tr("Delete"), tr("DeleteTT"))
-, _btnSave(tr("Save"), tr("SaveTT"))
-, _hlBtnsDB(5)
-, _gl(10, 4)
-, _SubjectID(SubjectID)
+ViewTasks::ViewTasks(td::INT4 SubjectID) :
+    _db(dp::getMainDatabase()),
+    _LblActName(tr("Activity")),
+    _LblDateBegin(tr("ActivityDateB")),
+    _LblTimeBegin(tr("ActivityTimeB")),
+    _LblDateEnd(tr("ActivityDateE")),
+    _LblTimeEnd(tr("ActivityTimeE")),
+    _LblDateFinal(tr("ActivityDateF")),
+    _LblTimeFinal(tr("ActivityTimeF")),
+    _lblType(tr("ActivityNameForDateTime")),
+    _type(td::int4),
+    _lblCName(tr("Course:")),
+    _btnAdd(tr("add"), tr("AddTT"))
+    //, _btnUpdate(tr("Update"), tr("UpdateTT"))
+    , _btnDelete(tr("Delete"), tr("DeleteTT"))
+    , _btnSave(tr("Save"), tr("SaveTT"))
+    , _hlBtnsDB(5)
+    , _gl(10, 4)
+    , _SubjectID(SubjectID)
 {
 
 
@@ -81,7 +81,7 @@ _btnAdd(tr("add"), tr("AddTT"))
          _table.selectRow(0, true);
      }*/
 }
-bool ViewDateTimeActivity::loadComboBox(td::String select, gui::DBComboBox& combo)
+bool ViewTasks::loadComboBox(td::String select, gui::DBComboBox& combo)
 {
     dp::IStatementPtr pSelect = _db->createStatement(select.c_str());
     dp::Params parDS(pSelect->allocParams());
@@ -99,8 +99,8 @@ bool ViewDateTimeActivity::loadComboBox(td::String select, gui::DBComboBox& comb
     }
     combo.selectIndex(0);
     return true;
-} 
-void ViewDateTimeActivity::populateData()
+}
+void ViewTasks::populateData()
 {
     auto pDB = dp::getMainDatabase();
     _pDS = pDB->createDataSet("SELECT a.Datum_Pocetka AS datumb,a.Vrijeme_Pocetka AS vrijemeb, a.Datum_Kraja AS datume, a.Vrijeme_Kraja AS vrijemee, a.Datum_Prijave AS datumf, a.Vrijeme_Prijave AS vrijemef,a.ID_Roka,a.ID_Aktivnosti,a.ID_Predmeta, b.Naziv_Aktivnosti FROM Rokovi a, Aktivnosti b where a.ID_Predmeta=? and b.Tip_Aktivnosti=1 and a.ID_Predmeta = b.ID_Predmeta and a.ID_Aktivnosti=b.ID_Aktivnosti", dp::IDataSet::Execution::EX_MULT);
@@ -121,7 +121,7 @@ void ViewDateTimeActivity::populateData()
     }
     _table.init(_pDS, { 9, 0, 1, 2, 3, 4 ,5, 6 });
 }
-void ViewDateTimeActivity::SetCurrentSubject() {
+void ViewTasks::SetCurrentSubject() {
     dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT Naziv_Predmeta FROM Predmet WHERE ID_Predmeta = ?");
     dp::Params parDS(pSelect->allocParams());
     //d::INT4 IDPredmeta = Globals::_IDSubjectSelection;
@@ -141,23 +141,23 @@ void ViewDateTimeActivity::SetCurrentSubject() {
     }
 
 }
-void ViewDateTimeActivity::SetActivityName(td::Variant& val,td::INT4 br) {
- dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT Naziv_Aktivnosti FROM Aktivnosti WHERE ID_Aktivnosti=?");
- dp::Params parDS(pSelect->allocParams());
- //d::INT4 IDPredmeta = Globals::_IDSubjectSelection;
- parDS << br;
- dp::Columns pCols = pSelect->allocBindColumns(1);
- td::String Aktivnost;
- pCols << "Naziv_Aktivnosti" << Aktivnost;
- if (!pSelect->execute()) {
-     Aktivnost = "Haos";
- }
- if (!pSelect->moveNext())
-     return;  
-val = Aktivnost;
+void ViewTasks::SetActivityName(td::Variant& val, td::INT4 br) {
+    dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT Naziv_Aktivnosti FROM Aktivnosti WHERE ID_Aktivnosti=?");
+    dp::Params parDS(pSelect->allocParams());
+    //d::INT4 IDPredmeta = Globals::_IDSubjectSelection;
+    parDS << br;
+    dp::Columns pCols = pSelect->allocBindColumns(1);
+    td::String Aktivnost;
+    pCols << "Naziv_Aktivnosti" << Aktivnost;
+    if (!pSelect->execute()) {
+        Aktivnost = "Haos";
+    }
+    if (!pSelect->moveNext())
+        return;
+    val = Aktivnost;
 }
 
-bool ViewDateTimeActivity::onChangedSelection(gui::TableEdit* pTE) {
+bool ViewTasks::onChangedSelection(gui::TableEdit* pTE) {
     if (pTE == &_table) {
         int iRow = _table.getFirstSelectedRow();
         if (iRow < 0) {
@@ -182,9 +182,9 @@ bool ViewDateTimeActivity::onChangedSelection(gui::TableEdit* pTE) {
         _timeE.setValue(val);
 
         val = row[4];
- 
+
         _dateF.setValue(val);
-           
+
         val = row[5];
 
         _timeF.setValue(val);
@@ -198,7 +198,7 @@ bool ViewDateTimeActivity::onChangedSelection(gui::TableEdit* pTE) {
     return false;
 }
 
-void ViewDateTimeActivity::populateDSRow(dp::IDataSet::Row& row, td::INT4 i)
+void ViewTasks::populateDSRow(dp::IDataSet::Row& row, td::INT4 i)
 {
     td::Variant val;
     _dateB.getValue(val);
@@ -235,7 +235,7 @@ void ViewDateTimeActivity::populateDSRow(dp::IDataSet::Row& row, td::INT4 i)
     row[9].setValue(var);
 
 }
-td::INT4 ViewDateTimeActivity::findMaxID()
+td::INT4 ViewTasks::findMaxID()
 {
     dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select ifnull(max(ID_Roka), 0) as maxid from Rokovi");
     dp::Columns pColumns = pSelect->allocBindColumns(1);
@@ -274,7 +274,7 @@ td::INT4 ViewDateTimeActivity::findMaxID()
 }
 
 
-bool  ViewDateTimeActivity::saveData()
+bool  ViewTasks::saveData()
 {
     dp::Transaction tran(_db);
     if (!eraseDateTime())
@@ -329,14 +329,14 @@ bool  ViewDateTimeActivity::saveData()
 //    return;
 //}
 
-bool ViewDateTimeActivity::canAdd()
+bool ViewTasks::canAdd()
 {
     /*Vrsiti log provjeru vremena da li je vrijeme pocetka ispita u budnucnosti i da li manje od vremena kraj ispita vrijeme prijave vece od tren i prije pocetka
     vrijeme ot prijave*/
     return true;
 }
 
-bool ViewDateTimeActivity::eraseDateTime()
+bool ViewTasks::eraseDateTime()
 
 {
     td::INT4 id;
@@ -346,9 +346,9 @@ bool ViewDateTimeActivity::eraseDateTime()
 
     for (auto itd : _itemsToDelete)
     {
-       ///* dp::IStatementPtr pDeleteItem(_db->createStatement("delete from Rokovi where ID_Roka=?"));
-       // dp::Params pParams2(pDeleteItem->allocParams());
-       // pParams2 << id;*/
+        ///* dp::IStatementPtr pDeleteItem(_db->createStatement("delete from Rokovi where ID_Roka=?"));
+        // dp::Params pParams2(pDeleteItem->allocParams());
+        // pParams2 << id;*/
         id = itd;
         if (!pDeleteItem->execute())
         {
@@ -358,7 +358,7 @@ bool ViewDateTimeActivity::eraseDateTime()
     return true;
 }
 
-bool ViewDateTimeActivity::insertDateTime()
+bool ViewTasks::insertDateTime()
 {
     dp::IStatementPtr pInsertCourseP(_db->createStatement("insert into Rokovi (ID_Roka, ID_Aktivnosti, Datum_Pocetka, Vrijeme_Pocetka, Datum_Kraja, Vrijeme_Kraja,Datum_Prijave, Vrijeme_Prijave,ID_Predmeta) values (?,?,?,?,?,?,?,?,?)"));
     dp::Params pParams2(pInsertCourseP->allocParams());
@@ -372,7 +372,7 @@ bool ViewDateTimeActivity::insertDateTime()
     auto rowCnt = pDS->getNumberOfRows();
     for (size_t iRow = 0; iRow < rowCnt; ++iRow)
     {
-     
+
         auto& row = pDS->getRow(iRow);
         id_roka = row[6].i4Val();
         if (std::find(_itemsToInsert.begin(), _itemsToInsert.end(), id_roka) == _itemsToInsert.end())
@@ -381,21 +381,21 @@ bool ViewDateTimeActivity::insertDateTime()
         td::Variant val;
 
         datump = row[0];
-        
+
 
         vrijemep = row[1];
-       
+
         datumk = row[2];
-       
+
 
         vrijemek = row[3];
-      
+
 
         datumf = row[4];
 
         vrijemef = row[5];
 
-   
+
 
         id_pred = _SubjectID;
 
@@ -413,7 +413,7 @@ bool ViewDateTimeActivity::insertDateTime()
 
 
 
-bool ViewDateTimeActivity::onClick(gui::Button* pBtn)
+bool ViewTasks::onClick(gui::Button* pBtn)
 {
     if (pBtn == &_btnDelete)
     {
@@ -435,7 +435,7 @@ bool ViewDateTimeActivity::onClick(gui::Button* pBtn)
 
         return true;
     }
-            
+
     if (pBtn == &_btnAdd)
     {
 
@@ -458,7 +458,7 @@ bool ViewDateTimeActivity::onClick(gui::Button* pBtn)
 
     return false;
 }
-bool ViewDateTimeActivity::doesItDexist(td::Date d, td::Time t)
+bool ViewTasks::doesItDexist(td::Date d, td::Time t)
 {
     size_t nRows = _pDS->getNumberOfRows();
     for (size_t i = 0; i < nRows; ++i)
@@ -469,7 +469,7 @@ bool ViewDateTimeActivity::doesItDexist(td::Date d, td::Time t)
     }
     return false;
 }
-td::INT4 ViewDateTimeActivity::getIDfromTable(int rowID)
+td::INT4 ViewTasks::getIDfromTable(int rowID)
 {
     dp::IDataSet* pDS = _table.getDataSet();
     auto& row = pDS->getRow(rowID);
