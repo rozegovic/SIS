@@ -1,9 +1,9 @@
 #pragma once
 #include "ViewGradeExams.h"
 #include <td/Types.h>
-#include "ViewIDs.h"
 
-ViewGradeExams::ViewGradeExams(td::INT4 SubjectID): _db(dp::getMainDatabase())
+
+ViewGradeExams::ViewGradeExams(td::INT4 SubjectID) : _db(dp::getMainDatabase())
 , _lblName(tr("nameUser:"))
 , _lblLName(tr("lastName:"))
 , _lblIndex(tr("index:"))
@@ -11,35 +11,153 @@ ViewGradeExams::ViewGradeExams(td::INT4 SubjectID): _db(dp::getMainDatabase())
 , _lblActivityName(tr("activityName:"))
 , _lblCName(tr("courseName:"))
 , _btnAdd(tr("add"))
-, _btnSave(tr("save")) 
+, _btnSave(tr("save"))
 , _btnDelete(tr("Delete"))
 , _btnUpdate(tr("Update"))
-, _hlBtns(11)
+, _hlBtns(5)
 , _gl(6, 4) // pazi na brojeve----neka budu tri reda ovih labela (naziv aktivnosti i naziv predmeta, ime i prezime, indeks i ocjena)
 , _SubjectID(SubjectID)
 {
+
+	_hlBtns.appendSpacer();
+	_hlBtns.append(_btnDelete);
+	// _hlBtnsDB.append(_btnUpdate); 
+	_hlBtns.append(_btnSave);
+	_hlBtns.append(_btnAdd);
+	_hlBtns.append(_btnUpdate);
+	_hlBtns.appendSpacer();
+
+
+	//  _btnUpdate.setType(gui::Button::Type::Default);
+	_btnSave.setType(gui::Button::Type::Default);
+	_btnDelete.setType(gui::Button::Type::Destructive);
+	_btnAdd.setType(gui::Button::Type::Constructive);
+	gui::GridComposer gc(_gl);
+
+	gc.appendRow(_lblActivityName);
+	gc.appendCol(_activityName);
+
+	gc.appendCol(_lblCName);
+	gc.appendCol(_cName);
+
+	gc.appendRow(_lblName);
+	gc.appendCol(_name);
+
+	gc.appendCol(_lblLName);
+	gc.appendCol(_lName);
+
+	gc.appendRow(_lblIndex);
+	gc.appendCol(_index);
+
+	gc.appendCol(_lblGrade);
+	gc.appendCol(_grade);
+
+
+	gc.appendRow(_table, 0);
+	gc.appendRow(_hlBtns, 0);
+	gui::View::setLayout(&_gl);
 	SetCurrentSubject();
 	_cName.setAsReadOnly();  // postavlja se u funkciji setcurrentsubject
-
+	populateData();
 }
 
 void ViewGradeExams::populateData()
 {
-	// ucitavaju se ime, prezime, indeks, naziv aktivnosti i ocjena (ocjena ce se na pocetku ucitati kao nista tj. 0 jer jos nije unesena)
-	//  za sve studente prijavljene na ZAVRSENE ISPITE (dodati provjeru da li je proslo vrijeme kraja ispita)
-	//  ako ti trebaju jos neke kolone mozes dodati 
-	// vjv ce trebati id, id_aktivnosti, id_korisnika iz tabele OcjeneIspita ali one se nece ispisivati
+	
+
+	//VAŽNO!!!!
+	////// Ne radi SELECT problem je pronadjen al ne znam zasto je problem u dijelu WHERE tacnije a.ID_Korisnika = b.ID_Korisnika kada se izbaci ovaj uslov select radi////
+
+
+	auto pDB = dp::getMainDatabase();
+	_pDS = pDB->createDataSet("SELECT a.ID AS ocjeneid,a.ID_Korisnika AS korisnikid, a.ID_Aktivnosti AS aktivnostid, a.Ocjena AS ocjena,  b.Ime AS ime, b.Prezime AS prezime,b.Indeks AS indeks, c.Naziv_Aktivnosti AS nazivakt, d.Naziv_Predmeta FROM OcjeneIspita a, Korisnici b, Aktivnosti c, Predmet d  WHERE c.ID_Predmeta=? and a.ID_Korisnika = b.ID_Korisnika and a.ID_Aktivnosti=c.ID_Aktivnosti and a.ID_Predmeta=d.ID_Predmeta", dp::IDataSet::Execution::EX_MULT);
+
+	dp::Params parDS(_pDS->allocParams());
+	//td::INT4 IDPredmeta = Globals::_IDSubjectSelection;
+
+	//u parDS ce se ucitavati Globals::CurrentActivity
+	parDS << _SubjectID;
+	td::String Predmet;
+	dp::DSColumns cols(_pDS->allocBindColumns(10));
+	cols << "ocjeneid" << td::int4 << "korisnikid" << td::int4 << "aktivnostid" << td::int4 << "ocjena" << td::string8 << "ime" << td::string8 << "prezime" << td::string8 << "indeks" << td::int4 << "nazivakt" << td::string8 << "ID_Predmeta" << td::int4 << "Naziv_Predmeta" << td::string8;
+
+	if (!_pDS->execute())
+	{
+		_pDS = nullptr;
+		return;
+	}
+	_table.init(_pDS, { 4,5,6,7,3 });
 }
 
 bool ViewGradeExams::onChangedSelection(gui::TableEdit* pTE)
 {
-	// nema nikakvih posebnih napomena
+	if (pTE == &_table) {
+		int iRow = _table.getFirstSelectedRow();
+		if (iRow < 0) {
+			return true;
+		}
+		td::Variant val;
+		dp::IDataSet* pDS = _table.getDataSet();
+		auto& row = pDS->getRow(iRow);
+
+		/*_Aktivnost.setValue(val);*/
+
+		val = row[3];
+		_grade.setValue(val);
+
+		val = row[4];
+		_name.setValue(val);
+
+		val = row[5];
+		_lName.setValue(val);
+
+		val = row[6];
+		_index.setValue(val);
+
+		val = row[7];
+		_activityName.setValue(val);
+
+		val = row[9];
+		_cName.setValue(val);
+
+		return true;
+	}
 	return false;
 }
 
-void ViewGradeExams::populateDSRow(dp::IDataSet::Row& row, td::INT4 i)
+void ViewGradeExams::populateDSRow(dp::IDataSet::Row& row, td::INT4 id)
 {
-	// nema posebnih napomena
+	td::Variant val;
+	_grade.getValue(val);
+	row[3].setValue(val);
+
+	_name.getValue(val);
+	row[4].setValue(val);
+
+	_lName.getValue(val);
+	row[5].setValue(val);
+
+	_index.getValue(val);
+	row[6].setValue(val);
+
+	_activityName.getValue(val);
+	row[7].setValue(val);
+
+	_cName.getValue(val);
+	row[8].setValue(val);
+
+	td::Variant x = id;
+	row[0].setValue(x);
+
+	val = _UserID;
+	row[1].setValue(val);
+
+	val = _ActivityID;
+	row[2].setValue(val);
+
+	val = _SubjectID;
+	row[9].setValue(val);
+	
 }
 
 bool ViewGradeExams::canAdd()
@@ -91,12 +209,12 @@ bool ViewGradeExams::onClick(gui::Button* pBtn)
 		int iRow = _table.getFirstSelectedRow();
 		if (iRow < 0)
 			return true;
-    	//-------------uzimamo id reda kojeg je potrebno obrisati
+		//-------------uzimamo id reda kojeg je potrebno obrisati
 		td::INT4 itemid = getIDfromTable(iRow);
 
 		_table.beginUpdate();
 		_table.removeRow(iRow);
-		_table.endUpdate(); 
+		_table.endUpdate();
 		_itemsToDelete.push_back(itemid);
 
 		//--------------ako brisemo predmet koji se nije sacuvan u bazi, ali se nalazi u vektorima obrisati ga iz njih
@@ -134,8 +252,8 @@ bool ViewGradeExams::onClick(gui::Button* pBtn)
 		_table.push_back();
 		_table.endUpdate();
 
-		_itemsToUpdate.erase(std::remove(_itemsToUpdate.begin(), _itemsToUpdate.end(), itemid), _itemsToUpdate.end()); 
-		_itemsToInsert.push_back(itemid); 
+		_itemsToUpdate.erase(std::remove(_itemsToUpdate.begin(), _itemsToUpdate.end(), itemid), _itemsToUpdate.end());
+		_itemsToInsert.push_back(itemid);
 		return true;
 	}
 	if (pBtn == &_btnSave) {
