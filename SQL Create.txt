@@ -271,13 +271,15 @@ CREATE TABLE "DokumentiOpenPredaja" (
 
 CREATE TABLE "Predaja" (
 	"ID_Predaje"	INTEGER NOT NULL,
-	"ID_Otvaranja"	INTEGER NOT NULL,
-	"ID_Studenta"	BLOB NOT NULL,
+	"ID_Roka"	INTEGER NOT NULL,
+	"ID_Studenta"	INTEGER NOT NULL,
 	"Datoteka"	BLOB NOT NULL,
-	"Predano"	INTEGER NOT NULL,
-	FOREIGN KEY("ID_Otvaranja") REFERENCES "OpenPredaja"("ID"),
+	"Datum_Predaje"	INTEGER NOT NULL,
+	"Vrijeme_Predaje"	INTEGER NOT NULL,
+	"Predano"	INTEGER NOT NULL, // predano 1, nije predano 0
 	FOREIGN KEY("ID_Studenta") REFERENCES "Korisnici"("ID"),
-	PRIMARY KEY("ID_Predaje")
+	PRIMARY KEY("ID_Predaje"),
+	FOREIGN KEY("ID_Roka") REFERENCES "Rokovi"("ID_Roka")
 );
 
 
