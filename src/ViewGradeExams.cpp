@@ -162,7 +162,7 @@ bool ViewGradeExams::canAdd()
 bool ViewGradeExams::eraseExamGrade()
 {
 	td::INT4 id;
-	dp::IStatementPtr pDeleteGrade(_db->createStatement("update OcjeneIspita SET Ocjena = NULL where ID = ?"));
+	dp::IStatementPtr pDeleteGrade(_db->createStatement("delete from OcjeneIspita where ID = ?"));
 	dp::Params pParams2(pDeleteGrade->allocParams());
 	pParams2 << id;
 
@@ -181,25 +181,28 @@ bool ViewGradeExams::eraseExamGrade()
 
 bool ViewGradeExams::insertExamGrade()
 {
-	dp::IStatementPtr pUpdateGrade(_db->createStatement("UPDATE OcjeneIspita SET Ocjena=? WHERE ID=?"));
-	dp::Params pParams2(pUpdateGrade->allocParams());
+	dp::IStatementPtr pInsertGrade(_db->createStatement("insert into OcjeneIspita (ID, ID_Korisnika, ID_Aktivnosti, Ocjena) values (?,?,?,?)"));
+	dp::Params pParams(pInsertGrade->allocParams());
+	td::INT4 id, user_id, activity_id;
 	td::String grade;
-	td::INT4 id;
-	pParams2 << dp::toNCh(grade, 100) << id;
+
+	pParams << id << user_id << activity_id << dp::toNCh(grade, 100);
 
 	dp::IDataSet* pDS = _table.getDataSet();
 	auto rowCnt = pDS->getNumberOfRows();
 	for (size_t iRow = 0; iRow < rowCnt; ++iRow)
 	{
 		auto& row = pDS->getRow(iRow);
-		id = row[7].i4Val();
+		id = row[0].i4Val();
 		if (std::find(_itemsToInsert.begin(), _itemsToInsert.end(), id) == _itemsToInsert.end())
 			continue;
+		user_id = row[1].i4Val();
+		activity_id = row[2].i4Val();
+		grade = row[3];
 
-		grade = row[6];
-
-		if (!pUpdateGrade->execute())
+		if (!pInsertGrade->execute())
 		{
+			//showAlert(tr("alert"), tr("alertDR")); ???
 			return false;
 		}
 	}
@@ -211,20 +214,19 @@ bool ViewGradeExams::updateExamGrade()
 	dp::IStatementPtr pUpdateGrade(_db->createStatement("UPDATE OcjeneIspita SET Ocjena=? WHERE ID=?"));
 	dp::Params pParams2(pUpdateGrade->allocParams());
 	td::String grade;
+	pParams2 << dp::toNCh(grade, 100);
 	td::INT4 id;
-	pParams2 << dp::toNCh(grade, 100) << id;
-	
 
 	dp::IDataSet* pDS = _table.getDataSet();
 	auto rowCnt = pDS->getNumberOfRows();
 	for (size_t iRow = 0; iRow < rowCnt; ++iRow)
 	{
 		auto& row = pDS->getRow(iRow);
-		id = row[7].i4Val();
+		id = row[0].i4Val();
 		if (std::find(_itemsToUpdate.begin(), _itemsToUpdate.end(), id) == _itemsToUpdate.end())
 			continue;
 
-		grade = row[6];
+		grade = row[3];
 
 		if (!pUpdateGrade->execute())
 		{
@@ -267,18 +269,11 @@ bool ViewGradeExams::onClick(gui::Button* pBtn)
 			return true;
 		//-------------uzimamo id reda kojeg je potrebno obrisati
 		td::INT4 itemid = getIDfromTable(iRow);
-		
-		_table.beginUpdate();
-		auto& row = _table.getCurrentRow();
-		row[6].toZero();
-		_table.updateRow(iRow);
-		_table.endUpdate();
-		_itemsToDelete.push_back(itemid);
 
-		/*_table.beginUpdate();
+		_table.beginUpdate();
 		_table.removeRow(iRow);
 		_table.endUpdate();
-		_itemsToDelete.push_back(itemid);*/
+		_itemsToDelete.push_back(itemid);
 
 		//--------------ako brisemo predmet koji se nije sacuvan u bazi, ali se nalazi u vektorima obrisati ga iz njih
 		_itemsToInsert.erase(std::remove(_itemsToInsert.begin(), _itemsToInsert.end(), itemid), _itemsToInsert.end());

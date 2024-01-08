@@ -189,6 +189,23 @@
 		<Res id="ectsTT" tr="ECTS bodovi"/>
 		<Res id="izborniTT" tr="Izborni"/>
 		<Res id="maxbrTT" tr="Maksinalan broj studenata na predmetu"/>
+
+		<Res id="ID" tr="ID"/>
+		<Res id="Subject" tr="Predmet poruke"/>
+		<Res id="AuthorID" tr="AutorID"/>
+		<Res id="Prezime" tr="Prezime"/>
+		<Res id="Ime" tr="Ime"/>
+		<Res id="Datum" tr="Datum"/>
+		<Res id="Vrijeme" tr="Vrijeme"/>
+		<Res id="Poruke" tr="Poruke"/>
+		<Res id="IDTT" tr="ID"/>
+		<Res id="SubjectTT" tr="Predmet poruke"/>
+		<Res id="AuthorIDTT" tr="AutorID"/>
+		<Res id="PrezimeTT" tr="Prezime"/>
+		<Res id="ImeTT" tr="Ime"/>
+		<Res id="DatumTT" tr="Datum"/>
+		<Res id="VrijemeTT" tr="Vrijeme"/>
+		<Res id="PorukeTT" tr="Poruke"/>
 		
 		
 		<Res id="tobeenrolledtocourse" tr="Studenti koji imaju mogućnost upisa"/>
