@@ -547,7 +547,7 @@ void ViewActivity::SetCurrentSubject() {
                     td::String naslov = "Aktivnost!";
                     td::String poruka = "Registrovana je promjena za odredjenu aktivnost! ";
                     MsgSender msg;
-                    msg.sendMsgtoUsers(naslov, poruka, userIDs);
+                    msg.sendSystemMsgtoUsers(naslov, poruka, userIDs);
                 }
             }
             return true;
