@@ -65,5 +65,6 @@ protected:
     bool saveData();
     bool onClick(gui::Button* pBtn);
     bool doesIDexist(td::INT4 ID);
+    void UpdatePresentDataSet();
 };
 

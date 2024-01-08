@@ -220,6 +220,7 @@ bool ViewSubject::onClick(gui::Button* pBtn)
 			return true;
 		}
 		saveData();
+		UpdatePresentDataSet();
 		if(curRow<_pDS->getNumberOfRows()-1)
 		curRow++;
 		
@@ -228,7 +229,7 @@ bool ViewSubject::onClick(gui::Button* pBtn)
 	//_tablePresent.clean();
 	//_pDS2 = nullptr;
 		//populateTablePresent();
-	//_tablePresent.reload();
+	
 		return true;
 	}
 
@@ -254,7 +255,7 @@ bool ViewSubject::onClick(gui::Button* pBtn)
 			while (pInsStat->moveNext());
 			tr.commit();
 		}
-		
+		UpdatePresentDataSet();
 		if (curRow < _pDS->getNumberOfRows()-1)
 		curRow++;
 		_table.selectRow(curRow, true);
@@ -262,7 +263,7 @@ bool ViewSubject::onClick(gui::Button* pBtn)
 	//_pDS2 = nullptr;
 	//_tablePresent.clean();
 	//populateTablePresent();
-	//_tablePresent.reload();
+	
 		return true;
 	}
 
@@ -303,6 +304,12 @@ bool ViewSubject::onChangedSelection(gui::DBComboBox* pCB) {
 		populateTimeCombo(_time,dt);
 
 	}
+	if (pCB == &_time)
+	{
+	//	_tablePresent.clean();
+		return true;
+
+	}
 	return false;
 
 }
@@ -331,3 +338,35 @@ td::INT4 ViewSubject::getCurrentTerminID()
 
 }
 
+void ViewSubject::UpdatePresentDataSet() {
+
+	
+	dp::IDataSetPtr pomDS = dp::getMainDatabase()->createDataSet("select Ime as Name, Prezime as Surname from Korisnici,Prisustvo where Korisnici.PozicijaID==5 and Korisnici.ID == Prisustvo.ID_studenta and Prisustvo.ID_termina=?", dp::IDataSet::Execution::EX_MULT);
+	dp::Params pParams(pomDS->allocParams());
+	_TerminID = getCurrentTerminID();
+	pParams << _TerminID;
+	dp::DSColumns cols(pomDS->allocBindColumns(2));
+	cols << "Name" << td::string8 << "Surname" << td::string8;
+	if (!pomDS->execute())
+	{
+		pomDS = nullptr;
+		return;
+	}
+
+
+	_tablePresent.clean();
+
+
+	size_t nRows = pomDS->getNumberOfRows();
+	for (size_t i = 0; i < nRows; i++) {
+		_tablePresent.beginUpdate();
+		auto& rowpom = pomDS->getRow(i);
+		auto& row = _tablePresent.getEmptyRow();
+		row = rowpom;
+
+		_tablePresent.push_back();
+
+		_tablePresent.endUpdate();
+	}
+
+}
