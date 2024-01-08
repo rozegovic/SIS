@@ -224,4 +224,71 @@ CREATE TABLE "SAOTicket" (
 	PRIMARY KEY("ID")
 );
 
+CREATE TABLE "Rokovi" (
+	"ID_Roka"	INTEGER NOT NULL,
+	"ID_Aktivnosti"	INTEGER NOT NULL,
+	"Datum_Pocetka"	INTEGER NOT NULL,
+	"Vrijeme_Pocetka"	INTEGER NOT NULL,
+	"Datum_Kraja"	INTEGER NOT NULL,
+	"Vrijeme_Kraja"	INTEGER NOT NULL,
+	"Datum_Prijave"	INTEGER NOT NULL,
+	"Vrijeme_Prijave"	INTEGER NOT NULL,
+	"ID_Predmeta"	INTEGER NOT NULL,
+	PRIMARY KEY("ID_Roka"),
+	FOREIGN KEY("ID_Predmeta") REFERENCES "Predmet"("ID_Predmeta"),
+	FOREIGN KEY("ID_Aktivnosti") REFERENCES "Aktivnosti"("ID_Aktivnosti")
+);
 
+
+
+CREATE TABLE "SAOStudentTicket" (
+	"ID"	INTEGER,
+	"Indeks"	TEXT NOT NULL,
+	"Ticket_Tip"	TEXT NOT NULL,
+	"Req_Title"	TEXT NOT NULL,
+	"Request"	TEXT,
+	"Attachment"	BLOB,
+	"Status"	TEXT,
+	PRIMARY KEY("ID" AUTOINCREMENT)
+);
+
+CREATE TABLE "OpenPredaja" (
+	"ID"	INTEGER NOT NULL,
+	"Naziv"	TEXT NOT NULL,
+	"Datum_Predaje"	INTEGER NOT NULL,
+	"Vrijeme_Predaje"	INTEGER NOT NULL,
+	PRIMARY KEY("ID")
+);
+
+CREATE TABLE "DokumentiOpenPredaja" (
+	"ID"	INTEGER NOT NULL,
+	"Dokumenti"	BLOB,
+	"ID_Dokumenta"	INTEGER NOT NULL,
+	FOREIGN KEY("ID_Dokumenta") REFERENCES "OpenPredaja"("ID"),
+	PRIMARY KEY("ID")
+);
+
+
+CREATE TABLE "Predaja" (
+	"ID_Predaje"	INTEGER NOT NULL,
+	"ID_Roka"	INTEGER NOT NULL,
+	"ID_Studenta"	INTEGER NOT NULL,
+	"Datoteka"	BLOB NOT NULL,
+	"Datum_Predaje"	INTEGER NOT NULL,
+	"Vrijeme_Predaje"	INTEGER NOT NULL,
+	"Predano"	INTEGER NOT NULL, // predano 1, nije predano 0
+	FOREIGN KEY("ID_Studenta") REFERENCES "Korisnici"("ID"),
+	PRIMARY KEY("ID_Predaje"),
+	FOREIGN KEY("ID_Roka") REFERENCES "Rokovi"("ID_Roka")
+);
+
+
+CREATE TABLE "OcjeneIspita" (
+	"ID"	INTEGER NOT NULL,
+	"ID_Korisnika"	INTEGER NOT NULL,
+	"ID_Aktivnosti"	INTEGER NOT NULL,
+	"Ocjena"	TEXT,
+	FOREIGN KEY("ID_Korisnika") REFERENCES "Korisnici"("ID"),
+	FOREIGN KEY("ID_Aktivnosti") REFERENCES "Aktivnosti"("ID_Aktivnosti"),
+	PRIMARY KEY("ID")
+);

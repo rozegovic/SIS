@@ -14,6 +14,9 @@
 #define View_EXAMSIGNUPS 109u
 #define View_TICKET 110u
 #define View_COURSEENROLL 111u
+#define View_MESSAGES 112u
+#define View_GRADE 113u
+
 
 #define USER_STUDENT 4
 #define MESSAGE_HEADER_LEN 128

@@ -18,7 +18,9 @@
 #include "ViewTicket.h"
 #include "ViewCurriculumDialog.h"
 #include "DialogCurriculum.h"
-
+#include "ViewMessages.h"
+#include "ViewGradeExams.h"
+#include "ViewAttendance.h"
 
 #include <rpt/IResources.h>
 #include "NavigatorViewActivity.h"
@@ -38,6 +40,8 @@ MainWindow::MainWindow()
     , _imgExamAtt(":complex")
     , _imgTicket(":pencil")
     , _imgCourseenr(":plus")
+    , _imgMessages(":complex")
+    , _imgExamGrades(":complex")
 {
     setTitle(tr("SIS"));
     _mainMenuBar.setAsMain(this);
@@ -54,7 +58,6 @@ MainWindow::MainWindow()
         return;
     }
 }
-
 
 void MainWindow::showLogin()
 {
@@ -123,7 +126,7 @@ bool MainWindow::showCurriculum()
 {
     DialogCurriculum* pDlg = new DialogCurriculum(this);
     pDlg->setTitle(tr("Choose semester and department"));
-    pDlg->openModalWithID(DlgID::Curriculum, [this](gui::Dialog::Button::ID btn, gui::Dialog* pDlg)
+    pDlg->openModal([this](gui::Dialog::Button::ID btn, gui::Dialog* pDlg)
         {
             auto btnID = pDlg->getClickedButtonID();
             if (btnID == gui::Dialog::Button::ID::OK) {
@@ -140,9 +143,16 @@ bool MainWindow::showCurriculum()
 
 bool MainWindow::showSubjectChooseActivty()
 {
+    auto x = Globals::_currentUserRole;
+    if (x != 1 && x != 3 && x != 6)
+    {
+        showAlert(tr("AccessNotAllowed"), "");
+        return true;
+    }
+
     DialogChooseSubject* pDlg = new DialogChooseSubject(this);
     pDlg->setTitle(tr("SubjectChoose"));
-    pDlg->openModalWithID(DlgID::Login, [this](gui::Dialog::Button::ID btn, gui::Dialog* pDlg)
+    pDlg->openModal([this](gui::Dialog::Button::ID btn, gui::Dialog* pDlg)
         {
             auto btnID = pDlg->getClickedButtonID();
             if (btnID == gui::Dialog::Button::ID::OK) {
@@ -159,7 +169,12 @@ bool MainWindow::showSubjectChooseActivty()
 
 bool MainWindow::showMySubjectChoose()
 {
-
+    auto x = Globals::_currentUserRole;
+    if (x != 1 && x != 3 && x != 6)
+    {
+        showAlert(tr("AccessNotAllowed"), "");
+        return true;
+    }
     DialogChooseSubject* pDlg = new DialogChooseSubject(this);
     pDlg->setTitle(tr("SubjectChoose"));
     pDlg->openModal([this](gui::Dialog::Button::ID btn, gui::Dialog* pDlg)
@@ -178,16 +193,46 @@ bool MainWindow::showMySubjectChoose()
 
 bool MainWindow::showAllSubjectChoose()
 {
-    DialogChooseAllSubjects* pDlg = new DialogChooseAllSubjects(this);
+    auto x = Globals::_currentUserRole;
+    if (x != 1 && x != 3 && x != 6)
+    {
+        showAlert(tr("AccessNotAllowed"), "");
+        return true;
+    }
+
+        DialogChooseSubject* pDlg = new DialogChooseSubject(this);
+        pDlg->setTitle(tr("SubjectChoose"));
+        pDlg->openModal([this](gui::Dialog::Button::ID btn, gui::Dialog* pDlg)
+            {
+                auto btnID = pDlg->getClickedButtonID();
+                if (btnID == gui::Dialog::Button::ID::OK) {
+                    auto dlgCS = static_cast<DialogChooseSubject*> (pDlg);
+                    showTStaffView(dlgCS->getSubjectID());
+                }
+                else return true;
+            });
+
+    return false;
+}
+
+bool MainWindow::showSomeSubjectChoose()
+{
+    auto x = Globals::_currentUserRole;
+    if (x!=1)
+    {
+        showAlert(tr("AccessNotAllowed"), "");
+        return true;
+    }
+    DialogChooseSubject* pDlg = new DialogChooseSubject(this);
     pDlg->setTitle(tr("SubjectChoose"));
     pDlg->openModal([this](gui::Dialog::Button::ID btn, gui::Dialog* pDlg)
         {
             auto btnID = pDlg->getClickedButtonID();
             if (btnID == gui::Dialog::Button::ID::OK) {
                 auto dlgCS = static_cast<DialogChooseSubject*> (pDlg);
-                showTStaffView(dlgCS->getSubjectID());
+                showGradeExamView(dlgCS->getSubjectID());
             }
-            else  return true;
+            else return true;
         });
 
     return false;
@@ -239,7 +284,9 @@ bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc)
         break; case 110: return showExamSignUpView();
         break; case 120: return showCourseEnrollView();
         break; case 130: return showTicketView();
-
+        break; case 140: return showMessagesView();
+        break; case 150: return showSomeSubjectChoose();
+        //break; case 160: return AttendanceReport(&_imgAttendance);
 
 
                       
@@ -296,6 +343,12 @@ bool MainWindow::showUsersView()
 
 bool MainWindow::showDepartmentsView()
 {
+    auto x = Globals::_currentUserRole;
+    if (x != 6)
+    {
+        showAlert(tr("AccessNotAllowed"), "");
+        return true;
+    }
     if (focusOnViewPositionWithID(View_DEPARTMENT))
         return true;
 
@@ -306,6 +359,12 @@ bool MainWindow::showDepartmentsView()
 
 bool MainWindow::showCoursesView()
 {
+    auto x = Globals::_currentUserRole;
+    if (x != 6)
+    {
+        showAlert(tr("AccessNotAllowed"), "");
+        return true;
+    }
     if (focusOnViewPositionWithID(View_COURSE))
         return true;
 
@@ -449,3 +508,30 @@ bool MainWindow::showCourseEnrollView() {
     return true;
 }
 
+bool MainWindow::showMessagesView() {
+
+    if (!Globals::isStudent)
+    {
+        showAlert(tr("AccessNotAllowed"), "");
+        return true;
+    }
+
+    if (focusOnViewPositionWithID(View_MESSAGES))
+        return true;
+
+    ViewMessages* pView = new ViewMessages;
+    _mainView.addView(pView, tr("viewMessages"), &_imgMessages);
+    return true;
+}
+
+bool MainWindow::showGradeExamView(td::INT4 SubjectID)
+{
+    td::INT4 ViewID = (View_GRADE << 24) | SubjectID;
+    if (focusOnViewPositionWithID(ViewID))
+        return true;
+
+    ViewGradeExams* pView = new ViewGradeExams(SubjectID);
+    _mainView.addView(pView, tr("viewGradeExam"), &_imgExamGrades);
+
+    return true;
+}

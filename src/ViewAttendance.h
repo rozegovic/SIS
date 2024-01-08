@@ -45,6 +45,7 @@ protected:
     gui::Button _btnAdd;
     gui::Button _btnDelete;
     gui::Button _btnUpdate;
+    gui::Button _btnReport;
    // gui::Button _btnSave;
     
     gui::GridLayout _gl;
@@ -55,8 +56,11 @@ protected:
     td::Date LastMsgDate;
     
     gui::TableEdit _table;
+    
+    gui::Image _imgClassAtt;
 public:
     ViewAttendance(td::INT4 SubjectID);
+    void AttendanceReport(const gui::Image* pImage);
 protected:
     void populateRoleCombo(gui::DBComboBox &combo);
     void populateData();
@@ -69,6 +73,7 @@ protected:
     //void SendAddMsg();
     void SendMsg(td::INT4 MsgType);
     bool CheckTime();
+    //void AttendanceReport(const gui::Image* pImage);
 };
 
 

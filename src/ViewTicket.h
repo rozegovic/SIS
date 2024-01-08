@@ -26,6 +26,7 @@
 #include <gui/ImageView.h>
 #include <rnd/MinMax.h>
 #include "ViewUsers.h"
+#include "Globals.h"
 
 
 class ViewTicket : public gui::View {
@@ -33,16 +34,8 @@ private:
 
 protected:
 	//first row
-	gui::Label _namelbl;
-	gui::LineEdit _name;
-	gui::Label _surnamelbl;
-	gui::LineEdit _surname;
-	gui::Label _indexlbl;
-	gui::LineEdit _index;
-
-	//second row
 	gui::Label _typelbl;
-	gui::DBComboBox _type;
+	gui::LineEdit _type;
 	gui::Label _subjectlbl;
 	gui::LineEdit _subject;
 	gui::Label _bodylbl;
@@ -51,20 +44,23 @@ protected:
 	//third row
 	gui::HorizontalLayout _hlBtnsDB;
 	gui::Button _btnSend;
+
+	gui::TableEdit _tableTickets;
 	gui::GridLayout _gl;
 	dp::IDatabase* _db;
 	dp::IDataSetPtr _pDS;
+
 
 public:
 	ViewTicket();
 
 protected:
 	//void populateTypeOfTicket(); POSTO NECEMO IMATI TABELU HOCE LI NAM TREBATI OVA FUNKCIJA?
-	void populateTypeCombo(gui::DBComboBox& combo);
+	//void populateTypeCombo(gui::DBComboBox& combo);
 	bool onClick(gui::Button* pBtn) override;
 	bool onAnswer(td::UINT4 questionID, gui::Alert::Answer answer) override;
 	bool sendTicket();
-	bool IsIndexInUsersTable();
-	bool onChangedSelection(gui::DBComboBox* pCmb);
-
+//	bool onChangedSelection(gui::DBComboBox* pCmb);
+	td::Variant GetStudentIndeks();
+	void populateTableData();
 };

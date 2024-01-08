@@ -29,7 +29,8 @@ public:
 
         fo::fs::path home;
         mu::getHomePath(home);
-        fo::fs::path DBPath = (home / "C:Work/CPProjects/SiS_v1.7/Temp_Baza.db");
+
+        fo::fs::path DBPath = (home / "Work/CPProjects/SiS_v_Zadnji/Temp_Baza.db");
 
         if (!pDB->connect(DBPath.string().c_str()))
             return false;
