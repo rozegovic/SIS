@@ -89,7 +89,7 @@ void ViewSubject::populateDateCombo(gui::DBComboBox& combo)
 	
 	if (vekt.size() == 0)
         return;
-    combo.selectIndex(0);
+    //combo.selectIndex(0);
 	populateTimeCombo(_time, vekt.at(0));
 }
 void ViewSubject::populateTimeCombo(gui::DBComboBox& combo, td::Date date)
@@ -110,7 +110,7 @@ void ViewSubject::populateTimeCombo(gui::DBComboBox& combo, td::Date date)
 		pom = time.toString();
 		combo.addItem(pom, id);
 	}
-	combo.selectIndex(0);
+	//combo.selectIndex(0);
 
 }
 
@@ -303,10 +303,12 @@ bool ViewSubject::onChangedSelection(gui::DBComboBox* pCB) {
 		td::Date dt;
 		dt.fromString(str);
 		populateTimeCombo(_time,dt);
+		UpdatePresentDataSet();
 
 	}
 	if (pCB == &_time)
 	{
+		UpdatePresentDataSet();
 	//	_tablePresent.clean();
 		return true;
 
