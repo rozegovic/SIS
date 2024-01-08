@@ -20,6 +20,7 @@
 #include "DialogCurriculum.h"
 #include "ViewMessages.h"
 #include "ViewGradeExams.h"
+#include "ViewAttendance.h"
 
 #include <rpt/IResources.h>
 #include "NavigatorViewActivity.h"
@@ -285,7 +286,7 @@ bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc)
         break; case 130: return showTicketView();
         break; case 140: return showMessagesView();
         break; case 150: return showSomeSubjectChoose();
-
+        //break; case 160: return AttendanceReport(&_imgAttendance);
 
 
                       

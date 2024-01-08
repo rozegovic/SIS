@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <DevRes>
 	<Translations>
 		<Res id="Pos" tr="Rbr"/>
@@ -7,6 +7,12 @@
 		<Res id="prezime" tr="Prezime"/>
 		<Res id="indeks" tr="Indeks"/>
 		<Res id="NameAktivnosti" tr="Vrsta provjere"/>
+        
+        <!--Prijave na nastavu-->
+        <Res id="Date" tr="Datum"/>
+        <Res id="Time" tr="Vrijeme"/>
+        
+        
 
 	</Translations>
 </DevRes>
