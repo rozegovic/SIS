@@ -20,6 +20,7 @@
 #include "DialogCurriculum.h"
 #include "ViewMessages.h"
 #include "ViewGradeExams.h"
+#include "upload.h"
 
 #include <rpt/IResources.h>
 #include "NavigatorViewActivity.h"
@@ -41,6 +42,7 @@ MainWindow::MainWindow()
     , _imgCourseenr(":plus")
     , _imgMessages(":complex")
     , _imgExamGrades(":complex")
+    , _imgUpload(":complex")
 {
     setTitle(tr("SIS"));
     _mainMenuBar.setAsMain(this);
@@ -285,6 +287,7 @@ bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc)
         break; case 130: return showTicketView();
         break; case 140: return showMessagesView();
         break; case 150: return showSomeSubjectChoose();
+        break; case 160: return showUpload(); 
 
 
 
@@ -532,5 +535,21 @@ bool MainWindow::showGradeExamView(td::INT4 SubjectID)
     ViewGradeExams* pView = new ViewGradeExams(SubjectID);
     _mainView.addView(pView, tr("viewGradeExam"), &_imgExamGrades);
 
+    return true;
+}
+
+bool MainWindow::showUpload()
+{
+    auto x = Globals::_currentUserRole;
+    if (x != 6)
+    {
+        showAlert(tr("AccessNotAllowed"), "");
+        return true;
+    }
+    if (focusOnViewPositionWithID(View_UPLOAD))
+        return true;
+
+    ViewUpload* pView = new ViewUpload;
+    _mainView.addView(pView, tr("viewUpload"), &_imgUpload);
     return true;
 }

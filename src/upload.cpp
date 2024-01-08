@@ -81,7 +81,13 @@ void ViewUpload::populateDataForTable1()
 {
     _pDS = dp::getMainDatabase()->createDataSet("SELECT P.Naziv_Predmeta, P.Sifra_Predmeta, A.Naziv_Aktivnosti, r.Datum_Kraja, r.Vrijeme_Kraja, P.ID_Predmeta FROM Predmet P, Aktivnosti A, Predaja pr, Rokovi r where P.ID_Predmeta = A.ID_Predmeta and r.ID_Predmeta = A.ID_Predmeta and (A.Tip_Aktivnosti = 2 or A.Tip_Aktivnosti = 5) and r.Datum_Kraja > 0 and pr.Predano = 0 and r.ID_Roka = pr.ID_Roka", dp::IDataSet::Execution::EX_MULT);
     dp::DSColumns cols(_pDS->allocBindColumns(6));
-    cols << "Naziv_Predmeta" << td::string8 << "Sifra_Predmeta" << td::string8 << "Naziv_Aktivnosti" << td::string8 << "Datum_Kraja" << td::date << "Vrijeme_Kraja" << td::time/* << "Reg_time" << td::time */ << "ID_Predmeta" << td::int4;;
+    cols << "Naziv_Predmeta" << td::string8 
+        << "Sifra_Predmeta" << td::string8 
+        << "Naziv_Aktivnosti" << td::string8 
+        << "Datum_Kraja" << td::date 
+        << "Vrijeme_Kraja" << td::time
+        /* << "Reg_time" << td::time */ 
+        << "ID_Predmeta" << td::int4;;
 
     if (!_pDS->execute())
     {
