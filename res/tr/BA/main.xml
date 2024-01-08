@@ -153,7 +153,9 @@
                           <Res id="StatUser" tr="Korisnik:"/>
                          <Res id="StatRole" tr="Uloga:"/>
                          <Res id="Subject" tr="Predmet"/>
+						 <Res id="tablePresent" tr="Prisutni za ovaj termin:"/>
                             <Res id="alertPr" tr="Vec ste unijeli prisustvo ovog studenta za ovaj termin"/>
+							 <Res id="alertCmb" tr="Niste odabrali ni jedan termin"/>
 		
 		
 		

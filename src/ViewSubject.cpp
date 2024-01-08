@@ -207,10 +207,16 @@ bool ViewSubject::onClick(gui::Button* pBtn)
 	{   
 		if (_pDS->getNumberOfRows() == 0)
 			return false;
+		if (_TerminID < 1)
+		{    
+			showAlert(tr("alert"), tr("alertCmb"));
+			return false;
+		}
 		td::INT4 curRow= _pDS->getCurrentRowNo();
 		dp::IDataSet* pDS = _table.getDataSet();
 		auto& row = pDS->getRow(curRow);
 		td::INT4 curID = row[2].i4Val();
+		_TerminID = getCurrentTerminID();
 		if (doesIDexist(curID))
 		{
 			showAlert(tr("alert"), tr("alertPr"));
@@ -238,7 +244,11 @@ bool ViewSubject::onClick(gui::Button* pBtn)
 	{
 		if (_pDS->getNumberOfRows() == 0)
 			return false;
-		
+		if (_TerminID < 1)
+		{   
+			showAlert(tr("alert"), tr("alertCmb"));
+			return false;
+		}
 		td::INT4 curRow = _pDS->getCurrentRowNo();
 		dp::IDataSet* pDS = _table.getDataSet();
 		auto& row = pDS->getRow(curRow);
@@ -276,9 +286,9 @@ bool ViewSubject::doesIDexist(td::INT4 ID)
 {
 	_TerminID = getCurrentTerminID();
 	auto pDB = dp::getMainDatabase();
-	_pDSPos = pDB->createDataSet("SELECT ID_studenta  FROM Prisustvo", dp::IDataSet::Execution::EX_MULT);
-	dp::DSColumns cols(_pDSPos->allocBindColumns(1));
-	cols << "ID_studenta" << td::int4;
+	_pDSPos = pDB->createDataSet("SELECT ID_studenta, ID_termina  FROM Prisustvo", dp::IDataSet::Execution::EX_MULT);
+	dp::DSColumns cols(_pDSPos->allocBindColumns(2));
+	cols << "ID_studenta" << td::int4<<"ID_termina" << td::int4;
 
 	if (!_pDSPos->execute())
 	{
@@ -289,7 +299,7 @@ bool ViewSubject::doesIDexist(td::INT4 ID)
 	for (size_t i = 0; i < nRows; ++i)
 	{
 		auto row = _pDSPos->getRow(i);
-	if (row[0] == ID )
+	if (row[0] == ID && row[1]==_TerminID)
 			return true;
 	}
 	return false;
