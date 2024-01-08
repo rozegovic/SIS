@@ -94,6 +94,10 @@ void ViewSubject::populateDateCombo(gui::DBComboBox& combo)
 }
 void ViewSubject::populateTimeCombo(gui::DBComboBox& combo, td::Date date)
 {
+	if (_date.getSelectedIndex()<0)
+	{
+		return;
+}
 	//td::INT4 indeks=_date.getSelectedIndex();
 	dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT ID, Vrijeme FROM Termini where Termini.Datum=?");
 	dp::Params pParams(pSelect->allocParams());
@@ -110,7 +114,7 @@ void ViewSubject::populateTimeCombo(gui::DBComboBox& combo, td::Date date)
 		pom = time.toString();
 		combo.addItem(pom, id);
 	}
-	//combo.selectIndex(0);
+	combo.selectIndex(0);
 
 }
 
