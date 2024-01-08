@@ -42,10 +42,14 @@ protected:
     gui::LineEdit _cName;
 
     gui::HorizontalLayout _hlBtns;
+    gui::HorizontalLayout _report;
+
     gui::Button _btnAdd;
     gui::Button _btnDelete;
     gui::Button _btnUpdate;
     gui::Button _btnSave;
+    gui::Button _btnReport;
+
 
     dp::IDatabase* _db;
     gui::GridLayout _gl;

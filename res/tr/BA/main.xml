@@ -242,6 +242,13 @@
 		<Res id="Messages:" tr="Poruke:"/>
 		<Res id="Messages" tr="Poruke"/>
 
+		<Res id="grade:" tr="Ocjena:"/>
+		<Res id="activityName:" tr="Aktivnost:"/>
+		<Res id="Report" tr="Izvještaj"/>
+		<Res id="viewExamGrade" tr="Ocjena ispita"/>
+		<Res id="Naziv_Aktivnosti" tr="Aktivnost"/>
+		<Res id="viewGradeExam" tr="Ocjena ispita"/>
+
 
 	</Translations>
 </DevRes>

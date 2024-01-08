@@ -12,7 +12,7 @@
 #include "DialogChooseSubject.h"
 #include "ViewCurriculum.h"
 #include "DialogChooseAllSubjects.h"
-#include "ViewExamAttendance.h"
+#include "Reports.h"
 #include "ViewExamSignUp.h"
 #include "ViewCourseEnroll.h"
 #include "ViewTicket.h"
@@ -183,7 +183,7 @@ bool MainWindow::showMySubjectChoose()
                 auto dlgCS = static_cast<DialogChooseSubject*> (pDlg);
                 examAttendance(&_imgExamAtt, dlgCS->getSubjectID());
             }
-            else return true;
+            return true;
         });
 
     return false;
@@ -208,7 +208,7 @@ bool MainWindow::showAllSubjectChoose()
                     auto dlgCS = static_cast<DialogChooseSubject*> (pDlg);
                     showTStaffView(dlgCS->getSubjectID());
                 }
-                else return true;
+                return true;
             });
 
     return false;
@@ -229,9 +229,11 @@ bool MainWindow::showSomeSubjectChoose()
             auto btnID = pDlg->getClickedButtonID();
             if (btnID == gui::Dialog::Button::ID::OK) {
                 auto dlgCS = static_cast<DialogChooseSubject*> (pDlg);
+                //examGrades(&_imgExamAtt, dlgCS->getSubjectID());
+
                 showGradeExamView(dlgCS->getSubjectID());
             }
-            else return true;
+            return true;
         });
 
     return false;
