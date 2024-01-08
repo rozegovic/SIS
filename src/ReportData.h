@@ -6,7 +6,7 @@
 class DocumentData : public rpt::DocumentData
 {
 public:
-    DocumentData(td::INT4 SubjectID)
+    DocumentData(td::INT4 SubjectID, td::String name)
         : rpt::DocumentData()
     {
         //has to be loaded from DB
@@ -25,7 +25,7 @@ public:
             return;
         if (!pSelect->moveNext())
             return;
-        _data[0] = "Studenti prijavljeni na ispit"; //RPT_TXT_DOCUMENT_TYPE
+        _data[0] = name; //RPT_TXT_DOCUMENT_TYPE
         _data[1] = s; //RPT_TXT_DOCUMENT_ID
         //_data[2] = now;	 //RPT_DT_DOCUMENT_DATETIME
         //_data[3] = (td::INT4)14; //RPT_INT_DOCUMENT_PAYMENT_DAYS

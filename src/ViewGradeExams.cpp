@@ -1,12 +1,12 @@
 #pragma once
 #include "ViewGradeExams.h"
 #include <td/Types.h>
-
+#include "Reports.h"
 
 ViewGradeExams::ViewGradeExams(td::INT4 SubjectID) : _db(dp::getMainDatabase())
-, _lblName(tr("nameUser:"))
-, _lblLName(tr("lastName:"))
-, _lblIndex(tr("index:"))
+, _lblName(tr("userName:"))
+, _lblLName(tr("userLName:"))
+, _lblIndex(tr("indeksUser:"))
 , _lblGrade(tr("grade:")) // napomena za Eminu - poslije dodati send message
 , _lblActivityName(tr("activityName:"))
 , _lblCName(tr("courseName:"))
@@ -14,9 +14,11 @@ ViewGradeExams::ViewGradeExams(td::INT4 SubjectID) : _db(dp::getMainDatabase())
 , _btnSave(tr("save"))
 , _btnDelete(tr("Delete"))
 , _btnUpdate(tr("Update"))
+, _btnReport(tr("Report"))
 , _hlBtns(5)
 , _gl(6, 4) // pazi na brojeve----neka budu tri reda ovih labela (naziv aktivnosti i naziv predmeta, ime i prezime, indeks i ocjena)
 , _SubjectID(SubjectID)
+, _report(1)
 {
 
 	_hlBtns.appendSpacer();
@@ -27,6 +29,7 @@ ViewGradeExams::ViewGradeExams(td::INT4 SubjectID) : _db(dp::getMainDatabase())
 	_hlBtns.append(_btnUpdate);
 	_hlBtns.appendSpacer();
 
+	_report.append(_btnReport, td::HAlignment::Right);
 
 	//  _btnUpdate.setType(gui::Button::Type::Default);
 	_btnSave.setType(gui::Button::Type::Default);
@@ -36,12 +39,12 @@ ViewGradeExams::ViewGradeExams(td::INT4 SubjectID) : _db(dp::getMainDatabase())
 
 	SetCurrentSubject();
 	_cName.setAsReadOnly();  // postavlja se u funkciji setcurrentsubject
-
-	gc.appendRow(_lblActivityName);
-	gc.appendCol(_activityName);
-
-	gc.appendCol(_lblCName);
+	 
+	gc.appendRow(_lblCName);  
 	gc.appendCol(_cName);
+
+	gc.appendCol(_lblActivityName);
+	gc.appendCol(_activityName);
 
 	gc.appendRow(_lblName);
 	gc.appendCol(_name);
@@ -54,6 +57,8 @@ ViewGradeExams::ViewGradeExams(td::INT4 SubjectID) : _db(dp::getMainDatabase())
 
 	gc.appendCol(_lblGrade);
 	gc.appendCol(_grade);
+
+	gc.appendRow(_report, 0);
 
 
 	gc.appendRow(_table, 0);
@@ -311,7 +316,11 @@ bool ViewGradeExams::onClick(gui::Button* pBtn)
 	if (pBtn == &_btnSave) {
 		saveData();
 	}
-
+	if (pBtn == &_btnReport) {
+		gui::Image _imgExamGrades(":complex");
+		examGrades(&_imgExamGrades, _SubjectID);
+		// pada zbog pristupa nedozvoljenim lokacijama - PROBLEM
+	}
 	return false;
 }
 
