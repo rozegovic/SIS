@@ -179,8 +179,8 @@ bool ViewGradeExams::insertExamGrade()
 	dp::IStatementPtr pUpdateGrade(_db->createStatement("UPDATE OcjeneIspita SET Ocjena=? WHERE ID=?"));
 	dp::Params pParams2(pUpdateGrade->allocParams());
 	td::String grade;
-	pParams2 << dp::toNCh(grade, 100);
 	td::INT4 id;
+	pParams2 << dp::toNCh(grade, 100) << id;
 
 	dp::IDataSet* pDS = _table.getDataSet();
 	auto rowCnt = pDS->getNumberOfRows();
@@ -262,11 +262,18 @@ bool ViewGradeExams::onClick(gui::Button* pBtn)
 			return true;
 		//-------------uzimamo id reda kojeg je potrebno obrisati
 		td::INT4 itemid = getIDfromTable(iRow);
-
+		
 		_table.beginUpdate();
-		_table.removeRow(iRow);
+		auto& row = _table.getCurrentRow();
+		row[6].toZero();
+		_table.updateRow(iRow);
 		_table.endUpdate();
 		_itemsToDelete.push_back(itemid);
+
+		/*_table.beginUpdate();
+		_table.removeRow(iRow);
+		_table.endUpdate();
+		_itemsToDelete.push_back(itemid);*/
 
 		//--------------ako brisemo predmet koji se nije sacuvan u bazi, ali se nalazi u vektorima obrisati ga iz njih
 		_itemsToInsert.erase(std::remove(_itemsToInsert.begin(), _itemsToInsert.end(), itemid), _itemsToInsert.end());
