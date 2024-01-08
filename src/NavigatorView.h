@@ -38,19 +38,24 @@ protected:
     gui::Navigator _navigator;
     gui::Image _imgAttendance;
     gui::Image _imgSubject;
+    gui::Image _imgTimeSlot; ///
     SwitcherView _switcherView;
 public:
     NavigatorView(td::INT4 ViewID, td::INT4 subjectID)
         : _hl(2)
-        , _navigator(2, true)
+        , _navigator(3, true)
         , _imgAttendance(":imgSubject")
         , _imgSubject(":imgAttendance")
+        , _imgTimeSlot(":imgSubject")
+
+      //  , _imgSubject("C:/Users/xy/Work/Common/Icons/imgAttendance.JPG")
         , _switcherView(subjectID)
 
     {
         setMargins(0, 0, 0, 0);
         _navigator.setItem(0, &_imgAttendance, tr("Attendance"));
         _navigator.setItem(1, &_imgSubject, tr("Subject"));
+        _navigator.setItem(2, &_imgSubject, tr("Time_slot"));
         _hl.append(_navigator);
         _hl.append(_switcherView);
         setLayout(&_hl);

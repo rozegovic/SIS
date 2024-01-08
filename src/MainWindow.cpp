@@ -10,6 +10,7 @@
 #include "ViewActivity.h"
 #include "ViewEnroll.h"
 #include "DialogChooseSubject.h"
+#include "DialogChooseSubjectForTimeSlot.h"
 #include "ViewCurriculum.h"
 #include "DialogChooseAllSubjects.h"
 #include "ViewExamAttendance.h"
@@ -113,6 +114,25 @@ bool MainWindow::showSubjectChoose()
             if (btnID == gui::Dialog::Button::ID::OK) {
                 auto dlgCS = static_cast<DialogChooseSubject*> (pDlg);
                 showAttendanceView(dlgCS->getSubjectID());
+            }
+            else return true;
+        });
+
+    //pDlg->openModal(DlgID::Login, this);
+    return false;
+}
+
+bool MainWindow::showSubjectChooseForTimeSlot()                                         ///
+{
+
+    DialogChooseSubjectForTimeSlot* pDlg = new DialogChooseSubjectForTimeSlot(this);
+    pDlg->setTitle(tr("SubjectChoose"));
+    pDlg->openModal([this](gui::Dialog::Button::ID btn, gui::Dialog* pDlg)
+        {
+            auto btnID = pDlg->getClickedButtonID();
+            if (btnID == gui::Dialog::Button::ID::OK) {
+                auto dlgCS = static_cast<DialogChooseSubjectForTimeSlot*> (pDlg);
+                showAttendanceView(dlgCS->getSubjectID());                              ///
             }
             else return true;
         });
@@ -285,6 +305,8 @@ bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc)
         break; case 130: return showTicketView();
         break; case 140: return showMessagesView();
         break; case 150: return showSomeSubjectChoose();
+
+        break; case 160: return showSubjectChooseForTimeSlot();
 
 
 
