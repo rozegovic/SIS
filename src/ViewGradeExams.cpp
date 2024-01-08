@@ -39,8 +39,8 @@ ViewGradeExams::ViewGradeExams(td::INT4 SubjectID) : _db(dp::getMainDatabase())
 
 	SetCurrentSubject();
 	_cName.setAsReadOnly();  // postavlja se u funkciji setcurrentsubject
-	 
-	gc.appendRow(_lblCName);  
+
+	gc.appendRow(_lblCName);
 	gc.appendCol(_cName);
 
 	gc.appendCol(_lblActivityName);
@@ -263,7 +263,7 @@ bool ViewGradeExams::onClick(gui::Button* pBtn)
 	{
 
 
-		
+
 		int iRow = _table.getFirstSelectedRow();
 		if (iRow < 0)
 			return true;
@@ -271,8 +271,11 @@ bool ViewGradeExams::onClick(gui::Button* pBtn)
 		td::INT4 itemid = getIDfromTable(iRow);
 
 		_table.beginUpdate();
-		_table.removeRow(iRow);
+		auto& row = _table.getCurrentRow();
+		row[6].toZero();
+	//	_table.updateRow(iRow);
 		_table.endUpdate();
+
 		_itemsToDelete.push_back(itemid);
 
 		//--------------ako brisemo predmet koji se nije sacuvan u bazi, ali se nalazi u vektorima obrisati ga iz njih
