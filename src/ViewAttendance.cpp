@@ -3,6 +3,15 @@
 #include "SendMessage.h"
 #include <iostream>
 #include <math.h>
+#include "ReportAttData.h"
+#include <rpt/IViewer.h>
+#include <dp/IDataSetDelegate.h>
+#include <gui/ContextMenu.h>
+#include <dp/IDatabase.h>
+#include <dp/IDataSet.h>
+#include <mu/IAppSettings.h>
+#include <gui/Image.h>
+#include <gui/Frame.h>
 
 ViewAttendance::ViewAttendance(td::INT4 SubjectID):
 _LblSubjName(tr("AttSubj")),
@@ -12,11 +21,13 @@ _LblTime(tr("AttTime"))
 , _btnAdd(tr("add"), tr("AddTT"))
 , _btnUpdate(tr("Update"), tr("UpdateTT"))
 , _btnDelete(tr("Delete"), tr("DeleteTT"))
+,_btnReport(tr("AttReport"), tr("AttRepTT"))
 //,_btnSave(tr("Save"), tr("SaveTT"))
 , _type(td::int4)
-, _hlBtnsDB(5)
+, _hlBtnsDB(6)
 ,_gl(6, 2)
 ,_SubjectID(SubjectID)
+,_imgClassAtt(":complex")
 {
     
     
@@ -26,13 +37,15 @@ _LblTime(tr("AttTime"))
  //   _hlBtnsDB.append(_btnSave);
     _hlBtnsDB.append(_btnAdd);
     _hlBtnsDB.appendSpacer();
+    _hlBtnsDB.append(_btnReport);
    
     
     _btnUpdate.setType(gui::Button::Type::Default);
     //_btnSave.setType(gui::Button::Type::Default);
     _btnDelete.setType(gui::Button::Type::Destructive);
     _btnAdd.setType(gui::Button::Type::Constructive);
-
+    _btnReport.setType(gui::Button::Type::Normal);
+    
     SetCurrentSubject();
     _Subject.setAsReadOnly();
     
@@ -245,6 +258,10 @@ bool ViewAttendance::onClick(gui::Button* pBtn)
             SendMsg(1);
         return true;
     }
+    if(pBtn == &_btnReport){
+        AttendanceReport(&_imgClassAtt);
+        return true;
+    }
   /*  if(pBtn == &_btnSave){
         saveData();
     }*/
@@ -321,4 +338,71 @@ bool ViewAttendance::CheckTime(){
     if(currDate == LastMsgDate && std::fabs((LastMsgTime.getMinute() - currTime .getMinute())) <= 1)
         return false;
     return true;
+}
+void ViewAttendance::AttendanceReport(const gui::Image* pImage){
+    
+    dp::IDatabase* pDB = dp::getMainDatabase();
+
+    //#ifdef REPTEST
+    DocumentData docData(_SubjectID);
+    CompanyData companyData;
+    ObjectData objectData;
+
+   // rpt::ReportData repData(20, docData, companyData, objectData, pDB, mu::getAppSettings()->getTranslationExtension().c_str());
+
+    //rpt::ReportData::iterator it(repData.begin());
+    
+    std::vector<td::Date> datumiTermina;
+    std::vector<td::Time> vremenaTermina;
+    td::Date tempD;
+    td::Time tempT;
+    
+    dp::IDataSet* pDP(pDB->createDataSet("select Datum, Vrijeme from Termini"));
+    dp::DSColumns cols(pDP->allocBindColumns(2));
+    
+    cols << "Datum" << tempD << "Vrijeme" << tempT;
+    if (!pDP->execute())//sto ovdje nece ne znam...
+    {
+        return;
+    }
+    while (pDP->moveNext()){
+        datumiTermina.push_back(tempD);
+        vremenaTermina.push_back(tempT);
+    }
+    rpt::ReportData repData(1, docData, companyData, objectData, pDB, mu::getAppSettings()->getTranslationExtension().c_str());
+
+    rpt::ReportData::iterator it(repData.begin());
+    dp::IDataSet* pRep(pDB->createDataSet("select a.Ime, a.Prezime FROM Korisnici a, Prisustvo b, Termini c WHERE b.ID_Studenta = a.ID AND b.ID_termina = c.ID and c.Datum = ? and c.Vrijeme = ?"));
+    dp::DSColumns colsRep(pRep->allocBindColumns(2));
+    colsRep << "Ime" << td::string8 << "Prezime" << td::string8;
+    it << rpt::ContainerType::CNT_Body << pRep;
+    dp::Params pars = pRep->allocParams();
+    pars << tempD << tempT;
+    //for (int i = 0; i < datumiTermina.size(); i++){
+        tempD = datumiTermina.at(0);
+        tempT =  vremenaTermina.at(0);
+        
+        if(!pRep->execute()){
+            return;
+        }
+        size_t nRows = pRep->getNumberOfRows();
+        if (nRows == 0)
+        {
+            //niko nije prijavljen, smislit sta treba radit
+            //return;
+        }
+        //it << rpt::ContainerType::CNT_Body << pRep;
+        //++it;
+   // }
+    td::String configName("ClassAttRep");
+
+    rpt::IViewer* pRepView = rpt::IViewer::create(configName, repData);
+    if (pRepView)
+    {
+        pRepView->show(gui::tr("ClassAttRep"), pImage);
+
+    }
+    
+
+    
 }

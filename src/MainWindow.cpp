@@ -21,6 +21,7 @@
 #include "DialogCurriculum.h"
 #include "ViewMessages.h"
 #include "ViewGradeExams.h"
+#include "ViewAttendance.h"
 
 #include <rpt/IResources.h>
 #include "NavigatorViewActivity.h"
@@ -297,7 +298,7 @@ bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc)
         break; case 50: return showAllSubjectChoose();
         break; case 60: return showSubjectChooseActivty();
         break; case 70: return showEnrollView();
-        break; case 80: return showSubjectChoose();
+       // break; case 80: return showSubjectChoose();
         break; case 90: return showCurriculum();
         break; case 100: showMySubjectChoose(); return true;
         break; case 110: return showExamSignUpView();
@@ -305,8 +306,9 @@ bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc)
         break; case 130: return showTicketView();
         break; case 140: return showMessagesView();
         break; case 150: return showSomeSubjectChoose();
-
         break; case 160: return showSubjectChooseForTimeSlot();
+
+        //break; case 160: return AttendanceReport(&_imgAttendance);
 
 
 
@@ -316,7 +318,11 @@ bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc)
         }
 
     }
-
+    if (menuID == 20 && firstSubMenuID == 30 && lastSubMenuID == 30){
+        switch (actionID){
+                break; case 80: return showSubjectChoose();
+        }
+    }
 
 
     //ovo neka ostane, ako smo zaboravili pozvati menu opciju iskocice nam ovo
