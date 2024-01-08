@@ -278,7 +278,7 @@ bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc)
         break; case 50: return showAllSubjectChoose();
         break; case 60: return showSubjectChooseActivty();
         break; case 70: return showEnrollView();
-        break; case 80: return showSubjectChoose();
+       // break; case 80: return showSubjectChoose();
         break; case 90: return showCurriculum();
         break; case 100: showMySubjectChoose(); return true;
         break; case 110: return showExamSignUpView();
@@ -295,7 +295,11 @@ bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc)
         }
 
     }
-
+    if (menuID == 20 && firstSubMenuID == 30 && lastSubMenuID == 30){
+        switch (actionID){
+                break; case 80: return showSubjectChoose();
+        }
+    }
 
 
     //ovo neka ostane, ako smo zaboravili pozvati menu opciju iskocice nam ovo
