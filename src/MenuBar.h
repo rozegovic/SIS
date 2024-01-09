@@ -31,7 +31,14 @@ public:
         items[4].initAsActionItem(tr("viewTStaff"), 50);
         items[5].initAsActionItem(tr("viewActivity"), 60);
         items[6].initAsActionItem(tr("viewEnroll"), 70);
-        items[7].initAsActionItem(tr("viewAttendance"), 80);
+        //items[7].initAsActionItem(tr("viewAttendance"), 80);
+        items[7].initAsSubMenu(30, tr("viewAttendance"), 2);
+        {
+            auto& items1 = items[7].getItems();
+            items1[0].initAsActionItem(tr("viewAttendance"), 80);
+            items1[1].initAsActionItem(tr("viewTimeSlot"), 160);   //dodati u prevod
+        }
+            
         items[8].initAsActionItem(tr("viewCurriculum"), 90);
         items[9].initAsActionItem(tr("viewExamAtt"), 100);
         items[10].initAsActionItem(tr("viewExamSignUp"), 110);
@@ -40,6 +47,7 @@ public:
         items[13].initAsActionItem(tr("viewMessages"), 140);
         items[14].initAsActionItem(tr("viewExamGrade"), 150);
         items[15].initAsActionItem(tr("viewUpload"), 160);
+      //  items[16].initAsActionItem(tr("viewAttRep"), 160);
 
     }
    
