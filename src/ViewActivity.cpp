@@ -269,7 +269,7 @@ void ViewActivity::SetCurrentSubject() {
             procenat = row[3].dec2Val(); 
             nameA = row[1]; 
             opisA = row[4]; 
-            tipP = row[5].i4Val();
+            tipP = row[6].i4Val();
 
             if (!pChangeCourse->execute())
             {
@@ -285,7 +285,7 @@ void ViewActivity::SetCurrentSubject() {
         dp::Params parDS(pInsStat->allocParams());
         td::INT4 idA, idP, tipP;
         td::Decimal2 procenat;
-        td::String nameA, opisA, nameP;
+        td::String nameA, opisA;
 
         parDS << idA << idP << procenat << dp::toNCh(nameA, 30) << dp::toNCh(opisA, 30) << tipP;
 
@@ -302,7 +302,7 @@ void ViewActivity::SetCurrentSubject() {
             procenat = row[3].dec2Val(); 
             nameA = row[1]; 
             opisA = row[4]; 
-            tipP = row[5].i4Val(); 
+            tipP = row[6].i4Val(); 
 
             if (!pInsStat->execute()) 
                 return false;
