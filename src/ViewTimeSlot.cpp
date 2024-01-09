@@ -107,15 +107,30 @@ bool ViewTimeSlot::IsEnrolled(td::INT4 ID_stud, td::INT4 ID_term, td::INT4 ID_Pr
 }
 
 
-bool ViewTimeSlot::saveData1() { //upis
- //   
+bool ViewTimeSlot::saveData1(td::INT4 ID_stud, td::INT4 ID_term, td::INT4 ID_Pred) { //upis
+  //  td::INT4 _TerminID = getCurrentTerminID();
+
+    dp::IStatementPtr pInsStat(dp::getMainDatabase()->createStatement("INSERT INTO TerminiStudenti (ID_studenta,ID_termina,TipPredavanjaID) VALUES(ID_stud,ID_term,ID_Pred)"));
+   /* dp::Params parDS(pInsStat->allocParams());
+    td::INT4 sID, tID, pID;
+    parDS << sID<<tID << pID;
+  //   tID = _TerminID;
+    td::INT4 curRow = _pDS->getCurrentRowNo();
+    auto row = _pDS->getRow(curRow);
+    sID = row[0].i4Val();
+    tID = row[1].i4Val();
+    pID = row[2].i4Val();*/
+    if (!pInsStat->execute())
+        return false;
 
     return true;
 }
 
-bool ViewTimeSlot::saveData2() { //ispis
+bool ViewTimeSlot::saveData2() { //ispis 
     //   
-
+    dp::IStatementPtr pInsStat(dp::getMainDatabase()->createStatement("DELETE FROM TerminiStudenti (ID_studenta,ID_termina,TipPredavanjaID) VALUES(ID_stud,ID_term,ID_Pred)"));
+    if (!pInsStat->execute())
+        return false;
     return true;
 }
 
@@ -138,13 +153,14 @@ bool ViewTimeSlot::onClick(gui::Button* pBtn)
     if (pBtn == &_btnEnroll)
     {
         if (!IsEnrolled(ID_stud, ID_term, ID_Pred)) {
-        saveData1();
+        saveData1(ID_stud, ID_term, ID_Pred);
         _table.reload();
         _table.selectRow(0, true);
         return true;
         }
         else {
-
+           showAlert(tr("alert"), tr("alertTS"));  //dodati u prevod
+           return false;
         }
 
     }

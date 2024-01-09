@@ -58,7 +58,7 @@ protected:
     void populateDataForTable();
     void getSubjectName();
     bool IsEnrolled(td::INT4 ID_stud, td::INT4 ID_term, td::INT4 ID_Pred);
-    bool saveData1();
+    bool saveData1(td::INT4 ID_stud, td::INT4 ID_term, td::INT4 ID_Pred);
     bool saveData2();
     virtual bool onClick(gui::Button* pBtn);
   //  virtual bool onChangedSelection(gui::TableEdit* pTE);
