@@ -32,9 +32,8 @@ ViewTimeSlot::ViewTimeSlot(td::INT4 SubjectID) :
     gc.appendRow(_hlBtnsDB, 0);
     gui::View::setLayout(&_gl);
     getSubjectName();
-    td::INT4 ID_stud, ID_term, ID_Pred;
-    ID_Pred = 0; ID_term = 0; ID_stud = 0;
-    IsEnrolled( ID_stud, ID_term, ID_Pred);
+   
+ 
     _db = dp::getMainDatabase();
 
     populateDataForTable();
@@ -51,11 +50,11 @@ void ViewTimeSlot::initTable()
 }
 void ViewTimeSlot::populateDataForTable()
 {
-    _pDS = dp::getMainDatabase()->createDataSet("SELECT b.Naziv AS tip, a.Vrijeme AS time, a.Datum AS date from Termini a, TipPredavanja b WHERE b.ID = a.TipPredavanjaID and a.Predmet_ID=? ", dp::IDataSet::Execution::EX_MULT);
+    _pDS = dp::getMainDatabase()->createDataSet("SELECT b.Naziv AS tip, a.Vrijeme AS time, a.Datum AS date,a.TipPredavanjaID as idPred, a.ID as idTerm from Termini a, TipPredavanja b WHERE b.ID = a.TipPredavanjaID and a.TipPredavanjaID!=1  and a.Predmet_ID=?", dp::IDataSet::Execution::EX_MULT);
     dp::Params pParams(_pDS->allocParams());
     pParams << _SubjectID;
-    dp::DSColumns cols(_pDS->allocBindColumns(3));
-    cols << "tip" << td::string8 << "time" << td::int4 << "date" << td::int4;
+    dp::DSColumns cols(_pDS->allocBindColumns(5));
+    cols << "tip" << td::string8 << "time" << td::time << "date" << td::date<<"idPred"<<td::int4<<"idTerm"<<td::int4;
 
     if (!_pDS->execute())
     {
@@ -85,22 +84,22 @@ void ViewTimeSlot::getSubjectName() {
     }
 }
 
-bool ViewTimeSlot::IsEnrolled(td::INT4 ID_stud, td::INT4 ID_term, td::INT4 ID_Pred) {
+bool ViewTimeSlot::IsEnrolled(td::INT4 ID_stud ,td::INT4 ID_Pred) {
     auto pDB = dp::getMainDatabase();
-    _pDS = pDB->createDataSet("SELECT ID_Studenta as IDs, ID_Termina as IDt, TipPredavanjaID as IDp  FROM TerminiStudenti", dp::IDataSet::Execution::EX_MULT);
-    dp::DSColumns cols(_pDS->allocBindColumns(3));
-    cols << "IDs" << td::int4 << "IDt" << td::int4 << "IDp" << td::int4;
+    _pDSpos = pDB->createDataSet("SELECT ID_Studenta as IDs TipPredavanjaID as IDp  FROM TerminiStudenti", dp::IDataSet::Execution::EX_MULT);
+    dp::DSColumns cols(_pDS->allocBindColumns(2));
+    cols << "IDs" << td::int4  << "IDp" << td::int4;
 
-    if (!_pDS->execute())
+    if (!_pDSpos->execute())
     {
-        _pDS = nullptr;
+        _pDSpos = nullptr;
         return false;
     }
-    size_t nRows = _pDS->getNumberOfRows();
+    size_t nRows = _pDSpos->getNumberOfRows();
     for (size_t i = 0; i < nRows; ++i)
     {
-        auto row = _pDS->getRow(i);
-        if (row[0] == ID_stud && row[1] == ID_term && row[2] == ID_Pred)
+        auto row = _pDSpos->getRow(i);
+        if (row[0] == ID_stud && row[1] == ID_Pred)
             return true;
     }
     return false;
@@ -108,9 +107,25 @@ bool ViewTimeSlot::IsEnrolled(td::INT4 ID_stud, td::INT4 ID_term, td::INT4 ID_Pr
 
 
 bool ViewTimeSlot::saveData1() { //upis
- //   
+   dp::IStatementPtr pInsStat(dp::getMainDatabase()->createStatement("INSERT INTO TerminiStudenti (ID_Studenta,ID_Termina,TipPredavanjaID) VALUES(?,?,?)"));
+    dp::Params parDS(pInsStat->allocParams());
+    td::INT4 sID, tID,pID;
+    parDS << sID << tID<<pID;
+    sID = Globals::_currentUserID;
+    td::INT4 curRow = _pDS->getCurrentRowNo();
+    auto row = _pDS->getRow(curRow);
+    tID = row[4].i4Val();
+    pID = row[3].i4Val();
+    if (IsEnrolled(sID,pID) == true)
+    {
+        return false;
+    }
+    if (!pInsStat->execute())
+        return false;
 
     return true;
+
+ 
 }
 
 bool ViewTimeSlot::saveData2() { //ispis
@@ -121,31 +136,35 @@ bool ViewTimeSlot::saveData2() { //ispis
 
 bool ViewTimeSlot::onClick(gui::Button* pBtn)
 {//provjeru izvršiti
-    td::INT4 ID_stud, ID_term, ID_Pred; 
-    ID_stud = Globals::_currentUserID;
-    dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT a.ID AS ID_term, a.TipPredavanjaID AS ID_Pred FROM Termini a"
-        " WHERE a.ID = ? AND a.TipPredavanjaID = ?");
-    dp::Params parDS(pSelect->allocParams());
-    parDS << ID_term<< ID_Pred;
+  
 
     if (pBtn == &_btnReload)
     {
-        _table.reload();
-        _table.selectRow(0, true);
+      //  _table.reload();
+       // _table.selectRow(0, true);
   
         return true;
     }
     if (pBtn == &_btnEnroll)
     {
-        if (!IsEnrolled(ID_stud, ID_term, ID_Pred)) {
-        saveData1();
-        _table.reload();
-        _table.selectRow(0, true);
-        return true;
+        td::INT4 tID, pID,sID;
+        sID = Globals::_currentUserID;
+        td::INT4 curRow = _pDS->getCurrentRowNo();
+        auto row = _pDS->getRow(curRow);
+        tID = row[4].i4Val();
+        pID = row[3].i4Val();
+        if (IsEnrolled(sID, pID) == true)
+        {
+showAlert(tr("alert"), tr("alertPr"));
+            return true;
         }
-        else {
 
-        }
+        saveData1();
+      //  _table.reload();
+       // _table.selectRow(0, true);
+        return true;
+       
+        
 
     }
 

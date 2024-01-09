@@ -44,7 +44,7 @@ protected:
     gui::GridLayout _gl;
     dp::IDatabase* _db;
     dp::IDataSetPtr _pDS = nullptr;
-
+    dp::IDataSetPtr _pDSpos;
     td::INT4 _SubjectID;
 
     gui::TableEdit _table;
@@ -57,7 +57,7 @@ protected:
   //  virtual bool onClick(gui::Button* pBtn);
     void populateDataForTable();
     void getSubjectName();
-    bool IsEnrolled(td::INT4 ID_stud, td::INT4 ID_term, td::INT4 ID_Pred);
+    bool IsEnrolled(td::INT4 ID_stud, td::INT4 ID_Pred);
     bool saveData1();
     bool saveData2();
     virtual bool onClick(gui::Button* pBtn);
