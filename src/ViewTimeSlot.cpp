@@ -128,14 +128,16 @@ bool ViewTimeSlot::saveData1() { //upis
  
 }
 
-bool ViewTimeSlot::saveData2() { //ispis
+bool ViewTimeSlot::saveData2() { //ispis 
     //   
-
+  //  dp::IStatementPtr pInsStat(dp::getMainDatabase()->createStatement("DELETE FROM TerminiStudenti (ID_studenta,ID_termina,TipPredavanjaID) VALUES(ID_stud,ID_term,ID_Pred)"));
+   // if (!pInsStat->execute())
+    //    return false;
     return true;
 }
 
 bool ViewTimeSlot::onClick(gui::Button* pBtn)
-{//provjeru izvršiti
+{//provjeru izvrï¿½iti
   
 
     if (pBtn == &_btnReload)
