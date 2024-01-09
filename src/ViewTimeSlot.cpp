@@ -45,7 +45,7 @@ ViewTimeSlot::~ViewTimeSlot() {
 void ViewTimeSlot::initTable()
 {
     gui::Columns visCols(_table.allocBindColumns(3));
-    visCols << gui::ThSep::DoNotShowThSep << gui::Header(0, tr("Type")) << gui::Header(1, tr("Time")) << gui::Header(2, tr("Date")) ;
+    visCols << gui::ThSep::DoNotShowThSep << gui::Header(0, tr("Type")) << gui::Header(1, tr("Time")) << gui::Header(2, tr("Date"));
     _table.init(_pDS); 
 }
 void ViewTimeSlot::populateDataForTable()
@@ -87,13 +87,13 @@ void ViewTimeSlot::getSubjectName() {
 bool ViewTimeSlot::IsEnrolled(td::INT4 ID_stud ,td::INT4 ID_Pred) {
     auto pDB = dp::getMainDatabase();
     _pDSpos = pDB->createDataSet("SELECT ID_Studenta as IDs TipPredavanjaID as IDp  FROM TerminiStudenti", dp::IDataSet::Execution::EX_MULT);
-    dp::DSColumns cols(_pDS->allocBindColumns(2));
+    dp::DSColumns cols(_pDSpos->allocBindColumns(2));
     cols << "IDs" << td::int4  << "IDp" << td::int4;
 
     if (!_pDSpos->execute())
     {
         _pDSpos = nullptr;
-        return false;
+       return false;
     }
     size_t nRows = _pDSpos->getNumberOfRows();
     for (size_t i = 0; i < nRows; ++i)

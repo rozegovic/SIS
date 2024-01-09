@@ -53,7 +53,7 @@
 		<Res id="viewCourseEnroll" tr="Predmeti upis"/>
 		<Res id="viewMessages" tr="Obavještenja"/>
 		<Res id="Withdraw" tr="Ispiši"/>
-
+		<Res id="viewTimeSlot" tr="Prijava termina"/>
 		<Res id="ExamAttendanceRep" tr="Prijave na ispit"/>
 
 <Res id="Department" tr="Smjer"/>
