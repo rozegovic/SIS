@@ -153,9 +153,11 @@
                           <Res id="StatUser" tr="Korisnik:"/>
                          <Res id="StatRole" tr="Uloga:"/>
                          <Res id="Subject" tr="Predmet"/>
+						 <Res id="tablePresent" tr="Prisutni za ovaj termin:"/>
                             <Res id="alertPr" tr="Vec ste unijeli prisustvo ovog studenta za ovaj termin"/>
 							<Res id="tablePresent" tr="Prisutni za ovaj termin:"/>
 							<Res id="alertNoTerm" tr="Niste odabrali ni jedan termin"/>
+							 <Res id="alertCmb" tr="Niste odabrali ni jedan termin"/>
 		
 		
 		
@@ -229,11 +231,21 @@
 		
 		<Res id="Options" tr="Opcije"/>
 		<!--Login-->
+	<Res id="Login" tr="Prijava"/>
+		<Res id="username" tr="Korisničko ime:"/>
+		<Res id="password" tr="Sifra:"/>
         <Res id = "WrongPass" tr = "Pogresna sifra!"/>
 		<Res id = "EnterCorrPass" tr = "Ukucajte ispravnu sifru"/>
 		<!--Logout-->
         <Res id = "logout" tr = "Odjava"/>
 		<Res id = "App" tr = "Aplikacija"/>
+	<Res id="viewAttendance" tr="Prisustvo"/>
+	<Res id="NumSeats" tr="Broj mjesta"/>
+	<Res id="Location" tr="Lokacija"/>
+	<Res id="Type" tr="Tip"/>
+	<Res id="Update" tr="Ažuriraj"/>
+	<Res id="Options" tr="Opcije"/>
+	<Res id="Subject" tr="Predmet"/>
 		<Res id="namee:" tr="Ime:"/>
 		<Res id="surname:" tr="Prezime:"/>
 		<Res id="indeksUser:" tr="Indeks:"/>
