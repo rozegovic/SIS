@@ -47,7 +47,6 @@ public:
 public:
     void showLogin();
     bool showSubjectChoose();
-    bool showSubjectChooseForTimeSlot();
     bool showMySubjectChoose();
     bool showAllSubjectChoose();
     bool showSubjectChooseActivty();
@@ -66,9 +65,6 @@ protected:
     bool showActivityView(td::INT4 SubjectID);
     bool showEnrollView();
     bool showAttendanceView(td::INT4 SubjectID);
-    bool showTimeSlotView(td::INT4 SubjectID);
-    bool showCurriculumView();
-
     bool showCurriculumView(td::INT4 _departmentID, td::INT4 _semesterID);
     bool showExamSignUpView();
     bool showTicketView();

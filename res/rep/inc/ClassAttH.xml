@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<DocHeader layout="vertical" designWidth="170" height="14" hAlign="center" vAlign="center" font="DocuDesc">	
-    <Date dateFmt="DateOwnShortDM" lbl="Date" name="date"/>
-    <Time timeFmt="TimeOwnShortHMM" lbl="Time" name="time">
-	
-</DocHeader>

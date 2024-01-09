@@ -10,4 +10,3 @@
 
 void examAttendance(const gui::Image*, td::INT4 SubjectID);
 void examGrades(const gui::Image*, td::INT4 SubjectID); 
-//bool AttendanceReport(const gui::Image* pImage);

@@ -10,7 +10,6 @@
 #include "ViewActivity.h"
 #include "ViewEnroll.h"
 #include "DialogChooseSubject.h"
-#include "DialogChooseSubjectForTimeSlot.h"
 #include "ViewCurriculum.h"
 #include "DialogChooseAllSubjects.h"
 #include "Reports.h"
@@ -22,7 +21,6 @@
 #include "ViewMessages.h"
 #include "ViewGradeExams.h"
 #include "upload.h"
-#include "ViewAttendance.h"
 
 #include <rpt/IResources.h>
 #include "NavigatorViewActivity.h"
@@ -122,23 +120,6 @@ bool MainWindow::showSubjectChoose()
         });
 
     //pDlg->openModal(DlgID::Login, this);
-    return false;
-}
-
-bool MainWindow::showSubjectChooseForTimeSlot()                                         ///
-{
-
-    DialogChooseSubjectForTimeSlot* pDlg = new DialogChooseSubjectForTimeSlot(this);
-    pDlg->setTitle(tr("SubjectChoose"));
-    pDlg->openModal([this](gui::Dialog::Button::ID btn, gui::Dialog* pDlg)
-        {
-            auto btnID = pDlg->getClickedButtonID();
-            if (btnID == gui::Dialog::Button::ID::OK) {
-                auto dlgCS = static_cast<DialogChooseSubjectForTimeSlot*> (pDlg);
-                showTimeSlotView(dlgCS->getSubjectID());                              ///
-            }
-            else return true;
-        });
     return false;
 }
 
@@ -300,7 +281,7 @@ bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc)
         break; case 50: return showAllSubjectChoose();
         break; case 60: return showSubjectChooseActivty();
         break; case 70: return showEnrollView();
-       // break; case 80: return showSubjectChoose();
+        break; case 80: return showSubjectChoose();
         break; case 90: return showCurriculum();
         break; case 100: showMySubjectChoose(); return true;
         break; case 110: return showExamSignUpView();
@@ -309,24 +290,16 @@ bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc)
         break; case 140: return showMessagesView();
         break; case 150: return showSomeSubjectChoose();
         break; case 160: return showUpload(); 
-        break; case 170: return showSubjectChooseForTimeSlot();
 
-        //break; case 160: return AttendanceReport(&_imgAttendance);
+
+
+                      
 
         break; default: break;
         }
 
     }
-    if (menuID == 20 && firstSubMenuID == 30 && lastSubMenuID == 30){
-        switch (actionID){
-                break; case 80: return showSubjectChoose();
-        }
-    }
-    if (menuID == 20 && firstSubMenuID == 30 && lastSubMenuID == 30) {        ///
-        switch (actionID) {
-        break; case 170: return showSubjectChooseForTimeSlot();
-        }
-    }
+
 
 
     //ovo neka ostane, ako smo zaboravili pozvati menu opciju iskocice nam ovo
@@ -468,42 +441,6 @@ bool MainWindow::showAttendanceView(td::INT4 SubjectID)
 
     NavigatorView* pView = new NavigatorView(ViewID, SubjectID);
     td::String a = (tr("viewAttendance"));
-    dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select a.Naziv_Predmeta AS Naziv FROM Predmet a WHERE a.ID_Predmeta = ?");
-    dp::Params pParams(pSelect->allocParams());
-    pParams << SubjectID;
-    dp::Columns pCols = pSelect->allocBindColumns(1);
-    td::String name;
-    pCols << "Naziv" << name;
-    if (!pSelect->execute())
-        return false;
-
-    if (!pSelect->moveNext())
-        return false;
-    a += " - ";
-    a += name;
-
-    _mainView.addView(pView, a, &_imgAttendance);
-    return true;
-}
-
-
-bool MainWindow::showTimeSlotView(td::INT4 SubjectID)
-{
-    td::INT4 ViewID = (View_TIMESLOT << 24) | SubjectID;
-    if (focusOnViewPositionWithID(ViewID))
-        return true;
-
-    auto x = Globals::_currentUserRole;
-    if (x != 5)
-    {
-        showAlert(tr("AccessNotAllowed"), "");
-        return true;
-    }
-    //showSubjectChooseForTimeSlot();
-
-   // NavigatorView* pView = new NavigatorView(ViewID, SubjectID);
-    ViewTimeSlot* pView = new ViewTimeSlot(SubjectID);              ///
-    td::String a = (tr("viewTimeSlot"));
     dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select a.Naziv_Predmeta AS Naziv FROM Predmet a WHERE a.ID_Predmeta = ?");
     dp::Params pParams(pSelect->allocParams());
     pParams << SubjectID;

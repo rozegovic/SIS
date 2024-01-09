@@ -79,8 +79,8 @@ protected:
    bool onChangedSelection(gui::DBComboBox* pCmb) override;
     void initTableEnrolledStudents();
     void initTableStudents();
-    bool onClick(gui::Button* pBtn) override;
-    bool onAnswer(td::UINT4 questionID, gui::Alert::Answer answer) override;
+    bool onClick(gui::Button* pBtn);
+    bool onAnswer(td::UINT4 questionID, gui::Alert::Answer answer);
     void populateDSRow(dp::IDataSet::Row& row);
     bool saveEnrolls();
     void UpdateEnrollDataSet();

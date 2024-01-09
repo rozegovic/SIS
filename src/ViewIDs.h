@@ -8,8 +8,7 @@
 #define View_TSTAFF 104u
 #define View_ACTIVITY 105u
 #define View_ENROLL 105u
-#define View_ATTENDANCE 106u       
-#define View_TIMESLOT 114u
+#define View_ATTENDANCE 106u
 #define View_CURRICULUM 107u
 #define View_EXAMATTENDANCE 108u
 #define View_EXAMSIGNUPS 109u
