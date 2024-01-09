@@ -382,9 +382,9 @@ void ViewAttendance::AttendanceReport(const gui::Image* pImage){
     ++it;*/
     
     {
-        dp::IDataSet* pRep(pDB->createDataSet("select a.Ime, a.Prezime, c.Datum FROM Korisnici a, Prisustvo b, Termini c WHERE b.ID_Studenta = a.ID AND b.ID_termina = c.ID"));
-           dp::DSColumns colsRep(pRep->allocBindColumns(3));
-        colsRep << "Ime" << td::string8 << "Prezime" << td::string8 <<"Datum" << td::date;
+        dp::IDataSet* pRep(pDB->createDataSet("select a.Ime, a.Prezime, c.Datum as Datum, c.Vrijeme as Vrijeme FROM Korisnici a, Prisustvo b, Termini c WHERE b.ID_Studenta = a.ID AND b.ID_termina = c.ID"));
+           dp::DSColumns colsRep(pRep->allocBindColumns(4));
+        colsRep << "Ime" << td::string8 << "Prezime" << td::string8 <<"Datum" << td::date <<"Vrijeme" << td::time;
            it << rpt::ContainerType::CNT_Body << pRep;
            
                
@@ -399,7 +399,7 @@ void ViewAttendance::AttendanceReport(const gui::Image* pImage){
                }
 
     }
-    ++it;
+   ++it;
     it.nextLayout();
     {
         dp::IDataSet* pRep(pDB->createDataSet("SELECT a.Ime, a.Prezime FROM Korisnici a LEFT JOIN Prisustvo b ON a.ID =  b.ID_studenta WHERE b.ID_studenta IS NULL AND a.PozicijaID = 5"));
