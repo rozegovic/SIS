@@ -32,19 +32,14 @@ private:
 protected:
     gui::Label _LblSubjName;
     gui::LineEdit _Subject;
-    gui::Label _LblDate;
-    gui::DateEdit _date;
-
-    gui::Label _LblTime;
-    gui::TimeEdit _time;
 
     gui::Label _LblType;
     gui::DBComboBox _type;
 
     gui::HorizontalLayout _hlBtnsDB;
-    gui::Button _btnAdd;
-    gui::Button _btnDelete;
-    // gui::Button _btnSave;
+    gui::Button _btnEnroll;
+    gui::Button _btnDEnroll;
+    gui::Button _btnReload;
 
     gui::GridLayout _gl;
     dp::IDataSetPtr _pDS;
@@ -55,4 +50,5 @@ protected:
 public:
     ViewTimeSlot(td::INT4 SubjectID);
 protected:
+
 };

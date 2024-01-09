@@ -4,31 +4,30 @@
 #include <td/StringConverter.h>
 
 ViewTimeSlot::ViewTimeSlot(td::INT4 SubjectID) :
-    _LblSubjName(tr("AttSubj")),
-    _LblDate(tr("AttDate")),
-    _LblTime(tr("AttTime"))
-    , _LblType(tr("AttType"))
-    , _btnAdd(tr("add"), tr("AddTT"))
-    , _btnDelete(tr("Delete"), tr("DeleteTT"))
-    //,_btnSave(tr("Save"), tr("SaveTT"))
+    _LblSubjName(tr("AttSubj"))
+
+    , _LblType(tr("AttType")),
+    _hlBtnsDB(5)
+    , _btnDEnroll(tr("DEnroll"))
+    , _btnReload(tr("Reload"))
+    , _btnEnroll(tr("Enroll"))
+    
     , _type(td::int4)
-    , _hlBtnsDB(5)
-    , _gl(6, 2)
+    , _gl(4, 4)
     , _SubjectID(SubjectID)
 {
 
 
     _hlBtnsDB.appendSpacer();
-    _hlBtnsDB.append(_btnDelete);
-    //   _hlBtnsDB.append(_btnSave);
-    _hlBtnsDB.append(_btnAdd);
+
+    _hlBtnsDB.append(_btnDEnroll);
+    _hlBtnsDB.append(_btnReload);
+    _hlBtnsDB.append(_btnEnroll);
     _hlBtnsDB.appendSpacer();
 
-    //_btnSave.setType(gui::Button::Type::Default);
-    _btnDelete.setType(gui::Button::Type::Destructive);
-    _btnAdd.setType(gui::Button::Type::Constructive);
+    _btnDEnroll.setType(gui::Button::Type::Default);
+    _btnEnroll.setType(gui::Button::Type::Constructive);
 
-   // SetCurrentSubject();
     _Subject.setAsReadOnly();
 
     gui::GridComposer gc(_gl);
@@ -37,12 +36,6 @@ ViewTimeSlot::ViewTimeSlot(td::INT4 SubjectID) :
     gc.appendRow(_LblSubjName);
     gc.appendCol(_Subject);
 
-    gc.appendRow(_LblDate);
-    gc.appendCol(_date);
-
-    gc.appendRow(_LblTime);
-    gc.appendCol(_time);
-
     gc.appendRow(_LblType);
     gc.appendCol(_type);
 
@@ -50,6 +43,7 @@ ViewTimeSlot::ViewTimeSlot(td::INT4 SubjectID) :
     gc.appendRow(_hlBtnsDB, 0);
 
     gui::View::setLayout(&_gl);
+
   //  populateRoleCombo(_type);
   //  populateData();
 
