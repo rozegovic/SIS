@@ -47,7 +47,7 @@ public:
         items[13].initAsActionItem(tr("viewMessages"), 140);
         items[14].initAsActionItem(tr("viewExamGrade"), 150);
         items[15].initAsActionItem(tr("viewUpload"), 160);
-        items[16].initAsActionItem(tr("viewAttRep"), 160);
+      //  items[16].initAsActionItem(tr("viewAttRep"), 160);
 
     }
    
