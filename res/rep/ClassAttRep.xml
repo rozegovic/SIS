@@ -16,7 +16,8 @@
 				<Numeric type="int4" showThSep="false" hideZero="false" hAlign="left" width="10" name="#Pos"/>
 				<Text hAlign="left"  width="20" name="Ime"/>
 				<Text hAlign="left"  width="50" name="Prezime"/>
-                <Date dateFmt="DateOwnShortDM" lbl="Date" name="date"/>
+                <Date dateFmt="DateOwnShortDM" width="20" hAlign="left" name="Datum"/>
+				<Time timeFmt="TimeWinShort" width="20" hAlign="left" name="Vrijeme"/>
                 
 			</Row>
 		</Body>
