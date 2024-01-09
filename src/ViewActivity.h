@@ -37,7 +37,7 @@ protected:
     //gui::Label _lblIDP; 
     td::INT4 _idP;      //id predmeta 
     gui::Label _lblType;
-    gui::DBComboBox _type;     //skraceno ime predmeta
+    gui::DBComboBox _type;     //Vrsta aktivnosti
     gui::Label _lblCName;
     gui::LineEdit _cName;       //ime predmeta
     gui::Label _lblDes;
