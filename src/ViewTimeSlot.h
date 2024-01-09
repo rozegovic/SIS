@@ -33,8 +33,8 @@ protected:
     gui::Label _LblSubjName;
     gui::LineEdit _Subject;
 
-    gui::Label _LblType;
-    gui::DBComboBox _type;
+   // gui::Label _LblType;
+   // gui::DBComboBox _type;
 
     gui::HorizontalLayout _hlBtnsDB;
     gui::Button _btnEnroll;
@@ -42,13 +42,21 @@ protected:
     gui::Button _btnReload;
 
     gui::GridLayout _gl;
-    dp::IDataSetPtr _pDS;
+    dp::IDatabase* _db;
+    dp::IDataSetPtr _pDS = nullptr;
 
     td::INT4 _SubjectID;
 
     gui::TableEdit _table;
 public:
     ViewTimeSlot(td::INT4 SubjectID);
+    ~ViewTimeSlot();
+
 protected:
+    void initTable();
+  //  virtual bool onClick(gui::Button* pBtn);
+    void populateDataForTable();
+    void getSubjectName();
+  //  virtual bool onChangedSelection(gui::TableEdit* pTE);
 
 };
