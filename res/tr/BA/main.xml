@@ -35,6 +35,9 @@
 
         <Res id = "alertAttTxt" tr = "Već postoji termin za odabrani datum i vrijeme"/>
 		
+        <Res id = "AttReport" tr = "Izvještaj"/>
+        
+        <Res id = "AttRepTT" tr = "Izvještaj o prijavama studenata na termine nastave"/>
 		
 		<Res id="SubjectChoose" tr="Izbor predmeta"/>
 		
