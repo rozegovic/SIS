@@ -93,6 +93,31 @@ bool ViewTicket::onClick(gui::Button* pBtn)
 		return true;
 	}
 
+	if (pBtn == &_btnOpen)
+	{
+		auto rowindex = _tableTickets.getFirstSelectedRow();
+		auto pomDS = _tableTickets.getDataSet();
+		auto& row = pomDS->getRow(rowindex);
+
+		td::String tipKarte = row[0].getConstStr();
+		td::String naslov = row[1].getConstStr();
+		gui::TextEdit body;
+		body.setValue(row[3].getConstStr());
+		td::INT4 tableID = row[4].i4Val();
+		td::String indeks = row[5].getConstStr();
+
+		gui::Window* pParentWnd = getParentWindow();
+		auto pWnd = new RequestUpdateWindow(pParentWnd, tipKarte, naslov, body, tableID, indeks);
+		pWnd->keepOnTopOfParent();
+		pWnd->open();
+
+		UpdateTable();
+
+		_tableTickets.reload();
+
+		return true;
+	}
+
 	return false;
 }
 
