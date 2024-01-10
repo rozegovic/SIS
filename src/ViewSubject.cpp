@@ -88,12 +88,16 @@ void ViewSubject::populateDateCombo(gui::DBComboBox& combo)
 	}
 	
 	if (vekt.size() == 0)
-		return;
-	combo.selectIndex(0);
+        return;
+    //combo.selectIndex(0);
 	populateTimeCombo(_time, vekt.at(0));
 }
 void ViewSubject::populateTimeCombo(gui::DBComboBox& combo, td::Date date)
 {
+	if (_date.getSelectedIndex()<0)
+	{
+		return;
+}
 	//td::INT4 indeks=_date.getSelectedIndex();
 	dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT ID, Vrijeme FROM Termini where Termini.Datum=?");
 	dp::Params pParams(pSelect->allocParams());
@@ -151,7 +155,7 @@ void ViewSubject::populateTablePresent()
 
 	if (_pDS2->getNumberOfRows())
 	{
-	//	_tablePresent.selectRow(0, true);
+		_tablePresent.selectRow(0, true);
 	}
 	
 }
@@ -208,7 +212,7 @@ bool ViewSubject::onClick(gui::Button* pBtn)
 		if (_pDS->getNumberOfRows() == 0)
 			return false;
 		if (_TerminID < 1)
-		{
+		{    
 			showAlert(tr("alert"), tr("alertNoTerm"));
 			return false;
 		}
@@ -216,6 +220,7 @@ bool ViewSubject::onClick(gui::Button* pBtn)
 		dp::IDataSet* pDS = _table.getDataSet();
 		auto& row = pDS->getRow(curRow);
 		td::INT4 curID = row[2].i4Val();
+		_TerminID = getCurrentTerminID();
 		if (doesIDexist(curID))
 		{
 			showAlert(tr("alert"), tr("alertPr"));
@@ -226,6 +231,7 @@ bool ViewSubject::onClick(gui::Button* pBtn)
 			return true;
 		}
 		saveData();
+		UpdatePresentDataSet();
 		if(curRow<_pDS->getNumberOfRows()-1)
 		curRow++;
 		
@@ -234,7 +240,7 @@ bool ViewSubject::onClick(gui::Button* pBtn)
 	//_tablePresent.clean();
 	//_pDS2 = nullptr;
 		//populateTablePresent();
-	//_tablePresent.reload();
+	
 		return true;
 	}
 
@@ -242,7 +248,11 @@ bool ViewSubject::onClick(gui::Button* pBtn)
 	{
 		if (_pDS->getNumberOfRows() == 0)
 			return false;
-		
+		if (_TerminID < 1)
+		{   
+			showAlert(tr("alert"), tr("alertCmb"));
+			return false;
+		}
 		td::INT4 curRow = _pDS->getCurrentRowNo();
 		dp::IDataSet* pDS = _table.getDataSet();
 		auto& row = pDS->getRow(curRow);
@@ -260,7 +270,7 @@ bool ViewSubject::onClick(gui::Button* pBtn)
 			while (pInsStat->moveNext());
 			tr.commit();
 		}
-		
+		UpdatePresentDataSet();
 		if (curRow < _pDS->getNumberOfRows()-1)
 		curRow++;
 		_table.selectRow(curRow, true);
@@ -268,7 +278,7 @@ bool ViewSubject::onClick(gui::Button* pBtn)
 	//_pDS2 = nullptr;
 	//_tablePresent.clean();
 	//populateTablePresent();
-	//_tablePresent.reload();
+	
 		return true;
 	}
 
@@ -280,16 +290,15 @@ bool ViewSubject::doesIDexist(td::INT4 ID)
 {
 	_TerminID = getCurrentTerminID();
 	auto pDB = dp::getMainDatabase();
-	_pDSPos = pDB->createDataSet("SELECT ID_studenta,ID_termina  FROM Prisustvo", dp::IDataSet::Execution::EX_MULT);
+	_pDSPos = pDB->createDataSet("SELECT ID_studenta, ID_termina  FROM Prisustvo", dp::IDataSet::Execution::EX_MULT);
 	dp::DSColumns cols(_pDSPos->allocBindColumns(2));
-	cols << "ID_studenta" << td::int4<<"ID_termina"<<td::int4;
+	cols << "ID_studenta" << td::int4<<"ID_termina" << td::int4;
 
 	if (!_pDSPos->execute())
 	{
 		_pDSPos = nullptr;
 		return false;
 	}
-	_TerminID = getCurrentTerminID();
 	size_t nRows = _pDSPos->getNumberOfRows();
 	for (size_t i = 0; i < nRows; ++i)
 	{
@@ -308,6 +317,14 @@ bool ViewSubject::onChangedSelection(gui::DBComboBox* pCB) {
 		td::Date dt;
 		dt.fromString(str);
 		populateTimeCombo(_time,dt);
+		UpdatePresentDataSet();
+
+	}
+	if (pCB == &_time)
+	{
+		UpdatePresentDataSet();
+	//	_tablePresent.clean();
+		return true;
 
 	}
 	return false;
@@ -338,3 +355,35 @@ td::INT4 ViewSubject::getCurrentTerminID()
 
 }
 
+void ViewSubject::UpdatePresentDataSet() {
+
+	
+	dp::IDataSetPtr pomDS = dp::getMainDatabase()->createDataSet("select Ime as Name, Prezime as Surname from Korisnici,Prisustvo where Korisnici.PozicijaID==5 and Korisnici.ID == Prisustvo.ID_studenta and Prisustvo.ID_termina=?", dp::IDataSet::Execution::EX_MULT);
+	dp::Params pParams(pomDS->allocParams());
+	_TerminID = getCurrentTerminID();
+	pParams << _TerminID;
+	dp::DSColumns cols(pomDS->allocBindColumns(2));
+	cols << "Name" << td::string8 << "Surname" << td::string8;
+	if (!pomDS->execute())
+	{
+		pomDS = nullptr;
+		return;
+	}
+
+
+	_tablePresent.clean();
+
+
+	size_t nRows = pomDS->getNumberOfRows();
+	for (size_t i = 0; i < nRows; i++) {
+		_tablePresent.beginUpdate();
+		auto& rowpom = pomDS->getRow(i);
+		auto& row = _tablePresent.getEmptyRow();
+		row = rowpom;
+
+		_tablePresent.push_back();
+
+		_tablePresent.endUpdate();
+	}
+
+}

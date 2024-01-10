@@ -53,6 +53,10 @@ class ViewSubject : public gui::View
 
 public:
     ViewSubject(td::INT4 SubjectID);
+    gui::DBComboBox& getDate() {
+        return _date;
+    }
+    void populateDateCombo(gui::DBComboBox& combo);
 
 protected:
     td::INT4 getCurrentTerminID();
@@ -60,10 +64,11 @@ protected:
      bool onChangedSelection(gui::DBComboBox* pCB);
     void populateData();
     void populateTablePresent();
-    void populateDateCombo(gui::DBComboBox& combo);
+    //void populateDateCombo(gui::DBComboBox& combo);
     void populateTimeCombo(gui::DBComboBox& combo, td::Date date);
     bool saveData();
     bool onClick(gui::Button* pBtn);
     bool doesIDexist(td::INT4 ID);
+    void UpdatePresentDataSet();
 };
 
