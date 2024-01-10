@@ -5,6 +5,7 @@
 #include "ViewDateTimeActivity.h"
 #include "ViewTasks.h"
 
+
 class SwitcherViewActivity : public gui::ViewSwitcher
 {
 private:
@@ -15,7 +16,7 @@ protected:
 
 public:
     SwitcherViewActivity(td::UINT4 subjectid)
-        : gui::ViewSwitcher(3)
+        : gui::ViewSwitcher(1)
         , _viewActivity(subjectid)
         , _viewDateTime(subjectid) 
         , _viewTasks(subjectid)
@@ -23,6 +24,7 @@ public:
         addView(&_viewActivity, true);
         addView(&_viewDateTime);
         addView(&_viewTasks);
-    }
+
+     }
 };
 

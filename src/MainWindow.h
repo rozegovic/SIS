@@ -33,8 +33,6 @@ protected:
     gui::Image _imgUpload;
     gui::Image _imgExamLabHomework;
     gui::Image _imgSAOTicket;
-
-
     StatusBar _statBar;
 
 
@@ -79,6 +77,7 @@ protected:
     bool showUpload();
 
     bool showTicketForSaoView()
+
 
     //bool onClick(gui::Dialog* pDlg, td::UINT4 dlgID) override;
 

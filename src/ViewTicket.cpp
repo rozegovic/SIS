@@ -62,12 +62,11 @@ bool ViewTicket::onChangedSelection(gui::ComboBox* pCmb)
 		case 0: _type.setValue(td::Variant("Upis")); break;
 		case 1: _type.setValue(td::Variant("Poruka")); break;
 		case 2: _type.setValue(td::Variant("Molba")); break;
-		case 3: _type.setValue(td::Variant("Žalba")); break;
+		case 3: _type.setValue(td::Variant("ï¿½alba")); break;
 		case 4: _type.setValue(td::Variant("Prijedlog")); break;
 		}
 		return true;
 	}
-
 	return false;
 }
 
@@ -93,9 +92,6 @@ bool ViewTicket::onClick(gui::Button* pBtn)
 		selectFiles();
 		return true;
 	}
-
-
-
 
 	return false;
 }
@@ -209,7 +205,6 @@ bool ViewTicket::sendTicketWithAttachment()
 	_body.setValue("");
 
 	_titleFile.setTitle("");
-
 	return true;
 }
 
@@ -293,19 +288,19 @@ void ViewTicket::initTable()
 
 void ViewTicket::populateTableData()
 {
+
 	td::String setstr = "SELECT SAOStudentTicket.Ticket_Tip as type, SAOStudentTicket.Req_Title as title, SAOStudentTicket.Status, SAOStudentTicket.Request as request, SAOStudentTicket.ID as reqID, SAOStudentTicket.Indeks as indeks  FROM SAOStudentTicket WHERE SAOStudentTicket.Indeks=";
 	setstr.append(GetStudentIndeks().getConstStr());
 
 	_pDS = dp::getMainDatabase()->createDataSet(setstr, dp::IDataSet::Execution::EX_MULT);
 	dp::DSColumns cols(_pDS->allocBindColumns(6));
 	cols << "type" << td::string8 << "title" << td::string8 << "status" << td::string8 << "request" << td::string8 << "reqID" << td::int4 << "indeks" << td::string8;
+
 	if (!_pDS->execute())
 	{
 		_pDS = nullptr;
-		showAlert("errorReadingTable", "");
 		return;
 	}
-
 
 	initTable();
 }

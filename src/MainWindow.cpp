@@ -26,6 +26,7 @@
 #include "NavigatorViewActivity.h"
 #include "ViewTimeSlot.h"
 #include "ViewGradeLabHomework.h"
+
 #include "ViewTicketFORSAO.h"
 
 
@@ -301,7 +302,6 @@ bool MainWindow::showSomeSubjectChoose()
 }
 
 
-
 bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc)
 {
     auto [menuID, firstSubMenuID, lastSubMenuID, actionID] = aiDesc.getIDs();
@@ -357,10 +357,19 @@ bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc)
 
 
 
-
         break; default: break;
         }
 
+    }
+
+   
+
+    
+    if (menuID == 20 && firstSubMenuID == 30 && lastSubMenuID == 30) {        ///
+        switch (actionID) {
+        break; case 80: return showSubjectChoose();
+        break; case 170: return showSubjectChooseForTimeSlot();
+        }
     }
 
 
