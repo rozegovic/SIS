@@ -1,4 +1,5 @@
 #pragma once
+#include <algorithm>
 #include <gui/View.h>
 #include <gui/Label.h>
 #include <gui/LineEdit.h>
@@ -23,59 +24,44 @@
 #include <dp/IDataSetDelegate.h>
 #include <fo/FileOperations.h>
 #include <gui/ImageView.h>
-#include <gui/Color.h>
-#include "Globals.h"
-
-
-
-
-class ViewExamSignUp : public gui::View
+#include <rnd/MinMax.h>
+  
+  
+class ViewTimeSlot : public gui::View
 {
+private:
 protected:
-    gui::Label _lblIndeks;
-    gui::LineEdit _indeks;
- 
+    gui::Label _LblSubjName;
+    gui::LineEdit _Subject;
 
-    gui::Label _lblName;
-    gui::LineEdit _name;
-    gui::Label _lblSurname;
-    gui::LineEdit _surname;
-    gui::Label _lblTable1;
-    gui::Label _lblTable2;
+   // gui::Label _LblType;
+   // gui::DBComboBox _type;
 
-    gui::TableEdit _table1;
-    gui::TableEdit _table2;
     gui::HorizontalLayout _hlBtnsDB;
     gui::Button _btnEnroll;
     gui::Button _btnDEnroll;
     gui::Button _btnReload;
 
-  
-  
     gui::GridLayout _gl;
-
     dp::IDatabase* _db;
     dp::IDataSetPtr _pDS = nullptr;
-    dp::IDataSetPtr _pDS2 = nullptr;
-    td::INT4 _paramFrom;  //mozda kasnije potrebni
-    td::INT4 _paramTo;    //mozda kasnije potrebni
+    dp::IDataSetPtr _pDSpos;
+    td::INT4 _SubjectID;
 
-    std::vector<td::INT4> _depsToDelete, _depsToInsert, _depsToUpdate;
-
+    gui::TableEdit _table;
 public:
-    ViewExamSignUp();
-    ~ViewExamSignUp();
-    td::Variant ID_Pre1;
-    td::Variant ID_Pre2;
+    ViewTimeSlot(td::INT4 SubjectID);
+    ~ViewTimeSlot();
 
 protected:
-    void initTable1();
-    void initTable2();
+    void initTable();
+  //  virtual bool onClick(gui::Button* pBtn);
+    void populateDataForTable();
+    void getSubjectName();
+    bool IsEnrolled(td::INT4 ID_stud, td::INT4 ID_Pred);
     bool saveData1();
     bool saveData2();
     virtual bool onClick(gui::Button* pBtn);
-    void populateDataForTable1();
-    void populateDataForTable2();
-    virtual bool onChangedSelection(gui::TableEdit* pTE);
-};
+  //  virtual bool onChangedSelection(gui::TableEdit* pTE);
 
+};

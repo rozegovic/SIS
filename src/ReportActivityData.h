@@ -1,17 +1,13 @@
-//
-//  ReportAttData.h
-//  appSIS
-//
-//  Created by Amina Hajrić on 07.01.2024..
-//
 #pragma once
 #include <rpt/ReportData.h>
 #include <rpt/EntityData.h>
 #include <rpt/AutoElement.h>
+#include <dp/IStatement.h>
+#include <dp/IDatabase.h>
 
 class DocumentData : public rpt::DocumentData
 {
-public: 
+public:
     DocumentData(td::INT4 SubjectID)
         : rpt::DocumentData()
     {
@@ -31,9 +27,9 @@ public:
             return;
         if (!pSelect->moveNext())
             return;
-        
-        
-        _data[0] = "Studenti prijavljeni na termine nastave"; //RPT_TXT_DOCUMENT_TYPE
+
+
+        _data[0] = "Aktivnost studenata na predmetu"; //RPT_TXT_DOCUMENT_TYPE
         _data[1] = s; //RPT_TXT_DOCUMENT_ID
         //_data[2] = now;     //RPT_DT_DOCUMENT_DATETIME
         //_data[3] = (td::INT4)14; //RPT_INT_DOCUMENT_PAYMENT_DAYS
@@ -96,3 +92,4 @@ public:
         //etc
     }
 };
+
