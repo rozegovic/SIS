@@ -515,21 +515,8 @@ void ViewTasks::showOpenFileDialog()
                     gui::TextEdit* pTE = (*this).getTextEdit();
                     pTE->setText(strContent);
 
-                    fo::fs::path homePath;
-                    mu::getHomePath(homePath);
-                    fo::fs::path testDBPath = (homePath / "other_bin/TestData/natGUITest/Test.db");
-
-                    dp::IDatabasePtr pDB = dp::create(dp::IDatabase::ConnType::CT_SQLITE, dp::IDatabase::ServerType::SER_SQLITE3);
+                    dp::IDatabase *pDB = dp::getMainDatabase();
                     //dp::getMainDatabase() if I were connected to DB before
-
-                    if (!pDB->connect(testDBPath.string().c_str()))
-                    {
-                        assert(false && "Nema baze...");
-                        return;
-                    }
-                    //just for test, i always delete everything in the table, so it doesent get huge
-                   /* dp::IStatementPtr pStatDel = pDB->createStatement("delete from TestBLOBAttachment");*/
-
 
                     dp::IStatementPtr pStatIns = pDB->createStatement("insert into DokumentiOpenPredaja(ID, Dokumenti, ID_Predaje) values(?, ?, ?)");
                     dp::Params paramsInsert(pStatIns->allocParams());
@@ -613,12 +600,7 @@ bool ViewTasks::onAnswer(td::UINT4 questionID, gui::Alert::Answer answer)//??
         }
         return true;
     }
-    return false;
-}
-
-bool ViewTasks::onAnswer2(td::UINT4 questionIDA, gui::Alert::Answer answer)
-{
-    if ((QuestionIDA)questionIDA == QuestionIDA::OpenFile)
+    if ((QuestionIDA)questionID == QuestionIDA::OpenFile)
     {
         if (answer == gui::Alert::Answer::Yes)
             showOpenFileDialog();
@@ -626,6 +608,7 @@ bool ViewTasks::onAnswer2(td::UINT4 questionIDA, gui::Alert::Answer answer)
     }
     return false;
 }
+
 
 bool ViewTasks::onClick(gui::FileDialog* pFD, td::UINT4 dlgID)
 {
