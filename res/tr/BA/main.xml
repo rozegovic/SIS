@@ -233,6 +233,11 @@
 		<Res id="sendRequestTT" tr="Pošalji trenutni zahtjev"/>
 		<Res id="OnHold" tr="Na Čekanju"/>
 		
+		<Res id="open" tr="Otvori"/>
+		<Res id="openTT" tr="Više informacija"/>
+		<Res id="attachmentAddLbl" tr="Privitak"/>
+		<Res id="attachmentlbl" tr="Dodaj privitak:"/>
+		
 		
 		<Res id="AccessNotAllowed" tr="Nemate pravo pristupa"/>
 
