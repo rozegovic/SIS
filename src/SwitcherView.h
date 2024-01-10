@@ -15,8 +15,8 @@ protected:
 
 public:
     SwitcherView(td::UINT4 subjectid)
-        : gui::ViewSwitcher(3),
-        _viewAttendance(subjectid),
+        : gui::ViewSwitcher(2),
+        _viewAttendance(subjectid, &_viewSubject),
         _viewSubject(subjectid)
      //   _viewTimeSlot(subjectid)
 
