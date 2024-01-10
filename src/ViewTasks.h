@@ -26,6 +26,10 @@
 #include <gui/ImageView.h>
 #include <rnd/MinMax.h>
 
+enum class QuestionIDDDAAAA : td::UINT2 { Saveee };
+enum class QuestionIDA : td::UINT4 { OpenFile = 1, SaveFile };
+enum class WndID : td::UINT4 { SingleWnd = 1, FileOpenDlg, FileSaveDlg, LoginDlg, SettingsDlg };
+
 class ViewTasks : public gui::View
 {
 private:
@@ -38,25 +42,18 @@ protected:
     gui::Label _LblTimeBegin;
     gui::TimeEdit _timeB;
 
-    gui::Label _LblDateEnd;
-    gui::DateEdit _dateE;
-    gui::Label _LblTimeEnd;
-    gui::TimeEdit _timeE;
-
-    gui::Label _LblTimeFinal;
-    gui::TimeEdit _timeF;
-    gui::Label _LblDateFinal;
-    gui::DateEdit _dateF;
-
     gui::Label _lblType;
     gui::DBComboBox _type;
     gui::Label _lblCName;
     gui::LineEdit _cName;
 
+    gui::Label _lblTable2;
+    gui::TableEdit _table2;
 
     gui::HorizontalLayout _hlBtnsDB;
     gui::Button _btnAdd;
     gui::Button _btnDelete;
+    gui::Button _btnAddFile;
     //  gui::Button _btnUpdate;
     gui::Button _btnSave;
 
@@ -66,6 +63,7 @@ protected:
     //::INT4 _ActivityID;
     td::INT4 _SubjectID;
     ///*td::string8 _nazivakt;*/
+    gui::TextEdit _textEdit;
 
     gui::TableEdit _table;
     std::vector<td::INT4> _itemsToDelete, _itemsToInsert, _itemsToUpdate;
