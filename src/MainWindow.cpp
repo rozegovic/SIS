@@ -312,6 +312,9 @@ bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc)
         }
 
     }
+
+   
+
     if (menuID == 20 && firstSubMenuID == 30 && lastSubMenuID == 30){
         switch (actionID){
                 break; case 80: return showSubjectChoose();
@@ -322,6 +325,7 @@ bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc)
         break; case 160: return showSubjectChooseForTimeSlot();
         }
     }
+
 
 
     //ovo neka ostane, ako smo zaboravili pozvati menu opciju iskocice nam ovo
