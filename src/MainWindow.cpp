@@ -123,6 +123,25 @@ bool MainWindow::showSubjectChoose()
     return false;
 }
 
+
+
+bool MainWindow::showSubjectChooseForTimeSlot()                                         ///
+{
+
+    DialogChooseSubjectForTimeSlot* pDlg = new DialogChooseSubjectForTimeSlot(this);
+    pDlg->setTitle(tr("SubjectChoose"));
+    pDlg->openModal([this](gui::Dialog::Button::ID btn, gui::Dialog* pDlg)
+        {
+            auto btnID = pDlg->getClickedButtonID();
+            if (btnID == gui::Dialog::Button::ID::OK) {
+                auto dlgCS = static_cast<DialogChooseSubjectForTimeSlot*> (pDlg);
+                showTimeSlotView(dlgCS->getSubjectID());                              ///
+            }
+            else return true;
+        });
+    return false;
+}
+
 bool MainWindow::showCurriculum()
 {
     DialogCurriculum* pDlg = new DialogCurriculum(this);

@@ -40,8 +40,6 @@ protected:
     {
         showLogin();
     }
-
-
 public:
     MainWindow();
 public:
