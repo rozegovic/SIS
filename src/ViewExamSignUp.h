@@ -34,7 +34,7 @@ class ViewExamSignUp : public gui::View
 protected:
     gui::Label _lblIndeks;
     gui::LineEdit _indeks;
- 
+
 
     gui::Label _lblName;
     gui::LineEdit _name;
@@ -50,8 +50,8 @@ protected:
     gui::Button _btnDEnroll;
     gui::Button _btnReload;
 
-  
-  
+
+
     gui::GridLayout _gl;
 
     dp::IDatabase* _db;
@@ -76,6 +76,4 @@ protected:
     virtual bool onClick(gui::Button* pBtn);
     void populateDataForTable1();
     void populateDataForTable2();
-    virtual bool onChangedSelection(gui::TableEdit* pTE);
 };
-
