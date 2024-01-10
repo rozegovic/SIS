@@ -295,12 +295,7 @@ bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc)
         }
 
     }
-    if (menuID == 20 && firstSubMenuID == 30 && lastSubMenuID == 30){
-        switch (actionID){
-                break; case 80: return showSubjectChoose();
-        }
-    }
-
+   
 
     //ovo neka ostane, ako smo zaboravili pozvati menu opciju iskocice nam ovo
     //ako ga stavimo u ovaj #ifdef, ovaj dio koda nece postojati u release modu

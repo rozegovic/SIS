@@ -3,6 +3,8 @@
 	<Translations>
 		
 		<Res id="addView" tr="Dodaj tab"/>
+		<Res id="Report" tr="Izvještaj"/>
+		<Res id="ActivityRep" tr="Izvještaj aktivnosti"/>
 		<Res id="addViewTT" tr="Dodaj tab view"/>
 		<Res id="remView" tr="Izbriši tab"/>
 		<Res id="remViewTT" tr="Izbriši tab view"/>
@@ -34,6 +36,7 @@
         <Res id = "AttUpdateTT" tr = "Ažuriraj termine"/>
 
         <Res id = "alertAttTxt" tr = "Već postoji termin za odabrani datum i vrijeme"/>
+		<Res id = "alertActivityRep" tr = "Nema unesenih aktivnosti iz odabranog predmeta!"/>
 		
 		
 		<Res id="SubjectChoose" tr="Izbor predmeta"/>
