@@ -156,6 +156,9 @@
                             <Res id="alertPr" tr="Vec ste unijeli prisustvo ovog studenta za ovaj termin"/>
 							<Res id="tablePresent" tr="Prisutni za ovaj termin:"/>
 							<Res id="alertNoTerm" tr="Niste odabrali ni jedan termin"/>
+							<Res id="Report" tr="Izvještaj"/>
+		<Res id="ActivityRep" tr="Izvještaj aktivnosti"/>
+		<Res id="viewTimeSlot" tr="Prijava termina"/>
 		
 		
 		
