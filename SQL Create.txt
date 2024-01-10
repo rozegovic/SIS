@@ -107,6 +107,15 @@ FOREIGN KEY("Predmet_ID") REFERENCES "Predmet"("ID_Predmeta"),
 FOREIGN KEY("TipPredavanjaID") REFERENCES "TipPredavanja"("ID")
 );
 
+CREATE TABLE "TerminiStudenti" (
+	"ID_Studenta"	INTEGER NOT NULL,
+	"ID_Termina"	INTEGER,
+	"TipPredavanjaID"	INTEGER,
+	FOREIGN KEY("ID_Termina") REFERENCES "Termini"("ID"),
+	FOREIGN KEY("TipPredavanjaID") REFERENCES "TipPredavanja"("ID"),
+	FOREIGN KEY("ID_Studenta") REFERENCES "Korisnici"("ID"),
+	PRIMARY KEY("ID_Studenta","ID_Termina")
+)
 CREATE TABLE "Prisustvo" (
 	"ID_termina"	INTEGER NOT NULL,
 	"ID_studenta"	INTEGER NOT NULL,
