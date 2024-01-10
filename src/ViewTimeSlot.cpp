@@ -84,11 +84,11 @@ void ViewTimeSlot::getSubjectName() {
     }
 }
 
-bool ViewTimeSlot::IsEnrolled(td::INT4 ID_stud ,td::INT4 ID_Pred) {
+bool ViewTimeSlot::IsEnrolled(td::INT4 ID_stud ,td::INT4 ID_Ter) {
     auto pDB = dp::getMainDatabase();
-    _pDSpos = pDB->createDataSet("SELECT ID_Studenta as IDs TipPredavanjaID as IDp  FROM TerminiStudenti", dp::IDataSet::Execution::EX_MULT);
+    _pDSpos = pDB->createDataSet("SELECT ID_Studenta as IDs ID_Termina as IDt FROM TerminiStudenti", dp::IDataSet::Execution::EX_MULT);
     dp::DSColumns cols(_pDSpos->allocBindColumns(2));
-    cols << "IDs" << td::int4  << "IDp" << td::int4;
+    cols << "IDs" << td::int4  << "IDt" << td::int4;
 
     if (!_pDSpos->execute())
     {
@@ -99,7 +99,7 @@ bool ViewTimeSlot::IsEnrolled(td::INT4 ID_stud ,td::INT4 ID_Pred) {
     for (size_t i = 0; i < nRows; ++i)
     {
         auto row = _pDSpos->getRow(i);
-        if (row[0] == ID_stud && row[1] == ID_Pred)
+        if (row[0] == ID_stud && row[1] == ID_Ter)
             return true;
     }
     return false;
@@ -109,20 +109,21 @@ bool ViewTimeSlot::IsEnrolled(td::INT4 ID_stud ,td::INT4 ID_Pred) {
 bool ViewTimeSlot::saveData1() { //upis
    dp::IStatementPtr pInsStat(dp::getMainDatabase()->createStatement("INSERT INTO TerminiStudenti (ID_Studenta,ID_Termina,TipPredavanjaID) VALUES(?,?,?)"));
     dp::Params parDS(pInsStat->allocParams());
+    dp::Transaction tr(dp::getMainDatabase());
     td::INT4 sID, tID,pID;
-    parDS << sID << tID<<pID;
+    parDS << sID << tID << pID;
     sID = Globals::_currentUserID;
     td::INT4 curRow = _pDS->getCurrentRowNo();
     auto row = _pDS->getRow(curRow);
     tID = row[4].i4Val();
     pID = row[3].i4Val();
-    if (IsEnrolled(sID,pID) == true)
+    if (IsEnrolled(sID,tID) == true)
     {
         return false;
     }
     if (!pInsStat->execute())
         return false;
-
+    tr.commit();
     return true;
 
  
@@ -149,15 +150,15 @@ bool ViewTimeSlot::onClick(gui::Button* pBtn)
     }
     if (pBtn == &_btnEnroll)
     {
-        td::INT4 tID, pID,sID;
+        td::INT4 tID, pID, sID;
         sID = Globals::_currentUserID;
         td::INT4 curRow = _pDS->getCurrentRowNo();
         auto row = _pDS->getRow(curRow);
         tID = row[4].i4Val();
         pID = row[3].i4Val();
-        if (IsEnrolled(sID, pID) == true)
+        if (IsEnrolled(sID, tID) == true)
         {
-showAlert(tr("alert"), tr("alertPr"));
+            showAlert(tr("alert"), tr("alertPr"));
             return true;
         }
 
