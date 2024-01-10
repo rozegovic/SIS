@@ -76,7 +76,7 @@ protected:
     bool showGradeLabHomeworkView(td::INT4 SubjectID);
     bool showUpload();
 
-    bool showTicketForSaoView()
+    bool showTicketForSaoView();
 
 
     //bool onClick(gui::Dialog* pDlg, td::UINT4 dlgID) override;
