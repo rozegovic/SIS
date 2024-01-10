@@ -1,4 +1,12 @@
 #include "ViewTasks.h"
+#include "SendMessage.h"
+#include <gui/FileDialog.h>
+#include <gui/Alert.h>
+#include <fo/FileOperations.h>
+#include <td/BLOB.h>
+#include <gui/Window.h>
+#include "ViewIDs.h"
+
 //#include "Globals.h"
 
 
@@ -7,19 +15,17 @@ ViewTasks::ViewTasks(td::INT4 SubjectID) :
     _LblActName(tr("Activity")),
     _LblDateBegin(tr("ActivityDateB")),
     _LblTimeBegin(tr("ActivityTimeB")),
-    _LblDateEnd(tr("ActivityDateE")),
-    _LblTimeEnd(tr("ActivityTimeE")),
-    _LblDateFinal(tr("ActivityDateF")),
-    _LblTimeFinal(tr("ActivityTimeF")),
     _lblType(tr("ActivityNameForDateTime")),
     _type(td::int4),
     _lblCName(tr("Course:")),
+    _lblTable2(tr("Docs:")),
     _btnAdd(tr("add"), tr("AddTT"))
     //, _btnUpdate(tr("Update"), tr("UpdateTT"))
     , _btnDelete(tr("Delete"), tr("DeleteTT"))
     , _btnSave(tr("Save"), tr("SaveTT"))
-    , _hlBtnsDB(5)
-    , _gl(10, 4)
+    , _btnAddFile(tr("AddFile"), tr("AddFileTT"))
+    , _hlBtnsDB(6)
+    , _gl(7, 4)
     , _SubjectID(SubjectID)
 {
 
@@ -57,19 +63,12 @@ ViewTasks::ViewTasks(td::INT4 SubjectID) :
     gc.appendCol(_LblTimeBegin);
     gc.appendCol(_timeB);
 
-    gc.appendRow(_LblDateEnd);
-    gc.appendCol(_dateE);
-
-    gc.appendCol(_LblTimeEnd);
-    gc.appendCol(_timeE);
-
-    gc.appendRow(_LblDateFinal);
-    gc.appendCol(_dateF);
-
-    gc.appendCol(_LblTimeFinal);
-    gc.appendCol(_timeF);
+    gc.appendRow(_btnAddFile);
 
     gc.appendRow(_table, 0);
+    gc.appendRow(_lblTable2);
+    gc.appendRow(_textEdit, 0);
+
     gc.appendRow(_hlBtnsDB, 0);
 
     gui::View::setLayout(&_gl);
@@ -175,20 +174,6 @@ bool ViewTasks::onChangedSelection(gui::TableEdit* pTE) {
         val = row[1];
         _timeB.setValue(val);
 
-        val = row[2];
-        _dateE.setValue(val);
-
-        val = row[3];
-        _timeE.setValue(val);
-
-        val = row[4];
-
-        _dateF.setValue(val);
-
-        val = row[5];
-
-        _timeF.setValue(val);
-
         val = row[7];
         td::Variant var;
         _type.setValue(val);
@@ -206,18 +191,6 @@ void ViewTasks::populateDSRow(dp::IDataSet::Row& row, td::INT4 i)
 
     _timeB.getValue(val);
     row[1].setValue(val);
-
-    _dateE.getValue(val);
-    row[2].setValue(val);
-
-    _timeE.getValue(val);
-    row[3].setValue(val);
-
-    _dateF.getValue(val);
-    row[4].setValue(val);
-
-    _timeF.getValue(val);
-    row[5].setValue(val);
 
     td::Variant x = i;
     row[6].setValue(x);
@@ -451,9 +424,21 @@ bool ViewTasks::onClick(gui::Button* pBtn)
         _itemsToInsert.push_back(itemid);
         return true;
     }
+    if (pBtn == &_btnAddFile) {
+        gui::TextEdit* pTE = (*this).getTextEdit();
+        bool isEmpty = pTE->isEmpty();
+        if (!isEmpty)
+        {
+            showYesNoQuestionAsync(QuestionIDA::OpenFile, this, tr("Replace data"), tr("Text edit is not empty. Are you sure you want to replace it with new content?"), tr("Yes"), tr("No"));
+        }
+        else
+            showOpenFileDialog();
+        return true;
+    }
     if (pBtn == &_btnSave) {
-        saveData();
-        //  _table.reload();
+        showYesNoQuestionAsync(QuestionIDDDAAAA::Saveee, this, tr("alert"), tr("saveSure"), tr("Yes"), tr("No"));
+
+        return true;
     }
 
     return false;
@@ -530,7 +515,7 @@ void ViewTasks::showOpenFileDialog()
                     gui::TextEdit* pTE = (*this).getTextEdit();
                     pTE->setText(strContent);
 
-                    dp::IDatabase *pDB = dp::getMainDatabase();
+                    dp::IDatabase* pDB = dp::getMainDatabase();
                     //dp::getMainDatabase() if I were connected to DB before
 
                     dp::IStatementPtr pStatIns = pDB->createStatement("insert into DokumentiOpenPredaja(ID, Dokumenti, ID_Predaje) values(?, ?, ?)");
@@ -553,8 +538,8 @@ void ViewTasks::showOpenFileDialog()
 
 
                     td::BLOB dataIn(td::BLOB::SRC_FILE, 16384U, typeFile);
-                    static td::INT4 ID=1, ID_predaje=1;
-                    paramsInsert <<ID <<dataIn<<ID_predaje;
+                    static td::INT4 ID = 1, ID_predaje = 1;
+                    paramsInsert << ID << dataIn << ID_predaje;
                     ID++; ID_predaje++;
                     //Neophodno, sa ove lokacije (strFileFullPath) se uzima BLOB
                     if (!dataIn.setInFileName(strFileFullPath))

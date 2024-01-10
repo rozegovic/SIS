@@ -18,6 +18,8 @@
 #define View_GRADE 113u
 #define View_UPLOAD 114u
 #define View_TIMESLOT 115u
+#define View_GRADE_LABHOM 116u
+
 
 
 #define USER_STUDENT 4

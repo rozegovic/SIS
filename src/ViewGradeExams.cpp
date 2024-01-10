@@ -2,6 +2,7 @@
 #include "ViewGradeExams.h"
 #include <td/Types.h>
 #include "Reports.h"
+#include "SendMessage.h"
 
 ViewGradeExams::ViewGradeExams(td::INT4 SubjectID) : _db(dp::getMainDatabase())
 , _lblName(tr("userName:"))
@@ -19,6 +20,7 @@ ViewGradeExams::ViewGradeExams(td::INT4 SubjectID) : _db(dp::getMainDatabase())
 , _gl(6, 4) // pazi na brojeve----neka budu tri reda ovih labela (naziv aktivnosti i naziv predmeta, ime i prezime, indeks i ocjena)
 , _SubjectID(SubjectID)
 , _report(1)
+, _imgExamGrades(":complex")
 {
 
 	_hlBtns.appendSpacer();
@@ -145,12 +147,12 @@ void ViewGradeExams::populateDSRow(dp::IDataSet::Row& row, td::INT4 id)
 
 	td::Variant x = id;
 	row[7].setValue(x);
-
+	/*td::INT4 a = _UserID;
 	val = _UserID;
-	row[0].setValue(val);
+	row[0].setValue(val);*/
 
-	val = _ActivityID;
-	row[1].setValue(val);
+	//val = _ActivityID;
+	//row[1].setValue(val);
 
 }
 bool ViewGradeExams::canAdd()
@@ -251,6 +253,16 @@ bool ViewGradeExams::saveData()
 		_itemsToInsert.clear();
 		_itemsToUpdate.clear();
 	}
+
+	for (auto i : _userids) {
+
+		td::String naslov = "Ocjena!";
+		td::String poruka = "Unesena je ocjena za odredenu aktivnost! ";
+		MsgSender msg;
+		msg.sendSystemMsgtoUser(naslov, poruka, i);
+	}
+	_userids.clear();
+
 	return true;
 }
 
@@ -269,8 +281,11 @@ bool ViewGradeExams::onClick(gui::Button* pBtn)
 
 		_table.beginUpdate();
 		auto& row = _table.getCurrentRow();
+
 		row[6].toZero();
-	//	_table.updateRow(iRow);
+		td::INT4 a = row[0].i4Val();
+		_userids.insert(a);
+		//	_table.updateRow(iRow);
 		_table.endUpdate();
 
 		_itemsToDelete.push_back(itemid);
@@ -290,7 +305,10 @@ bool ViewGradeExams::onClick(gui::Button* pBtn)
 
 		_table.beginUpdate();
 		auto& row = _table.getCurrentRow();
+
 		populateDSRow(row, itemid);
+		td::INT4 a = row[0].i4Val();
+		_userids.insert(a);
 		_table.updateRow(iRow);
 		_table.endUpdate();
 
@@ -305,6 +323,8 @@ bool ViewGradeExams::onClick(gui::Button* pBtn)
 		td::INT4 itemid = getIDfromTable(iRow);
 		_table.beginUpdate();
 		auto& row = _table.getCurrentRow();
+		td::INT4 a = row[0].i4Val();
+		_userids.insert(a);
 		populateDSRow(row, itemid);
 		_table.updateRow(iRow);
 		_table.endUpdate();
@@ -317,7 +337,6 @@ bool ViewGradeExams::onClick(gui::Button* pBtn)
 		saveData();
 	}
 	if (pBtn == &_btnReport) {
-		gui::Image _imgExamGrades(":complex");
 		examGrades(&_imgExamGrades, _SubjectID);
 		// pada zbog pristupa nedozvoljenim lokacijama - PROBLEM
 	}
