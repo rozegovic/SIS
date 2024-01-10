@@ -35,6 +35,9 @@
 
         <Res id = "alertAttTxt" tr = "Već postoji termin za odabrani datum i vrijeme"/>
 		
+        <Res id = "AttReport" tr = "Izvještaj"/>
+        
+        <Res id = "AttRepTT" tr = "Izvještaj o prijavama studenata na termine nastave"/>
 		
 		<Res id="SubjectChoose" tr="Izbor predmeta"/>
 		
@@ -156,7 +159,7 @@
                             <Res id="alertPr" tr="Vec ste unijeli prisustvo ovog studenta za ovaj termin"/>
 							<Res id="tablePresent" tr="Prisutni za ovaj termin:"/>
 							<Res id="alertNoTerm" tr="Niste odabrali ni jedan termin"/>
-							<Res id="Report" tr="Izvještaj"/>
+									<Res id="Report" tr="Izvještaj"/>
 		<Res id="ActivityRep" tr="Izvještaj aktivnosti"/>
 		<Res id="viewTimeSlot" tr="Prijava termina"/>
 		
