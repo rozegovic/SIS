@@ -134,6 +134,8 @@ void ViewRequestUpdate::SaveToDatabase() {
 
     fo::fs::path homePath;
     mu::getHomePath(homePath);
+
+
     fo::fs::path testDBPath = (homePath / "other_bin\\TestData\\natGUITest\\Temp_Baza.db");
 
     dp::IDatabasePtr pDB = dp::create(dp::IDatabase::ConnType::CT_SQLITE, dp::IDatabase::ServerType::SER_SQLITE3);

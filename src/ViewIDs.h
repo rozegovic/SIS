@@ -17,12 +17,14 @@
 #define View_MESSAGES 112u
 #define View_GRADE 113u
 #define View_UPLOAD 114u
-#define View_GRADE_LABHOM 115u
-#define View_SAOTICKET 116u
+#define View_TIMESLOT 115u
+#define View_GRADE_LABHOM 116u
+#define View_SAOTICKET 117u
+
 
 
 #define USER_STUDENT 4
 #define MESSAGE_HEADER_LEN 128
 #define MESSAGE_BODY_LEN 4096
 
-#define USERNAME_LEN 128
+#define USERNAME_LEN 128_LEN 128

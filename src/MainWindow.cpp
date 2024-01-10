@@ -20,12 +20,14 @@
 #include "DialogCurriculum.h"
 #include "ViewMessages.h"
 #include "ViewGradeExams.h"
-#include "ViewGradeLabHomework.h"
 #include "upload.h"
-#include "ViewTicketFORSAO.h"
-
+#include "DialogChooseSubjectForTimeSlot.h"
 #include <rpt/IResources.h>
 #include "NavigatorViewActivity.h"
+#include "ViewTimeSlot.h"
+#include "ViewGradeLabHomework.h"
+#include "ViewTicketFORSAO.h"
+
 
 MainWindow::MainWindow()
     : gui::Window(gui::Geometry(100, 100, 1000, 600))
@@ -36,17 +38,17 @@ MainWindow::MainWindow()
     , _imgClassroom(":complex")
     , _imgTStaff(":complex")
     , _imgActivity(":complex")
-    ,_imgEnroll(":complex")
-    ,_imgAttendance(":complex")
-    ,_imgCurr(":complex")
+    , _imgEnroll(":complex")
+    , _imgAttendance(":complex")
+    , _imgCurr(":complex")
     , _imgExamAtt(":complex")
     , _imgTicket(":pencil")
     , _imgCourseenr(":plus")
     , _imgMessages(":complex")
     , _imgExamGrades(":complex")
     , _imgExamLabHomework(":complex")
+    , _imgSAOTicket(":pencil")
     , _imgUpload(":complex")
-    ,_imgSAOTicket(":pencil")
 {
     setTitle(tr("SIS"));
     _mainMenuBar.setAsMain(this);
@@ -66,10 +68,10 @@ MainWindow::MainWindow()
 
 void MainWindow::showLogin()
 {
- 
-   // pDlg->openModal();
-   // pDlg->setTitle(tr("Login"));
-   // -----------------------------OVO SAM JA ZAKOMENTARISALA
+
+    // pDlg->openModal();
+    // pDlg->setTitle(tr("Login"));
+    // -----------------------------OVO SAM JA ZAKOMENTARISALA
     DialogLogin* pDlg = new DialogLogin(this);
     pDlg->setTitle(tr("Login"));
     pDlg->openModal([this](gui::Dialog::Button::ID btn, gui::Dialog* pDlg)
@@ -125,6 +127,59 @@ bool MainWindow::showSubjectChoose()
 
     //pDlg->openModal(DlgID::Login, this);
     return false;
+}
+
+
+
+bool MainWindow::showSubjectChooseForTimeSlot()                                         ///
+{
+
+    DialogChooseSubjectForTimeSlot* pDlg = new DialogChooseSubjectForTimeSlot(this);
+    pDlg->setTitle(tr("SubjectChoose"));
+    pDlg->openModal([this](gui::Dialog::Button::ID btn, gui::Dialog* pDlg)
+        {
+            auto btnID = pDlg->getClickedButtonID();
+            if (btnID == gui::Dialog::Button::ID::OK) {
+                auto dlgCS = static_cast<DialogChooseSubjectForTimeSlot*> (pDlg);
+                showTimeSlotView(dlgCS->getSubjectID());                              ///
+            }
+            else return true;
+        });
+    return false;
+}
+bool MainWindow::showTimeSlotView(td::INT4 SubjectID)
+{
+    td::INT4 ViewID = (View_TIMESLOT << 24) | SubjectID;
+    if (focusOnViewPositionWithID(ViewID))
+        return true;
+
+    auto x = Globals::_currentUserRole;
+    if (x != 5)
+    {
+        showAlert(tr("AccessNotAllowed"), "");
+        return true;
+    }
+    //showSubjectChooseForTimeSlot();
+
+   // NavigatorView* pView = new NavigatorView(ViewID, SubjectID);
+    ViewTimeSlot* pView = new ViewTimeSlot(SubjectID);              ///
+    td::String a = (tr("viewTimeSlot"));
+    dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select a.Naziv_Predmeta AS Naziv FROM Predmet a WHERE a.ID_Predmeta = ?");
+    dp::Params pParams(pSelect->allocParams());
+    pParams << SubjectID;
+    dp::Columns pCols = pSelect->allocBindColumns(1);
+    td::String name;
+    pCols << "Naziv" << name;
+    if (!pSelect->execute())
+        return false;
+
+    if (!pSelect->moveNext())
+        return false;
+    a += " - ";
+    a += name;
+
+    _mainView.addView(pView, a, &_imgAttendance);
+    return true;
 }
 
 bool MainWindow::showCurriculum()
@@ -205,17 +260,17 @@ bool MainWindow::showAllSubjectChoose()
         return true;
     }
 
-        DialogChooseSubject* pDlg = new DialogChooseSubject(this);
-        pDlg->setTitle(tr("SubjectChoose"));
-        pDlg->openModal([this](gui::Dialog::Button::ID btn, gui::Dialog* pDlg)
-            {
-                auto btnID = pDlg->getClickedButtonID();
-                if (btnID == gui::Dialog::Button::ID::OK) {
-                    auto dlgCS = static_cast<DialogChooseSubject*> (pDlg);
-                    showTStaffView(dlgCS->getSubjectID());
-                }
-                return true;
-            });
+    DialogChooseSubject* pDlg = new DialogChooseSubject(this);
+    pDlg->setTitle(tr("SubjectChoose"));
+    pDlg->openModal([this](gui::Dialog::Button::ID btn, gui::Dialog* pDlg)
+        {
+            auto btnID = pDlg->getClickedButtonID();
+            if (btnID == gui::Dialog::Button::ID::OK) {
+                auto dlgCS = static_cast<DialogChooseSubject*> (pDlg);
+                showTStaffView(dlgCS->getSubjectID());
+            }
+            return true;
+        });
 
     return false;
 }
@@ -223,7 +278,7 @@ bool MainWindow::showAllSubjectChoose()
 bool MainWindow::showSomeSubjectChoose()
 {
     auto x = Globals::_currentUserRole;
-    if (x!=1)
+    if (x != 1)
     {
         showAlert(tr("AccessNotAllowed"), "");
         return true;
@@ -244,35 +299,10 @@ bool MainWindow::showSomeSubjectChoose()
 
     return false;
 }
-bool MainWindow::showSomeSubjectChoose2()
-{
-    auto x = Globals::_currentUserRole;
-    if (x != 1)
-    {
-        showAlert(tr("AccessNotAllowed"), "");
-        return true;
-    }
-    DialogChooseSubject* pDlg = new DialogChooseSubject(this);
-    pDlg->setTitle(tr("SubjectChoose"));
-    pDlg->openModal([this](gui::Dialog::Button::ID btn, gui::Dialog* pDlg)
-        {
-            auto btnID = pDlg->getClickedButtonID();
-            if (btnID == gui::Dialog::Button::ID::OK) {
-                auto dlgCS = static_cast<DialogChooseSubject*> (pDlg);
-                //examGrades(&_imgExamAtt, dlgCS->getSubjectID());
-
-                showGradeLabHomeworkView(dlgCS->getSubjectID());
-            }
-            return true;
-        });
-
-    return false;
-}
 
 
 
-
-bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc) 
+bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc)
 {
     auto [menuID, firstSubMenuID, lastSubMenuID, actionID] = aiDesc.getIDs();
 
@@ -284,12 +314,12 @@ bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc)
         {
             Globals::_currentUserRole = -1;
             Globals::_currentUserID = -1;
-//Globals::_IDSubjectSelection = -1;
+            //Globals::_IDSubjectSelection = -1;
 
-             Globals::isAdmin = false;
-             Globals::isProfessor = false;
-             Globals::isAssistant = false;
-             Globals::isStudent = false;
+            Globals::isAdmin = false;
+            Globals::isProfessor = false;
+            Globals::isAssistant = false;
+            Globals::isStudent = false;
             Globals::isSAO = false;
             showLogin();
             return true;
@@ -318,17 +348,29 @@ bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc)
         break; case 130: return showTicketView();
         break; case 140: return showMessagesView();
         break; case 150: return showSomeSubjectChoose();
-        break; case 160: return showUpload(); 
-        break; case 170: return showSomeSubjectChoose2();
-        break; case 180: return ShowTicketForSAOView();
+        break; case 160: return showUpload();
+        break; case 170: return showSubjectChooseForTimeSlot();
+        break; case 180: return showSomeSubjectChoose2();
+        break; case 190: return showTicketForSaoView();
 
 
 
-                      
+
+
 
         break; default: break;
         }
 
+    }
+
+
+
+
+    if (menuID == 20 && firstSubMenuID == 30 && lastSubMenuID == 30) {        ///
+        switch (actionID) {
+        break; case 80: return showSubjectChoose();
+        break; case 170: return showSubjectChooseForTimeSlot();
+        }
     }
 
 
@@ -493,11 +535,6 @@ bool MainWindow::showAttendanceView(td::INT4 SubjectID)
 bool MainWindow::showCurriculumView(td::INT4 _departmentID, td::INT4 _semesterID)
 {
     //showSubjectChoose();
-    if (!Globals::isAdmin && !Globals::isSAO)
-    {
-        showAlert(tr("AccessNotAllowed"), "");
-        return true;
-    }
     if (focusOnViewPositionWithID(View_CURRICULUM))
         return true;
 
@@ -576,18 +613,6 @@ bool MainWindow::showGradeExamView(td::INT4 SubjectID)
     return true;
 }
 
-bool MainWindow::showGradeLabHomeworkView(td::INT4 SubjectID)
-{
-    td::INT4 ViewID = (View_GRADE_LABHOM << 24) | SubjectID;
-    if (focusOnViewPositionWithID(ViewID))
-        return true;
-
-    ViewGradeLabHomework* pView = new ViewGradeLabHomework(SubjectID);
-    _mainView.addView(pView, tr("viewGradeLabHw"), &_imgExamGrades);
-
-    return true;
-}
-
 bool MainWindow::showUpload()
 {
     auto x = Globals::_currentUserRole;
@@ -604,16 +629,55 @@ bool MainWindow::showUpload()
     return true;
 }
 
+bool MainWindow::showSomeSubjectChoose2()
+{
+    auto x = Globals::_currentUserRole;
+    if (x != 1)
+    {
+        showAlert(tr("AccessNotAllowed"), "");
+        return true;
+    }
+    DialogChooseSubject* pDlg = new DialogChooseSubject(this);
+    pDlg->setTitle(tr("SubjectChoose"));
+    pDlg->openModal([this](gui::Dialog::Button::ID btn, gui::Dialog* pDlg)
+        {
+            auto btnID = pDlg->getClickedButtonID();
+            if (btnID == gui::Dialog::Button::ID::OK) {
+                auto dlgCS = static_cast<DialogChooseSubject*> (pDlg);
+                //examGrades(&_imgExamAtt, dlgCS->getSubjectID());
 
-bool MainWindow::ShowTicketForSAOView() {
+                showGradeLabHomeworkView(dlgCS->getSubjectID());
+            }
+            return true;
+        });
+
+    return false;
+}
+
+bool MainWindow::showGradeLabHomeworkView(td::INT4 SubjectID)
+{
+    td::INT4 ViewID = (View_GRADE_LABHOM << 24) | SubjectID;
+    if (focusOnViewPositionWithID(ViewID))
+        return true;
+
+    ViewGradeLabHomework* pView = new ViewGradeLabHomework(SubjectID);
+    _mainView.addView(pView, tr("viewGradeLabHw"), &_imgExamGrades);
+
+    return true;
+}
+
+
+bool MainWindow::showTicketForSaoView() {
+
+
 
     if (focusOnViewPositionWithID(View_SAOTICKET))
         return true;
 
-    ViewTicketForSAO* pView = new ViewTicketForSAO;
+    ViewTicketForSAO* pView = new ViewTicketForSAO();
     _mainView.addView(pView, tr("viewTicketForSAO"), &_imgSAOTicket);
     return true;
-
+  
 
 
 }
