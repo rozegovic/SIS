@@ -48,6 +48,27 @@ void ViewTimeSlot::initTable()
     visCols << gui::ThSep::DoNotShowThSep << gui::Header(0, tr("Type")) << gui::Header(1, tr("Time")) << gui::Header(2, tr("Date"));
     _table.init(_pDS); 
 }
+/*td::String IsEnrolled() {
+    auto pDB = dp::getMainDatabase();
+    _pDSpos = pDB->createDataSet("SELECT ID_Studenta as IDs ID_Termina as IDt FROM TerminiStudenti", dp::IDataSet::Execution::EX_MULT);
+    dp::DSColumns cols(_pDSpos->allocBindColumns(2));
+    cols << "IDs" << td::int4 << "IDt" << td::int4;
+
+    if (!_pDSpos->execute())
+    {
+        _pDSpos = nullptr;
+        return false;
+    }
+    size_t nRows = _pDSpos->getNumberOfRows();
+    for (size_t i = 0; i < nRows; ++i)
+    {
+        auto row = _pDSpos->getRow(i);
+        if (row[0] == ID_stud && row[1] == ID_Ter)
+            return true;
+    }
+    return false;
+
+}*/
 void ViewTimeSlot::populateDataForTable()
 {
     _pDS = dp::getMainDatabase()->createDataSet("SELECT b.Naziv AS tip, a.Vrijeme AS time, a.Datum AS date,a.TipPredavanjaID as idPred, a.ID as idTerm from Termini a, TipPredavanja b WHERE b.ID = a.TipPredavanjaID and a.TipPredavanjaID!=1  and a.Predmet_ID=?", dp::IDataSet::Execution::EX_MULT);
@@ -85,24 +106,19 @@ void ViewTimeSlot::getSubjectName() {
 }
 
 bool ViewTimeSlot::IsEnrolled(td::INT4 ID_stud ,td::INT4 ID_Ter) {
-    auto pDB = dp::getMainDatabase();
-    _pDSpos = pDB->createDataSet("SELECT ID_Studenta as IDs ID_Termina as IDt FROM TerminiStudenti", dp::IDataSet::Execution::EX_MULT);
-    dp::DSColumns cols(_pDSpos->allocBindColumns(2));
-    cols << "IDs" << td::int4  << "IDt" << td::int4;
 
-    if (!_pDSpos->execute())
-    {
-        _pDSpos = nullptr;
-       return false;
+    dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT TipPredavanjaID as ID FROM TerminiStudenti WHERE ID_Studenta = ? AND ID_Termina = ?");
+    dp::Params pParams(pSelect->allocParams());
+    pParams << ID_stud << ID_Ter;
+    dp::Columns pCols = pSelect->allocBindColumns(1);
+    td::INT4 ID = 0;
+    pCols << "ID" << ID;
+    if (!pSelect->execute()) {
+        return false;
     }
-    size_t nRows = _pDSpos->getNumberOfRows();
-    for (size_t i = 0; i < nRows; ++i)
-    {
-        auto row = _pDSpos->getRow(i);
-        if (row[0] == ID_stud && row[1] == ID_Ter)
-            return true;
-    }
-    return false;
+    if (!pSelect->moveNext()) return false;
+    return true;
+
 }
 
 
@@ -156,7 +172,7 @@ bool ViewTimeSlot::onClick(gui::Button* pBtn)
         auto row = _pDS->getRow(curRow);
         tID = row[4].i4Val();
         pID = row[3].i4Val();
-        if (IsEnrolled(sID, tID) == true)
+        if (IsEnrolled(sID, tID))
         {
             showAlert(tr("alert"), tr("alertPr"));
             return true;
