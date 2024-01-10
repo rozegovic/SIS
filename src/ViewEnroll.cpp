@@ -99,18 +99,19 @@ void ViewEnroll::initTableStudents()
 
 void ViewEnroll::populateDepartmentCombo(gui::DBComboBox& combo)
 {
-    dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT ID_Smjera,Naziv_Smjera FROM Smjer");
-    dp::Columns pCols = pSelect->allocBindColumns(2);
-    td::String name;
-    td::INT4 id;
-    pCols << "ID_Smjera" << id << "Naziv_Smjera" << name;
-    pSelect->execute();
+        dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT ID_Smjera,Naziv_Smjera FROM Smjer");
+        dp::Columns pCols = pSelect->allocBindColumns(2);
+        td::String name;
+        td::INT4 id;
+        pCols << "ID_Smjera" << id << "Naziv_Smjera" << name;
+        pSelect->execute();
 
-    while (pSelect->moveNext())
-    {
-        combo.addItem(name, id);
-    }
-    combo.selectIndex(0);
+        while (pSelect->moveNext())
+        {
+            combo.addItem(name, id);
+        }
+
+        combo.selectIndex(0);
 }
 
 void ViewEnroll::populateSemesterCombo(gui::ComboBox& combo)
@@ -123,6 +124,7 @@ void ViewEnroll::populateSemesterCombo(gui::ComboBox& combo)
     combo.addItem("VI");
 
     combo.selectIndex(0);
+
 }
 
 void ViewEnroll::populateDataForEnrolledStudents() {

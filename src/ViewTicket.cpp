@@ -1,6 +1,7 @@
-﻿#pragma once
+#pragma once
 #include "ViewTicket.h"
 #include "ViewIDs.h"
+#include "RequestUpdateWindow.h"
 
 ViewTicket::ViewTicket()
 	: _typelbl(tr("typeOfMessage"))
@@ -12,11 +13,13 @@ ViewTicket::ViewTicket()
 	, _titleFile("")
 	, _hlBtnsDB(4)
 	, _btnSend(tr("send"), tr("sendRequestTT"))
+	, _btnOpen(tr("open"), tr("openTT"))
 	, _gl(6, 6)
 	, _db(dp::create(dp::IDatabase::ConnType::CT_SQLITE, dp::IDatabase::ServerType::SER_SQLITE3))
 {
 
 	_hlBtnsDB.appendSpacer();
+	_hlBtnsDB.append(_btnOpen);
 	_hlBtnsDB.append(_btnSend);
 
 	_btnSend.setType(gui::Button::Type::Default);
@@ -59,12 +62,11 @@ bool ViewTicket::onChangedSelection(gui::ComboBox* pCmb)
 		case 0: _type.setValue(td::Variant("Upis")); break;
 		case 1: _type.setValue(td::Variant("Poruka")); break;
 		case 2: _type.setValue(td::Variant("Molba")); break;
-		case 3: _type.setValue(td::Variant("Žalba")); break;
+		case 3: _type.setValue(td::Variant("�alba")); break;
 		case 4: _type.setValue(td::Variant("Prijedlog")); break;
 		}
 		return true;
 	}
-
 	return false;
 }
 
@@ -203,7 +205,6 @@ bool ViewTicket::sendTicketWithAttachment()
 	_body.setValue("");
 
 	_titleFile.setTitle("");
-
 	return true;
 }
 
@@ -287,13 +288,13 @@ void ViewTicket::initTable()
 
 void ViewTicket::populateTableData()
 {
-	td::String setIndex = "SELECT SAOStudentTicket.Ticket_Tip as type, SAOStudentTicket.Req_Title as title, SAOStudentTicket.Status as status FROM SAOStudentTicket WHERE SAOStudentTicket.Indeks=";
 
-	setIndex.append(GetStudentIndeks().getConstStr());
-	setIndex.append(" ORDER BY ID");
-	_pDS = dp::getMainDatabase()->createDataSet(setIndex, dp::IDataSet::Execution::EX_MULT);
-	dp::DSColumns cols(_pDS->allocBindColumns(3));
-	cols << "type" << td::string8 << "title" << td::string8 << "status" << td::string8;
+	td::String setstr = "SELECT SAOStudentTicket.Ticket_Tip as type, SAOStudentTicket.Req_Title as title, SAOStudentTicket.Status, SAOStudentTicket.Request as request, SAOStudentTicket.ID as reqID, SAOStudentTicket.Indeks as indeks  FROM SAOStudentTicket WHERE SAOStudentTicket.Indeks=";
+	setstr.append(GetStudentIndeks().getConstStr());
+
+	_pDS = dp::getMainDatabase()->createDataSet(setstr, dp::IDataSet::Execution::EX_MULT);
+	dp::DSColumns cols(_pDS->allocBindColumns(6));
+	cols << "type" << td::string8 << "title" << td::string8 << "status" << td::string8 << "request" << td::string8 << "reqID" << td::int4 << "indeks" << td::string8;
 
 	if (!_pDS->execute())
 	{
@@ -304,3 +305,36 @@ void ViewTicket::populateTableData()
 	initTable();
 }
 
+
+void ViewTicket::UpdateTable() {
+
+	td::String setstr = "SELECT SAOStudentTicket.Ticket_Tip as type, SAOStudentTicket.Req_Title as title, SAOStudentTicket.Status, SAOStudentTicket.Request as request, SAOStudentTicket.ID as reqID, SAOStudentTicket.Indeks as indeks  FROM SAOStudentTicket WHERE SAOStudentTicket.Indeks=";
+	setstr.append(GetStudentIndeks().getConstStr());
+
+	auto pompDS = dp::getMainDatabase()->createDataSet(setstr, dp::IDataSet::Execution::EX_MULT);
+	dp::DSColumns cols(pompDS->allocBindColumns(6));
+	cols << "type" << td::string8 << "title" << td::string8 << "status" << td::string8 << "request" << td::string8 << "reqID" << td::int4 << "indeks" << td::string8;
+	if (!pompDS->execute())
+	{
+		pompDS = nullptr;
+		showAlert("errorReadingTable", "");
+		return;
+	}
+
+
+	_tableTickets.clean();
+
+
+	size_t nRows = pompDS->getNumberOfRows();
+	for (size_t i = 0; i < nRows; i++) {
+		_tableTickets.beginUpdate();
+		auto& rowpom = pompDS->getRow(i);
+		auto& row = _tableTickets.getEmptyRow();
+		row = rowpom;
+
+		_tableTickets.push_back();
+
+		_tableTickets.endUpdate();
+	}
+
+}
