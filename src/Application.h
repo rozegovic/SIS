@@ -30,7 +30,7 @@ public:
         fo::fs::path home;
         mu::getHomePath(home);
 
-        fo::fs::path DBPath = (home / "Work/CPProjects/SiS_v_Zadnji_Kopija/Temp_Baza_1.db");
+        fo::fs::path DBPath = (home / "other_bin/TestData/natGUITest/Temp_Baza.db");
 
         if (!pDB->connect(DBPath.string().c_str()))
             return false;

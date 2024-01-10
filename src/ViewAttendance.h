@@ -47,6 +47,7 @@ protected:
     gui::Button _btnDelete;
     gui::Button _btnUpdate;
     gui::Button _btnReport;
+
    // gui::Button _btnSave;
     
     gui::GridLayout _gl;
@@ -76,7 +77,6 @@ protected:
     //void SendAddMsg();
     void SendMsg(td::INT4 MsgType);
     bool CheckTime();
-    //void AttendanceReport(const gui::Image* pImage);
 };
 
 
