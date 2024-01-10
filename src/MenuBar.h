@@ -36,7 +36,7 @@ public:
         {
             auto& items1 = items[7].getItems();
             items1[0].initAsActionItem(tr("viewAttendance"), 80);
-            items1[1].initAsActionItem(tr("viewTimeSlot"), 160);
+            items1[1].initAsActionItem(tr("viewTimeSlot"), 160);   //dodati u prevod
         }
             
         items[8].initAsActionItem(tr("viewCurriculum"), 90);

@@ -192,7 +192,7 @@ void ViewAttendance::saveData()
         //row[0].getValue (val);
         dat = row[0];
         tip = row[3].i4Val();
-        predmet = 1;
+        predmet = _SubjectID;
         t = row[1];
         
         if (!pInsStat->execute())
@@ -348,52 +348,77 @@ void ViewAttendance::AttendanceReport(const gui::Image* pImage){
     CompanyData companyData;
     ObjectData objectData;
 
-   // rpt::ReportData repData(20, docData, companyData, objectData, pDB, mu::getAppSettings()->getTranslationExtension().c_str());
+   rpt::ReportData repData(2, docData, companyData, objectData, pDB, mu::getAppSettings()->getTranslationExtension().c_str());
 
-    //rpt::ReportData::iterator it(repData.begin());
+    rpt::ReportData::iterator it(repData.begin());
     
-    std::vector<td::Date> datumiTermina;
-    std::vector<td::Time> vremenaTermina;
+    td::Variant temp;
     td::Date tempD;
     td::Time tempT;
     
-    dp::IDataSet* pDP(pDB->createDataSet("select Datum, Vrijeme from Termini"));
-    dp::DSColumns cols(pDP->allocBindColumns(2));
-    
-    cols << "Datum" << tempD << "Vrijeme" << tempT;
-    if (!pDP->execute())//sto ovdje nece ne znam...
-    {
-        return;
-    }
-    while (pDP->moveNext()){
-        datumiTermina.push_back(tempD);
-        vremenaTermina.push_back(tempT);
-    }
-    rpt::ReportData repData(1, docData, companyData, objectData, pDB, mu::getAppSettings()->getTranslationExtension().c_str());
-
-    rpt::ReportData::iterator it(repData.begin());
-    dp::IDataSet* pRep(pDB->createDataSet("select a.Ime, a.Prezime FROM Korisnici a, Prisustvo b, Termini c WHERE b.ID_Studenta = a.ID AND b.ID_termina = c.ID and c.Datum = ? and c.Vrijeme = ?"));
-    dp::DSColumns colsRep(pRep->allocBindColumns(2));
-    colsRep << "Ime" << td::string8 << "Prezime" << td::string8;
-    it << rpt::ContainerType::CNT_Body << pRep;
-    dp::Params pars = pRep->allocParams();
-    pars << tempD << tempT;
-    //for (int i = 0; i < datumiTermina.size(); i++){
-        tempD = datumiTermina.at(0);
-        tempT =  vremenaTermina.at(0);
+  /*  _date.getValue(temp);
+   // tempD = temp;
+    tempD = td::Date (2024, 1, 7);
+    _time.getValue(temp);
+    //tempT = temp;
+    tempT  = 649079385;
+   {
+        dp::IDataSet* pDP(dp::createConnectionlessDataSet(dp::IDataSet::Size::SingleRow));
         
-        if(!pRep->execute()){
-            return;
-        }
-        size_t nRows = pRep->getNumberOfRows();
-        if (nRows == 0)
-        {
-            //niko nije prijavljen, smislit sta treba radit
-            //return;
-        }
-        //it << rpt::ContainerType::CNT_Body << pRep;
-        //++it;
-   // }
+        it << rpt::ContainerType::CNT_DocHeader << pDP; //define field and its data
+        
+        dp::DSColumns cols(pDP->allocBindColumns(2));
+        cols << "date" << td::int4
+        << "time" << td::int4;
+        
+        
+        pDP->execute();
+        
+        auto& row = pDP->getRow(0);
+        row[0] = tempD;
+        row[1] = tempT;
+    }
+    
+    ++it;*/
+    
+    {
+        dp::IDataSet* pRep(pDB->createDataSet("select a.Ime, a.Prezime, c.Datum as Datum, c.Vrijeme as Vrijeme FROM Korisnici a, Prisustvo b, Termini c WHERE b.ID_Studenta = a.ID AND b.ID_termina = c.ID"));
+           dp::DSColumns colsRep(pRep->allocBindColumns(4));
+        colsRep << "Ime" << td::string8 << "Prezime" << td::string8 <<"Datum" << td::date <<"Vrijeme" << td::time;
+           it << rpt::ContainerType::CNT_Body << pRep;
+           
+               
+               if(!pRep->execute()){
+                   return;
+               }
+               size_t nRows = pRep->getNumberOfRows();
+               if (nRows == 0)
+               {
+                   //niko nije prijavljen, smislit sta treba radit
+                   //return;
+               }
+
+    }
+   ++it;
+    it.nextLayout();
+    {
+        dp::IDataSet* pRep(pDB->createDataSet("SELECT a.Ime, a.Prezime FROM Korisnici a LEFT JOIN Prisustvo b ON a.ID =  b.ID_studenta WHERE b.ID_studenta IS NULL AND a.PozicijaID = 5"));
+           dp::DSColumns colsRep(pRep->allocBindColumns(2));
+        colsRep << "Ime" << td::string8 << "Prezime" << td::string8;
+           it << rpt::ContainerType::CNT_Body << pRep;
+           
+               
+               if(!pRep->execute()){
+                   return;
+               }
+               size_t nRows = pRep->getNumberOfRows();
+               if (nRows == 0)
+               {
+                   //niko nije prijavljen, smislit sta treba radit
+                   //return;
+               }
+    }
+   
     td::String configName("ClassAttRep");
 
     rpt::IViewer* pRepView = rpt::IViewer::create(configName, repData);
@@ -406,3 +431,80 @@ void ViewAttendance::AttendanceReport(const gui::Image* pImage){
 
     
 }
+/*void ViewAttendance::AttendanceReport(const gui::Image* pImage){
+    dp::IDatabase* pDB = dp::getMainDatabase();
+
+    DocumentData docData(_SubjectID);
+    CompanyData companyData;
+    ObjectData objectData;
+
+    //docData[RPT_TXT_DOCUMENT_TYPE] = "Prijave na termine nastave";
+    //docData[RPT_TXT_DOCUMENT_ID] = "";
+    
+    rpt::ReportData repData(2, docData, companyData, objectData, pDB, mu::getAppSettings()->getTranslationExtension().c_str());
+
+    rpt::ReportData::iterator it(repData.begin());
+    //#endif
+        //Grouper
+    {
+        dp::IDataSet* pDP(pDB->createDataSet("select b.Datum FROM Termini b ORDER BY Datum ASC"));
+
+        //#ifdef REPTEST
+        it << rpt::ContainerType::CNT_Grouper << pDP; //define field and its data
+        //#endif
+        dp::DSColumns cols(pDP->allocBindColumns(1));
+        cols  << "Datum" << td::date;
+        if (!pDP->execute())//sto ovdje nece ne znam...
+        {
+            return;
+        }
+        //it << rpt::ContainerType::CNT_Body << pDP;
+
+        size_t nRows = pDP->getNumberOfRows();
+        if (nRows == 0)
+        {
+            //nema termina u tabeli
+
+            return;
+        }
+    }
+    ++it;
+    {
+        dp::IDataSet* pDP(pDB->createDataSet("select a.Ime, a.Prezime From Korisnici a, Prisustvo c Where a.ID = c.ID_Studenta"));
+
+        //#ifdef REPTEST
+        it << rpt::ContainerType::CNT_Body << pDP; //define field and its data
+        //#endif
+        dp::DSColumns cols(pDP->allocBindColumns(2));
+        cols  << "Ime" << td::string8 << "Prezime" << td::string8;
+        if (!pDP->execute())//sto ovdje nece ne znam...
+        {
+            return;
+        }
+        //it << rpt::ContainerType::CNT_Body << pDP;
+
+        size_t nRows = pDP->getNumberOfRows();
+        if (nRows == 0)
+        {
+            //nema termina u tabeli
+
+            return;
+        }
+    }
+
+    //InvoiceSimple
+    td::String configName("ClassAttRep");
+
+    rpt::IViewer* pRepView = rpt::IViewer::create(configName, repData);
+    if (pRepView)
+    {
+        pRepView->show(gui::tr("ClassAttRep"), pImage);
+
+    }
+
+    
+
+
+    
+}
+*/
