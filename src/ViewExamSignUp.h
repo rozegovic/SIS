@@ -76,5 +76,6 @@ protected:
     virtual bool onClick(gui::Button* pBtn);
     void populateDataForTable1();
     void populateDataForTable2();
+    virtual bool onChangedSelection(gui::TableEdit* pTE);
 };
 

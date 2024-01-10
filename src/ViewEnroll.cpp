@@ -15,11 +15,11 @@ ViewEnroll::ViewEnroll() :
     _indexlbl(tr("indexUserL")),
     _enrolled(tr("enrolled")),
     _toBeEnrolled(tr("tobeenrolled")),
-     _hlBtnsDB(8)
+    _hlBtnsDB(8)
     , _btnSave(tr("Save"), tr("SaveTT"))
     , _btnReload(tr("Reload"), tr("ReloadTT"))
     , _btnEnroll(tr("Enroll"), tr("EnrollTT"))
-    ,_btnWithdraw(tr("Withdraw"),tr("WithdrawTT"))
+    , _btnWithdraw(tr("Withdraw"), tr("WithdrawTT"))
     , _gl(7, 6)
     , _db(dp::create(dp::IDatabase::ConnType::CT_SQLITE, dp::IDatabase::ServerType::SER_SQLITE3))
 {
@@ -64,7 +64,7 @@ ViewEnroll::ViewEnroll() :
 
     populateDataForStudents();
     populateDataForEnrolledStudents();
-    
+
     populateDepartmentCombo(_department);
     populateSemesterCombo(_semesterCombo);
 
@@ -99,20 +99,21 @@ void ViewEnroll::initTableStudents()
 
 void ViewEnroll::populateDepartmentCombo(gui::DBComboBox& combo)
 {
-        dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT ID_Smjera,Naziv_Smjera FROM Smjer");
-        dp::Columns pCols = pSelect->allocBindColumns(2);
-        td::String name;
-        td::INT4 id;
-        pCols << "ID_Smjera" << id << "Naziv_Smjera" << name;
-        pSelect->execute();
+    dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT ID_Smjera,Naziv_Smjera FROM Smjer");
+    dp::Columns pCols = pSelect->allocBindColumns(2);
+    td::String name;
+    td::INT4 id;
+    pCols << "ID_Smjera" << id << "Naziv_Smjera" << name;
+    pSelect->execute();
 
-        while (pSelect->moveNext())
-        {
-            combo.addItem(name, id);
-        }
+    while (pSelect->moveNext())
+    {
+        combo.addItem(name, id);
+    }
+    combo.selectIndex(0);
 }
 
-void ViewEnroll::populateSemesterCombo(gui::ComboBox& combo) 
+void ViewEnroll::populateSemesterCombo(gui::ComboBox& combo)
 {
     combo.addItem("I");
     combo.addItem("II");
@@ -120,6 +121,8 @@ void ViewEnroll::populateSemesterCombo(gui::ComboBox& combo)
     combo.addItem("IV");
     combo.addItem("V");
     combo.addItem("VI");
+
+    combo.selectIndex(0);
 }
 
 void ViewEnroll::populateDataForEnrolledStudents() {
@@ -139,7 +142,7 @@ void ViewEnroll::populateDataForStudents()
     _pDS = dp::getMainDatabase()->createDataSet("SELECT K.ID as IDUser, K.Ime as nameUser, K.Prezime as surnameUser, K.Indeks as indexUser FROM Korisnici K LEFT JOIN Upis U ON K.Indeks = U.Indeks WHERE U.ID IS NULL AND K.Indeks != 0", dp::IDataSet::Execution::EX_MULT);
     dp::DSColumns cols(_pDS->allocBindColumns(4));
     cols << "IDUser" << td::int4 << "nameUser" << td::string8 << "surnameUser" << td::string8 << "indexUser" << td::string8;
-    
+
     if (!_pDS->execute())
     {
         _pDS = nullptr;
@@ -157,20 +160,20 @@ bool ViewEnroll::onChangedSelection(gui::TableEdit* pTE) {
         if (iRow < 0) {
             return true;
         }
-            td::Variant val;
-            dp::IDataSet* pDS = _tableStudents.getDataSet();
-            auto& row = pDS->getRow(iRow);
-            val = row[0];
-            _id.setValue(val);
+        td::Variant val;
+        dp::IDataSet* pDS = _tableStudents.getDataSet();
+        auto& row = pDS->getRow(iRow);
+        val = row[0];
+        _id.setValue(val);
 
-            val = row[1];
-            _name.setValue(val);
+        val = row[1];
+        _name.setValue(val);
 
-            val = row[2];
-            _surname.setValue(val);
+        val = row[2];
+        _surname.setValue(val);
 
-            val = row[3];
-            _index.setValue(val);
+        val = row[3];
+        _index.setValue(val);
 
         return true;
     }
@@ -207,7 +210,7 @@ bool ViewEnroll::onChangedSelection(gui::TableEdit* pTE) {
     return false;
 }
 
-bool ViewEnroll::onChangedSelection(gui::ComboBox* pCmb) 
+bool ViewEnroll::onChangedSelection(gui::ComboBox* pCmb)
 {
     if (pCmb == &_semesterCombo) {
 
@@ -230,7 +233,7 @@ bool ViewEnroll::onChangedSelection(gui::ComboBox* pCmb)
 
 void ViewEnroll::populateDSRow(dp::IDataSet::Row& row)
 {
-    td::Variant val,val1;
+    td::Variant val, val1;
     _id.getValue(val);
     row[0].setValue(val);
 
@@ -280,11 +283,11 @@ bool ViewEnroll::onClick(gui::Button* pBtn)
             return true;
         if (iRow >= 0) {
             _tableEnrolled.beginUpdate();
-                auto& row = _tableEnrolled.getEmptyRow();
-                populateDSRow(row);
-                row[3] = rowToBeDel[3];
-                _tableEnrolled.push_back();
-                
+            auto& row = _tableEnrolled.getEmptyRow();
+            populateDSRow(row);
+            row[3] = rowToBeDel[3];
+            _tableEnrolled.push_back();
+
             _tableEnrolled.endUpdate();
             _tableStudents.removeRow(iRow);
             return true;
@@ -295,17 +298,17 @@ bool ViewEnroll::onClick(gui::Button* pBtn)
         showYesNoQuestionAsync(QuestionID::Save, this, tr("alert"), tr("saveSure"), tr("Yes"), tr("No"));
         return true;
     }
-    
+
     return false;
 }
-bool ViewEnroll::saveEnrolls() 
+bool ViewEnroll::saveEnrolls()
 {
     //ovo je kada su svi updateovani
     dp::IStatementPtr pInsStat(_db->createStatement("INSERT INTO Upis (ID, Indeks, ID_smjera, Semestar) VALUES (?,?,?,?) "));
     dp::Params parDS(pInsStat->allocParams());
-    td::INT4 IDSmjer, semestar,id=1;
+    td::INT4 IDSmjer, semestar, id = 1;
     td::String index;
-    parDS << id << dp::toNCh(index,30) << IDSmjer << semestar;
+    parDS << id << dp::toNCh(index, 30) << IDSmjer << semestar;
 
     dp::IStatementPtr pDel(_db->createStatement("DELETE FROM Upis"));
     if (!pDel->execute())
@@ -316,7 +319,7 @@ bool ViewEnroll::saveEnrolls()
     size_t nRows = _pDS2->getNumberOfRows();
     for (size_t i = 0; i < nRows; i++) {
         auto row = _pDS2->getRow(i);
-        index = row[3]; 
+        index = row[3];
         IDSmjer = row[5].i4Val();
         semestar = row[6].i4Val();
         if (!pInsStat->execute())
