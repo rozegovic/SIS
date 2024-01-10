@@ -13,7 +13,7 @@
 #include <gui/Image.h>
 #include <gui/Frame.h>
 
-ViewAttendance::ViewAttendance(td::INT4 SubjectID):
+ViewAttendance::ViewAttendance(td::INT4 SubjectID, ViewSubject* subject):
 _LblSubjName(tr("AttSubj")),
 _LblDate(tr("AttDate")),
 _LblTime(tr("AttTime"))
@@ -29,7 +29,7 @@ _LblTime(tr("AttTime"))
 ,_SubjectID(SubjectID)
 ,_imgClassAtt(":complex")
 {
-    
+    _subject = subject;
     
     _hlBtnsDB.appendSpacer();
     _hlBtnsDB.append(_btnDelete);
@@ -254,6 +254,8 @@ bool ViewAttendance::onClick(gui::Button* pBtn)
         _table.push_back();
         _table.endUpdate();
         saveData();
+        _subject->getDate().clean();
+        _subject->populateDateCombo(_subject->getDate());
         if(CheckTime())
             SendMsg(1);
         return true;
