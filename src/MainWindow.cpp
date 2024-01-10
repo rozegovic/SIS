@@ -290,6 +290,7 @@ bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc)
         break; case 140: return showMessagesView();
         break; case 150: return showSomeSubjectChoose();
         break; case 160: return showUpload(); 
+        break; case 170: return showSubjectChooseForTimeSlot();
 
 
 
@@ -298,6 +299,19 @@ bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc)
         break; default: break;
         }
 
+    }
+
+   
+
+    if (menuID == 20 && firstSubMenuID == 30 && lastSubMenuID == 30){
+        switch (actionID){
+                break; case 80: return showSubjectChoose();
+        }
+    }
+    if (menuID == 20 && firstSubMenuID == 30 && lastSubMenuID == 30) {        ///
+        switch (actionID) {
+        break; case 170: return showSubjectChooseForTimeSlot();
+        }
     }
 
 
