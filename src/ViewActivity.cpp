@@ -4,19 +4,6 @@
 #include "Globals.h"
 #include "WindowMessages.h"
 #include "SendMessage.h"
-#include "ReportActivityData.h"
-#include <rpt/IViewer.h>
-#include <iostream>
-#include <math.h>
-#include <dp/IDataSetDelegate.h>
-#include <gui/ContextMenu.h>
-#include <dp/IDatabase.h>
-#include <dp/IDataSet.h>
-#include <mu/IAppSettings.h>
-#include <gui/Image.h>
-#include <gui/Frame.h>
-
-
 
 
 
@@ -139,13 +126,10 @@ ViewActivity::ViewActivity(td::INT4 SubjectID) : _db(dp::getMainDatabase()) //ov
 , _btnDelete(tr("Delete"))
 , _btnUpdate(tr("Update"))
 , _btnInsert(tr("Insert"))
-, _btnReport(tr("Report"))
-, _hlBtns(9) //nisam siguran koliko ce biti dugmadi
-, _gl(6, 4)
+, _hlBtns(8) //nisam siguran koliko ce biti dugmadi
+, _gl(5, 4)
 , _paramFrom(0)
 , _paramTo(100)
-, SubjectID(SubjectID)
-, _imgActivityRep(":complex")
 //ne bi trebalo da jos ista fali
 {
     setVisualID(View_ACTIVITY);
@@ -157,9 +141,7 @@ ViewActivity::ViewActivity(td::INT4 SubjectID) : _db(dp::getMainDatabase()) //ov
     _hlBtns.append(_btnDelete, td::HAlignment::Right);
     _hlBtns.append(_btnUpdate, td::HAlignment::Right);
     _hlBtns.append(_btnInsert, td::HAlignment::Right);
-    _hlBtns.append(_btnReport, td::HAlignment::Right);
     _btnSave.setAsDefault();
-    _btnReport.setType(gui::Button::Type::Normal);
 
     SetCurrentSubject();
     _cName.setAsReadOnly();
@@ -535,10 +517,6 @@ void ViewActivity::SetCurrentSubject() {
 
             return true;
         }
-        if (pBtn == &_btnReport) {
-            ActivityReport(&_imgActivityRep, SubjectID);
-            return true;
-        }
         return false;
     }
 
@@ -694,60 +672,7 @@ void ViewActivity::SetCurrentSubject() {
             return true;
         }
         //show msg - cant update
-
-
         return false;
     }
-    
-    void ViewActivity::ActivityReport(const gui::Image* pImage, td::INT4 SubjectID)
-    {
-
-        dp::IDatabase* pDB = dp::getMainDatabase();
-
-        //#ifdef REPTEST
-        DocumentData docData(SubjectID);
-        CompanyData companyData;
-        ObjectData objectData;
-
-        rpt::ReportData repData(1, docData, companyData, objectData, pDB, mu::getAppSettings()->getTranslationExtension().c_str());
-        rpt::ReportData::iterator it(repData.begin());
-        //#endif
-            //Body 
-        {
-            dp::IDataSet* pDP(pDB->createDataSet("select a.ID_Korisnika, a.ID_Aktivnosti, a.Ocjena, b.Naziv_Aktivnosti, c.Indeks, c.Ime, c.Prezime from OcjeneIspita a, Aktivnosti b, Korisnici c where a.ID_Aktivnosti = b.ID_Aktivnosti and a.ID_Korisnika = c.ID and b.ID_Predmeta = ? Order by b.Naziv_Aktivnosti DESC"));
-
-            //#ifdef REPTEST
-            it << rpt::ContainerType::CNT_Body << pDP; //define field and its data
-            //#endif
-            dp::DSColumns cols(pDP->allocBindColumns(7));
-            cols << "ID_Korisnika" << td::int4 << "ID_Aktivnosti" << td::int4 << "Naziv_Aktivnosti" << td::string8 << "Indeks" << td::string8 << "Ime" << td::string8 << "Prezime" << td::string8<< "Ocjena" << td::string8 ;
-            dp::Params pars = pDP->allocParams();
-            pars << SubjectID;
-
-
-            if (!pDP->execute())//sto ovdje nece ne znam...
-            {
-                return;
-            }
-
-
-            size_t nRows = pDP->getNumberOfRows();
-            if (nRows == 0)
-            {   
-                showAlert(tr("alert"), tr("alertActivityRep"));
-                return;
-                
-            }
-        }
-
-        td::String configName("ActivityRep");
-
-        rpt::IViewer* pRepView = rpt::IViewer::create(configName, repData);
-        if (pRepView)
-        {
-            pRepView->show(gui::tr("ActivityRep"), pImage);            
-        }
-    }
-    
 
     

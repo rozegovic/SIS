@@ -1,10 +1,11 @@
-﻿#pragma once
-#include "ViewGradeExams.h"
+#pragma once
+#include "ViewGradeLabHomework.h"
 #include <td/Types.h>
 #include "Reports.h"
 #include "SendMessage.h"
 
-ViewGradeExams::ViewGradeExams(td::INT4 SubjectID) : _db(dp::getMainDatabase())
+
+ViewGradeLabHomework::ViewGradeLabHomework(td::INT4 SubjectID) : _db(dp::getMainDatabase())
 , _lblName(tr("userName:"))
 , _lblLName(tr("userLName:"))
 , _lblIndex(tr("indeksUser:"))
@@ -20,7 +21,8 @@ ViewGradeExams::ViewGradeExams(td::INT4 SubjectID) : _db(dp::getMainDatabase())
 , _gl(6, 4) // pazi na brojeve----neka budu tri reda ovih labela (naziv aktivnosti i naziv predmeta, ime i prezime, indeks i ocjena)
 , _SubjectID(SubjectID)
 , _report(1)
-, _imgExamGrades(":complex")
+, _imgHWGrades(":complex")
+
 {
 
 	_hlBtns.appendSpacer();
@@ -72,26 +74,26 @@ ViewGradeExams::ViewGradeExams(td::INT4 SubjectID) : _db(dp::getMainDatabase())
 	onChangedSelection(&_table);
 }
 
-void ViewGradeExams::populateData()
+void ViewGradeLabHomework::populateData()
 {
 
-	_pDS = _db->createDataSet("SELECT a.ID_Korisnika, a.ID_Aktivnosti, b.Naziv_Aktivnosti, c.Indeks, c.Ime, c.Prezime, d.Ocjena, d.ID FROM PolazniciAktivnosti a, Aktivnosti b, Korisnici c, OcjeneIspita d WHERE a.ID_Aktivnosti = b.ID_Aktivnosti AND d.ID_Korisnika=a.ID_Korisnika AND d.ID_Aktivnosti=b.ID_Aktivnosti AND a.ID_Korisnika = c.ID AND b.ID_Predmeta = ? AND b.Tip_Aktivnosti = 1 ORDER BY b.Naziv_Aktivnosti DESC", dp::IDataSet::Execution::EX_MULT);
+	_pDS = _db->createDataSet("SELECT a.ID_Korisnika, a.ID_Aktivnosti, b.Naziv_Aktivnosti, c.Indeks, c.Ime, c.Prezime, d.Ocjena as Procenat, d.ID FROM PolazniciAktivnosti a, Aktivnosti b, Korisnici c, OcjeneLabZadace d WHERE a.ID_Aktivnosti = b.ID_Aktivnosti AND d.ID_Korisnika = a.ID_Korisnika AND d.ID_Aktivnosti = b.ID_Aktivnosti AND a.ID_Korisnika = c.ID AND b.ID_Predmeta = ? AND b.Tip_Aktivnosti IN(5, 2) ORDER BY b.Naziv_Aktivnosti DESC", dp::IDataSet::Execution::EX_MULT);
 
 	dp::Params parDS(_pDS->allocParams());
 
 	parDS << _SubjectID;
 	dp::DSColumns cols(_pDS->allocBindColumns(8));
-	cols << "ID_Korisnika" << td::int4 << "ID_Aktivnosti" << td::int4 << "Naziv_Aktivnosti" << td::string8 << "Indeks" << td::string8 << "Ime" << td::string8 << "Prezime" << td::string8 << "Ocjena" << td::string8 << "ID" << td::int4;
+	cols << "ID_Korisnika" << td::int4 << "ID_Aktivnosti" << td::int4 << "Naziv_Aktivnosti" << td::string8 << "Indeks" << td::string8 << "Ime" << td::string8 << "Prezime" << td::string8 << "Procenat" << td::string8 << "ID" << td::int4;
 
 	if (!_pDS->execute())
 	{
 		_pDS = nullptr;
 		return;
 	}
-	_table.init(_pDS, { 4,5,3,2,6});
+	_table.init(_pDS, { 4,5,3,2,6 });
 }
 
-bool ViewGradeExams::onChangedSelection(gui::TableEdit* pTE)
+bool ViewGradeLabHomework::onChangedSelection(gui::TableEdit* pTE)
 {
 	if (pTE == &_table) {
 		int iRow = _table.getFirstSelectedRow();
@@ -124,7 +126,7 @@ bool ViewGradeExams::onChangedSelection(gui::TableEdit* pTE)
 	return false;
 }
 
-void ViewGradeExams::populateDSRow(dp::IDataSet::Row& row, td::INT4 id)
+void ViewGradeLabHomework::populateDSRow(dp::IDataSet::Row& row, td::INT4 id)
 {
 	td::Variant val;
 	_grade.getValue(val);
@@ -147,24 +149,19 @@ void ViewGradeExams::populateDSRow(dp::IDataSet::Row& row, td::INT4 id)
 
 	td::Variant x = id;
 	row[7].setValue(x);
-	/*td::INT4 a = _UserID;
-	val = _UserID;
-	row[0].setValue(val);*/
 
-	//val = _ActivityID;
-	//row[1].setValue(val);
 
 }
-bool ViewGradeExams::canAdd()
+bool ViewGradeLabHomework::canAdd()
 {
 	// nema provjera za sada
 	return true;
 }
 
-bool ViewGradeExams::eraseExamGrade()
+bool ViewGradeLabHomework::eraseLabHomeworkGrade()
 {
 	td::INT4 id;
-	dp::IStatementPtr pDeleteGrade(_db->createStatement("update OcjeneIspita SET Ocjena = NULL where ID = ?"));
+	dp::IStatementPtr pDeleteGrade(_db->createStatement("update OcjeneLabZadace SET Ocjena = NULL where ID = ?"));
 	dp::Params pParams2(pDeleteGrade->allocParams());
 	pParams2 << id;
 
@@ -181,9 +178,9 @@ bool ViewGradeExams::eraseExamGrade()
 
 }
 
-bool ViewGradeExams::insertExamGrade()
+bool ViewGradeLabHomework::insertLabHomeworkGrade()
 {
-	dp::IStatementPtr pUpdateGrade(_db->createStatement("UPDATE OcjeneIspita SET Ocjena=? WHERE ID=?"));
+	dp::IStatementPtr pUpdateGrade(_db->createStatement("UPDATE OcjeneLabZadace SET Ocjena=? WHERE ID=?"));
 	dp::Params pParams2(pUpdateGrade->allocParams());
 	td::String grade;
 	td::INT4 id;
@@ -208,9 +205,9 @@ bool ViewGradeExams::insertExamGrade()
 	return true;
 }
 
-bool ViewGradeExams::updateExamGrade()
+bool ViewGradeLabHomework::updateLabHomeworkGrade()
 {
-	dp::IStatementPtr pUpdateGrade(_db->createStatement("UPDATE OcjeneIspita SET Ocjena=? WHERE ID=?"));
+	dp::IStatementPtr pUpdateGrade(_db->createStatement("UPDATE OcjeneLabZadace SET Ocjena=? WHERE ID=?"));
 	dp::Params pParams2(pUpdateGrade->allocParams());
 	td::String grade;
 	td::INT4 id;
@@ -235,16 +232,16 @@ bool ViewGradeExams::updateExamGrade()
 	}
 	return true;
 }
-bool ViewGradeExams::saveData()
+bool ViewGradeLabHomework::saveData()
 {
 	dp::Transaction tran(_db);
-	if (!eraseExamGrade())
+	if (!eraseLabHomeworkGrade())
 		return false;
 
-	if (!insertExamGrade())
+	if (!insertLabHomeworkGrade())
 		return false;
 
-	if (!updateExamGrade())
+	if (!updateLabHomeworkGrade())
 		return false;
 
 	if (tran.commit())
@@ -261,12 +258,12 @@ bool ViewGradeExams::saveData()
 		MsgSender msg;
 		msg.sendSystemMsgtoUser(naslov, poruka, i);
 	}
-	_userids.clear(); 
+	_userids.clear();
 
 	return true;
 }
 
-bool ViewGradeExams::onClick(gui::Button* pBtn)
+bool ViewGradeLabHomework::onClick(gui::Button* pBtn)
 {
 	if (pBtn == &_btnDelete)
 	{
@@ -281,11 +278,10 @@ bool ViewGradeExams::onClick(gui::Button* pBtn)
 
 		_table.beginUpdate();
 		auto& row = _table.getCurrentRow();
-
 		row[6].toZero();
 		td::INT4 a = row[0].i4Val();
 		_userids.insert(a);
-	//	_table.updateRow(iRow);
+		//	_table.updateRow(iRow);
 		_table.endUpdate();
 
 		_itemsToDelete.push_back(itemid);
@@ -305,7 +301,6 @@ bool ViewGradeExams::onClick(gui::Button* pBtn)
 
 		_table.beginUpdate();
 		auto& row = _table.getCurrentRow();
-		
 		populateDSRow(row, itemid);
 		td::INT4 a = row[0].i4Val();
 		_userids.insert(a);
@@ -323,9 +318,9 @@ bool ViewGradeExams::onClick(gui::Button* pBtn)
 		td::INT4 itemid = getIDfromTable(iRow);
 		_table.beginUpdate();
 		auto& row = _table.getCurrentRow();
+		populateDSRow(row, itemid);
 		td::INT4 a = row[0].i4Val();
 		_userids.insert(a);
-		populateDSRow(row, itemid);
 		_table.updateRow(iRow);
 		_table.endUpdate();
 
@@ -337,13 +332,16 @@ bool ViewGradeExams::onClick(gui::Button* pBtn)
 		saveData();
 	}
 	if (pBtn == &_btnReport) {
-		examGrades(&_imgExamGrades, _SubjectID);
+		//gui::Image _imgExamGrades(":complex");
+		labGrades(&_imgHWGrades, _SubjectID);
+		//homeworkGrades(&_imgHWGrades, _SubjectID); //---------------------popraviti da se mogu dva sacuvati
+
 		// pada zbog pristupa nedozvoljenim lokacijama - PROBLEM
 	}
 	return false;
 }
 
-void ViewGradeExams::SetCurrentSubject()
+void ViewGradeLabHomework::SetCurrentSubject()
 {
 	dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT Naziv_Predmeta FROM Predmet WHERE ID_Predmeta = ?");
 	dp::Params parDS(pSelect->allocParams());
@@ -364,7 +362,7 @@ void ViewGradeExams::SetCurrentSubject()
 	}
 }
 
-td::INT4 ViewGradeExams::getIDfromTable(int rowID)
+td::INT4 ViewGradeLabHomework::getIDfromTable(int rowID)
 {
 	dp::IDataSet* pDS = _table.getDataSet();
 	auto& row = pDS->getRow(rowID);
@@ -372,9 +370,9 @@ td::INT4 ViewGradeExams::getIDfromTable(int rowID)
 	return row[7].i4Val();
 }
 
-td::INT4 ViewGradeExams::findMaxID()
+td::INT4 ViewGradeLabHomework::findMaxID()
 {
-	dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select ifnull(max(ID), 0) as maxid from OcjeneIspita");
+	dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select ifnull(max(ID), 0) as maxid from OcjeneLabZadace");
 	dp::Columns pColumns = pSelect->allocBindColumns(1);
 	td::INT4 maxID;
 	pColumns << "maxid" << maxID;
@@ -410,9 +408,9 @@ td::INT4 ViewGradeExams::findMaxID()
 	return ++maxID;
 }
 
-void ViewGradeExams::insertValues(td::INT4 subjectID)
+void ViewGradeLabHomework::insertValues(td::INT4 subjectID)
 {
-	dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("INSERT INTO OcjeneIspita (ID_Korisnika, ID_Aktivnosti) SELECT a.ID_Korisnika, a.ID_Aktivnosti FROM PolazniciAktivnosti a WHERE NOT EXISTS( SELECT 1 FROM OcjeneIspita WHERE OcjeneIspita.ID_Korisnika = a.ID_Korisnika AND OcjeneIspita.ID_Aktivnosti = a.ID_Aktivnosti);");
+	dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("INSERT INTO OcjeneLabZadace (ID_Korisnika, ID_Aktivnosti) SELECT a.ID_Korisnika, a.ID_Aktivnosti FROM PolazniciAktivnosti a WHERE NOT EXISTS( SELECT 1 FROM OcjeneLabZadace WHERE OcjeneLabZadace.ID_Korisnika = a.ID_Korisnika AND OcjeneLabZadace.ID_Aktivnosti = a.ID_Aktivnosti);");
 	if (!pSelect->execute())
 		return;
 	if (!pSelect->moveNext())

@@ -20,6 +20,7 @@
 #include "DialogCurriculum.h"
 #include "ViewMessages.h"
 #include "ViewGradeExams.h"
+#include "ViewGradeLabHomework.h"
 #include "upload.h"
 
 #include <rpt/IResources.h>
@@ -42,6 +43,7 @@ MainWindow::MainWindow()
     , _imgCourseenr(":plus")
     , _imgMessages(":complex")
     , _imgExamGrades(":complex")
+    , _imgExamLabHomework(":complex")
     , _imgUpload(":complex")
 {
     setTitle(tr("SIS"));
@@ -120,25 +122,6 @@ bool MainWindow::showSubjectChoose()
         });
 
     //pDlg->openModal(DlgID::Login, this);
-    return false;
-}
-
-
-
-bool MainWindow::showSubjectChooseForTimeSlot()                                         ///
-{
-
-    DialogChooseSubjectForTimeSlot* pDlg = new DialogChooseSubjectForTimeSlot(this);
-    pDlg->setTitle(tr("SubjectChoose"));
-    pDlg->openModal([this](gui::Dialog::Button::ID btn, gui::Dialog* pDlg)
-        {
-            auto btnID = pDlg->getClickedButtonID();
-            if (btnID == gui::Dialog::Button::ID::OK) {
-                auto dlgCS = static_cast<DialogChooseSubjectForTimeSlot*> (pDlg);
-                showTimeSlotView(dlgCS->getSubjectID());                              ///
-            }
-            else return true;
-        });
     return false;
 }
 
@@ -259,6 +242,31 @@ bool MainWindow::showSomeSubjectChoose()
 
     return false;
 }
+bool MainWindow::showSomeSubjectChoose2()
+{
+    auto x = Globals::_currentUserRole;
+    if (x != 1)
+    {
+        showAlert(tr("AccessNotAllowed"), "");
+        return true;
+    }
+    DialogChooseSubject* pDlg = new DialogChooseSubject(this);
+    pDlg->setTitle(tr("SubjectChoose"));
+    pDlg->openModal([this](gui::Dialog::Button::ID btn, gui::Dialog* pDlg)
+        {
+            auto btnID = pDlg->getClickedButtonID();
+            if (btnID == gui::Dialog::Button::ID::OK) {
+                auto dlgCS = static_cast<DialogChooseSubject*> (pDlg);
+                //examGrades(&_imgExamAtt, dlgCS->getSubjectID());
+
+                showGradeLabHomeworkView(dlgCS->getSubjectID());
+            }
+            return true;
+        });
+
+    return false;
+}
+
 
 
 
@@ -309,7 +317,7 @@ bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc)
         break; case 140: return showMessagesView();
         break; case 150: return showSomeSubjectChoose();
         break; case 160: return showUpload(); 
-        break; case 170: return showSubjectChooseForTimeSlot();
+        break; case 170: return showSomeSubjectChoose2();
 
 
 
@@ -318,19 +326,6 @@ bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc)
         break; default: break;
         }
 
-    }
-
-   
-
-    if (menuID == 20 && firstSubMenuID == 30 && lastSubMenuID == 30){
-        switch (actionID){
-                break; case 80: return showSubjectChoose();
-        }
-    }
-    if (menuID == 20 && firstSubMenuID == 30 && lastSubMenuID == 30) {        ///
-        switch (actionID) {
-        break; case 170: return showSubjectChooseForTimeSlot();
-        }
     }
 
 
@@ -495,6 +490,11 @@ bool MainWindow::showAttendanceView(td::INT4 SubjectID)
 bool MainWindow::showCurriculumView(td::INT4 _departmentID, td::INT4 _semesterID)
 {
     //showSubjectChoose();
+    if (!Globals::isAdmin && !Globals::isSAO)
+    {
+        showAlert(tr("AccessNotAllowed"), "");
+        return true;
+    }
     if (focusOnViewPositionWithID(View_CURRICULUM))
         return true;
 
@@ -569,6 +569,18 @@ bool MainWindow::showGradeExamView(td::INT4 SubjectID)
 
     ViewGradeExams* pView = new ViewGradeExams(SubjectID);
     _mainView.addView(pView, tr("viewGradeExam"), &_imgExamGrades);
+
+    return true;
+}
+
+bool MainWindow::showGradeLabHomeworkView(td::INT4 SubjectID)
+{
+    td::INT4 ViewID = (View_GRADE_LABHOM << 24) | SubjectID;
+    if (focusOnViewPositionWithID(ViewID))
+        return true;
+
+    ViewGradeLabHomework* pView = new ViewGradeLabHomework(SubjectID);
+    _mainView.addView(pView, tr("viewGradeLabHw"), &_imgExamGrades);
 
     return true;
 }

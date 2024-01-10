@@ -2,8 +2,6 @@
 #include <rpt/ReportData.h>
 #include <rpt/EntityData.h>
 #include <rpt/AutoElement.h>
-#include <dp/IDatabase.h>
-
 
 class DocumentData : public rpt::DocumentData
 {
@@ -29,7 +27,7 @@ public:
             return;
         _data[0] = name; //RPT_TXT_DOCUMENT_TYPE
         _data[1] = s; //RPT_TXT_DOCUMENT_ID
-        //_data[2] = ;	 //RPT_DT_DOCUMENT_DATETIME
+        //_data[2] = now;	 //RPT_DT_DOCUMENT_DATETIME
         //_data[3] = (td::INT4)14; //RPT_INT_DOCUMENT_PAYMENT_DAYS
         //_data[4] = (td::INT4)30; //RPT_INT_DOCUMENT_EXTRA_INTEREST_RATE_AFTER_DAYS
         //_data[5] = in4Days; //RPT_DT_DOCUMENT_PAYMENT_DEADLINE_DATETIME

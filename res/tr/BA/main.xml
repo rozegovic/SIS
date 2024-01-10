@@ -3,8 +3,6 @@
 	<Translations>
 		
 		<Res id="addView" tr="Dodaj tab"/>
-		<Res id="Report" tr="Izvještaj"/>
-		<Res id="ActivityRep" tr="Izvještaj aktivnosti"/>
 		<Res id="addViewTT" tr="Dodaj tab view"/>
 		<Res id="remView" tr="Izbriši tab"/>
 		<Res id="remViewTT" tr="Izbriši tab view"/>
@@ -36,11 +34,8 @@
         <Res id = "AttUpdateTT" tr = "Ažuriraj termine"/>
 
         <Res id = "alertAttTxt" tr = "Već postoji termin za odabrani datum i vrijeme"/>
-		<Res id = "alertActivityRep" tr = "Nema unesenih aktivnosti iz odabranog predmeta!"/>
 		
-        <Res id = "AttReport" tr = "Izvještaj"/>
-        <Res id = "AttRepTT" tr = "Izvještaj o prijavama studenata na termine"/>
-        
+		
 		<Res id="SubjectChoose" tr="Izbor predmeta"/>
 		
 		
@@ -58,7 +53,7 @@
 		<Res id="viewCourseEnroll" tr="Predmeti upis"/>
 		<Res id="viewMessages" tr="Obavještenja"/>
 		<Res id="Withdraw" tr="Ispiši"/>
-		<Res id="viewTimeSlot" tr="Prijava termina"/>
+
 		<Res id="ExamAttendanceRep" tr="Prijave na ispit"/>
 
 <Res id="Department" tr="Smjer"/>
@@ -211,13 +206,17 @@
 		<Res id="DatumTT" tr="Datum"/>
 		<Res id="VrijemeTT" tr="Vrijeme"/>
 		<Res id="PorukeTT" tr="Poruke"/>
-		
+		<Res id="AddFile" tr="Dodaj dokument"/>
+		<Res id="AddFileTT" tr="Dodaj dokument"/>
+		<Res id="Docs:" tr="Dokumenti:"/>
 		
 		<Res id="tobeenrolledtocourse" tr="Studenti koji imaju mogućnost upisa"/>
 		<Res id="enrolledtocourse" tr="Studenti upisani na predmet"/>
 		<Res id="courselbl" tr="Predmet:"/>
 		<Res id="WithdrawCourseTT" tr="Ispiši studenta sa predmeta"/>
-		
+
+		<Res id="tobeenrolled" tr="Upiši sljedeće studente na odsjek"/>
+		<Res id="enrolled" tr="Upisani studenti na odsjek"/>
 		
 		
 		<Res id="saveSureTicket" tr="Jeste li sigurni da želite poslati zahtjev?"/>
@@ -270,6 +269,15 @@
 		<Res id="viewExamGrade" tr="Ocjena ispita"/>
 		<Res id="Naziv_Aktivnosti" tr="Aktivnost"/>
 		<Res id="viewGradeExam" tr="Ocjena ispita"/>
+
+		<Res id="Replace data" tr="Zamjena dokumenta"/>
+		<Res id="Text edit is not empty. Are you sure you want to replace it with new content?" tr="Polje nije prazno. Da li ste sigurni da želite zamijeniti njegov sadržaj?"/>
+		<Res id="Yes" tr="Da"/>
+		<Res id="No" tr="Ne"/>
+		
+		<Res id="viewGradeLabHW" tr="Ocjene dodataka"/>
+		<Res id="viewExamLabHomework" tr="Ocjena dodataka"/>
+
 
 
 	</Translations>

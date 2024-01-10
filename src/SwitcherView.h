@@ -14,7 +14,7 @@ protected:
 public:
     SwitcherView(td::UINT4 subjectid)
         : gui::ViewSwitcher(2),
-        _viewAttendance(subjectid, &_viewSubject),
+        _viewAttendance(subjectid),
         _viewSubject(subjectid)
 
     {

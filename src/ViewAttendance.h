@@ -25,7 +25,6 @@
 #include <fo/FileOperations.h>
 #include <gui/ImageView.h>
 #include <rnd/MinMax.h>
-#include "ViewSubject.h"
 
 class ViewAttendance : public gui::View
 {
@@ -56,13 +55,8 @@ protected:
     td::Date LastMsgDate;
     
     gui::TableEdit _table;
-    
-    gui::Image _imgClassAtt;
-    ViewSubject* _subject;
-
 public:
-    ViewAttendance(td::INT4 SubjectID, ViewSubject* subject);
-    void AttendanceReport(const gui::Image* pImage);
+    ViewAttendance(td::INT4 SubjectID);
 protected:
     void populateRoleCombo(gui::DBComboBox &combo);
     void populateData();

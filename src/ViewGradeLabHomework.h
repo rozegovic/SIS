@@ -25,9 +25,9 @@
 #include <gui/ImageView.h>
 #include <gui/Color.h>
 
-class ViewGradeExams : public gui::View {
+class ViewGradeLabHomework : public gui::View {
 protected:
-    gui::Label _lblName; 
+    gui::Label _lblName;
     gui::LineEdit _name;
     gui::Label _lblLName;
     gui::LineEdit _lName;
@@ -57,27 +57,28 @@ protected:
     td::INT4 _SubjectID;
     td::INT4 _ActivityID;
     td::INT4 _UserID;
-    gui::Image _imgExamGrades;
-    gui::TableEdit _table;
+    gui::Image _imgHWGrades;
 
-    std::set<td::INT4> _userids;
+
+    gui::TableEdit _table;
+    std::set<td::INT4> _userids; 
 
 
     std::vector<td::INT4> _itemsToDelete, _itemsToInsert, _itemsToUpdate;
 public:
-	ViewGradeExams(td::INT4 SubjectID);   // Adnan
+    ViewGradeLabHomework(td::INT4 SubjectID);   // Adnan
 protected:
     void populateData();    // Adnan
     bool onChangedSelection(gui::TableEdit* pTE);    // Adnan
     void populateDSRow(dp::IDataSet::Row& row, td::INT4 i);    // Adnan
     bool canAdd();      // uradjeno trenutno
-    bool eraseExamGrade();    // Iman
-    bool insertExamGrade();    // Iman
-    bool updateExamGrade();    // Iman
+    bool eraseLabHomeworkGrade();    // Iman
+    bool insertLabHomeworkGrade();    // Iman
+    bool updateLabHomeworkGrade();    // Iman
     bool saveData();    // uradjeno
     bool onClick(gui::Button* pBtn); // uradjeno
     void SetCurrentSubject();     // uradjeno
-   // void SetActivityName(td::Variant& val, td::INT4 br);    //---------Adnan-----moze se iskoristiti nesto poput ove funkcije za  ucitavanje ovih naziva
+    // void SetActivityName(td::Variant& val, td::INT4 br);    //---------Adnan-----moze se iskoristiti nesto poput ove funkcije za  ucitavanje ovih naziva
     td::INT4 getIDfromTable(int rowID);    // uradjeno + provjera
     td::INT4 findMaxID();     // uradjeno
     void insertValues(td::INT4 subjectID);
