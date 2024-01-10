@@ -88,7 +88,6 @@ protected:
     void showOpenFileDialog();
     gui::TextEdit* getTextEdit();
     bool onAnswer(td::UINT4 questionID, gui::Alert::Answer answer);
-    bool onAnswer2(td::UINT4 questionIDA, gui::Alert::Answer answer);
     bool onClick(gui::FileDialog* pFD, td::UINT4 dlgID);
     void saveFile(gui::FileDialog* pFD);
 };
