@@ -22,6 +22,7 @@
 #include "ViewGradeExams.h"
 #include "ViewGradeLabHomework.h"
 #include "upload.h"
+#include "ViewTicketFORSAO.h"
 
 #include <rpt/IResources.h>
 #include "NavigatorViewActivity.h"
@@ -45,6 +46,7 @@ MainWindow::MainWindow()
     , _imgExamGrades(":complex")
     , _imgExamLabHomework(":complex")
     , _imgUpload(":complex")
+    ,_imgSAOTicket(":pencil")
 {
     setTitle(tr("SIS"));
     _mainMenuBar.setAsMain(this);
@@ -318,6 +320,7 @@ bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc)
         break; case 150: return showSomeSubjectChoose();
         break; case 160: return showUpload(); 
         break; case 170: return showSomeSubjectChoose2();
+        break; case 180: return ShowTicketForSAOView();
 
 
 
@@ -599,4 +602,18 @@ bool MainWindow::showUpload()
     ViewUpload* pView = new ViewUpload;
     _mainView.addView(pView, tr("viewUpload"), &_imgUpload);
     return true;
+}
+
+
+bool MainWindow::ShowTicketForSAOView() {
+
+    if (focusOnViewPositionWithID(View_SAOTICKET))
+        return true;
+
+    ViewTicketForSAO* pView = new ViewTicketForSAO;
+    _mainView.addView(pView, tr("viewTicketForSAO"), &_imgSAOTicket);
+    return true;
+
+
+
 }

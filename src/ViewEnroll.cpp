@@ -110,6 +110,9 @@ void ViewEnroll::populateDepartmentCombo(gui::DBComboBox& combo)
         {
             combo.addItem(name, id);
         }
+
+        combo.selectIndex(0);
+
 }
 
 void ViewEnroll::populateSemesterCombo(gui::ComboBox& combo) 
@@ -120,6 +123,9 @@ void ViewEnroll::populateSemesterCombo(gui::ComboBox& combo)
     combo.addItem("IV");
     combo.addItem("V");
     combo.addItem("VI");
+
+    combo.selectIndex(0);
+
 }
 
 void ViewEnroll::populateDataForEnrolledStudents() {
