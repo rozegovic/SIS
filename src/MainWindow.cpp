@@ -106,6 +106,12 @@ void MainWindow::showLogin()
 
 bool MainWindow::showSubjectChoose()
 {
+    auto x = Globals::_currentUserRole;
+    if (x != 1 && x != 6)
+    {
+        showAlert(tr("AccessNotAllowed"), "");
+        return true;
+    }
 
     DialogChooseSubject* pDlg = new DialogChooseSubject(this);
     pDlg->setTitle(tr("SubjectChoose"));
@@ -443,6 +449,12 @@ bool MainWindow::showCoursesView()
 
 bool MainWindow::showClassroomView()
 {
+    auto x = Globals::_currentUserRole;
+    if (x != 6) {
+        showAlert(tr("AccessNotAllowed"), "");
+        return true;
+    }
+
     if (focusOnViewPositionWithID(View_CLASSROOM))
         return true;
 
