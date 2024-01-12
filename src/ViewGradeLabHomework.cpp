@@ -11,6 +11,7 @@ ViewGradeLabHomework::ViewGradeLabHomework(td::INT4 SubjectID) : _db(dp::getMain
 , _lblIndex(tr("indeksUser:"))
 , _lblGrade(tr("grade:")) // napomena za Eminu - poslije dodati send message
 , _lblActivityName(tr("activityName:"))
+, _activityName(td::int4)
 , _lblCName(tr("courseName:"))
 , _btnAdd(tr("add"))
 , _btnSave(tr("save"))
@@ -71,6 +72,13 @@ ViewGradeLabHomework::ViewGradeLabHomework(td::INT4 SubjectID) : _db(dp::getMain
 	gui::View::setLayout(&_gl);
 	insertValues(_SubjectID);
 	populateData();
+	td::String s = "select c.ID_Aktivnosti as ID, c.Naziv_Aktivnosti as Name from Predaja a, OpenPredaja b, Aktivnosti c, VrstaAktivnosti d where d.ID IN(2, 5) and d.ID = c.Tip_Aktivnosti and b.ID_Aktivnosti = c.ID_Aktivnosti and a.ID_OpenPredaja = b.ID and c.ID_Predmeta = ?";
+	td::Date d(true);
+		//----------------------------------dodati provjeru datuma i vremena: da li je kraj vremena predaje proslo u odnosu na trenutno vrijeme (ucitavati SAMO ako jeste)
+		//-------------------logicko pitanje da li ucitavati naziv aktivnosti ili naziv iz tabele openpredaja????????
+	//-----------------------popraviti i populatedsrow
+	//-------------------------dodati on finishedit za combobox i iz njega pozivati populateData
+	loadComboBox(s, _activityName);
 	onChangedSelection(&_table);
 }
 
@@ -117,8 +125,8 @@ bool ViewGradeLabHomework::onChangedSelection(gui::TableEdit* pTE)
 
 		val = row[3];
 		_index.setValue(val);
-
-		val = row[2];
+		//------------------popraviti
+		val = row[1];
 		_activityName.setValue(val);
 
 		return true;
@@ -415,4 +423,24 @@ void ViewGradeLabHomework::insertValues(td::INT4 subjectID)
 		return;
 	if (!pSelect->moveNext())
 		return;
+}
+
+bool ViewGradeLabHomework::loadComboBox(td::String select, gui::DBComboBox& combo)
+{
+	dp::IStatementPtr pSelect = _db->createStatement(select.c_str());
+	dp::Params parDS(pSelect->allocParams());
+	parDS << _SubjectID;
+	dp::Columns pCols = pSelect->allocBindColumns(2);
+	td::String name;
+	td::INT4 id;
+	pCols << "ID" << id << "Name" << name;
+	if (!pSelect->execute())
+		return false;
+
+	while (pSelect->moveNext())
+	{
+		combo.addItem(name, id);
+	}
+	combo.selectIndex(0);
+	return true;
 }

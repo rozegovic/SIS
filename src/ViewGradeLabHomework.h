@@ -36,7 +36,7 @@ protected:
     gui::Label _lblGrade;
     gui::LineEdit _grade;
     gui::Label _lblActivityName;
-    gui::LineEdit _activityName;
+    gui::DBComboBox _activityName;
 
     gui::Label _lblCName;
     gui::LineEdit _cName;
@@ -82,4 +82,5 @@ protected:
     td::INT4 getIDfromTable(int rowID);    // uradjeno + provjera
     td::INT4 findMaxID();     // uradjeno
     void insertValues(td::INT4 subjectID);
+    bool loadComboBox(td::String select, gui::DBComboBox& combo);
 };
