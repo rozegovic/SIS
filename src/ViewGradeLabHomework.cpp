@@ -25,7 +25,6 @@ ViewGradeLabHomework::ViewGradeLabHomework(td::INT4 SubjectID) : _db(dp::getMain
 , _imgHWGrades(":complex")
 
 {
-
 	_hlBtns.appendSpacer();
 	_hlBtns.append(_btnDelete);
 	// _hlBtnsDB.append(_btnUpdate); 
@@ -72,24 +71,27 @@ ViewGradeLabHomework::ViewGradeLabHomework(td::INT4 SubjectID) : _db(dp::getMain
 	gui::View::setLayout(&_gl);
 	insertValues(_SubjectID);
 	populateData();
-	td::String s = "select c.ID_Aktivnosti as ID, c.Naziv_Aktivnosti as Name from Predaja a, OpenPredaja b, Aktivnosti c, VrstaAktivnosti d where d.ID IN(2, 5) and d.ID = c.Tip_Aktivnosti and b.ID_Aktivnosti = c.ID_Aktivnosti and a.ID_OpenPredaja = b.ID and c.ID_Predmeta = ?";
+	td::String s = "select b.ID as ID, c.Naziv_Aktivnosti as Name from OpenPredaja b, Aktivnosti c, VrstaAktivnosti d where d.ID IN(2, 5) and d.ID = c.Tip_Aktivnosti and b.ID_Aktivnosti = c.ID_Aktivnosti and c.ID_Predmeta = ?";
 	td::Date d(true);
-		//----------------------------------dodati provjeru datuma i vremena: da li je kraj vremena predaje proslo u odnosu na trenutno vrijeme (ucitavati SAMO ako jeste)
-		//-------------------logicko pitanje da li ucitavati naziv aktivnosti ili naziv iz tabele openpredaja????????
-	//-----------------------popraviti i populatedsrow
-	//-------------------------dodati on finishedit za combobox i iz njega pozivati populateData
+		//----------------------------------dodati provjeru datuma i vremena: da li je kraj vremena predaje prosao u odnosu na trenutno vrijeme (ucitavati SAMO ako jeste)
+		//-------------------logicko pitanje da li ucitavati naziv aktivnosti ili naziv iz tabele openpredaja????????----
+	//-----------------------popraviti i populatedsrow i mozda onChangedSelection
+	// id_aktivnosti ucitati u varijablu _ActivityID da se moze koristiti za druge provjere - potrebno za ostatak koda
+	//-------------------------dodati on finishedit za combobox i iz njega pozivati populateData 
 	loadComboBox(s, _activityName);
 	onChangedSelection(&_table);
 }
 
 void ViewGradeLabHomework::populateData()
 {
-
-	_pDS = _db->createDataSet("SELECT a.ID_Korisnika, a.ID_Aktivnosti, b.Naziv_Aktivnosti, c.Indeks, c.Ime, c.Prezime, d.Ocjena as Procenat, d.ID FROM PolazniciAktivnosti a, Aktivnosti b, Korisnici c, OcjeneLabZadace d WHERE a.ID_Aktivnosti = b.ID_Aktivnosti AND d.ID_Korisnika = a.ID_Korisnika AND d.ID_Aktivnosti = b.ID_Aktivnosti AND a.ID_Korisnika = c.ID AND b.ID_Predmeta = ? AND b.Tip_Aktivnosti IN(5, 2) ORDER BY b.Naziv_Aktivnosti DESC", dp::IDataSet::Execution::EX_MULT);
+	//popraviti populate da ucitava studente koji su na aktivnosti izabranoj u comboboxu
+	// za to ce trebati parDS ucitati jos jednu varijablu tj ucitati id_aktivnosti iz comboboxa - nista ostalo u selectu ne treba mijenjati
+	_pDS = _db->createDataSet("SELECT d.ID_Korisnika, d.ID_Aktivnosti, b.Naziv_Aktivnosti, c.Indeks, c.Ime, c.Prezime, d.Ocjena as Procenat, d.ID FROM Aktivnosti b, Korisnici c, OcjeneLabZadace d WHERE d.ID_Aktivnosti = b.ID_Aktivnosti and d.ID_Korisnika = c.ID AND b.ID_Predmeta = ? AND b.Tip_Aktivnosti IN(5, 2) ORDER BY b.Naziv_Aktivnosti DESC", dp::IDataSet::Execution::EX_MULT);
 
 	dp::Params parDS(_pDS->allocParams());
 
 	parDS << _SubjectID;
+
 	dp::DSColumns cols(_pDS->allocBindColumns(8));
 	cols << "ID_Korisnika" << td::int4 << "ID_Aktivnosti" << td::int4 << "Naziv_Aktivnosti" << td::string8 << "Indeks" << td::string8 << "Ime" << td::string8 << "Prezime" << td::string8 << "Procenat" << td::string8 << "ID" << td::int4;
 
@@ -340,11 +342,13 @@ bool ViewGradeLabHomework::onClick(gui::Button* pBtn)
 		saveData();
 	}
 	if (pBtn == &_btnReport) {
-		//gui::Image _imgExamGrades(":complex");
-		labGrades(&_imgHWGrades, _SubjectID);
-		//homeworkGrades(&_imgHWGrades, _SubjectID); //---------------------popraviti da se mogu dva sacuvati
 
-		// pada zbog pristupa nedozvoljenim lokacijama - PROBLEM
+		if(_ActivityID==2)
+			homeworkGrades(&_imgHWGrades, _SubjectID); 
+		else if(_ActivityID==5)
+			labGrades(&_imgHWGrades, _SubjectID);
+
+
 	}
 	return false;
 }
@@ -418,7 +422,7 @@ td::INT4 ViewGradeLabHomework::findMaxID()
 
 void ViewGradeLabHomework::insertValues(td::INT4 subjectID)
 {
-	dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("INSERT INTO OcjeneLabZadace (ID_Korisnika, ID_Aktivnosti) SELECT a.ID_Korisnika, a.ID_Aktivnosti FROM PolazniciAktivnosti a WHERE NOT EXISTS( SELECT 1 FROM OcjeneLabZadace WHERE OcjeneLabZadace.ID_Korisnika = a.ID_Korisnika AND OcjeneLabZadace.ID_Aktivnosti = a.ID_Aktivnosti);");
+	dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("INSERT INTO OcjeneLabZadace (ID_Korisnika, ID_Aktivnosti) SELECT a.ID_Studenta, b.ID_Aktivnosti FROM UpisPredmeta a JOIN Aktivnosti b ON a.ID_Predmeta = b.ID_Predmeta WHERE b.Tip_Aktivnosti IN(2, 5)AND NOT EXISTS(SELECT 1 FROM OcjeneLabZadace c WHERE c.ID_Korisnika = a.ID_Studenta AND c.ID_Aktivnosti = b.ID_Aktivnosti); ");
 	if (!pSelect->execute())
 		return;
 	if (!pSelect->moveNext())
