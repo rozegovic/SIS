@@ -73,10 +73,12 @@ ViewGradeLabHomework::ViewGradeLabHomework(td::INT4 SubjectID) : _db(dp::getMain
 	populateData();
 	td::String s = "select b.ID as ID, c.Naziv_Aktivnosti as Name from OpenPredaja b, Aktivnosti c, VrstaAktivnosti d where d.ID IN(2, 5) and d.ID = c.Tip_Aktivnosti and b.ID_Aktivnosti = c.ID_Aktivnosti and c.ID_Predmeta = ?";
 	td::Date d(true);
+	//----Adnan
 		//----------------------------------dodati provjeru datuma i vremena: da li je kraj vremena predaje prosao u odnosu na trenutno vrijeme (ucitavati SAMO ako jeste)
-		//-------------------logicko pitanje da li ucitavati naziv aktivnosti ili naziv iz tabele openpredaja????????----
+		//-------------------logicko pitanje da li ucitavati naziv aktivnosti ili naziv iz tabele openpredaja????????---- mozes ostaviti i ovako kako je dato 
 	//-----------------------popraviti i populatedsrow i mozda onChangedSelection
 	// id_aktivnosti ucitati u varijablu _ActivityID da se moze koristiti za druge provjere - potrebno za ostatak koda
+	// -------Emir
 	//-------------------------dodati on finishedit za combobox i iz njega pozivati populateData 
 	loadComboBox(s, _activityName);
 	onChangedSelection(&_table);
@@ -84,6 +86,7 @@ ViewGradeLabHomework::ViewGradeLabHomework(td::INT4 SubjectID) : _db(dp::getMain
 
 void ViewGradeLabHomework::populateData()
 {
+	//-----Adnan
 	//popraviti populate da ucitava studente koji su na aktivnosti izabranoj u comboboxu
 	// za to ce trebati parDS ucitati jos jednu varijablu tj ucitati id_aktivnosti iz comboboxa - nista ostalo u selectu ne treba mijenjati
 	_pDS = _db->createDataSet("SELECT d.ID_Korisnika, d.ID_Aktivnosti, b.Naziv_Aktivnosti, c.Indeks, c.Ime, c.Prezime, d.Ocjena as Procenat, d.ID FROM Aktivnosti b, Korisnici c, OcjeneLabZadace d WHERE d.ID_Aktivnosti = b.ID_Aktivnosti and d.ID_Korisnika = c.ID AND b.ID_Predmeta = ? AND b.Tip_Aktivnosti IN(5, 2) ORDER BY b.Naziv_Aktivnosti DESC", dp::IDataSet::Execution::EX_MULT);
