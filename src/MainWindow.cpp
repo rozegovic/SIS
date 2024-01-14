@@ -229,7 +229,7 @@ bool MainWindow::showSubjectChooseActivty()
 bool MainWindow::showMySubjectChoose()
 {
     auto x = Globals::_currentUserRole;
-    if (x != 1 && x != 3 && x != 6)
+    if (x != 1 && x != 6)
     {
         showAlert(tr("AccessNotAllowed"), "");
         return true;
@@ -253,7 +253,7 @@ bool MainWindow::showMySubjectChoose()
 bool MainWindow::showAllSubjectChoose()
 {
     auto x = Globals::_currentUserRole;
-    if (x != 1 && x != 3 && x != 6)
+    if (x != 6)
     {
         showAlert(tr("AccessNotAllowed"), "");
         return true;
@@ -277,7 +277,7 @@ bool MainWindow::showAllSubjectChoose()
 bool MainWindow::showSomeSubjectChoose()
 {
     auto x = Globals::_currentUserRole;
-    if (x!=1)
+    if (x!=1 && x!=6)
     {
         showAlert(tr("AccessNotAllowed"), "");
         return true;
@@ -543,6 +543,13 @@ bool MainWindow::showCurriculumView(td::INT4 _departmentID, td::INT4 _semesterID
 
 bool MainWindow::showExamSignUpView()
 {
+    auto x = Globals::_currentUserRole;
+    if (x != 5 && x != 6)
+    {
+        showAlert(tr("AccessNotAllowed"), "");
+        return true;
+    }
+
     if (focusOnViewPositionWithID(View_CURRICULUM))
         return true;
 
@@ -585,11 +592,7 @@ bool MainWindow::showCourseEnrollView() {
 
 bool MainWindow::showMessagesView() {
 
-    if (!Globals::isStudent)
-    {
-        showAlert(tr("AccessNotAllowed"), "");
-        return true;
-    }
+    //obavjestenjima smije svako pristupiti
 
     if (focusOnViewPositionWithID(View_MESSAGES))
         return true;
@@ -614,7 +617,7 @@ bool MainWindow::showGradeExamView(td::INT4 SubjectID)
 bool MainWindow::showUpload()
 {
     auto x = Globals::_currentUserRole;
-    if (x != 6)
+    if (x != 6 && x != 5 )
     {
         showAlert(tr("AccessNotAllowed"), "");
         return true;
@@ -630,7 +633,7 @@ bool MainWindow::showUpload()
 bool MainWindow::showSomeSubjectChoose2()
 {
     auto x = Globals::_currentUserRole;
-    if (x != 1)
+    if (x != 3 && x !=6)
     {
         showAlert(tr("AccessNotAllowed"), "");
         return true;
