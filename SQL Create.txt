@@ -79,13 +79,16 @@ CREATE TABLE IF NOT EXISTS "Predmet" (
 );
 CREATE TABLE IF NOT EXISTS "Termini" (
 	"ID"	INTEGER NOT NULL,
-	"Datum"	INTEGER NOT NULL,
+	"Dan"	TEXT NOT NULL,
 	"TipPredavanjaID"	INTEGER NOT NULL,
 	"Predmet_ID"	INTEGER NOT NULL,
 	"Vrijeme"	INTEGER NOT NULL,
+	"Max_br_pol"	INTEGER,
+	"Br_prijavljenih"	INTEGER,
 	FOREIGN KEY("TipPredavanjaID") REFERENCES "TipPredavanja"("ID"),
-	FOREIGN KEY("Predmet_ID") REFERENCES "Predmet"("ID_Predmeta"),
-	CONSTRAINT "PK_Termini" PRIMARY KEY("ID")
+	CONSTRAINT "PK_Termini" PRIMARY KEY("ID"),
+	FOREIGN KEY("Predmet_ID") REFERENCES "Predmet"("ID_Predmeta")
+
 );
 CREATE TABLE IF NOT EXISTS "Prisustvo" (
 	"ID_termina"	INTEGER NOT NULL,

@@ -15,22 +15,24 @@
 
 ViewAttendance::ViewAttendance(td::INT4 SubjectID, ViewSubject* subject):
 _LblSubjName(tr("AttSubj")),
-_LblDate(tr("AttDate")),
+_LblDay(tr("AttDay")),
 _LblTime(tr("AttTime"))
 ,_LblType(tr("AttType"))
-, _btnAdd(tr("add"), tr("AddTT"))
-, _btnUpdate(tr("Update"), tr("UpdateTT"))
-, _btnDelete(tr("Delete"), tr("DeleteTT"))
+, _LblMaxNum(tr("AttMaxNum"))
+, _btnAdd(tr("add"), tr("AttAddBtnTT"))
+, _btnUpdate(tr("Update"), tr("AttUpdateTT"))
+, _btnDelete(tr("Delete"), tr("AttDelBtnTT"))
 ,_btnReport(tr("AttReport"), tr("AttRepTT"))
 //,_btnSave(tr("Save"), tr("SaveTT"))
 , _type(td::int4)
+,_maxNum(td::int4)
 , _hlBtnsDB(6)
-,_gl(6, 2)
+,_gl(5, 4)
 ,_SubjectID(SubjectID)
 ,_imgClassAtt(":complex")
 {
     _subject = subject;
-    
+    _maxNum.setValue(20);
     _hlBtnsDB.appendSpacer();
     _hlBtnsDB.append(_btnDelete);
     _hlBtnsDB.append(_btnUpdate);
@@ -53,28 +55,30 @@ _LblTime(tr("AttTime"))
     
     
     gc.appendRow(_LblSubjName);
-    gc.appendCol(_Subject);
-
-    gc.appendRow(_LblDate);
-    gc.appendCol(_date);
+    gc.appendCol(_Subject);  
+    
+    gc.appendRow(_LblType);
+    gc.appendCol(_type);
+    gc.appendCol(_LblDay);
+    gc.appendCol(_dayCombo);
     
     gc.appendRow(_LblTime);
     gc.appendCol(_time);
-  
-    gc.appendRow(_LblType);
-    gc.appendCol(_type);
+    gc.appendCol(_LblMaxNum);
+    gc.appendCol(_maxNum);
 
     gc.appendRow(_table, 0);
     gc.appendRow(_hlBtnsDB, 0);
 
     gui::View::setLayout(&_gl);
     populateRoleCombo(_type);
+    populateDayCombo(_dayCombo);
     populateData();
 
-    _table.init(_pDS, {0, 1, 2});
+    _table.init(_pDS, {0,1,2,4});
     if (_pDS->getNumberOfRows())
     {
-        _table.selectRow(0, true);
+       _table.selectRow(0, true);
     }
    
     
@@ -100,6 +104,19 @@ void ViewAttendance::SetCurrentSubject(){
     
 }
 
+void ViewAttendance::populateDayCombo(gui::ComboBox& combo)
+{
+    combo.addItem(tr("Monday"));
+    combo.addItem(tr("Tuesday"));
+    combo.addItem(tr("Wednesday"));
+    combo.addItem(tr("Thursday"));
+    combo.addItem(tr("Friday"));
+    combo.addItem(tr("Saturday"));
+    combo.addItem(tr("Sunday"));
+
+    combo.selectIndex(0);
+
+}
 void ViewAttendance::populateRoleCombo(gui::DBComboBox &combo)
 {
     dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT ID, Naziv FROM TipPredavanja");
@@ -115,10 +132,24 @@ void ViewAttendance::populateRoleCombo(gui::DBComboBox &combo)
     }
     combo.selectIndex(0);
 }
+
+bool ViewAttendance::onChangedSelection(gui::ComboBox* pCmb)
+{
+    if (pCmb == &_dayCombo) {
+
+        td::String dan = _dayCombo.getSelectedText();
+
+        _day.setValue(dan);
+
+        return true;
+    }
+
+    return false;
+}
 void ViewAttendance::populateData()
 {
     auto pDB = dp::getMainDatabase();
-    _pDS = pDB->createDataSet("SELECT a.Datum AS datum, a.Vrijeme AS vrijeme, b.Naziv AS Tip, b.ID as ID FROM Termini a, TipPredavanja b WHERE a.TipPredavanjaID = b.ID and a.Predmet_ID = ?", dp::IDataSet::Execution::EX_MULT);
+    _pDS = pDB->createDataSet("SELECT a.Dan AS dan, a.Vrijeme AS vrijeme, b.Naziv AS Tip, b.ID as ID, a.Max_br_pol as MaxBroj FROM Termini a, TipPredavanja b WHERE a.TipPredavanjaID = b.ID and a.Predmet_ID = ?", dp::IDataSet::Execution::EX_MULT);
     
     dp::Params parDS(_pDS->allocParams());
     //td::INT4 IDPredmeta = Globals::_IDSubjectSelection;
@@ -126,8 +157,8 @@ void ViewAttendance::populateData()
     //u parDS ce se ucitavati Globals::CurrentSubject
     parDS << _SubjectID;
     
-    dp::DSColumns cols(_pDS->allocBindColumns(4));
-    cols << "datum" << td::date << "vrijeme" << td::time<< "Tip" << td::string8 << "ID" << td::int4;
+    dp::DSColumns cols(_pDS->allocBindColumns(5));
+    cols << "dan" << td::string8 << "vrijeme" << td::time<< "Tip" << td::string8 << "ID" << td::int4 << "MaxBroj" << td::int4;
 
     if (!_pDS->execute())
     {
@@ -138,7 +169,8 @@ void ViewAttendance::populateData()
 void ViewAttendance::populateDSRow(dp::IDataSet::Row& row)
 {
     td::Variant val;
-    _date.getValue(val);
+    _day.setValue(_dayCombo.getSelectedText());
+    _day.getValue(val);
     row[0].setValue(val);
 
     _time.getValue(val);
@@ -147,6 +179,8 @@ void ViewAttendance::populateDSRow(dp::IDataSet::Row& row)
     _type.getValue(val);
     row[3] = val.i4Val();
     row[2].setValue(_type.getSelectedText());
+    _maxNum.getValue(val);
+    row[4].setValue(val);
 
 }
 bool ViewAttendance::onChangedSelection(gui::TableEdit* pTE) {
@@ -159,13 +193,21 @@ bool ViewAttendance::onChangedSelection(gui::TableEdit* pTE) {
         dp::IDataSet* pDS = _table.getDataSet();
         auto& row = pDS->getRow(iRow);
         val = row[0];
-        _date.setValue(val);
-
+        _day.setValue(val);
+        for (int i = 0; i < _dayCombo.getNoOfItems(); i++)
+        {
+            _dayCombo.selectIndex(i);
+            if (val == _dayCombo.getSelectedText())
+                break;
+       }
         val = row[1];
         _time.setValue(val);
 
         val = row[3];
         _type.setValue(val);
+        
+        val = row[4];
+        _maxNum.setValue(val);
 
         return true;
     }
@@ -173,15 +215,15 @@ bool ViewAttendance::onChangedSelection(gui::TableEdit* pTE) {
 }
 void ViewAttendance::saveData()
 {
-    dp::IStatementPtr pInsStat(dp::getMainDatabase()->createStatement("INSERT INTO Termini ( Datum, TipPredavanjaID, Predmet_ID, Vrijeme) VALUES(?,?,?,?)"));
+    dp::IStatementPtr pInsStat(dp::getMainDatabase()->createStatement("INSERT INTO Termini ( Dan, TipPredavanjaID, Predmet_ID, Vrijeme,Max_br_pol) VALUES(?,?,?,?,?)"));
     dp::Params parDS(pInsStat->allocParams());
     dp::Transaction tr(dp::getMainDatabase());
 
-    td::Date dat;
+    td::String day;
     td::Time t;
-    td::INT4 tip, predmet;
+    td::INT4 tip, predmet,Max_br_pol;
     td::Variant val;
-    parDS << dat << tip << predmet << t;
+    parDS << dp::toNCh(day, 30) << tip << predmet << t<<Max_br_pol;
     dp::IStatementPtr pDel(dp::getMainDatabase()->createStatement("DELETE FROM Termini"));
     if (!pDel->execute())
         return;
@@ -190,10 +232,11 @@ void ViewAttendance::saveData()
     {
         auto row = _pDS->getRow(i);
         //row[0].getValue (val);
-        dat = row[0];
+        day = row[0];
         tip = row[3].i4Val();
         predmet = _SubjectID;
         t = row[1];
+        Max_br_pol = row[4].i4Val();
         
         if (!pInsStat->execute())
             return;
@@ -219,9 +262,15 @@ bool ViewAttendance::onClick(gui::Button* pBtn)
     }
    if (pBtn == &_btnUpdate)
     {
+      
         td::Variant val1, val2;
-        _date.getValue(val1);
-        _time.getValue(val2);
+        _day.getValue(val1);
+        _time.getValue(val2); 
+        if (doesItDexist(val1, val2.timeVal())==false)
+       {
+            showAlert(tr("alert"), tr("alertAttUpdate"));
+            return true;
+       }
         int iRow = _table.getFirstSelectedRow();
         if (iRow < 0)
             return true;
@@ -231,6 +280,7 @@ bool ViewAttendance::onClick(gui::Button* pBtn)
         _table.updateRow(iRow);
         _table.endUpdate();
         saveData();
+        _table.reload();
         if(CheckTime())
             SendMsg(3);
         return true;
@@ -238,13 +288,13 @@ bool ViewAttendance::onClick(gui::Button* pBtn)
 
     if (pBtn == &_btnAdd)
     {
-        
+        _day.setValue(_dayCombo.getSelectedText());
        td::Variant val1, val2;
-       _date.getValue(val1);
-        _time.getValue(val2);
-        if (doesItDexist(val1.dateVal(), val2.timeVal()))
+       _day.getValue(val1); 
+       _time.getValue(val2);
+       if (doesItDexist(val1, val2.timeVal()))
         {
-            showAlert(tr("alert"), tr("alertAttTxt"));
+            showAlert(tr("alert"), tr("alertAttAdd"));
             return true;
         }
        
@@ -270,13 +320,13 @@ bool ViewAttendance::onClick(gui::Button* pBtn)
 
     return false;
 }
-bool ViewAttendance::doesItDexist(td::Date d, td::Time t)
+bool ViewAttendance::doesItDexist(td::Variant day, td::Time time)
 {
     size_t nRows = _pDS->getNumberOfRows();
     for (size_t i = 0; i < nRows; ++i)
     {
         auto row = _pDS->getRow(i);
-        if (row[0].dateVal() == d && row[1].timeVal() == t)
+        if (row[0] == day && row[1].timeVal() == time)
             return true;
     }
     return false;
