@@ -44,6 +44,7 @@ protected:
     dp::IDataSetPtr _pDS = nullptr;
     dp::IDataSetPtr _pDSpos;
     dp::IDataSetPtr _pDS2 = nullptr;
+  //  dp::IStatementPtr _pDS3 = nullptr;
     td::INT4 _SubjectID;
 
     gui::TableEdit _table;
@@ -54,11 +55,13 @@ public:
     ~ViewTimeSlot();
 
 protected:
+ //   td::INT4 getCurrentTerminID();
     void initTable();
     void initTable2();
     void populateDataForTable();
     void populateTable2();
     void getSubjectName();
+   // bool IsTherePlace(td::INT4 tID);
     bool IsEnrolled(td::INT4 ID_stud, td::INT4 ID_Pred);
     bool saveData1();
     bool saveData2();

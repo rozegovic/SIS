@@ -2,6 +2,7 @@
 #include "Globals.h"
 #include "ViewIDs.h"
 #include <td/StringConverter.h>
+#include "ViewSubject.h"
 
 ViewTimeSlot::ViewTimeSlot(td::INT4 SubjectID) :
     _LblSubjName(tr("AttSubj"))
@@ -40,6 +41,7 @@ ViewTimeSlot::ViewTimeSlot(td::INT4 SubjectID) :
     _db = dp::getMainDatabase();
 
     populateDataForTable();
+   // _table.setFont(gui::Font::ID::SystemSmallestBoldItalic);
     _table.setBold();
     populateTable2();
     _table2.setBold();
@@ -88,13 +90,26 @@ bool ViewTimeSlot::IsEnrolled(td::INT4 ID_stud, td::INT4 ID_Pred) {
     return false;
 
 }
+/*
+bool ViewTimeSlot::IsTherePlace(td::INT4 tID) {
+ 
+ _pDS3 = dp::getMainDatabase()->createStatement (SELECT Max_br_pol AS max, Br_prijavljenih  AS trenutnih FROM Termini WHERE Termini.ID = ?)
+      dp::Params pParams(_pDS3->allocParams());
+      pParams << tID;
+      dp::Columns pColumns = pSelect->allocBindColumns(2);
+      pColumns << "max" << Max_br_pol<< "trenutnih" << Br_prijavljenih;
+      if (trenutnih == max) return false;
+      return true;
+ }
+ */
+
 void ViewTimeSlot::populateDataForTable()
 {
     _pDS = dp::getMainDatabase()->createDataSet("SELECT b.Naziv AS tip, a.Vrijeme AS time, a.Dan AS date, a.TipPredavanjaID as idPred, a.ID as idTerm from Termini a, TipPredavanja b WHERE b.ID = a.TipPredavanjaID and a.TipPredavanjaID!=1 and a.Predmet_ID=?", dp::IDataSet::Execution::EX_MULT);
     dp::Params pParams(_pDS->allocParams());
     pParams << _SubjectID;
     dp::DSColumns cols(_pDS->allocBindColumns(5));
-    cols << "tip" << td::string8 << "time" << td::int4 << "date" << td::string8<<"idPred"<<td::int4<<"idTerm"<<td::int4;
+    cols << "tip" << td::string8 << "time" << td::int4 << "date" << td::string8 <<"idPred"<<td::int4<<"idTerm"<<td::int4;
 
     if (!_pDS->execute())
     {
@@ -107,15 +122,14 @@ void ViewTimeSlot::populateDataForTable()
 void ViewTimeSlot::populateTable2()
 {
     auto sID = Globals::_currentUserID;
-   // td::INT4 sID;
+  
     _pDS2 = dp::getMainDatabase()->createDataSet("SELECT b.Naziv AS tip, a.Vrijeme AS time, a.Dan AS date, c.ID_Studenta as IDs from Termini a, TipPredavanja b, TerminiStudenti c WHERE c.ID_Termina = a.ID and c.TipPredavanjaID = b.ID and c.ID_Studenta = ?", dp::IDataSet::Execution::EX_MULT);
     
     dp::Params pParams(_pDS2->allocParams());
     pParams << sID;           
     
     dp::DSColumns cols(_pDS2->allocBindColumns(3));
-    cols << "tip" << td::string8 << "time" << td::int4 << "date" << td::string8 ;
-
+    cols << "tip" << td::string8 << "time" << td::int4 << "date" << td::string8;
     if (!_pDS2->execute())
     {
         _pDS2 = nullptr;
@@ -124,6 +138,7 @@ void ViewTimeSlot::populateTable2()
     initTable2();
 
 }
+
 
 void ViewTimeSlot::getSubjectName() {
     
@@ -207,9 +222,22 @@ bool ViewTimeSlot::onClick(gui::Button* pBtn)
             showAlert(tr("alert"), tr("alertPr"));
             return true;
         }
-
+    /*
+     td::INT4 tID;
+    //   tID = getCurrentTerminID()  // nekako
+    // koristiti funkciju iz ViewSubject::getCurrentTerminID()... tID
+     if (!IsTherePlace(tID)) {   //funkcija u 94.liniji
+           showAlert(tr("alert"), ("Nazalost vise nema mjesta!");
+           return false;
+    }
+        */
         saveData1();
-      //  UpdatePresentDataSet();
+    /*
+     _pDS3 = dp::getMainDatabase()->createStatement (UPDATE Termini SET Br_prijavljenih = Br_prijavljenih + 1 WHERE Termini.ID = ?)
+     dp::Params pParams(_pDS3->allocParams());
+     pParams << tID;
+      */
+    //  UpdatePresentDataSet();
       //  _table2.reload();                    ///
         return true;
        
@@ -221,6 +249,8 @@ bool ViewTimeSlot::onClick(gui::Button* pBtn)
         _table.reload();
      //   _table2.reload();
         _table.selectRow(0, true);
+
+        //dodati kao za Enroll provjeru max broj polaznika
     //    UpdatePresentDataSet();
         return true;
 
@@ -231,7 +261,7 @@ bool ViewTimeSlot::onClick(gui::Button* pBtn)
 }
 
 void ViewTimeSlot::UpdatePresentDataSet() {
-   // td::INT4 sID;
+   
     auto sID = Globals::_currentUserID;
     dp::IDataSetPtr pomDS = dp::getMainDatabase()->createDataSet("SELECT b.Naziv AS tip, a.Vrijeme AS time, a.Dan AS date from Termini a, TipPredavanja b, TerminiStudenti c WHERE c.ID_Studenta = sID and c.ID_Termina = a.ID and c.TipPredavanjaID = b.ID and c.ID_Studenta = ?", dp::IDataSet::Execution::EX_MULT);
     
