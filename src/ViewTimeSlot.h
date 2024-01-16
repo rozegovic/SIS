@@ -47,6 +47,7 @@ protected:
     td::INT4 _SubjectID;
 
     gui::TableEdit _table;
+    gui::Label _lblTable2;
     gui::TableEdit _table2;
 public:
     ViewTimeSlot(td::INT4 SubjectID);
