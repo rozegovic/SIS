@@ -34,9 +34,6 @@ protected:
     gui::Label _LblSubjName;
     gui::LineEdit _Subject;
 
-   // gui::Label _LblType;
-   // gui::DBComboBox _type;
-
     gui::HorizontalLayout _hlBtnsDB;
     gui::Button _btnEnroll;
     gui::Button _btnDEnroll;
@@ -46,22 +43,26 @@ protected:
     dp::IDatabase* _db;
     dp::IDataSetPtr _pDS = nullptr;
     dp::IDataSetPtr _pDSpos;
+    dp::IDataSetPtr _pDS2 = nullptr;
     td::INT4 _SubjectID;
 
     gui::TableEdit _table;
+    gui::TableEdit _table2;
 public:
     ViewTimeSlot(td::INT4 SubjectID);
     ~ViewTimeSlot();
 
 protected:
     void initTable();
-  //  virtual bool onClick(gui::Button* pBtn);
+    void initTable2();
     void populateDataForTable();
+    void populateTable2();
     void getSubjectName();
     bool IsEnrolled(td::INT4 ID_stud, td::INT4 ID_Pred);
     bool saveData1();
     bool saveData2();
     virtual bool onClick(gui::Button* pBtn);
+    void UpdatePresentDataSet();
   //  virtual bool onChangedSelection(gui::TableEdit* pTE);
 
 };
