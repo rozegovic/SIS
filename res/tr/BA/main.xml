@@ -15,9 +15,11 @@
 		
 		<Res id = "AttSubj" tr = "Predmet:"/>
 
-        <Res id = "AttDate" tr = "Datum:"/>
+        <Res id = "AttDay" tr = "Dan:"/>
 
         <Res id = "AttTime" tr = "Vrijeme:"/>
+
+		<Res id = "AttMaxNum" tr = "Maksimalni broj studenata:"/>
 
         <Res id = "AttType" tr = "Tip predavanja:"/>
 
@@ -33,8 +35,18 @@
 
         <Res id = "AttUpdateTT" tr = "Ažuriraj termine"/>
 
-        <Res id = "alertAttTxt" tr = "Već postoji termin za odabrani datum i vrijeme"/>
+        <Res id = "alertAttAdd" tr = "Već postoji termin za odabrani dan i vrijeme"/>
+		 <Res id = "alertAttUpdate" tr = "Ne postoji termin za odabrani dan i vrijeme koji se može ažurirati"/>
 		
+		<Res id="Monday" tr="Ponedeljak"/>
+	    <Res id="Tuesday" tr="Utorak"/>
+		<Res id="Wednesday" tr="Srijeda"/>
+		<Res id="Thursday" tr="Četvrtak"/>
+		<Res id="Friday" tr="Petak"/>
+		<Res id="Saturday" tr="Subota"/>
+		<Res id="Sunday" tr="Nedelja"/>
+							
+
         <Res id = "AttReport" tr = "Izvještaj"/>
         
         <Res id = "AttRepTT" tr = "Izvještaj o prijavama studenata na termine nastave"/>
@@ -141,23 +153,27 @@
                         <Res id="username" tr="Korisničko ime:"/>
                         <Res id="password" tr="Šifra:"/>
                        
-                        <Res id="NumSeats" tr="Broj mjesta"/>
-                        <Res id="Location" tr="Lokacija"/>
-                        <Res id="Type" tr="Tip"/>
+                        <Res id="NumSeats" tr="Broj mjesta:"/>
+                        <Res id="Location" tr="Lokacija:"/>
+                        <Res id="Type" tr="Tip:"/>
                         <Res id="Update" tr="Ažuriraj"/>
                         <Res id="Attendance" tr="Prisustvo"/>
                         <Res id="Login" tr="Prijava"/>
-                        <Res id="Name" tr="Ime"/>
-                         <Res id="Surname" tr="Prezime"/>
-                         <Res id="Date" tr="Datum"/>
-                         <Res id="Time" tr="Vrijeme"/>
-                         <Res id="Present" tr="Prisutan"/>
-                          <Res id="NotPresent" tr="Nije prisutan"/>
+                        <Res id="SubjName" tr="Ime:"/>
+						 <Res id="Name" tr="Ime"/>
+						 <Res id="Surname" tr="Prezime"/>
+                         <Res id="SubjSurname" tr="Prezime:"/>
+                         <Res id="SubjDate" tr="Datum:"/>
+						 <Res id="Subjdate" tr="Datum"/>
+						 <Res id="SubjDay" tr="Dan:"/>
+                         <Res id="SubjTime" tr="Vrijeme:"/>
+                         <Res id="SubjPresent" tr="Prisutan"/>
+                          <Res id="SubjNotPresent" tr="Nije prisutan"/>
                           <Res id="StatUser" tr="Korisnik:"/>
                          <Res id="StatRole" tr="Uloga:"/>
                          <Res id="Subject" tr="Predmet"/>
                             <Res id="alertPr" tr="Vec ste unijeli prisustvo ovog studenta za ovaj termin"/>
-							<Res id="tablePresent" tr="Prisutni za ovaj termin:"/>
+							<Res id="SubjTablePresent" tr="Prisutni za ovaj termin:"/>
 							<Res id="alertNoTerm" tr="Niste odabrali ni jedan termin"/>
 									<Res id="Report" tr="Izvještaj"/>
 		<Res id="ActivityRep" tr="Izvještaj aktivnosti"/>
@@ -232,6 +248,11 @@
 		<Res id="send" tr="Pošalji"/>
 		<Res id="sendRequestTT" tr="Pošalji trenutni zahtjev"/>
 		<Res id="OnHold" tr="Na Čekanju"/>
+		
+		<Res id="open" tr="Otvori"/>
+		<Res id="openTT" tr="Više informacija"/>
+		<Res id="attachmentAddLbl" tr="Privitak"/>
+		<Res id="attachmentlbl" tr="Dodaj privitak:"/>
 		
 		
 		<Res id="AccessNotAllowed" tr="Nemate pravo pristupa"/>

@@ -31,7 +31,8 @@ protected:
     gui::Image _imgMessages;
     gui::Image _imgExamGrades;
     gui::Image _imgUpload;
-
+    gui::Image _imgExamLabHomework;
+    gui::Image _imgSAOTicket;
     StatusBar _statBar;
 
 
@@ -49,6 +50,7 @@ public:
     bool showAllSubjectChoose();
     bool showSubjectChooseActivty();
     bool showSomeSubjectChoose();
+    bool showSomeSubjectChoose2();
     bool showCurriculum();
     bool showSubjectChooseForTimeSlot();
     bool showTimeSlotView(td::INT4 SubjectID);
@@ -71,8 +73,12 @@ protected:
     bool showCourseEnrollView();
     bool showMessagesView();
     bool showGradeExamView(td::INT4 SubjectID);
+    bool showGradeLabHomeworkView(td::INT4 SubjectID);
     bool showUpload();
-    
+
+    bool showTicketForSaoView();
+
+
     //bool onClick(gui::Dialog* pDlg, td::UINT4 dlgID) override;
 
 

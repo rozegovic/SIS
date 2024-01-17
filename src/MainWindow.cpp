@@ -25,6 +25,11 @@
 #include <rpt/IResources.h>
 #include "NavigatorViewActivity.h"
 #include "ViewTimeSlot.h"
+#include "ViewGradeLabHomework.h"
+
+#include "ViewTicketFORSAO.h"
+
+
 MainWindow::MainWindow()
     : gui::Window(gui::Geometry(100, 100, 1000, 600))
     , _mainView()
@@ -34,14 +39,16 @@ MainWindow::MainWindow()
     , _imgClassroom(":complex")
     , _imgTStaff(":complex")
     , _imgActivity(":complex")
-    ,_imgEnroll(":complex")
-    ,_imgAttendance(":complex")
-    ,_imgCurr(":complex")
+    , _imgEnroll(":complex")
+    , _imgAttendance(":complex")
+    , _imgCurr(":complex")
     , _imgExamAtt(":complex")
     , _imgTicket(":pencil")
     , _imgCourseenr(":plus")
     , _imgMessages(":complex")
     , _imgExamGrades(":complex")
+    , _imgExamLabHomework(":complex")
+    , _imgSAOTicket(":pencil")
     , _imgUpload(":complex")
 {
     setTitle(tr("SIS"));
@@ -62,10 +69,10 @@ MainWindow::MainWindow()
 
 void MainWindow::showLogin()
 {
- 
-   // pDlg->openModal();
-   // pDlg->setTitle(tr("Login"));
-   // -----------------------------OVO SAM JA ZAKOMENTARISALA
+
+    // pDlg->openModal();
+    // pDlg->setTitle(tr("Login"));
+    // -----------------------------OVO SAM JA ZAKOMENTARISALA
     DialogLogin* pDlg = new DialogLogin(this);
     pDlg->setTitle(tr("Login"));
     pDlg->openModal([this](gui::Dialog::Button::ID btn, gui::Dialog* pDlg)
@@ -260,17 +267,17 @@ bool MainWindow::showAllSubjectChoose()
         return true;
     }
 
-        DialogChooseSubject* pDlg = new DialogChooseSubject(this);
-        pDlg->setTitle(tr("SubjectChoose"));
-        pDlg->openModal([this](gui::Dialog::Button::ID btn, gui::Dialog* pDlg)
-            {
-                auto btnID = pDlg->getClickedButtonID();
-                if (btnID == gui::Dialog::Button::ID::OK) {
-                    auto dlgCS = static_cast<DialogChooseSubject*> (pDlg);
-                    showTStaffView(dlgCS->getSubjectID());
-                }
-                return true;
-            });
+    DialogChooseSubject* pDlg = new DialogChooseSubject(this);
+    pDlg->setTitle(tr("SubjectChoose"));
+    pDlg->openModal([this](gui::Dialog::Button::ID btn, gui::Dialog* pDlg)
+        {
+            auto btnID = pDlg->getClickedButtonID();
+            if (btnID == gui::Dialog::Button::ID::OK) {
+                auto dlgCS = static_cast<DialogChooseSubject*> (pDlg);
+                showTStaffView(dlgCS->getSubjectID());
+            }
+            return true;
+        });
 
     return false;
 }
@@ -278,7 +285,7 @@ bool MainWindow::showAllSubjectChoose()
 bool MainWindow::showSomeSubjectChoose()
 {
     auto x = Globals::_currentUserRole;
-    if (x!=1)
+    if (x != 1)
     {
         showAlert(tr("AccessNotAllowed"), "");
         return true;
@@ -301,8 +308,7 @@ bool MainWindow::showSomeSubjectChoose()
 }
 
 
-
-bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc) 
+bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc)
 {
     auto [menuID, firstSubMenuID, lastSubMenuID, actionID] = aiDesc.getIDs();
 
@@ -314,12 +320,12 @@ bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc)
         {
             Globals::_currentUserRole = -1;
             Globals::_currentUserID = -1;
-//Globals::_IDSubjectSelection = -1;
+            //Globals::_IDSubjectSelection = -1;
 
-             Globals::isAdmin = false;
-             Globals::isProfessor = false;
-             Globals::isAssistant = false;
-             Globals::isStudent = false;
+            Globals::isAdmin = false;
+            Globals::isProfessor = false;
+            Globals::isAssistant = false;
+            Globals::isStudent = false;
             Globals::isSAO = false;
             showLogin();
             return true;
@@ -348,12 +354,14 @@ bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc)
         break; case 130: return showTicketView();
         break; case 140: return showMessagesView();
         break; case 150: return showSomeSubjectChoose();
-        break; case 160: return showUpload(); 
+        break; case 160: return showUpload();
         break; case 170: return showSubjectChooseForTimeSlot();
+        break; case 180: return showSomeSubjectChoose2();
+        break; case 190: return showTicketForSaoView();
 
 
 
-                      
+
 
         break; default: break;
         }
@@ -363,6 +371,16 @@ bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc)
    
 
     
+    if (menuID == 20 && firstSubMenuID == 30 && lastSubMenuID == 30) {        ///
+        switch (actionID) {
+        break; case 80: return showSubjectChoose();
+        break; case 170: return showSubjectChooseForTimeSlot();
+        }
+    }
+
+
+
+
     if (menuID == 20 && firstSubMenuID == 30 && lastSubMenuID == 30) {        ///
         switch (actionID) {
         break; case 80: return showSubjectChoose();
@@ -630,4 +648,57 @@ bool MainWindow::showUpload()
     ViewUpload* pView = new ViewUpload;
     _mainView.addView(pView, tr("viewUpload"), &_imgUpload);
     return true;
+}
+
+bool MainWindow::showSomeSubjectChoose2()
+{
+    auto x = Globals::_currentUserRole;
+    if (x != 1)
+    {
+        showAlert(tr("AccessNotAllowed"), "");
+        return true;
+    }
+    DialogChooseSubject* pDlg = new DialogChooseSubject(this);
+    pDlg->setTitle(tr("SubjectChoose"));
+    pDlg->openModal([this](gui::Dialog::Button::ID btn, gui::Dialog* pDlg)
+        {
+            auto btnID = pDlg->getClickedButtonID();
+            if (btnID == gui::Dialog::Button::ID::OK) {
+                auto dlgCS = static_cast<DialogChooseSubject*> (pDlg);
+                //examGrades(&_imgExamAtt, dlgCS->getSubjectID());
+
+                showGradeLabHomeworkView(dlgCS->getSubjectID());
+            }
+            return true;
+        });
+
+    return false;
+}
+
+bool MainWindow::showGradeLabHomeworkView(td::INT4 SubjectID)
+{
+    td::INT4 ViewID = (View_GRADE_LABHOM << 24) | SubjectID;
+    if (focusOnViewPositionWithID(ViewID))
+        return true;
+
+    ViewGradeLabHomework* pView = new ViewGradeLabHomework(SubjectID);
+    _mainView.addView(pView, tr("viewGradeLabHw"), &_imgExamGrades);
+
+    return true;
+}
+
+
+bool MainWindow::showTicketForSaoView() {
+
+
+
+    if (focusOnViewPositionWithID(View_SAOTICKET))
+        return true;
+
+    ViewTicketForSAO* pView = new ViewTicketForSAO();
+    _mainView.addView(pView, tr("viewTicketForSAO"), &_imgSAOTicket);
+    return true;
+  
+
+
 }

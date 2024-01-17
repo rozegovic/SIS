@@ -37,8 +37,10 @@ class ViewSubject : public gui::View
     gui::TableEdit _tablePresent;
     gui::Label _lblTime;
     gui::DBComboBox _time;
-    gui::Label _lblDate;
-    gui::DBComboBox _date;
+    gui::Label _lblDay;
+    gui::ComboBox _dayCombo;
+   gui::Label _lblDate;
+    gui::DateEdit _dateNovi;
     gui::HorizontalLayout _hlBtnsDB;
     gui::Button _btnPresent;
     gui::Button _btnNotPresent;
@@ -53,19 +55,21 @@ class ViewSubject : public gui::View
 
 public:
     ViewSubject(td::INT4 SubjectID);
-    gui::DBComboBox& getDate() {
+   /* gui::DBComboBox& getDate() {
         return _date;
-    }
-    void populateDateCombo(gui::DBComboBox& combo);
+    }*/
+  //  void populateDateCombo(gui::DBComboBox& combo);
+    void populateDayCombo(gui::ComboBox& combo);
 
 protected:
-    td::INT4 getCurrentTerminID();
+   td::INT4 getCurrentTerminID();
      bool onChangedSelection(gui::TableEdit* pTE);
+     bool onChangedSelection(gui::ComboBox* pCB);
      bool onChangedSelection(gui::DBComboBox* pCB);
     void populateData();
     void populateTablePresent();
     //void populateDateCombo(gui::DBComboBox& combo);
-    void populateTimeCombo(gui::DBComboBox& combo, td::Date date);
+   void populateTimeCombo(gui::DBComboBox& combo, td::String day);
     bool saveData();
     bool onClick(gui::Button* pBtn);
     bool doesIDexist(td::INT4 ID);
