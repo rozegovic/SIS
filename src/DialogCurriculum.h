@@ -17,7 +17,7 @@ protected:
             //  Globals::_IDSubjectSelection = _viewAttendance.getSubjectID();
             return true;
         }
-
+        return false;
     }
 public:
     td::INT4 getSemester() {

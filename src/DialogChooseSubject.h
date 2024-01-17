@@ -21,7 +21,8 @@ protected:
 public:
     td::INT4 getSubjectID() {
         return  _viewAttendance.getSubjectID();
-    }
+    }  
+
     DialogChooseSubject(gui::Frame* pView)
         : gui::Dialog(pView, { {gui::Dialog::Button::ID::OK, tr("Ok"), gui::Button::Type::Default},
                                 {gui::Dialog::Button::ID::Cancel, tr("Cancel")} }, gui::Size(300, 100))
