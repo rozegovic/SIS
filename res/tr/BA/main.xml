@@ -305,8 +305,20 @@
 		<Res id="viewGradeLabHW" tr="Ocjene dodataka"/>
 		<Res id="viewExamLabHomework" tr="Ocjena dodataka"/>
 
-
-
+        <Res id="alertLoginCreate" tr="Greška pri kreiranju logina"/>
+        <Res id="alertLoginDelete" tr="Greška pri brisanju logina"/>
+        
+        <Res id="RoleErr" tr="Problem pri određivanju uloge korisnika"/>
+        
+        <Res id="NewPwrd" tr="Nova šifra: "/>
+        <Res id="RepeatPwrd" tr="Ponovo unesite šifru: "/>
+        <Res id="HNewPwrd" tr="Postavljanje nove korisničke šifre"/>
+        <Res id="SetPassword" tr="Nova šifra"/>
+        <Res id="PwrdErr" tr="Unesene šifre se ne poklapaju"/>
+        
+        <Res id="PwrdOK" tr="Uspješno postavljanje nove šifre!"/>
+        <Res id="CloseWnd" tr="Zatvorite ovaj prozor"/>
+        
 	</Translations>
 </DevRes>
 
