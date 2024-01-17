@@ -4,7 +4,8 @@
 #include "ViewLogin.h"
 #include <dp/IDatabase.h>
 #include "Globals.h"
-
+#include "SetPasswordWindow.h"
+#include "WindowMessages.h"
 class  DialogLogin : public gui::Dialog
 {
     
@@ -13,6 +14,7 @@ protected:
     
     bool onClick(Dialog::Button::ID btnID, gui::Button* pButton) override
     {
+
         if (btnID == Dialog::Button::ID::OK)
         {
             td::String username = _viewLogin.getUserName();
@@ -52,14 +54,22 @@ protected:
             pCols1 << "RoleID" << userRole;
             if (!pSel1->execute())
             {
-                showAlert(tr("WrongPass"), tr("EnterCorrPass"));
+                showAlert(tr("RoleErr"), tr("RoleErrTxt"));
                 return false;
 
             }
             if (!pSel1->moveNext())
             {
-                showAlert(tr("WrongPass"), tr("EnterCorrPass"));
+                showAlert(tr("alert"), tr("RoleErr"));
                 return false;
+            }
+            //Otvaranje prozora za prvi sign in
+            if(pwrd == td::String("default")){
+                gui::Window* pParentWnd = getParentWindow();
+                auto pWnd = new SetPasswordWindow (pParentWnd, 2);
+                pWnd->keepOnTopOfParent();
+                pWnd->open();
+
             }
             Globals::_currentUserRole = userRole;
 
