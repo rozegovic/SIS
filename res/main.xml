@@ -11,7 +11,7 @@
 		<Res id="Home" path = "Work/CPProjects/SiS_v_Zadnji/res/Icons/Traditional-HomeXL.png"/>
 		<Res id="TransCost" path = "Work/CPProjects/SiS_v_Zadnji/res/Icons/transportCostXL.png"/>
 
-		<Res id="imgAttendance" path = "Work/CPProjects/SiS_v_Zadnji/res/Icons/imgAttendance.png"/>
+		<Res id="imgAttendance" path = "Work/CPProjects/SiS_v_Zadnji/res/Icons/imgAttendance.jpg"/>
 		<Res id="imgSubject" path = "Work/CPProjects/SiS_v_Zadnji/res/Icons/imgSubject.png"/>
 		<Res id="imgActivity" path = "Work/CPProjects/SiS_v_Zadnji/res/Icons/imgActivity.png"/>
 		

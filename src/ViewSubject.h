@@ -55,9 +55,9 @@ class ViewSubject : public gui::View
 
 public:
     ViewSubject(td::INT4 SubjectID);
-   /* gui::DBComboBox& getDate() {
-        return _date;
-    }*/
+    gui::ComboBox& getDay() {
+        return _dayCombo;
+    }
   //  void populateDateCombo(gui::DBComboBox& combo);
     void populateDayCombo(gui::ComboBox& combo);
 
@@ -68,6 +68,7 @@ protected:
      bool onChangedSelection(gui::DBComboBox* pCB);
     void populateData();
     void populateTablePresent();
+   bool onChangedValue(gui::DateEdit* pDE) override;
     //void populateDateCombo(gui::DBComboBox& combo);
    void populateTimeCombo(gui::DBComboBox& combo, td::String day);
     bool saveData();

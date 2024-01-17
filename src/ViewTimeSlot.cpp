@@ -109,7 +109,7 @@ void ViewTimeSlot::populateDataForTable()
     dp::Params pParams(_pDS->allocParams());
     pParams << _SubjectID;
     dp::DSColumns cols(_pDS->allocBindColumns(5));
-    cols << "tip" << td::string8 << "time" << td::int4 << "date" << td::string8 <<"idPred"<<td::int4<<"idTerm"<<td::int4;
+    cols << "tip" << td::string8 << "time" << td::time << "date" << td::string8 <<"idPred"<<td::int4<<"idTerm"<<td::int4;
 
     if (!_pDS->execute())
     {
@@ -129,7 +129,7 @@ void ViewTimeSlot::populateTable2()
     pParams << sID;           
     
     dp::DSColumns cols(_pDS2->allocBindColumns(3));
-    cols << "tip" << td::string8 << "time" << td::int4 << "date" << td::string8;
+    cols << "tip" << td::string8 << "time" << td::time << "date" << td::string8;
     if (!_pDS2->execute())
     {
         _pDS2 = nullptr;

@@ -173,6 +173,7 @@
                          <Res id="StatRole" tr="Uloga:"/>
                          <Res id="Subject" tr="Predmet"/>
                             <Res id="alertPr" tr="Vec ste unijeli prisustvo ovog studenta za ovaj termin"/>
+							 <Res id="alertAttNegative" tr="Broj mjesta ne može biti negativan"/>
 							<Res id="SubjTablePresent" tr="Prisutni za ovaj termin:"/>
 							<Res id="alertNoTerm" tr="Niste odabrali ni jedan termin"/>
 									<Res id="Report" tr="Izvještaj"/>

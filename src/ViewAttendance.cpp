@@ -13,16 +13,17 @@
 #include <gui/Image.h>
 #include <gui/Frame.h>
 
-ViewAttendance::ViewAttendance(td::INT4 SubjectID, ViewSubject* subject):
-_LblSubjName(tr("AttSubj")),
-_LblDay(tr("AttDay")),
-_LblTime(tr("AttTime"))
-,_LblType(tr("AttType"))
-, _LblMaxNum(tr("AttMaxNum"))
-, _btnAdd(tr("add"), tr("AttAddBtnTT"))
-, _btnUpdate(tr("Update"), tr("AttUpdateTT"))
-, _btnDelete(tr("Delete"), tr("AttDelBtnTT"))
-,_btnReport(tr("AttReport"), tr("AttRepTT"))
+ViewAttendance::ViewAttendance(td::INT4 SubjectID, ViewSubject* subject) :
+    _LblSubjName(tr("AttSubj")),
+    _LblDay(tr("AttDay")),
+    _LblTime(tr("AttTime"))
+    , _LblType(tr("AttType"))
+    , _LblMaxNum(tr("AttMaxNum"))
+    , _btnAdd(tr("add"), tr("AttAddBtnTT"))
+    , _btnUpdate(tr("Update"), tr("AttUpdateTT"))
+    , _btnDelete(tr("Delete"), tr("AttDelBtnTT"))
+    , _btnReport(tr("AttReport"), tr("AttRepTT"))
+    , _Time("TimeOwnShortHMM")
 //,_btnSave(tr("Save"), tr("SaveTT"))
 , _type(td::int4)
 ,_maxNum(td::int4)
@@ -41,7 +42,7 @@ _LblTime(tr("AttTime"))
     _hlBtnsDB.appendSpacer();
     _hlBtnsDB.append(_btnReport);
    
-    
+   // _time.setValue(_Time);
     _btnUpdate.setType(gui::Button::Type::Default);
     //_btnSave.setType(gui::Button::Type::Default);
     _btnDelete.setType(gui::Button::Type::Destructive);
@@ -149,7 +150,7 @@ bool ViewAttendance::onChangedSelection(gui::ComboBox* pCmb)
 void ViewAttendance::populateData()
 {
     auto pDB = dp::getMainDatabase();
-    _pDS = pDB->createDataSet("SELECT a.Dan AS dan, a.Vrijeme AS vrijeme, b.Naziv AS Tip, b.ID as ID, a.Max_br_pol as MaxBroj FROM Termini a, TipPredavanja b WHERE a.TipPredavanjaID = b.ID and a.Predmet_ID = ?", dp::IDataSet::Execution::EX_MULT);
+    _pDS = pDB->createDataSet("SELECT a.Dan AS dan, a.Vrijeme AS vrijeme, b.Naziv AS Tip, b.ID as ID, a.Max_br_pol as MaxBroj, a.Br_prijavljenih as brP FROM Termini a, TipPredavanja b WHERE a.TipPredavanjaID = b.ID and a.Predmet_ID = ?", dp::IDataSet::Execution::EX_MULT);
     
     dp::Params parDS(_pDS->allocParams());
     //td::INT4 IDPredmeta = Globals::_IDSubjectSelection;
@@ -157,8 +158,8 @@ void ViewAttendance::populateData()
     //u parDS ce se ucitavati Globals::CurrentSubject
     parDS << _SubjectID;
     
-    dp::DSColumns cols(_pDS->allocBindColumns(5));
-    cols << "dan" << td::string8 << "vrijeme" << td::time<< "Tip" << td::string8 << "ID" << td::int4 << "MaxBroj" << td::int4;
+    dp::DSColumns cols(_pDS->allocBindColumns(6));
+    cols << "dan" << td::string8 << "vrijeme" << td::time<< "Tip" << td::string8 << "ID" << td::int4 << "MaxBroj" << td::int4<<"brP"<<td::int4;
 
     if (!_pDS->execute())
     {
@@ -181,6 +182,7 @@ void ViewAttendance::populateDSRow(dp::IDataSet::Row& row)
     row[2].setValue(_type.getSelectedText());
     _maxNum.getValue(val);
     row[4].setValue(val);
+    
 
 }
 bool ViewAttendance::onChangedSelection(gui::TableEdit* pTE) {
@@ -215,15 +217,16 @@ bool ViewAttendance::onChangedSelection(gui::TableEdit* pTE) {
 }
 void ViewAttendance::saveData()
 {
-    dp::IStatementPtr pInsStat(dp::getMainDatabase()->createStatement("INSERT INTO Termini ( Dan, TipPredavanjaID, Predmet_ID, Vrijeme,Max_br_pol) VALUES(?,?,?,?,?)"));
+    dp::IStatementPtr pInsStat(dp::getMainDatabase()->createStatement("INSERT INTO Termini ( Dan, TipPredavanjaID, Predmet_ID, Vrijeme,Max_br_pol,Br_prijavljenih) VALUES(?,?,?,?,?,?)"));
     dp::Params parDS(pInsStat->allocParams());
     dp::Transaction tr(dp::getMainDatabase());
 
     td::String day;
     td::Time t;
-    td::INT4 tip, predmet,Max_br_pol;
+    td::INT4 tip, predmet,Max_br_pol,Tr_broj;
+    Tr_broj = 0;
     td::Variant val;
-    parDS << dp::toNCh(day, 30) << tip << predmet << t<<Max_br_pol;
+    parDS << dp::toNCh(day, 30) << tip << predmet << t<<Max_br_pol<<Tr_broj;
     dp::IStatementPtr pDel(dp::getMainDatabase()->createStatement("DELETE FROM Termini"));
     if (!pDel->execute())
         return;
@@ -237,7 +240,39 @@ void ViewAttendance::saveData()
         predmet = _SubjectID;
         t = row[1];
         Max_br_pol = row[4].i4Val();
-        
+         Tr_broj = row[5].i4Val();
+        if (!pInsStat->execute())
+            return;
+    }
+    tr.commit();
+    return;
+}
+void ViewAttendance::saveDataUpdate()
+{
+    dp::IStatementPtr pInsStat(dp::getMainDatabase()->createStatement("INSERT INTO Termini ( Dan, TipPredavanjaID, Predmet_ID, Vrijeme,Max_br_pol) VALUES(?,?,?,?,?)"));
+    dp::Params parDS(pInsStat->allocParams());
+    dp::Transaction tr(dp::getMainDatabase());
+
+    td::String day;
+    td::Time t;
+    td::INT4 tip, predmet, Max_br_pol;
+  
+    td::Variant val;
+    parDS << dp::toNCh(day, 30) << tip << predmet << t << Max_br_pol;
+    dp::IStatementPtr pDel(dp::getMainDatabase()->createStatement("DELETE FROM Termini"));
+    if (!pDel->execute())
+        return;
+    size_t nRows = _pDS->getNumberOfRows();
+    for (size_t i = 0; i < nRows; ++i)
+    {
+        auto row = _pDS->getRow(i);
+        //row[0].getValue (val);
+        day = row[0];
+        tip = row[3].i4Val();
+        predmet = _SubjectID;
+        t = row[1];
+        Max_br_pol = row[4].i4Val();
+
         if (!pInsStat->execute())
             return;
     }
@@ -262,7 +297,7 @@ bool ViewAttendance::onClick(gui::Button* pBtn)
     }
    if (pBtn == &_btnUpdate)
     {
-      
+         
         td::Variant val1, val2;
         _day.getValue(val1);
         _time.getValue(val2); 
@@ -271,6 +306,13 @@ bool ViewAttendance::onClick(gui::Button* pBtn)
             showAlert(tr("alert"), tr("alertAttUpdate"));
             return true;
        }
+        _maxNum.getValue(val1);
+        if (val1 < 0)
+        {
+
+            showAlert(tr("alert"), tr("alertAttNegative"));
+            return true;
+        }
         int iRow = _table.getFirstSelectedRow();
         if (iRow < 0)
             return true;
@@ -297,15 +339,21 @@ bool ViewAttendance::onClick(gui::Button* pBtn)
             showAlert(tr("alert"), tr("alertAttAdd"));
             return true;
         }
-       
+       _maxNum.getValue(val1);
+       if (val1 < 0)
+       {
+
+           showAlert(tr("alert"), tr("alertAttNegative"));
+           return true;
+       }
         _table.beginUpdate();
         auto& row = _table.getEmptyRow();
         populateDSRow(row);
         _table.push_back();
         _table.endUpdate();
         saveData();
-     //   _subject->getDate().clean();
-       // _subject->populateDateCombo(_subject->getDate());
+        _subject->getDay().clean();
+        _subject->populateDayCombo(_subject->getDay());
         if(CheckTime())
             SendMsg(1);
         return true;

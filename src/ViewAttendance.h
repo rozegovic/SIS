@@ -42,11 +42,14 @@ protected:
     gui::Label _LblTime;
     gui::TimeEdit _time;
     
+    td::Time _Time;
+    
     gui::Label _LblType;
     gui::DBComboBox _type;
     
     gui::Label _LblMaxNum;
     gui::NumericEdit _maxNum;
+   
     
     gui::HorizontalLayout _hlBtnsDB;
     gui::Button _btnAdd;
@@ -81,6 +84,7 @@ protected:
     bool doesItDexist(td::Variant day, td::Time time);
     bool onClick(gui::Button* pBtn);
     void saveData();
+    void saveDataUpdate();
     void SetCurrentSubject();
     //void SendAddMsg();
     void SendMsg(td::INT4 MsgType);

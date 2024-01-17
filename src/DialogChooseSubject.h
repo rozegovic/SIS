@@ -14,6 +14,7 @@ protected:
           //  Globals::_IDSubjectSelection = _viewAttendance.getSubjectID();
             return true;
         }
+        else closeModal(btnID);
         return false;
     }
 

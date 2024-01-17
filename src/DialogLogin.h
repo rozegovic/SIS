@@ -63,44 +63,31 @@ protected:
             }
             Globals::_currentUserRole = userRole;
 
-            if (Globals::_currentUserRole == 1) {
+            if (Globals::_currentUserRole == 6) {
                 Globals::isAdmin = true;
-                Globals::isProfessor = false;
-                Globals::isAssistant = false;
-                Globals::isStudent = false;
-                Globals::isSAO = false;
+             
             }
-            if (Globals::_currentUserRole == 2) {
-                Globals::isAdmin =false;
+            else  if (Globals::_currentUserRole == 1) {
+              
                 Globals::isProfessor = true;
-                Globals::isAssistant = false;
-                Globals::isStudent = false;
-                Globals::isSAO = false;
             }
-            if (Globals::_currentUserRole == 3) {
-                Globals::isAdmin = false;
-                Globals::isProfessor = false;
+            else if (Globals::_currentUserRole == 3) {
+              
                 Globals::isAssistant = true;
-                Globals::isStudent = false;
-                Globals::isSAO = false;
+           
             }
-            if (Globals::_currentUserRole == 4) {
-                Globals::isAdmin = false;
-                Globals::isProfessor = false;
-                Globals::isAssistant = false;
-                Globals::isStudent = false;
+            else if (Globals::_currentUserRole == 4) {
+              
                 Globals::isSAO = true;
             }
-            if (Globals::_currentUserRole == 5) {
-                Globals::isAdmin = false;
-                Globals::isProfessor = false;
-                Globals::isAssistant = false;
+            else if (Globals::_currentUserRole == 5) {
+             
                 Globals::isStudent = true;
-                Globals::isSAO = false;
+               
             }
 
         }
-
+      
         return true;
     }
 public:

@@ -2,6 +2,8 @@
 #include "Globals.h"
 #include "ViewIDs.h"
 #include <td/StringConverter.h>
+#include <gui/PasswordEdit.h>
+
 ViewSubject::ViewSubject(td::INT4 SubjectID) :
 	_lblName(tr("SubjName"))
 	, _lblSurname(tr("SubjSurname"))
@@ -31,6 +33,7 @@ ViewSubject::ViewSubject(td::INT4 SubjectID) :
 	gui::GridComposer gc(_gl);
 	gc.appendRow(_lblDate);
 	gc.appendCol(_dateNovi);
+	
 	gc.appendRow(_lblDay);
 	gc.appendCol(_dayCombo);
 	gc.appendCol(_lblTime);
@@ -54,13 +57,13 @@ ViewSubject::ViewSubject(td::INT4 SubjectID) :
 
 	_TerminID = getCurrentTerminID();
 
-	
 	_table.init(_pDS, { 0,1});
 
 	if (_pDS->getNumberOfRows())
 	{
 		_table.selectRow(0, true);
 	}
+
 }
 void ViewSubject::populateDayCombo(gui::ComboBox& combo)
 {
@@ -142,6 +145,7 @@ void ViewSubject::populateTimeCombo(gui::DBComboBox& combo, td::String day)
 	pParams << dp::toNCh(day,30);
 	dp::Columns pCols = pSelect->allocBindColumns(2);
 	td::Time time;
+	time.formatFromString("TimeOwnShortHMM");
 	td::INT4 id;
 	td::String pom;
 	pCols << "ID" << id << "Vrijeme" << time;
@@ -249,7 +253,10 @@ bool ViewSubject::onChangedSelection(gui::TableEdit* pTE) {
 bool ViewSubject::onClick(gui::Button* pBtn)
 {
 	if (pBtn == &_btnPresent)
-	{   
+	{
+		//td::Variant pom;
+		//_dateNovi.getValue(pom);
+		//_dateNovi.setValue(pom);
 		if (_pDS->getNumberOfRows() == 0)
 			return false;
 		if (_TerminID < 1)
@@ -431,4 +438,15 @@ void ViewSubject::UpdatePresentDataSet() {
 		_tablePresent.endUpdate();
 	}
 
+}
+
+bool ViewSubject::onChangedValue(gui::DateEdit* pDE)
+{
+	if (pDE == &_dateNovi)
+	{   
+		showAlert(tr("alert"), tr("alertCmb"));
+		UpdatePresentDataSet();
+		return true;
+	}
+	return false;
 }
