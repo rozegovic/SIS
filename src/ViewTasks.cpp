@@ -20,12 +20,13 @@ ViewTasks::ViewTasks(td::INT4 SubjectID) :
     _lblCName(tr("Course:")),
     _lblTable2(tr("Docs:")),
     _btnAdd(tr("add"), tr("AddTT"))
+    , _titleFile("")
     //, _btnUpdate(tr("Update"), tr("UpdateTT"))
     , _btnDelete(tr("Delete"), tr("DeleteTT"))
     , _btnSave(tr("Save"), tr("SaveTT"))
     , _btnAddFile(tr("AddFile"), tr("AddFileTT"))
     , _hlBtnsDB(6)
-    , _gl(7, 4)
+    , _gl(6, 4)
     , _SubjectID(SubjectID)
 {
 
@@ -63,10 +64,11 @@ ViewTasks::ViewTasks(td::INT4 SubjectID) :
     gc.appendCol(_LblTimeBegin);
     gc.appendCol(_timeB);
 
-    gc.appendRow(_btnAddFile);
 
     gc.appendRow(_table, 0);
     gc.appendRow(_lblTable2);
+    gc.appendCol(_titleFile,2);
+    gc.appendCol(_btnAddFile, td::HAlignment::Right);
     gc.appendRow(_textEdit, 0);
 
     gc.appendRow(_hlBtnsDB, 0);
@@ -554,6 +556,9 @@ void ViewTasks::showOpenFileDialog()
                     bool insOK = pStatIns->execute();
 
                     bool commitOK = transaction.commit();
+
+                    _titleFile.setTitle(filePath.filename());
+                    _titleFile.setBold();
                 }
             }
         });

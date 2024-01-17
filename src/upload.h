@@ -41,6 +41,7 @@ protected:
     gui::Label _lblTable1;
    gui::Label _lblTable2;
 
+
     gui::TableEdit _table1;
    gui::TableEdit _table2;
     gui::HorizontalLayout _hlBtnsDB;
