@@ -3,17 +3,18 @@
 #include "ViewIDs.h"
 #include <td/StringConverter.h>
 ViewSubject::ViewSubject(td::INT4 SubjectID) :
-	_lblName(tr("Name"))
-	, _lblSurname(tr("Surname"))
+	_lblName(tr("SubjName"))
+	, _lblSurname(tr("SubjSurname"))
+	, _lblDay(tr("SubjDay"))
+	, _lblDate(tr("SubjDate"))
 	, _hlBtnsDB(4)
-	, _lblTablePresent(tr("tablePresent"))
-	, _btnPresent(tr("Present"))
-	, _btnNotPresent(tr("NotPresent"))
-	, _lblTime(tr("Time"))
+	, _lblTablePresent(tr("SubjTablePresent"))
+	, _btnPresent(tr("SubjPresent"))
+	, _btnNotPresent(tr("SubjNotPresent"))
+	, _lblTime(tr("SubjTime"))
 	, _time(td::int4)
-	, _lblDate(tr("Date"))
-	, _date(td::int4)
-	, _gl(6, 4)
+	//, _lblDate(tr("SubjDate"))
+	, _gl(7, 4)
 	, _SubjectID(SubjectID)
 {
 	_name.setAsReadOnly();
@@ -29,7 +30,9 @@ ViewSubject::ViewSubject(td::INT4 SubjectID) :
 
 	gui::GridComposer gc(_gl);
 	gc.appendRow(_lblDate);
-	gc.appendCol(_date);
+	gc.appendCol(_dateNovi);
+	gc.appendRow(_lblDay);
+	gc.appendCol(_dayCombo);
 	gc.appendCol(_lblTime);
 	gc.appendCol(_time);
 	
@@ -44,11 +47,13 @@ ViewSubject::ViewSubject(td::INT4 SubjectID) :
 	gc.appendRow(_hlBtnsDB, 0);
 
 	gui::View::setLayout(&_gl);
-	populateDateCombo(_date);
+	//populateDateCombo(_date);	
+	populateTablePresent();
+	populateDayCombo(_dayCombo);
 	populateData();
 
 	_TerminID = getCurrentTerminID();
-	populateTablePresent();
+
 	
 	_table.init(_pDS, { 0,1});
 
@@ -57,8 +62,41 @@ ViewSubject::ViewSubject(td::INT4 SubjectID) :
 		_table.selectRow(0, true);
 	}
 }
+void ViewSubject::populateDayCombo(gui::ComboBox& combo)
+{
+	std::vector<td::String> vekt;
+	dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT  Dan FROM Termini where Predmet_ID=?");
+	dp::Params pParams(pSelect->allocParams());
+	pParams << _SubjectID;
+	dp::Columns pCols = pSelect->allocBindColumns(1);
+	td::String day;
 
-void ViewSubject::populateDateCombo(gui::DBComboBox& combo) 
+	td::String pom;
+	pCols << "Dan" << day;
+
+
+	pSelect->execute();
+
+s: while (pSelect->moveNext())
+{
+
+	for (auto a : vekt)
+	{
+		if (a == day)
+		{
+			goto s;
+		}
+	}
+	vekt.push_back(day);
+	combo.addItem(day);
+}
+
+if (vekt.size() == 0)
+return;
+combo.selectIndex(0);
+populateTimeCombo(_time, vekt.at(0));
+}
+/*void ViewSubject::populateDateCombo(gui::DBComboBox& combo)
 {   
 	std::vector<td::Date> vekt;
 	dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT ID, Datum FROM Termini where Predmet_ID=?");
@@ -91,17 +129,17 @@ void ViewSubject::populateDateCombo(gui::DBComboBox& combo)
         return;
     //combo.selectIndex(0);
 	populateTimeCombo(_time, vekt.at(0));
-}
-void ViewSubject::populateTimeCombo(gui::DBComboBox& combo, td::Date date)
+}*/
+void ViewSubject::populateTimeCombo(gui::DBComboBox& combo, td::String day)
 {
-	if (_date.getSelectedIndex()<0)
+	if (_dayCombo.getSelectedIndex()<0)
 	{
 		return;
 }
 	//td::INT4 indeks=_date.getSelectedIndex();
-	dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT ID, Vrijeme FROM Termini where Termini.Datum=?");
+	dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT ID, Vrijeme FROM Termini where Termini.Dan=?");
 	dp::Params pParams(pSelect->allocParams());
-	pParams << date;
+	pParams << dp::toNCh(day,30);
 	dp::Columns pCols = pSelect->allocBindColumns(2);
 	td::Time time;
 	td::INT4 id;
@@ -136,14 +174,16 @@ void ViewSubject::populateData()
 
 
 void ViewSubject::populateTablePresent() 
-{
+{   
+	td::Variant val1;
+	_dateNovi.getValue(val1);
 	auto pDB = dp::getMainDatabase();
-	_pDS2 = pDB->createDataSet("select Ime as Name, Prezime as Surname from Korisnici,Prisustvo where Korisnici.PozicijaID==5 and Korisnici.ID == Prisustvo.ID_studenta and Prisustvo.ID_termina=?");
+	_pDS2 = pDB->createDataSet("select Ime as Name, Prezime as Surname, Datum as Subjdate from Korisnici,Prisustvo where Korisnici.PozicijaID==5 and Korisnici.ID == Prisustvo.ID_studenta and Prisustvo.ID_termina=?");
 	dp::Params pParams(_pDS2->allocParams());
 	 _TerminID = getCurrentTerminID();
 	pParams << _TerminID;
-	dp::DSColumns cols(_pDS2->allocBindColumns(2));
-	cols << "Name" << td::string8 << "Surname" << td::string8;
+	dp::DSColumns cols(_pDS2->allocBindColumns(3));
+	cols << "Name" << td::string8 << "Surname" << td::string8<<"Subjdate" << td::date;
 
 	if (!_pDS2->execute())
 	{
@@ -151,7 +191,7 @@ void ViewSubject::populateTablePresent()
 		return;
 	}
 	//_tablePresent.clean();
-	_tablePresent.init(_pDS2, {0,1});
+	_tablePresent.init(_pDS2, {0,1,2});
 
 	if (_pDS2->getNumberOfRows())
 	{
@@ -159,30 +199,31 @@ void ViewSubject::populateTablePresent()
 	}
 	
 }
+
 bool ViewSubject::saveData()
 {   
-
-
 	td::INT4 _TerminID = getCurrentTerminID();
  
-	dp::IStatementPtr pInsStat(dp::getMainDatabase()->createStatement("INSERT INTO Prisustvo (ID_termina,ID_studenta) VALUES(?,?)"));
+	dp::IStatementPtr pInsStat(dp::getMainDatabase()->createStatement("INSERT INTO Prisustvo (ID_termina,ID_studenta,Datum) VALUES(?,?,?)"));
 	dp::Params parDS(pInsStat->allocParams());
 	td::INT4 tID, pID;
-	parDS <<tID << pID;
+	td::Date date;
+	td::Variant val1;
+	_dateNovi.getValue(val1);
+	date = val1;
+	parDS <<tID << pID << date;
 	tID = _TerminID;
 	td::INT4 curRow = _pDS->getCurrentRowNo();
 		auto row = _pDS->getRow(curRow);
 		pID = row[2].i4Val();
-		if (doesIDexist(pID)==true)
-		{    
-			return false;
-		}
+		
 		if (!pInsStat->execute())
 			return false;
 
 	return true; 
 
 }
+
 bool ViewSubject::onChangedSelection(gui::TableEdit* pTE) {
 
 	if (pTE == &_table) {
@@ -234,7 +275,6 @@ bool ViewSubject::onClick(gui::Button* pBtn)
 		UpdatePresentDataSet();
 		if(curRow<_pDS->getNumberOfRows()-1)
 		curRow++;
-		
 		_table.selectRow(curRow, true);
 	//_TerminID = getCurrentTerminID();
 	//_tablePresent.clean();
@@ -258,13 +298,15 @@ bool ViewSubject::onClick(gui::Button* pBtn)
 		auto& row = pDS->getRow(curRow);
 		td::INT4 curID = row[2].i4Val();
 		_TerminID = getCurrentTerminID();
+		td::Variant val1;
+		_dateNovi.getValue(val1);
 
 		if (doesIDexist(curID))
 		{
 			dp::Transaction tr(dp::getMainDatabase());
-			dp::IStatementPtr pInsStat(dp::getMainDatabase()->createStatement("Delete from prisustvo where ID_termina=? and ID_studenta=? "));
+			dp::IStatementPtr pInsStat(dp::getMainDatabase()->createStatement("Delete from prisustvo where ID_termina=? and ID_studenta=? and Datum=? "));
 			dp::Params parDS(pInsStat->allocParams());
-			parDS<<_TerminID<<curID;
+			parDS<<_TerminID<<curID<<val1;
 			if (!pInsStat->execute())
 				return false;
 			while (pInsStat->moveNext());
@@ -290,40 +332,45 @@ bool ViewSubject::doesIDexist(td::INT4 ID)
 {
 	_TerminID = getCurrentTerminID();
 	auto pDB = dp::getMainDatabase();
-	_pDSPos = pDB->createDataSet("SELECT ID_studenta, ID_termina  FROM Prisustvo", dp::IDataSet::Execution::EX_MULT);
-	dp::DSColumns cols(_pDSPos->allocBindColumns(2));
-	cols << "ID_studenta" << td::int4<<"ID_termina" << td::int4;
+	_pDSPos = pDB->createDataSet("SELECT ID_studenta, ID_termina, Datum  FROM Prisustvo", dp::IDataSet::Execution::EX_MULT);
+	dp::DSColumns cols(_pDSPos->allocBindColumns(3));
+	cols << "ID_studenta" << td::int4<<"ID_termina" << td::int4<<"Datum"<<td::date;
 
 	if (!_pDSPos->execute())
 	{
 		_pDSPos = nullptr;
 		return false;
 	}
+	td::Variant val1;
+	_dateNovi.getValue(val1);
 	size_t nRows = _pDSPos->getNumberOfRows();
 	for (size_t i = 0; i < nRows; ++i)
 	{
 		auto row = _pDSPos->getRow(i);
-	if (row[0] == ID && row[1]==_TerminID)
+	if (row[0] == ID && row[1]==_TerminID && row[2].dateVal() == val1.dateVal())
 			return true;
 	}
 	return false;
 }
 
-bool ViewSubject::onChangedSelection(gui::DBComboBox* pCB) {
-	if (pCB == &_date)
-	{
+bool ViewSubject::onChangedSelection(gui::ComboBox* pCB) {
+	if (pCB == &_dayCombo)
+	{  //UpdatePresentDataSet();
 		_time.clean();
-		td::String str =_date.getSelectedText();
-		td::Date dt;
-		dt.fromString(str);
-		populateTimeCombo(_time,dt);
-		UpdatePresentDataSet();
+		td::String str =_dayCombo.getSelectedText();
+		populateTimeCombo(_time,str);
+		
 
 	}
+	return false;
+
+}
+bool ViewSubject::onChangedSelection(gui::DBComboBox* pCB) {
+	
 	if (pCB == &_time)
 	{
 		UpdatePresentDataSet();
-	//	_tablePresent.clean();
+		//_tablePresent.clean();
 		return true;
 
 	}
@@ -334,15 +381,13 @@ bool ViewSubject::onChangedSelection(gui::DBComboBox* pCB) {
 td::INT4 ViewSubject::getCurrentTerminID()
 {
 	dp::Transaction tr(dp::getMainDatabase());
-	dp::IStatementPtr pInsStat1(dp::getMainDatabase()->createStatement("Select ID from Termini where Termini.Datum = ? and Termini.Vrijeme = ?"));
-	td::Date date;
-	td::String str = _date.getSelectedText();
-	date.fromString(str);
+	dp::IStatementPtr pInsStat1(dp::getMainDatabase()->createStatement("Select ID from Termini where Termini.Dan = ? and Termini.Vrijeme = ?"));
+	td::String day = _dayCombo.getSelectedText();
 	td::Time time;
 	td::String str2 = _time.getSelectedText();
 	time.fromString(str2);
 	dp::Params parDS1(pInsStat1->allocParams());
-	parDS1 << date << time;
+	parDS1 << dp::toNCh(day,30) << time;
 
 	dp::Columns pCols = pInsStat1->allocBindColumns(1);
 	td::INT4 ID_term;
@@ -358,12 +403,12 @@ td::INT4 ViewSubject::getCurrentTerminID()
 void ViewSubject::UpdatePresentDataSet() {
 
 	
-	dp::IDataSetPtr pomDS = dp::getMainDatabase()->createDataSet("select Ime as Name, Prezime as Surname from Korisnici,Prisustvo where Korisnici.PozicijaID==5 and Korisnici.ID == Prisustvo.ID_studenta and Prisustvo.ID_termina=?", dp::IDataSet::Execution::EX_MULT);
+	dp::IDataSetPtr pomDS = dp::getMainDatabase()->createDataSet("select Ime as Name, Prezime as Surname, Datum as Subjdate from Korisnici,Prisustvo where Korisnici.PozicijaID==5 and Korisnici.ID == Prisustvo.ID_studenta and Prisustvo.ID_termina=?", dp::IDataSet::Execution::EX_MULT);
 	dp::Params pParams(pomDS->allocParams());
 	_TerminID = getCurrentTerminID();
 	pParams << _TerminID;
-	dp::DSColumns cols(pomDS->allocBindColumns(2));
-	cols << "Name" << td::string8 << "Surname" << td::string8;
+	dp::DSColumns cols(pomDS->allocBindColumns(3));
+	cols << "Name" << td::string8 << "Surname" << td::string8<<"Subjdate"<<td::date;
 	if (!pomDS->execute())
 	{
 		pomDS = nullptr;

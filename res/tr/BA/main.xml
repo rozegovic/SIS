@@ -153,23 +153,27 @@
                         <Res id="username" tr="Korisničko ime:"/>
                         <Res id="password" tr="Šifra:"/>
                        
-                        <Res id="NumSeats" tr="Broj mjesta"/>
-                        <Res id="Location" tr="Lokacija"/>
-                        <Res id="Type" tr="Tip"/>
+                        <Res id="NumSeats" tr="Broj mjesta:"/>
+                        <Res id="Location" tr="Lokacija:"/>
+                        <Res id="Type" tr="Tip:"/>
                         <Res id="Update" tr="Ažuriraj"/>
                         <Res id="Attendance" tr="Prisustvo"/>
                         <Res id="Login" tr="Prijava"/>
-                        <Res id="Name" tr="Ime"/>
-                         <Res id="Surname" tr="Prezime"/>
-                         <Res id="Date" tr="Datum"/>
-                         <Res id="Time" tr="Vrijeme"/>
-                         <Res id="Present" tr="Prisutan"/>
-                          <Res id="NotPresent" tr="Nije prisutan"/>
+                        <Res id="SubjName" tr="Ime:"/>
+						 <Res id="Name" tr="Ime"/>
+						 <Res id="Surname" tr="Prezime"/>
+                         <Res id="SubjSurname" tr="Prezime:"/>
+                         <Res id="SubjDate" tr="Datum:"/>
+						 <Res id="Subjdate" tr="Datum"/>
+						 <Res id="SubjDay" tr="Dan:"/>
+                         <Res id="SubjTime" tr="Vrijeme:"/>
+                         <Res id="SubjPresent" tr="Prisutan"/>
+                          <Res id="SubjNotPresent" tr="Nije prisutan"/>
                           <Res id="StatUser" tr="Korisnik:"/>
                          <Res id="StatRole" tr="Uloga:"/>
                          <Res id="Subject" tr="Predmet"/>
                             <Res id="alertPr" tr="Vec ste unijeli prisustvo ovog studenta za ovaj termin"/>
-							<Res id="tablePresent" tr="Prisutni za ovaj termin:"/>
+							<Res id="SubjTablePresent" tr="Prisutni za ovaj termin:"/>
 							<Res id="alertNoTerm" tr="Niste odabrali ni jedan termin"/>
 									<Res id="Report" tr="Izvještaj"/>
 		<Res id="ActivityRep" tr="Izvještaj aktivnosti"/>

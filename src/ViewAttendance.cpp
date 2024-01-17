@@ -304,8 +304,8 @@ bool ViewAttendance::onClick(gui::Button* pBtn)
         _table.push_back();
         _table.endUpdate();
         saveData();
-        _subject->getDate().clean();
-        _subject->populateDateCombo(_subject->getDate());
+     //   _subject->getDate().clean();
+       // _subject->populateDateCombo(_subject->getDate());
         if(CheckTime())
             SendMsg(1);
         return true;
