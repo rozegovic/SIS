@@ -93,7 +93,7 @@ CREATE TABLE IF NOT EXISTS "Termini" (
 CREATE TABLE IF NOT EXISTS "Prisustvo" (
 	"ID_termina"	INTEGER NOT NULL,
 	"ID_studenta"	INTEGER NOT NULL,
-	"Datum"	INTEGER NOT NULL,
+	"Br_sedmice"	INTEGER NOT NULL,
 	FOREIGN KEY("ID_studenta") REFERENCES "Korisnici"("ID"),
 	FOREIGN KEY("ID_termina") REFERENCES "Termini"("ID")
 );
