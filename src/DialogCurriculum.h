@@ -15,9 +15,11 @@ protected:
     {
         if (btnID == Dialog::Button::ID::OK) {
             //  Globals::_IDSubjectSelection = _viewAttendance.getSubjectID();
+            if (!(_viewCurriculum.canAdd()))
+                return false;
             return true;
         }
-
+        return false;
     }
 public:
     td::INT4 getSemester() {
