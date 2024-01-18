@@ -164,6 +164,7 @@
 						 <Res id="Surname" tr="Prezime"/>
                          <Res id="SubjSurname" tr="Prezime:"/>
                          <Res id="SubjDate" tr="Datum:"/>
+						 <Res id="SubjWeek" tr="Nastavna sedmica:"/>
 						 <Res id="Subjdate" tr="Datum"/>
 						 <Res id="SubjDay" tr="Dan:"/>
                          <Res id="SubjTime" tr="Vrijeme:"/>

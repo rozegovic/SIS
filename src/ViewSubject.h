@@ -39,8 +39,8 @@ class ViewSubject : public gui::View
     gui::DBComboBox _time;
     gui::Label _lblDay;
     gui::ComboBox _dayCombo;
-   gui::Label _lblDate;
-    gui::DateEdit _dateNovi;
+   gui::Label _lblWeek;
+    gui::ComboBox _weekCombo;
     gui::HorizontalLayout _hlBtnsDB;
     gui::Button _btnPresent;
     gui::Button _btnNotPresent;
@@ -63,12 +63,15 @@ public:
 
 protected:
    td::INT4 getCurrentTerminID();
+   td::INT4 getCurrentWeekNum();   
+   td::INT4 getMaxWeek();
      bool onChangedSelection(gui::TableEdit* pTE);
      bool onChangedSelection(gui::ComboBox* pCB);
      bool onChangedSelection(gui::DBComboBox* pCB);
     void populateData();
+    void populateWeekCombo(gui::ComboBox& combo);
     void populateTablePresent();
-   bool onChangedValue(gui::DateEdit* pDE) override;
+ 
     //void populateDateCombo(gui::DBComboBox& combo);
    void populateTimeCombo(gui::DBComboBox& combo, td::String day);
     bool saveData();
