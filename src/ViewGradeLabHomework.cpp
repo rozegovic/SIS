@@ -79,7 +79,7 @@ ViewGradeLabHomework::ViewGradeLabHomework(td::INT4 SubjectID) : _db(dp::getMain
 	gui::View::setLayout(&_gl);
 	insertValues(_SubjectID);
 	populateData();
-	td::String s = "select b.ID as ID, c.Naziv_Aktivnosti as Name from OpenPredaja b, Aktivnosti c, VrstaAktivnosti d where d.ID IN(2, 5) and d.ID = c.Tip_Aktivnosti and b.ID_Aktivnosti = c.ID_Aktivnosti and c.ID_Predmeta = ?";
+	td::String s = "select c.ID_AKtivnosti as ID, c.Naziv_Aktivnosti as Name from OpenPredaja b, Aktivnosti c, VrstaAktivnosti d where d.ID IN(2, 5) and d.ID = c.Tip_Aktivnosti and b.ID_Aktivnosti = c.ID_Aktivnosti and c.ID_Predmeta = ?";
 	td::Date d(true);
 	//----Adnan
 		//----------------------------------dodati provjeru datuma i vremena: da li je kraj vremena predaje prosao u odnosu na trenutno vrijeme (ucitavati SAMO ako jeste)
