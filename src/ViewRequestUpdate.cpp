@@ -135,17 +135,9 @@ void ViewRequestUpdate::SaveToDatabase() {
     fo::fs::path homePath;
     mu::getHomePath(homePath);
 
-//fo::fs::path testDBPath = (homePath / "other_bin\\TestData\\natGUITest\\Temp_Baza.db");
 
-    dp::IDatabasePtr pDB = dp::getMainDatabase();//dp::create(dp::IDatabase::ConnType::CT_SQLITE, dp::IDatabase::ServerType::SER_SQLITE3);
-    //dp::getMainDatabase() if I were connected to DB before
-
-  
-    /*if (!pDB->connect(testDBPath.string().c_str()))
-    {
-        assert(false && "Nema baze...");
-        return;
-    }*/
+    dp::IDatabasePtr pDB = dp::getMainDatabase();
+ 
     //just for test, i always delete everything in the table, so it doesent get huge
     
     td::String strDelStat = "delete from SAOStudentTicket WHERE SAOStudentTicket.ID=";
@@ -176,7 +168,7 @@ void ViewRequestUpdate::SaveToDatabase() {
     if (strFileFullPath!= td::String(""))
         pStatIns = pDB->createStatement("insert into SAOStudentTicket(ID,Indeks,Ticket_Tip,Req_Title,Request,Attachment,Status_ID,Name_attachment) values(?,?,?,?,?,?,?,?)");
     else
-        pStatIns = pDB->createStatement("insert into SAOStudentTicket(ID,Indeks,Ticket_Tip,Req_Title,Request,Status_ID,Name_attachment) values(?,?,?,?,?,?,?)");
+        pStatIns = pDB->createStatement("insert into SAOStudentTicket(ID,Indeks,Ticket_Tip,Req_Title,Request,Status_ID) values(?,?,?,?,?,?)");
   
     dp::Params paramsInsert(pStatIns->allocParams());
 
@@ -208,7 +200,7 @@ void ViewRequestUpdate::SaveToDatabase() {
     if(strFileFullPath!=td::String(""))
        paramsInsert <<_IDBaza<<dp::toNCh(_indeks,30)<< dp::toNCh(tip, 30) << dp::toNCh(title, 30)<< dp::toNCh(request, 10000)<< dataIn<<status<<dp::toNCh(strFileName,50);
     else
-        paramsInsert <<_IDBaza<< dp::toNCh(_indeks, 30) << dp::toNCh(tip, 30) << dp::toNCh(title, 30) << dp::toNCh(request, 10000) << status<< dp::toNCh(strFileName, 50);
+        paramsInsert <<_IDBaza<< dp::toNCh(_indeks, 30) << dp::toNCh(tip, 30) << dp::toNCh(title, 30) << dp::toNCh(request, 10000) << status;
 
     //Neophodno, sa ove lokacije (strFileFullPath) se uzima BLOB
     if (!dataIn.setInFileName(strFileFullPath) && strFileFullPath != td::String(""))

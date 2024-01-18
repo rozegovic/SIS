@@ -93,19 +93,33 @@ bool ViewTicket::onClick(gui::Button* pBtn)
 		selectFiles();
 		return true;
 	}
-
-<<<<<<< Updated upstream
-=======
 	if (pBtn == &_btnOpen)
 	{
 		auto rowindex = _tableTickets.getFirstSelectedRow();
-	    
+
 		if (rowindex < 0)
-		 return false;
+			return false;
 
 		auto pomDS = _tableTickets.getDataSet();
 		auto& row = pomDS->getRow(rowindex);
->>>>>>> Stashed changes
+
+		td::String tipKarte = row[0].getConstStr();
+		td::String naslov = row[1].getConstStr();
+		gui::TextEdit body;
+		body.setValue(row[3].getConstStr());
+		td::INT4 tableID = row[4].i4Val();
+		td::String indeks = row[5].getConstStr();
+
+		gui::Window* pParentWnd = getParentWindow();
+		auto pWnd = new RequestUpdateWindow(pParentWnd, tipKarte, naslov, body, tableID, indeks);
+		pWnd->keepOnTopOfParent();
+		pWnd->open();
+
+		UpdateTable();
+
+		_tableTickets.reload();
+
+		return true;
 
 
 
@@ -310,12 +324,9 @@ void ViewTicket::initTable()
 
 void ViewTicket::populateTableData()
 {
-<<<<<<< Updated upstream
-	td::String setstr = "SELECT SAOStudentTicket.Ticket_Tip as type, SAOStudentTicket.Req_Title as title, SAOStudentTicket.Status, SAOStudentTicket.Request as request, SAOStudentTicket.ID as reqID, SAOStudentTicket.Indeks as indeks  FROM SAOStudentTicket WHERE SAOStudentTicket.Indeks=";
-=======
+
 
 	td::String setstr = "SELECT SAOStudentTicket.Ticket_Tip as type, SAOStudentTicket.Req_Title as title, (SELECT SAOTicket_Status.Status as status FROM SAOTicket_Status WHERE SAOStudentTicket.Status_ID=SAOTicket_Status.ID) as status, SAOStudentTicket.Request as request, SAOStudentTicket.ID as reqID, SAOStudentTicket.Indeks as indeks  FROM SAOStudentTicket WHERE SAOStudentTicket.Indeks=";
->>>>>>> Stashed changes
 	setstr.append(GetStudentIndeks().getConstStr());
 
 	_pDS = dp::getMainDatabase()->createDataSet(setstr, dp::IDataSet::Execution::EX_MULT);
