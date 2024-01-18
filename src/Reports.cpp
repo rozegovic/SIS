@@ -40,6 +40,7 @@ void examAttendance(const gui::Image* pImage, td::INT4 SubjectID)
 
 		if (!pDP->execute())//sto ovdje nece ne znam...
 		{
+			//gui::Alert::show(tr("Error"), tr("Ne moze..."));
 			return;
 		}
 

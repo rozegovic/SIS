@@ -3,6 +3,10 @@
 #include <td/Types.h>
 #include "Reports.h"
 #include "SendMessage.h"
+#include <gui/FileDialog.h>
+#include <gui/Alert.h>
+#include <fo/FileOperations.h>
+#include <td/BLOB.h>
 
 
 ViewGradeLabHomework::ViewGradeLabHomework(td::INT4 SubjectID) : _db(dp::getMainDatabase())
@@ -18,10 +22,11 @@ ViewGradeLabHomework::ViewGradeLabHomework(td::INT4 SubjectID) : _db(dp::getMain
 , _btnDelete(tr("Delete"))
 , _btnUpdate(tr("Update"))
 , _btnReport(tr("Report"))
+, _btnHWL(tr("Predano"))
 , _hlBtns(5)
 , _gl(6, 4) // pazi na brojeve----neka budu tri reda ovih labela (naziv aktivnosti i naziv predmeta, ime i prezime, indeks i ocjena)
 , _SubjectID(SubjectID)
-, _report(1)
+, _report(3)
 , _imgHWGrades(":complex")
 
 {
@@ -33,7 +38,10 @@ ViewGradeLabHomework::ViewGradeLabHomework(td::INT4 SubjectID) : _db(dp::getMain
 	_hlBtns.append(_btnUpdate);
 	_hlBtns.appendSpacer();
 
+	_report.appendSpacer();
+	_report.append(_btnHWL, td::HAlignment::Right);
 	_report.append(_btnReport, td::HAlignment::Right);
+
 
 	//  _btnUpdate.setType(gui::Button::Type::Default);
 	_btnSave.setType(gui::Button::Type::Default);
@@ -345,12 +353,21 @@ bool ViewGradeLabHomework::onClick(gui::Button* pBtn)
 		saveData();
 	}
 	if (pBtn == &_btnReport) {
-
-		if(_ActivityID==2)
+		dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT Tip_Aktivnosti FROM Aktivnosti WHERE ID_Aktivnosti = ?");
+		dp::Params parDS(pSelect->allocParams());
+		//d::INT4 IDPredmeta = Globals::_IDSubjectSelection;
+		parDS << _ActivityID;
+		dp::Columns pCols = pSelect->allocBindColumns(1);
+		td::INT4 id;
+		pCols << "Tip_Aktivnosti" << id;
+		if(id==2)
 			homeworkGrades(&_imgHWGrades, _SubjectID); 
-		else if(_ActivityID==5)
+		else if(id==5)
 			labGrades(&_imgHWGrades, _SubjectID);
-
+	}
+	if (pBtn == &_btnHWL) {
+		
+		showOpenFileDialog();
 
 	}
 	return false;
@@ -451,3 +468,212 @@ bool ViewGradeLabHomework::loadComboBox(td::String select, gui::DBComboBox& comb
 	combo.selectIndex(0);
 	return true;
 }
+
+void ViewGradeLabHomework::openFile(gui::FileDialog* pFD)
+{
+		auto status = pFD->getStatus();
+		if (status == gui::FileDialog::Status::OK)
+		{
+			td::String strFileName = pFD->getFileName();
+			td::String strContent;
+
+			if (fo::loadFileContent(strFileName, strContent))
+			{
+			//	gui::TextEdit* pTE = (*this).getTextEdit();
+				//pTE->setText(strContent);
+			}
+		}
+}
+
+void ViewGradeLabHomework::showOpenFileDialog()
+{
+	//create OpenFile dialog and open it
+	//auto pFD = new gui::OpenFileDialog(this, tr("OpenF"), { {tr("TxtDocs"),"*.txt"}, {tr("PDFDocs"),"*.pdf"}, {tr("JPGSlike"),"*.jpg"}, {tr("PNGSlike"),"*.png"} });
+#ifdef USE_CALLBACKS
+	pFD->openModal(&_callBackOpenFileDlg);
+#else
+
+//
+//	auto& row = _table.getCurrentRow();
+//	td::INT4 id = row[0].i4Val();	
+//	dp::IDatabase* pDB = dp::getMainDatabase();
+//	dp::IStatementPtr pStatIns = pDB->createStatement("SELECT Datoteka from Predaja where ID_Studenta=?"); 
+//	dp::Params paramsInsert(pStatIns->allocParams());
+//	paramsInsert << id;
+//
+//	dp::Columns pColumns = pStatIns->allocBindColumns(1);
+//
+//
+//	td::BLOB::Type typeFile = td::BLOB::Type::TYPE_TXT;
+//	//td::BLOB BLOBout(td::BLOB::SRC_FILE, 16384U, typeFile);
+//	const void* blobDataPtr;
+//	size_t blobSize;
+//
+//	pColumns << "Datoteka" << blobDataPtr << blobSize;
+//
+//	if (!pStatIns->execute())
+//		return;
+//	/*if (!pStatIns->moveNext())
+//		return;*/
+//
+//	
+//	//td::String strFileFullPath = pFD->getFileName();
+//
+//	// Create a temporary file to store the content
+//	std::string tempFilePath = "C:\\Users\\Emina\\Work\\TempFile.txt";  // Adjust the path as needed
+//	std::ofstream tempFile(tempFilePath, std::ios::binary);
+//	tempFile.write(reinterpret_cast<const char*>(blobDataPtr), blobSize);
+//	tempFile.close();
+//
+//
+//#ifdef MU_WINDOWS
+//	ShellExecute(NULL, "open", tempFilePath.c_str(), NULL, NULL, SW_SHOWNORMAL);
+//#endif
+
+
+//------------------------------------------------------------------moveNext problem
+	
+		auto pFD = new gui::SelectFolderDialog(this, tr("SelectFolder"));
+
+		pFD->openModal([this](gui::FileDialog* pFD)
+			{
+				auto status = pFD->getStatus();
+				if (status == gui::FileDialog::Status::OK)
+				{
+					//folder gdje snimamo BLOB iz tabele u bazi
+					td::String strFolderName = pFD->getFileName();
+
+					fo::fs::path filePath(strFolderName.c_str());
+
+
+					
+					dp::IDatabase* pDB = dp::getMainDatabase();
+					dp::IStatementPtr pStatSel = pDB->createStatement("SELECT a.NazivFajla as Name from Predaja a, OpenPredaja b where a.ID_Studenta = ? and b.ID_Aktivnosti = ? and b.ID = a.ID_OpenPredaja");
+					dp::IStatementPtr pStatSelBlob = pDB->createStatement("SELECT a.Datoteka as Data from Predaja a, OpenPredaja b where a.ID_Studenta = ? and b.ID_Aktivnosti = ? and b.ID = a.ID_OpenPredaja");
+					td::INT4 ID = 5;
+					dp::Params pStatSelParams(pStatSel->allocParams());
+					pStatSelParams << ID<<_ActivityID;
+					dp::Params pStatSelBlobParams(pStatSelBlob->allocParams());
+					pStatSelBlobParams << ID << _ActivityID;
+
+					//daj mi ime fajla
+					td::String fileName;
+					dp::Columns colSelect(pStatSel->allocBindColumns(1));
+					colSelect << "Name" << fileName;
+
+
+					if (!pStatSel->execute())
+					{
+						return;
+					}
+					if (!pStatSel->moveNext())
+					{
+						return;
+					}
+
+					filePath /= fileName.c_str();
+
+					td::String fullFilePath = filePath.string();
+
+					td::String fileExtension = filePath.filename().extension().string(); //daj mi tip fajla
+
+					//tip BLOBa
+					td::BLOB::Type typeFile = td::BLOB::Type::TYPE_BINARY_UNKNOWN;
+					if (fileExtension.compareConstStr(".txt"))
+						typeFile = td::BLOB::Type::TYPE_TXT;
+					else if (fileExtension.compareConstStr(".pdf"))
+						typeFile = td::BLOB::Type::TYPE_PDF;
+					else if (fileExtension.compareConstStr(".jpg"))
+						typeFile = td::BLOB::Type::TYPE_JPG;
+					else if (fileExtension.compareConstStr(".png"))
+						typeFile = td::BLOB::Type::TYPE_PNG;
+
+					td::BLOB BLOBout(td::BLOB::SRC_FILE, 16384U, typeFile);
+
+					//select sada i snimi u dokument
+					dp::Columns colSelect2(pStatSelBlob->allocBindColumns(1));
+					colSelect2 << "Data" << BLOBout;
+
+
+
+					if (!BLOBout.setOutFileName(fullFilePath))
+					{
+						//nije odabran folder?
+						//ili vec postoji fajl sa ovim fullFilePath?        
+						return;
+					}
+					if (!pStatSelBlob->execute())
+					{
+						return;
+					}
+					if (!pStatSelBlob->moveNext()) //------------------------------ovdje ne prolazi
+					{
+						return;
+					}
+					#ifdef MU_WINDOWS
+						ShellExecute(NULL, "open", fullFilePath.c_str(), NULL, NULL, SW_SHOWNORMAL);
+					#endif
+
+				}
+			});
+
+
+
+
+
+
+
+
+
+
+
+
+
+//	auto& row = _table.getCurrentRow();
+//	td::INT4 id = row[0].i4Val();
+//	dp::IDatabase* pDB = dp::getMainDatabase();
+//	dp::IStatementPtr pStatIns = pDB->createStatement("SELECT Datoteka from Predaja where ID_Studenta=?");
+//	dp::Params paramsInsert(pStatIns->allocParams());
+//	paramsInsert << id;
+//	//td::INT4 k;
+//	dp::Columns pColumns = pStatIns->allocBindColumns(1);
+//	//pColumns << "ID_openPredaja" << k;
+//	//
+//	//if (!pStatIns->execute())
+//	//	return;
+//
+//	//if (!pStatIns->moveNext())
+//	//	return;
+//	td::BLOB blob;
+//	const void* blobDataPtr = nullptr;;
+//	size_t blobSize;
+//	pColumns << "Datoteka" << reinterpret_cast<const char*>(blobDataPtr) << blobSize;
+//	//pColumns << "Datoteka" << blob;
+//
+//	if (!pStatIns->execute())
+//		return;
+//
+//	//if (!pStatIns->moveNext())
+//	//	return;
+//
+//
+//
+//	// Check if BLOB data is not empty
+//	if (blobSize == 0)
+//	{
+//		// Handle the case where the BLOB data is empty
+//		return;
+//	}
+//
+//	// Create a temporary file to store the content
+//	std::string tempFilePath = "C:\\Users\\Emina\\Work\\TempFile.pdf";  // Adjust the path as needed
+//	std::ofstream tempFile(tempFilePath, std::ios::binary);
+//	tempFile.write(static_cast<const char*>(blobDataPtr), blobSize);
+//	tempFile.close();
+//
+//#ifdef MU_WINDOWS
+//	ShellExecute(NULL, "open", tempFilePath.c_str(), NULL, NULL, SW_SHOWNORMAL);
+//#endif
+
+}
+#endif
