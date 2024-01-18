@@ -144,6 +144,8 @@ for (int i = 0; i < vekt.size(); i++)
 	if (vekt[i] > max)
 		max = vekt[i];
 }
+if (max == 15)
+     max--;
 return max;
 }
 
