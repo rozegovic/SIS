@@ -12,6 +12,7 @@
         
         <!--Prijave na nastavu-->
         <Res id="Date" tr="Datum: "/>
+        <Res id="Day" tr="Dan: "/>
         <Res id="Time" tr="Vrijeme: "/>
         <Res id="Absent" tr="Studenti koji nisu prijavljeni niti na jedan termin"/>
         

@@ -6,6 +6,8 @@
 #include "Globals.h"
 #include "ViewIDs.h"
 
+#include "SetPasswordWindow.h"
+#include "WindowMessages.h"
 class  DialogLogin : public gui::Dialog
 {
     
@@ -14,6 +16,7 @@ protected:
     
     bool onClick(Dialog::Button::ID btnID, gui::Button* pButton) override
     {
+
         if (btnID == Dialog::Button::ID::OK)
         {
             td::String username = _viewLogin.getUserName();
@@ -53,55 +56,50 @@ protected:
             pCols1 << "RoleID" << userRole;
             if (!pSel1->execute())
             {
-                showAlert(tr("WrongPass"), tr("EnterCorrPass"));
+                showAlert(tr("RoleErr"), tr("RoleErrTxt"));
                 return false;
 
             }
             if (!pSel1->moveNext())
             {
-                showAlert(tr("WrongPass"), tr("EnterCorrPass"));
+                showAlert(tr("alert"), tr("RoleErr"));
                 return false;
+            }
+            //Otvaranje prozora za prvi sign in
+            if(pwrd == td::String("default")){
+                gui::Window* pParentWnd = getParentWindow();
+                auto pWnd = new SetPasswordWindow (pParentWnd, 2);
+                pWnd->keepOnTopOfParent();
+                pWnd->open();
+
             }
             Globals::_currentUserRole = userRole;
 
-            if (Globals::_currentUserRole == 1) {
+            if (Globals::_currentUserRole == 6) {
                 Globals::isAdmin = true;
-                Globals::isProfessor = false;
-                Globals::isAssistant = false;
-                Globals::isStudent = false;
-                Globals::isSAO = false;
+             
             }
-            if (Globals::_currentUserRole == 2) {
-                Globals::isAdmin =false;
+            else  if (Globals::_currentUserRole == 1) {
+              
                 Globals::isProfessor = true;
-                Globals::isAssistant = false;
-                Globals::isStudent = false;
-                Globals::isSAO = false;
             }
-            if (Globals::_currentUserRole == 3) {
-                Globals::isAdmin = false;
-                Globals::isProfessor = false;
+            else if (Globals::_currentUserRole == 3) {
+              
                 Globals::isAssistant = true;
-                Globals::isStudent = false;
-                Globals::isSAO = false;
+           
             }
-            if (Globals::_currentUserRole == 4) {
-                Globals::isAdmin = false;
-                Globals::isProfessor = false;
-                Globals::isAssistant = false;
-                Globals::isStudent = false;
+            else if (Globals::_currentUserRole == 4) {
+              
                 Globals::isSAO = true;
             }
-            if (Globals::_currentUserRole == 5) {
-                Globals::isAdmin = false;
-                Globals::isProfessor = false;
-                Globals::isAssistant = false;
+            else if (Globals::_currentUserRole == 5) {
+             
                 Globals::isStudent = true;
-                Globals::isSAO = false;
+               
             }
 
         }
-
+      
         return true;
     }
 public:

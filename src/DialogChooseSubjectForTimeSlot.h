@@ -17,6 +17,7 @@ protected:
             //  Globals::_IDSubjectSelection = _viewAttendance.getSubjectID();
             return true;
         }
+        else closeModal(btnID);
         return false;
     }
 
@@ -48,10 +49,15 @@ public:
         pCols << "ID" << id << "Naziv" << name;
         if (!pSelect->execute())
             return false;
-
+        td::INT4 counter = 0;
         while (pSelect->moveNext())
         {
+            ++counter;
             combo.addItem(name, id);
+        }
+        if(counter == 0){
+            showAlert(tr("alert"), tr("alertNoSubjects"));
+            return false;
         }
         combo.selectIndex(0);
         return true;

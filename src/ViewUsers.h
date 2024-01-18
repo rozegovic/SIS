@@ -1,5 +1,6 @@
 #pragma once
 #include <algorithm>
+#include <vector>
 #include <gui/View.h>
 #include <gui/Label.h>
 #include <gui/LineEdit.h>
@@ -66,6 +67,9 @@ protected:
     gui::Button _btnPushBack;
     gui::GridLayout _gl;
     dp::IDataSetPtr _pDS;
+    
+    //Vector used for logins
+    std::vector<td::INT4> InitialUserIds;
 
 
 public:
@@ -84,5 +88,10 @@ protected:
     bool onAnswer(td::UINT4 questionID, gui::Alert::Answer answer);
     bool onChangedSelection(gui::DBComboBox* pCmb);
     void initTable();
+    //New functions for creating UserLogins
+    bool CreateUserLogin(td::String surname, td::INT4 UserID);
+    bool DeleteUserLogins(std::vector<td::INT4> &UserIds);
+    bool DoesLoginExist(td::INT4 UserID);
+    void GetInitialIds( std::vector<td::INT4> &Ids);
 
 };

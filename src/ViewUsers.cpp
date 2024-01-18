@@ -1,7 +1,9 @@
 #pragma once
 #include "ViewUsers.h"
 #include "ViewIDs.h"
-
+#include <iostream>
+#include <string>
+#include <utility>
 ViewUsers::ViewUsers()
     : _lblID(tr("IDUserL"))
     , _id(td::int4)
@@ -65,6 +67,7 @@ ViewUsers::ViewUsers()
     
     populateRoleCombo(_role);
     populateData();
+    GetInitialIds(InitialUserIds);
 }
 
 void ViewUsers::initTable()
@@ -225,13 +228,13 @@ bool ViewUsers::saveUsers()
     td::Date dateE, dateB;
     td::String name, surname, jmbg, address, index;
     parDS << id << dp::toNCh(surname, 30) << dp::toNCh(name, 30) << dateE << pID << dp::toNCh(jmbg, 30) << dp::toNCh(address, 30) << dateB << dp::toNCh(index, 20);
-    
-    dp::Transaction tr(dp::getMainDatabase());
+    dp::Transaction tr1(dp::getMainDatabase());
 
     dp::IStatementPtr pDel(dp::getMainDatabase()->createStatement("DELETE FROM Korisnici"));
     if (!pDel->execute())
         return false;
     size_t nRows = _pDS->getNumberOfRows();
+    std::vector<std::pair<td::INT4, td::String>> UsersEdited;//List of all Ids after editing
     for (size_t i = 0; i < nRows; ++i)
     {
         auto row = _pDS->getRow(i);
@@ -246,9 +249,50 @@ bool ViewUsers::saveUsers()
         index = row[9];
         if (!pInsStat->execute())
             return false;
+        
+        UsersEdited.push_back(std::pair<td::INT4, td::String> (id, surname));
+       /* if(!DoesLoginExist(id)){
+            if(!CreateUserLogin(surname, id)){
+                return false;
+                showAlert(tr("alertLoginCreate"), tr("alertLoginCreate"));
+             }
+        }*/
     }
     
-    tr.commit();
+    tr1.commit();
+    
+    //Creating new logins
+    for(auto data : UsersEdited){
+    if(!DoesLoginExist(data.first)){
+        if(!CreateUserLogin(data.second, data.first)){
+            showAlert(tr("alertLoginCreate"), tr("alertLoginCreate"));
+            return false;
+         }
+        }
+       
+    }
+    //Vector of users who got deleted, logins need to be deleted
+    std::vector<td::INT4> LoginsToDelete;
+    for(int i = 0; i < InitialUserIds.size(); i++){
+        bool IsInEdited = false;
+        for(int j = 0; j < UsersEdited.size(); j++){
+            if(InitialUserIds.at(i) == UsersEdited.at(j).first){
+                IsInEdited= true;
+                break;
+            }
+        }
+        if(!IsInEdited)
+            LoginsToDelete.push_back(InitialUserIds.at(i));
+    }
+    if(!DeleteUserLogins(LoginsToDelete))
+        return false;
+    
+    //tr1.commit();
+    //Update InitialUsers in case of additional editing
+    InitialUserIds.clear();
+    for(auto novi : UsersEdited){
+        InitialUserIds.push_back(novi.first);
+    }
     return true;
 }
 
@@ -266,6 +310,16 @@ bool ViewUsers::onClick(gui::Button* pBtn)
         int iRow = _table.getFirstSelectedRow();
         if (iRow < 0)
             return true;
+        /*
+        td::INT4 id;
+        td::Variant var;
+        _id.getValue(var);
+        id = var.i4Val();
+        if(!DeleteUserLogin(id)){
+            return false;
+            showAlert(tr("alertLoginDelete"), tr("alertLoginDelete"));
+            
+        }*/
         _table.beginUpdate();
         _table.removeRow(iRow);
         _table.endUpdate();
@@ -334,6 +388,19 @@ bool ViewUsers::onClick(gui::Button* pBtn)
         populateDSRow(row);
         _table.push_back();
         _table.endUpdate();
+        /*
+        td::String surname;
+        td::INT4 id;
+        td::Variant var;
+        _surname.getValue(var);
+        surname = var;
+        _id.getValue(var);
+        id = var.i4Val();
+        if(!CreateUserLogin(surname, id)){
+            return false;
+            showAlert(tr("alertLoginCreate"), tr("alertLoginCreate"));
+         
+         }*/
         return true;
     }
 
@@ -415,4 +482,74 @@ bool ViewUsers::onChangedSelection(gui::DBComboBox* pCmb)
         return true;
     }
     return false;
+}
+
+//Nove funkcije za automatsko kreiranje UserLogina, Grupa 2
+bool ViewUsers::CreateUserLogin(td::String surname, td::INT4 UserID){
+    td::INT4 counter;
+    dp::IStatementPtr CounterPrt (dp::getMainDatabase()->createStatement("SELECT COUNT(*) AS SurnameCount FROM Korisnici WHERE Prezime = ?"));
+    dp::Params par(CounterPrt->allocParams());
+    par <<  dp::toNCh(surname, 30);
+    dp::Columns cols(CounterPrt->allocBindColumns(1));
+    cols << "SurnameCount" << counter;
+   
+    if(!CounterPrt->execute())
+        return false;
+    if(!CounterPrt->moveNext())
+        return false;
+    std::cout << counter;
+    td::String username(surname);
+    //++counter;
+    std::string num = std::to_string(counter);
+    username += num;
+    std::cout << username;
+    td::String password ("default");
+    
+    dp::IStatementPtr InsertPtr (dp::getMainDatabase()->createStatement("INSERT INTO UserLogin (ID, Username, Password) VALUES (?, ? ,?)"));
+    dp::Params par1(InsertPtr->allocParams());
+    par1 << UserID << dp::toNCh(username, 30) <<  dp::toNCh(password, 30);
+    dp::Transaction tr(dp::getMainDatabase());
+    if(!InsertPtr->execute())
+        return false;
+    if(!tr.commit()){
+        tr.rollBack();
+        return false;}
+    
+    return true;
+}
+bool ViewUsers::DeleteUserLogins(std::vector<td::INT4> &UserIds){
+    for(auto id : UserIds){
+        dp::IStatementPtr DelPtr (dp::getMainDatabase()->createStatement("DELETE FROM UserLogin Where ID = ?"));
+        dp::Params par1(DelPtr->allocParams());
+        par1 << id;
+        dp::Transaction tr(dp::getMainDatabase());
+        if(!DelPtr->execute())
+              return false;
+        if(!tr.commit()){
+              tr.rollBack();
+              return false;
+          }
+    }
+  
+    
+    return true;
+}
+bool ViewUsers::DoesLoginExist(td::INT4 UserID){
+    dp::IStatementPtr SelPtr (dp::getMainDatabase()->createStatement("SELECT * FROM UserLogin WHERE ID = ?"));
+    dp::Params par1(SelPtr->allocParams());
+    par1 << UserID;
+    if(SelPtr->execute()){
+        if(SelPtr->moveNext()){
+            return true;
+        }
+    }
+    return false;
+}
+void ViewUsers::GetInitialIds(std::vector<td::INT4> &ids){
+    size_t nRows = _pDS->getNumberOfRows();
+    for (size_t i = 0; i < nRows; ++i){
+        auto row = _pDS->getRow(i);
+        td::INT4 id = row[0].i4Val();
+        ids.push_back(id);
+    }
 }
