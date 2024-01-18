@@ -38,6 +38,7 @@ protected:
     gui::Label _lblActivityName;
     gui::DBComboBox _activityName;
 
+
     gui::Label _lblCName;
     gui::LineEdit _cName;
 
@@ -57,7 +58,7 @@ protected:
     gui::GridLayout _gl;
     dp::IDataSetPtr _pDS;
     td::INT4 _SubjectID;
-    td::INT4 _ActivityID=3; //hard kodirano trenutno
+    td::INT4 _ActivityID; //hard kodirano trenutno
     td::INT4 _UserID;
     gui::Image _imgHWGrades;
 
@@ -87,4 +88,6 @@ protected:
     bool loadComboBox(td::String select, gui::DBComboBox& combo);
     void openFile(gui::FileDialog* pFD);
     void showOpenFileDialog();
+    virtual bool onChangedSelection(gui::DBComboBox* pCmb);
+
 };

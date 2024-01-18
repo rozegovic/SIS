@@ -15,7 +15,7 @@ ViewGradeLabHomework::ViewGradeLabHomework(td::INT4 SubjectID) : _db(dp::getMain
 , _lblIndex(tr("indeksUser:"))
 , _lblGrade(tr("grade:")) // napomena za Eminu - poslije dodati send message
 , _lblActivityName(tr("activityName:"))
-, _activityName(td::int4)
+, _activityName(td::int4) // gui::LineEdit::Messages::Send
 , _lblCName(tr("courseName:"))
 , _btnAdd(tr("add"))
 , _btnSave(tr("save"))
@@ -51,6 +51,9 @@ ViewGradeLabHomework::ViewGradeLabHomework(td::INT4 SubjectID) : _db(dp::getMain
 
 	SetCurrentSubject();
 	_cName.setAsReadOnly();  // postavlja se u funkciji setcurrentsubject
+	_name.setAsReadOnly();
+	_lName.setAsReadOnly();
+	_index.setAsReadOnly();
 
 	gc.appendRow(_lblCName);
 	gc.appendCol(_cName);
@@ -78,8 +81,8 @@ ViewGradeLabHomework::ViewGradeLabHomework(td::INT4 SubjectID) : _db(dp::getMain
 	gc.appendRow(_hlBtns, 0);
 	gui::View::setLayout(&_gl);
 	insertValues(_SubjectID);
-	populateData();
-	td::String s = "select b.ID as ID, c.Naziv_Aktivnosti as Name from OpenPredaja b, Aktivnosti c, VrstaAktivnosti d where d.ID IN(2, 5) and d.ID = c.Tip_Aktivnosti and b.ID_Aktivnosti = c.ID_Aktivnosti and c.ID_Predmeta = ?";
+	//populateData();
+	td::String s = "select c.ID_Aktivnosti as ID, c.Naziv_Aktivnosti as Name, b.Datum_Predaje as d, b.Vrijeme_Predaje as t from OpenPredaja b, Aktivnosti c, VrstaAktivnosti d where (d.ID=2 OR d.ID=5) and d.ID = c.Tip_Aktivnosti and b.ID_Aktivnosti = c.ID_Aktivnosti and c.ID_Predmeta = ?";
 	td::Date d(true);
 	//----Adnan
 		//----------------------------------dodati provjeru datuma i vremena: da li je kraj vremena predaje prosao u odnosu na trenutno vrijeme (ucitavati SAMO ako jeste)
@@ -89,19 +92,37 @@ ViewGradeLabHomework::ViewGradeLabHomework(td::INT4 SubjectID) : _db(dp::getMain
 	// -------Emir
 	//-------------------------dodati on finishedit za combobox i iz njega pozivati populateData 
 	loadComboBox(s, _activityName);
-	onChangedSelection(&_table);
+	populateData();
+
+	/*td::Variant val;
+	_activityName.getValue(val);
+	_actID.setValue(val, true);*/
+	//onChangedSelection(&_table);
 }
 
+bool ViewGradeLabHomework::onChangedSelection(gui::DBComboBox* pCmb)
+{
+	if (pCmb == &_activityName) {
+		td::Variant val;
+		_activityName.getValue(val);
+		_ActivityID = val.i4Val();
+		_table.reload();
+	//	_table.disableMessaging();
+		onChangedSelection(&_table);
+		//_table.enableMessaging();
+
+	}
+	return false;
+}
 void ViewGradeLabHomework::populateData()
 {
 	//-----Adnan
 	//popraviti populate da ucitava studente koji su na aktivnosti izabranoj u comboboxu
 	// za to ce trebati parDS ucitati jos jednu varijablu tj ucitati id_aktivnosti iz comboboxa - nista ostalo u selectu ne treba mijenjati
-	_pDS = _db->createDataSet("SELECT d.ID_Korisnika, d.ID_Aktivnosti, b.Naziv_Aktivnosti, c.Indeks, c.Ime, c.Prezime, d.Ocjena as Procenat, d.ID FROM Aktivnosti b, Korisnici c, OcjeneLabZadace d WHERE d.ID_Aktivnosti = b.ID_Aktivnosti and d.ID_Korisnika = c.ID AND b.ID_Predmeta = ? AND b.Tip_Aktivnosti IN(5, 2) ORDER BY b.Naziv_Aktivnosti DESC", dp::IDataSet::Execution::EX_MULT);
+	_pDS = _db->createDataSet("SELECT d.ID_Korisnika, d.ID_Aktivnosti, b.Naziv_Aktivnosti, c.Indeks, c.Ime, c.Prezime, d.Ocjena as Procenat, d.ID FROM Aktivnosti b, Korisnici c, OcjeneLabZadace d WHERE d.ID_Aktivnosti = b.ID_Aktivnosti and d.ID_Korisnika = c.ID AND b.ID_Predmeta = ? AND b.ID_Aktivnosti=? AND b.Tip_Aktivnosti IN(5, 2) ORDER BY b.Naziv_Aktivnosti DESC", dp::IDataSet::Execution::EX_MULT);
 
 	dp::Params parDS(_pDS->allocParams());
-
-	parDS << _SubjectID;
+	parDS << _SubjectID<<_ActivityID;
 
 	dp::DSColumns cols(_pDS->allocBindColumns(8));
 	cols << "ID_Korisnika" << td::int4 << "ID_Aktivnosti" << td::int4 << "Naziv_Aktivnosti" << td::string8 << "Indeks" << td::string8 << "Ime" << td::string8 << "Prezime" << td::string8 << "Procenat" << td::string8 << "ID" << td::int4;
@@ -140,7 +161,7 @@ bool ViewGradeLabHomework::onChangedSelection(gui::TableEdit* pTE)
 		_index.setValue(val);
 		//------------------popraviti
 		val = row[1];
-		_activityName.setValue(val);
+		_activityName.setValue(val, false);
 
 		return true;
 	}
@@ -163,7 +184,7 @@ void ViewGradeLabHomework::populateDSRow(dp::IDataSet::Row& row, td::INT4 id)
 	row[3].setValue(val);
 
 	_activityName.getValue(val);
-	row[2].setValue(val);
+	row[1].setValue(val);
 
 	/*_cName.getValue(val);
 	row[8].setValue(val);*/
@@ -304,6 +325,7 @@ bool ViewGradeLabHomework::onClick(gui::Button* pBtn)
 		_userids.insert(a);
 		//	_table.updateRow(iRow);
 		_table.endUpdate();
+		onChangedSelection(&_table);
 
 		_itemsToDelete.push_back(itemid);
 
@@ -327,6 +349,7 @@ bool ViewGradeLabHomework::onClick(gui::Button* pBtn)
 		_userids.insert(a);
 		_table.updateRow(iRow);
 		_table.endUpdate();
+		onChangedSelection(&_table);
 
 		if (std::find(_itemsToInsert.begin(), _itemsToInsert.end(), itemid) == _itemsToInsert.end())
 			_itemsToUpdate.push_back(itemid);
@@ -344,6 +367,7 @@ bool ViewGradeLabHomework::onClick(gui::Button* pBtn)
 		_userids.insert(a);
 		_table.updateRow(iRow);
 		_table.endUpdate();
+		onChangedSelection(&_table);
 
 		_itemsToUpdate.erase(std::remove(_itemsToUpdate.begin(), _itemsToUpdate.end(), itemid), _itemsToUpdate.end());
 		_itemsToInsert.push_back(itemid);
@@ -360,6 +384,11 @@ bool ViewGradeLabHomework::onClick(gui::Button* pBtn)
 		dp::Columns pCols = pSelect->allocBindColumns(1);
 		td::INT4 id;
 		pCols << "Tip_Aktivnosti" << id;
+		if (!pSelect->execute())
+			return false;
+		if (!pSelect->moveNext())
+			return false;
+
 		if(id==2)
 			homeworkGrades(&_imgHWGrades, _SubjectID); 
 		else if(id==5)
@@ -454,18 +483,24 @@ bool ViewGradeLabHomework::loadComboBox(td::String select, gui::DBComboBox& comb
 	dp::IStatementPtr pSelect = _db->createStatement(select.c_str());
 	dp::Params parDS(pSelect->allocParams());
 	parDS << _SubjectID;
-	dp::Columns pCols = pSelect->allocBindColumns(2);
+	dp::Columns pCols = pSelect->allocBindColumns(4);
 	td::String name;
 	td::INT4 id;
-	pCols << "ID" << id << "Name" << name;
+	td::Date d;
+	td::Time t;
+	td::Date dnow;
+	td::Time tnow;
+
+	pCols << "ID" << id << "Name" << name<<"d"<<d<<"t"<<t;
 	if (!pSelect->execute())
 		return false;
 
 	while (pSelect->moveNext())
 	{
+		if(dnow<d||(dnow==d&&tnow<t))  
 		combo.addItem(name, id);
 	}
-	combo.selectIndex(0);
+	//combo.selectIndex(0, );
 	return true;
 }
 
@@ -474,7 +509,7 @@ void ViewGradeLabHomework::openFile(gui::FileDialog* pFD)
 		auto status = pFD->getStatus();
 		if (status == gui::FileDialog::Status::OK)
 		{
-			td::String strFileName = pFD->getFileName();
+	 		td::String strFileName = pFD->getFileName();
 			td::String strContent;
 
 			if (fo::loadFileContent(strFileName, strContent))
