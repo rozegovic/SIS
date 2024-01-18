@@ -92,21 +92,26 @@ ViewGradeLabHomework::ViewGradeLabHomework(td::INT4 SubjectID) : _db(dp::getMain
 	// -------Emir
 	//-------------------------dodati on finishedit za combobox i iz njega pozivati populateData 
 	loadComboBox(s, _activityName);
+	populateData();
+
+	/*td::Variant val;
+	_activityName.getValue(val);
+	_actID.setValue(val, true);*/
 	//onChangedSelection(&_table);
 }
-bool ViewGradeLabHomework::onFinishEdit(gui::LineEdit* pCtrl)
-{
-	_ActivityID = 3;
 
-	populateData();
-	//nekompatibilan tip
-	/*if (pCtrl == &_activityName) {
+bool ViewGradeLabHomework::onChangedSelection(gui::DBComboBox* pCmb)
+{
+	if (pCmb == &_activityName) {
 		td::Variant val;
 		_activityName.getValue(val);
 		_ActivityID = val.i4Val();
-		populateData();
-	}*/
+		_table.reload();
+	//	_table.disableMessaging();
+		onChangedSelection(&_table);
+		//_table.enableMessaging();
 
+	}
 	return false;
 }
 void ViewGradeLabHomework::populateData()
@@ -156,7 +161,7 @@ bool ViewGradeLabHomework::onChangedSelection(gui::TableEdit* pTE)
 		_index.setValue(val);
 		//------------------popraviti
 		val = row[1];
-		_activityName.setValue(val);
+		_activityName.setValue(val, false);
 
 		return true;
 	}
@@ -179,7 +184,7 @@ void ViewGradeLabHomework::populateDSRow(dp::IDataSet::Row& row, td::INT4 id)
 	row[3].setValue(val);
 
 	_activityName.getValue(val);
-	row[2].setValue(val);
+	row[1].setValue(val);
 
 	/*_cName.getValue(val);
 	row[8].setValue(val);*/
@@ -320,6 +325,7 @@ bool ViewGradeLabHomework::onClick(gui::Button* pBtn)
 		_userids.insert(a);
 		//	_table.updateRow(iRow);
 		_table.endUpdate();
+		onChangedSelection(&_table);
 
 		_itemsToDelete.push_back(itemid);
 
@@ -343,6 +349,7 @@ bool ViewGradeLabHomework::onClick(gui::Button* pBtn)
 		_userids.insert(a);
 		_table.updateRow(iRow);
 		_table.endUpdate();
+		onChangedSelection(&_table);
 
 		if (std::find(_itemsToInsert.begin(), _itemsToInsert.end(), itemid) == _itemsToInsert.end())
 			_itemsToUpdate.push_back(itemid);
@@ -360,6 +367,7 @@ bool ViewGradeLabHomework::onClick(gui::Button* pBtn)
 		_userids.insert(a);
 		_table.updateRow(iRow);
 		_table.endUpdate();
+		onChangedSelection(&_table);
 
 		_itemsToUpdate.erase(std::remove(_itemsToUpdate.begin(), _itemsToUpdate.end(), itemid), _itemsToUpdate.end());
 		_itemsToInsert.push_back(itemid);
@@ -376,6 +384,11 @@ bool ViewGradeLabHomework::onClick(gui::Button* pBtn)
 		dp::Columns pCols = pSelect->allocBindColumns(1);
 		td::INT4 id;
 		pCols << "Tip_Aktivnosti" << id;
+		if (!pSelect->execute())
+			return false;
+		if (!pSelect->moveNext())
+			return false;
+
 		if(id==2)
 			homeworkGrades(&_imgHWGrades, _SubjectID); 
 		else if(id==5)
@@ -487,7 +500,7 @@ bool ViewGradeLabHomework::loadComboBox(td::String select, gui::DBComboBox& comb
 		if(dnow<d||(dnow==d&&tnow<t))  
 		combo.addItem(name, id);
 	}
-	combo.selectIndex(0);
+	//combo.selectIndex(0, );
 	return true;
 }
 
