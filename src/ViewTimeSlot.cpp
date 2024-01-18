@@ -220,7 +220,7 @@ bool ViewTimeSlot::onClick(gui::Button* pBtn)
 {
     if (pBtn == &_btnReload)
     {
-        _table.reload();
+       // _table.reload();
         UpdatePresentDataSet();
   
         return true;
@@ -263,18 +263,27 @@ bool ViewTimeSlot::onClick(gui::Button* pBtn)
 
     if (pBtn == &_btnDEnroll)
     {
+        td::INT4 tID;
+        td::INT4 curRow = _pDS->getCurrentRowNo();
+        auto row = _pDS->getRow(curRow);
+        tID = row[4].i4Val();
+
         saveData2();
 
-    /* _pDS4 = dp::getMainDatabase()->createStatement("UPDATE Termini SET Br_prijavljenih = Br_prijavljenih - 1 WHERE ID = ? ");
-        //ovaj update radi u bazi, ali pokazivac ?
+    
+    _pDS4 = dp::getMainDatabase()->createStatement("UPDATE Termini SET Br_prijavljenih = Br_prijavljenih - 1 WHERE ID = ? ");
         dp::Params pParams(_pDS4->allocParams());
         pParams << tID;
-       */
+        if (!_pDS4->execute())
+            return false;
+        if (!_pDS4->moveNext())
+            return false;
+       
+
         _table.reload();
      //   _table2.reload();
         _table.selectRow(0, true);
 
-        //dodati kao za Enroll provjeru max broj polaznika
     //    UpdatePresentDataSet();
         return true;
 
