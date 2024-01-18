@@ -7,7 +7,7 @@
 #include <dp/IDatabase.h>
 #include <dp/IDataSet.h>
 
-ViewTimeSlot::ViewTimeSlot(td::INT4 SubjectID) :
+ViewTimeSlot::ViewTimeSlot(td::INT4 SubjectID,td::INT4 ViewID ) :
     _LblSubjName(tr("AttSubj"))
     
     //, _LblType(tr("AttType")),
@@ -21,6 +21,7 @@ ViewTimeSlot::ViewTimeSlot(td::INT4 SubjectID) :
     , _gl(5, 4)
     , _SubjectID(SubjectID)
 {
+    setVisualID(ViewID);
    _hlBtnsDB.appendSpacer();
     _hlBtnsDB.append(_btnDEnroll);
 //    _hlBtnsDB.append(_btnReload);

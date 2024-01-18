@@ -322,6 +322,10 @@
         <Res id="CloseWnd" tr="Zatvorite ovaj prozor"/>
         
         <Res id="alertNoSubject" tr="Niste upisani niti na jedan predmet"/>
+		<Res id="alertNoProfesorSubject" tr="Niste profesor niti na jednom predmetu"/>
+		
+		
+		
     
 	</Translations>
 </DevRes>

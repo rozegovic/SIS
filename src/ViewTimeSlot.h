@@ -52,7 +52,7 @@ protected:
     gui::Label _lblTable2;
     gui::TableEdit _table2;
 public:
-    ViewTimeSlot(td::INT4 SubjectID);
+    ViewTimeSlot(td::INT4 SubjectID, td::INT4 ViewID);
     ~ViewTimeSlot();
 
 protected:

@@ -52,8 +52,14 @@ public:
         {
             combo.addItem(name, id);
         }
+        if (combo.getNoOfItems() > 0)
         combo.selectIndex(0);
         return true;
+
+    }
+    gui::DBComboBox& getComboBox()
+    {
+        return _viewAttendance.getComboBox();
 
     }
     ~DialogChooseSubject() {}

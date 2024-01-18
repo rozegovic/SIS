@@ -244,7 +244,7 @@ CREATE TABLE "TerminiStudenti" (
 	FOREIGN KEY("ID_Termina") REFERENCES "Termini"("ID"),
 	FOREIGN KEY("ID_Studenta") REFERENCES "Korisnici"("ID"),
 	PRIMARY KEY("ID")
-)
+);
 CREATE TABLE IF NOT EXISTS "Predaja" (
 	"ID_Predaje"	INTEGER NOT NULL,
 	"ID_OpenPredaja"	INTEGER NOT NULL,
