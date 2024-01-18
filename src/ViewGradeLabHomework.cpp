@@ -97,7 +97,7 @@ void ViewGradeLabHomework::populateData()
 	//-----Adnan
 	//popraviti populate da ucitava studente koji su na aktivnosti izabranoj u comboboxu
 	// za to ce trebati parDS ucitati jos jednu varijablu tj ucitati id_aktivnosti iz comboboxa - nista ostalo u selectu ne treba mijenjati
-	_pDS = _db->createDataSet("SELECT d.ID_Korisnika, d.ID_Aktivnosti, b.Naziv_Aktivnosti, c.Indeks, c.Ime, c.Prezime, d.Ocjena as Procenat, d.ID FROM Aktivnosti b, Korisnici c, OcjeneLabZadace d WHERE d.ID_Aktivnosti = b.ID_Aktivnosti and d.ID_Korisnika = c.ID AND b.ID_Predmeta = ? AND b.Tip_Aktivnosti IN(5, 2) ORDER BY b.Naziv_Aktivnosti DESC", dp::IDataSet::Execution::EX_MULT);
+	_pDS = _db->createDataSet("SELECT d.ID_Korisnika, d.ID_Aktivnosti, b.Naziv_Aktivnosti, c.Indeks, c.Ime, c.Prezime, d.Ocjena as Procenat, d.ID FROM Aktivnosti b, Korisnici c, OcjeneLabZadace d WHERE d.ID_Aktivnosti = b.ID_Aktivnosti and d.ID_Korisnika = c.ID AND b.ID_Predmeta = ?  AND b.Tip_Aktivnosti IN(5, 2) ORDER BY b.Naziv_Aktivnosti DESC", dp::IDataSet::Execution::EX_MULT);
 
 	dp::Params parDS(_pDS->allocParams());
 

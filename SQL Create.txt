@@ -216,12 +216,13 @@ CREATE TABLE IF NOT EXISTS "OcjeneLabZadace" (
 	FOREIGN KEY("ID_Korisnika") REFERENCES "Korisnici"("ID"),
 	FOREIGN KEY("ID_Aktivnosti") REFERENCES "Aktivnosti"("ID_Aktivnosti")
 );
-CREATE TABLE IF NOT EXISTS "UpisPredmeta" (
+CREATE TABLE "UpisPredmeta" (
 	"ID"	INTEGER,
 	"ID_Studenta"	INTEGER NOT NULL,
 	"ID_Predmeta"	INTEGER,
-	PRIMARY KEY("ID" AUTOINCREMENT),
-	FOREIGN KEY("ID_Predmeta") REFERENCES "Predmet"("ID_Predmeta")
+	FOREIGN KEY("ID_Studenta") REFERENCES "Korisnici"("ID"),
+	FOREIGN KEY("ID_Predmeta") REFERENCES "Predmet"("ID_Predmeta"),
+	PRIMARY KEY("ID" AUTOINCREMENT)
 );
 CREATE TABLE IF NOT EXISTS "Prijavljeni_ispiti" (
 	"ID_Predmeta"	INTEGER NOT NULL,
