@@ -87,4 +87,6 @@ protected:
     bool loadComboBox(td::String select, gui::DBComboBox& combo);
     void openFile(gui::FileDialog* pFD);
     void showOpenFileDialog();
+    bool onFinishEdit(gui::LineEdit* pCtrl) override;
+
 };

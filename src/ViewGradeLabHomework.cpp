@@ -15,7 +15,7 @@ ViewGradeLabHomework::ViewGradeLabHomework(td::INT4 SubjectID) : _db(dp::getMain
 , _lblIndex(tr("indeksUser:"))
 , _lblGrade(tr("grade:")) // napomena za Eminu - poslije dodati send message
 , _lblActivityName(tr("activityName:"))
-, _activityName(td::int4)
+, _activityName(td::int4) // gui::LineEdit::Messages::Send
 , _lblCName(tr("courseName:"))
 , _btnAdd(tr("add"))
 , _btnSave(tr("save"))
@@ -81,8 +81,8 @@ ViewGradeLabHomework::ViewGradeLabHomework(td::INT4 SubjectID) : _db(dp::getMain
 	gc.appendRow(_hlBtns, 0);
 	gui::View::setLayout(&_gl);
 	insertValues(_SubjectID);
-	populateData();
-	td::String s = "select b.ID as ID, c.Naziv_Aktivnosti as Name, b.Datum_Predaje as d, b.Vrijeme_Predaje as t from OpenPredaja b, Aktivnosti c, VrstaAktivnosti d where (d.ID=2 OR d.ID=5) and d.ID = c.Tip_Aktivnosti and b.ID_Aktivnosti = c.ID_Aktivnosti and c.ID_Predmeta = ?";
+	//populateData();
+	td::String s = "select c.ID_Aktivnosti as ID, c.Naziv_Aktivnosti as Name, b.Datum_Predaje as d, b.Vrijeme_Predaje as t from OpenPredaja b, Aktivnosti c, VrstaAktivnosti d where (d.ID=2 OR d.ID=5) and d.ID = c.Tip_Aktivnosti and b.ID_Aktivnosti = c.ID_Aktivnosti and c.ID_Predmeta = ?";
 	td::Date d(true);
 	//----Adnan
 		//----------------------------------dodati provjeru datuma i vremena: da li je kraj vremena predaje prosao u odnosu na trenutno vrijeme (ucitavati SAMO ako jeste)
@@ -92,16 +92,20 @@ ViewGradeLabHomework::ViewGradeLabHomework(td::INT4 SubjectID) : _db(dp::getMain
 	// -------Emir
 	//-------------------------dodati on finishedit za combobox i iz njega pozivati populateData 
 	loadComboBox(s, _activityName);
-	onChangedSelection(&_table);
+	//onChangedSelection(&_table);
 }
-bool ViewTeachingStaff::onFinishEdit(gui::LineEdit* pCtrl)
+bool ViewGradeLabHomework::onFinishEdit(gui::LineEdit* pCtrl)
 {
-	if (pCtrl == &_activityName) {
+	_ActivityID = 3;
+
+	populateData();
+	//nekompatibilan tip
+	/*if (pCtrl == &_activityName) {
 		td::Variant val;
 		_activityName.getValue(val);
 		_ActivityID = val.i4Val();
 		populateData();
-	}
+	}*/
 
 	return false;
 }
@@ -466,7 +470,7 @@ bool ViewGradeLabHomework::loadComboBox(td::String select, gui::DBComboBox& comb
 	dp::IStatementPtr pSelect = _db->createStatement(select.c_str());
 	dp::Params parDS(pSelect->allocParams());
 	parDS << _SubjectID;
-	dp::Columns pCols = pSelect->allocBindColumns(2);
+	dp::Columns pCols = pSelect->allocBindColumns(4);
 	td::String name;
 	td::INT4 id;
 	td::Date d;
