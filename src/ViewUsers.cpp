@@ -288,6 +288,7 @@ bool ViewUsers::saveUsers()
         return false;
     
     //tr1.commit();
+    //Update InitialUsers in case of additional editing
     InitialUserIds.clear();
     for(auto novi : UsersEdited){
         InitialUserIds.push_back(novi.first);

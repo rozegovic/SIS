@@ -7,7 +7,7 @@
 				<TrText hAlign="left" width="10" name="Pos"/>
 				<TrText hAlign="left" width="20" name="ime"/>
 				<TrText hAlign="left" width="50" name="prezime"/>
-                <TrText hAlign="left" width="20" name="Date"/>
+                <TrText hAlign="left" width="20" name="Day"/>
                 <TrText hAlign="left" width="50" name="Time"/>
 			</Row>
 		</Header>
@@ -16,7 +16,7 @@
 				<Numeric type="int4" showThSep="false" hideZero="false" hAlign="left" width="10" name="#Pos"/>
 				<Text hAlign="left"  width="20" name="Ime"/>
 				<Text hAlign="left"  width="50" name="Prezime"/>
-                <Date dateFmt="DateOwnShortDM" width="20" hAlign="left" name="Datum"/>
+                <Text  width="20" hAlign="left" name="Dan"/>
 				<Time timeFmt="TimeWinShort" width="20" hAlign="left" name="Vrijeme"/>
                 
 			</Row>
