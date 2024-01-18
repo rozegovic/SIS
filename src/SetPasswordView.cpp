@@ -52,11 +52,20 @@ bool SetPasswordView::onClick(gui::Button* pBtn){
         td::String p1, p2;
         p1 = _pwrd.getText();
         p2 = _repeatPwrd.getText();
+        if(p1 == td::String ("")){
+            gui::NatObject::showAlert(tr("alert"), tr("NoPwrd"));
+            return false;
+            
+        }
+        if(p1 == td::String ("default")){
+            gui::NatObject::showAlert(tr("alert"), tr("DefaultPwrd"));
+            return false;
+        }
         if(p1 == p2){
             SaveData();
             gui::NatObject::showAlert(tr("PwrdOK"), tr("CloseWnd"));
-     //       auto wnd = getAttachedWindow(2);
-//            wnd->close();
+  //     auto wnd = getAttachedWindow(2);
+//         wnd->close();
             return true;
         }
         else
