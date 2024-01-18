@@ -252,3 +252,20 @@ CREATE TABLE IF NOT EXISTS "Predaja" (
 	FOREIGN KEY("ID_OpenPredaja") REFERENCES "Rokovi"("ID_Roka"),
 	FOREIGN KEY("ID_Studenta") REFERENCES "Korisnici"("ID")
 );
+
+CREATE TABLE IF NOT EXISTS SAOStudentTicket (
+    ID INTEGER PRIMARY KEY NOT NULL,
+    Indeks TEXT NOT NULL,
+    Ticket_Tip TEXT NOT NULL,
+    Req_Title TEXT NOT NULL,
+    Request TEXT,
+    Status_ID INTEGER NOT NULL,
+    Attachment BLOB,
+    Name_attachment TEXT,
+	FOREIGN KEY (Status_ID) REFERENCES SAOTicket_Status(ID)
+);
+
+CREATE TABLE IF NOT EXISTS "SAOTicket_Status" (
+	"ID"	INTEGER PRIMARY KEY NOT NULL,
+	"Status"	TEXT NOT NULL
+);

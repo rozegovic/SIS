@@ -127,3 +127,5 @@ INSERT INTO "Predaja" ("ID_Predaje","ID_OpenPredaja","ID_Studenta","Datoteka","D
 INSERT INTO "Predaja" ("ID_Predaje","ID_OpenPredaja","ID_Studenta","Datoteka","Datum_Predaje","Vrijeme_Predaje","Predano") VALUES (8,5,5,'dz5',20220607,174601,1);
 INSERT INTO "Predaja" ("ID_Predaje","ID_OpenPredaja","ID_Studenta","Datoteka","Datum_Predaje","Vrijeme_Predaje","Predano") VALUES (9,6,5,'lab5',20230207,152904,1);
 INSERT INTO "Predaja" ("ID_Predaje","ID_OpenPredaja","ID_Studenta","Datoteka","Datum_Predaje","Vrijeme_Predaje","Predano") VALUES (10,6,5,'lab3',20230206,192304,1);
+INSERT INTO SAOTicket_Status (ID,Status) VALUES (1,'Na čekanju');
+INSERT INTO SAOTicket_Status (ID,Status) VALUES (2,'Obrađen');
