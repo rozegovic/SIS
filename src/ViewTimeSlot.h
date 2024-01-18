@@ -44,7 +44,8 @@ protected:
     dp::IDataSetPtr _pDS = nullptr;
     dp::IDataSetPtr _pDSpos;
     dp::IDataSetPtr _pDS2 = nullptr;
-  //  dp::IStatementPtr _pDS3 = nullptr;
+    dp::IStatementPtr _pDS3;
+    dp::IStatementPtr _pDS4;
     td::INT4 _SubjectID;
 
     gui::TableEdit _table;
@@ -55,18 +56,17 @@ public:
     ~ViewTimeSlot();
 
 protected:
- //   td::INT4 getCurrentTerminID();
+    //   td::INT4 getCurrentTerminID();
     void initTable();
     void initTable2();
     void populateDataForTable();
     void populateTable2();
     void getSubjectName();
-   // bool IsTherePlace(td::INT4 tID);
+    bool IsTherePlace(td::INT4 tID);
     bool IsEnrolled(td::INT4 ID_stud, td::INT4 ID_Pred);
     bool saveData1();
     bool saveData2();
     virtual bool onClick(gui::Button* pBtn);
     void UpdatePresentDataSet();
-  //  virtual bool onChangedSelection(gui::TableEdit* pTE);
-
+    
 };

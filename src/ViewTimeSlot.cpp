@@ -2,7 +2,10 @@
 #include "Globals.h"
 #include "ViewIDs.h"
 #include <td/StringConverter.h>
-#include "ViewSubject.h"
+
+#include <dp/IDataSetDelegate.h>
+#include <dp/IDatabase.h>
+#include <dp/IDataSet.h>
 
 ViewTimeSlot::ViewTimeSlot(td::INT4 SubjectID) :
     _LblSubjName(tr("AttSubj"))
@@ -90,18 +93,31 @@ bool ViewTimeSlot::IsEnrolled(td::INT4 ID_stud, td::INT4 ID_Pred) {
     return false;
 
 }
-/*
+
 bool ViewTimeSlot::IsTherePlace(td::INT4 tID) {
- 
- _pDS3 = dp::getMainDatabase()->createStatement (SELECT Max_br_pol AS max, Br_prijavljenih  AS trenutnih FROM Termini WHERE Termini.ID = ?)
+      
+     // dp::IStatementPtr _pDS3 = dp::getMainDatabase()->createStatement("SELECT Max_br_pol as max, Br_prijavljenih as trenutnih FROM Termini WHERE Termini.ID = ? ");
+      _pDS3 = dp::getMainDatabase()->createStatement("SELECT Max_br_pol, Br_prijavljenih  FROM Termini WHERE ID = ? ");
+      
       dp::Params pParams(_pDS3->allocParams());
       pParams << tID;
-      dp::Columns pColumns = pSelect->allocBindColumns(2);
-      pColumns << "max" << Max_br_pol<< "trenutnih" << Br_prijavljenih;
+
+      dp::Columns pCols =_pDS3->allocBindColumns(2); ///
+      td::INT4 max ;
+      td::INT4 trenutnih ;
+     
+  //    pCols << "max " << max << "trenutnih" << trenutnih;
+      pCols << "Max_br_pol" << max << "Br_prijavljenih" << trenutnih;
+
+      if (!_pDS3->execute())
+          return false;
+      if (!_pDS3->moveNext())
+          return false;
+      
       if (trenutnih == max) return false;
       return true;
  }
- */
+ 
 
 void ViewTimeSlot::populateDataForTable()
 {
@@ -220,23 +236,25 @@ bool ViewTimeSlot::onClick(gui::Button* pBtn)
         if (IsEnrolled(sID, pID))
         {
             showAlert(tr("alert"), tr("alertPr"));
-            return true;
+            return false;
         }
-    /*
-     td::INT4 tID;
-    //   tID = getCurrentTerminID()  // nekako
-    // koristiti funkciju iz ViewSubject::getCurrentTerminID()... tID
-     if (!IsTherePlace(tID)) {   //funkcija u 94.liniji
-           showAlert(tr("alert"), ("Nazalost vise nema mjesta!");
+    
+     if (!IsTherePlace(tID)) {   //funkcija u 97.liniji
+           showAlert(tr("alert"), ("Nazalost vise nema mjesta!"));
            return false;
     }
-        */
+        
         saveData1();
-    /*
-     _pDS3 = dp::getMainDatabase()->createStatement (UPDATE Termini SET Br_prijavljenih = Br_prijavljenih + 1 WHERE Termini.ID = ?)
-     dp::Params pParams(_pDS3->allocParams());
-     pParams << tID;
-      */
+    
+        _pDS4 = dp::getMainDatabase()->createStatement("UPDATE Termini SET Br_prijavljenih = Br_prijavljenih + 1 WHERE ID = ? ");
+        //ovaj update radi u bazi, ali pokazivac ?
+        dp::Params pParams(_pDS4->allocParams());
+        pParams << tID;
+        if (!_pDS4->execute())
+            return false;
+        if (!_pDS4->moveNext())
+            return false;
+      
     //  UpdatePresentDataSet();
       //  _table2.reload();                    ///
         return true;
@@ -246,6 +264,12 @@ bool ViewTimeSlot::onClick(gui::Button* pBtn)
     if (pBtn == &_btnDEnroll)
     {
         saveData2();
+
+    /* _pDS4 = dp::getMainDatabase()->createStatement("UPDATE Termini SET Br_prijavljenih = Br_prijavljenih - 1 WHERE ID = ? ");
+        //ovaj update radi u bazi, ali pokazivac ?
+        dp::Params pParams(_pDS4->allocParams());
+        pParams << tID;
+       */
         _table.reload();
      //   _table2.reload();
         _table.selectRow(0, true);
