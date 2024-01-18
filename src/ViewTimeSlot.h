@@ -37,7 +37,7 @@ protected:
     gui::HorizontalLayout _hlBtnsDB;
     gui::Button _btnEnroll;
     gui::Button _btnDEnroll;
-    gui::Button _btnReload;
+ //   gui::Button _btnReload;
 
     gui::GridLayout _gl;
     dp::IDatabase* _db;

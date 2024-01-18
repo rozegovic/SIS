@@ -439,7 +439,7 @@ bool ViewAttendance::CheckTime(){
         return false;
     return true;
 }
-void ViewAttendance::AttendanceReport(const gui::Image* pImage){
+/*void ViewAttendance::AttendanceReport(const gui::Image* pImage){
     
     dp::IDatabase* pDB = dp::getMainDatabase();
 
@@ -455,36 +455,12 @@ void ViewAttendance::AttendanceReport(const gui::Image* pImage){
     td::Variant temp;
     td::Date tempD;
     td::Time tempT;
-    
-  /*  _date.getValue(temp);
-   // tempD = temp;
-    tempD = td::Date (2024, 1, 7);
-    _time.getValue(temp);
-    //tempT = temp;
-    tempT  = 649079385;
-   {
-        dp::IDataSet* pDP(dp::createConnectionlessDataSet(dp::IDataSet::Size::SingleRow));
-        
-        it << rpt::ContainerType::CNT_DocHeader << pDP; //define field and its data
-        
-        dp::DSColumns cols(pDP->allocBindColumns(2));
-        cols << "date" << td::int4
-        << "time" << td::int4;
-        
-        
-        pDP->execute();
-        
-        auto& row = pDP->getRow(0);
-        row[0] = tempD;
-        row[1] = tempT;
-    }
-    
-    ++it;*/
-    
     {
-        dp::IDataSet* pRep(pDB->createDataSet("select a.Ime, a.Prezime, c.Datum as Datum, c.Vrijeme as Vrijeme FROM Korisnici a, Prisustvo b, Termini c WHERE b.ID_Studenta = a.ID AND b.ID_termina = c.ID"));
-           dp::DSColumns colsRep(pRep->allocBindColumns(4));
-        colsRep << "Ime" << td::string8 << "Prezime" << td::string8 <<"Datum" << td::date <<"Vrijeme" << td::time;
+        dp::IDataSet* pRep(pDB->createDataSet("select a.Ime, a.Prezime, c.Dan as Dan, c.Vrijeme as Vrijeme FROM Korisnici a, TerminiStudenti b, Termini c WHERE b.ID_Studenta = a.ID AND b.ID_termina = c.ID AND c.Predmet_ID = ?"));
+        dp::Params pParams1(pRep->allocParams());
+        pParams1 << _SubjectID;
+        dp::DSColumns colsRep(pRep->allocBindColumns(4));
+        colsRep << "Ime" << td::string8 << "Prezime" << td::string8 <<"Dan" << td::string8 <<"Vrijeme" << td::time;
            it << rpt::ContainerType::CNT_Body << pRep;
            
                
@@ -502,8 +478,10 @@ void ViewAttendance::AttendanceReport(const gui::Image* pImage){
    ++it;
     it.nextLayout();
     {
-        dp::IDataSet* pRep(pDB->createDataSet("SELECT a.Ime, a.Prezime FROM Korisnici a LEFT JOIN Prisustvo b ON a.ID =  b.ID_studenta WHERE b.ID_studenta IS NULL AND a.PozicijaID = 5"));
-           dp::DSColumns colsRep(pRep->allocBindColumns(2));
+        dp::IDataSet* pRep(pDB->createDataSet("SELECT k.Ime, k.Prezime FROM Korisnici k WHERE k.PozicijaID = 5 AND NOT EXISTS (SELECT 1 FROM TerminiStudenti p JOIN Termini t ON p.ID_termina = t.ID WHERE p.ID_studenta = k.ID AND t.Predmet_ID = ?);"));
+        dp::Params pParams1(pRep->allocParams());
+        pParams1 << _SubjectID;
+        dp::DSColumns colsRep(pRep->allocBindColumns(2));
         colsRep << "Ime" << td::string8 << "Prezime" << td::string8;
            it << rpt::ContainerType::CNT_Body << pRep;
            
@@ -530,8 +508,8 @@ void ViewAttendance::AttendanceReport(const gui::Image* pImage){
     
 
     
-}
-/*void ViewAttendance::AttendanceReport(const gui::Image* pImage){
+}*/
+void ViewAttendance::AttendanceReport(const gui::Image* pImage){
     dp::IDatabase* pDB = dp::getMainDatabase();
 
     DocumentData docData(_SubjectID);
@@ -547,14 +525,14 @@ void ViewAttendance::AttendanceReport(const gui::Image* pImage){
     //#endif
         //Grouper
     {
-        dp::IDataSet* pDP(pDB->createDataSet("select b.Datum FROM Termini b ORDER BY Datum ASC"));
+        dp::IDataSet* pDP(pDB->createDataSet("select b.Vrijeme FROM Termini b, TerminiStudenti c Where b.ID = c.ID_Termina ORDER BY Vrijeme ASC"));
 
         //#ifdef REPTEST
         it << rpt::ContainerType::CNT_Grouper << pDP; //define field and its data
         //#endif
         dp::DSColumns cols(pDP->allocBindColumns(1));
-        cols  << "Datum" << td::date;
-        if (!pDP->execute())//sto ovdje nece ne znam...
+        cols  << "Vrijeme" << td::time ;
+        if (!pDP->execute())//ovaj select ne prolazi ako pokušam učitavati i sortiran dan u sedmici
         {
             return;
         }
@@ -570,14 +548,14 @@ void ViewAttendance::AttendanceReport(const gui::Image* pImage){
     }
     ++it;
     {
-        dp::IDataSet* pDP(pDB->createDataSet("select a.Ime, a.Prezime From Korisnici a, Prisustvo c Where a.ID = c.ID_Studenta"));
+        dp::IDataSet* pDP(pDB->createDataSet("select a.Ime, a.Prezime From Korisnici a, TerminiStudenti c, Termini b Where a.ID = c.ID_Studenta AND c.ID_Termina = b.ID ORDER BY b.Vrijeme ASC"));
 
         //#ifdef REPTEST
         it << rpt::ContainerType::CNT_Body << pDP; //define field and its data
         //#endif
         dp::DSColumns cols(pDP->allocBindColumns(2));
         cols  << "Ime" << td::string8 << "Prezime" << td::string8;
-        if (!pDP->execute())//sto ovdje nece ne znam...
+        if (!pDP->execute())//ovdje ne prolazi execute, a select radi u dbBrowseru...
         {
             return;
         }
@@ -593,18 +571,13 @@ void ViewAttendance::AttendanceReport(const gui::Image* pImage){
     }
 
     //InvoiceSimple
-    td::String configName("ClassAttRep");
+    td::String configName("WaterfallAttempt");
 
     rpt::IViewer* pRepView = rpt::IViewer::create(configName, repData);
     if (pRepView)
     {
-        pRepView->show(gui::tr("ClassAttRep"), pImage);
+        pRepView->show(gui::tr("WaterfallAttempt"), pImage);
 
     }
-
-    
-
-
-    
 }
-*/
+

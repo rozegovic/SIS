@@ -320,6 +320,8 @@
         <Res id="PwrdOK" tr="Uspješno postavljanje nove šifre!"/>
         <Res id="CloseWnd" tr="Zatvorite ovaj prozor"/>
         
+        <Res id="alertNoSubject" tr="Niste upisani niti na jedan predmet"/>
+    
 	</Translations>
 </DevRes>
 

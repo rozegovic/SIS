@@ -11,10 +11,10 @@ ViewTimeSlot::ViewTimeSlot(td::INT4 SubjectID) :
     _LblSubjName(tr("AttSubj"))
     
     //, _LblType(tr("AttType")),
-    ,_hlBtnsDB(5)
+    ,_hlBtnsDB(4)
     ,_lblTable2("Izabrani termin/i:")
     , _btnDEnroll(tr("DEnroll"))
-    , _btnReload(tr("Reload"))
+   // , _btnReload(tr("Reload"))
     , _btnEnroll(tr("Enroll"))
     //, _type(td::int4)
     , _db(dp::create(dp::IDatabase::ConnType::CT_SQLITE, dp::IDatabase::ServerType::SER_SQLITE3))
@@ -23,7 +23,7 @@ ViewTimeSlot::ViewTimeSlot(td::INT4 SubjectID) :
 {
    _hlBtnsDB.appendSpacer();
     _hlBtnsDB.append(_btnDEnroll);
-    _hlBtnsDB.append(_btnReload);
+//    _hlBtnsDB.append(_btnReload);
     _hlBtnsDB.append(_btnEnroll);
     _hlBtnsDB.appendSpacer();
     _btnDEnroll.setType(gui::Button::Type::Default);
@@ -45,9 +45,9 @@ ViewTimeSlot::ViewTimeSlot(td::INT4 SubjectID) :
 
     populateDataForTable();
    // _table.setFont(gui::Font::ID::SystemSmallestBoldItalic);
-    _table.setBold();
+   // _table.setBold();
     populateTable2();
-    _table2.setBold();
+  //  _table2.setBold();
 }
 
 ViewTimeSlot::~ViewTimeSlot() {
@@ -189,8 +189,11 @@ bool ViewTimeSlot::saveData1() { //upis
     tID = row[4].i4Val();
     pID = row[3].i4Val();
   
-    if (!pInsStat->execute())
+    if (!pInsStat->execute()){
+        tr.rollBack();
         return false;
+        
+    }
     tr.commit();
     return true;
 
@@ -218,13 +221,13 @@ bool ViewTimeSlot::saveData2() { //ispis
 
 bool ViewTimeSlot::onClick(gui::Button* pBtn)
 {
-    if (pBtn == &_btnReload)
+   /* if (pBtn == &_btnReload)
     {
        // _table.reload();
         UpdatePresentDataSet();
   
         return true;
-    }
+    }*/
     if (pBtn == &_btnEnroll)
     {
         td::INT4 tID, pID, sID;
@@ -245,7 +248,7 @@ bool ViewTimeSlot::onClick(gui::Button* pBtn)
     }
         
         saveData1();
-    
+        UpdatePresentDataSet();
         _pDS4 = dp::getMainDatabase()->createStatement("UPDATE Termini SET Br_prijavljenih = Br_prijavljenih + 1 WHERE ID = ? ");
         //ovaj update radi u bazi, ali pokazivac ?
         dp::Params pParams(_pDS4->allocParams());
@@ -269,7 +272,7 @@ bool ViewTimeSlot::onClick(gui::Button* pBtn)
         tID = row[4].i4Val();
 
         saveData2();
-
+        UpdatePresentDataSet();
     
     _pDS4 = dp::getMainDatabase()->createStatement("UPDATE Termini SET Br_prijavljenih = Br_prijavljenih - 1 WHERE ID = ? ");
         dp::Params pParams(_pDS4->allocParams());
@@ -296,13 +299,13 @@ bool ViewTimeSlot::onClick(gui::Button* pBtn)
 void ViewTimeSlot::UpdatePresentDataSet() {
    
     auto sID = Globals::_currentUserID;
-    dp::IDataSetPtr pomDS = dp::getMainDatabase()->createDataSet("SELECT b.Naziv AS tip, a.Vrijeme AS time, a.Dan AS date from Termini a, TipPredavanja b, TerminiStudenti c WHERE c.ID_Studenta = sID and c.ID_Termina = a.ID and c.TipPredavanjaID = b.ID and c.ID_Studenta = ?", dp::IDataSet::Execution::EX_MULT);
+    dp::IDataSetPtr pomDS = dp::getMainDatabase()->createDataSet("SELECT b.Naziv AS tip, a.Vrijeme AS time, a.Dan AS date from Termini a,  TipPredavanja b, TerminiStudenti c WHERE c.ID_Termina = a.ID and c.TipPredavanjaID = b.ID and c.ID_Studenta = ?", dp::IDataSet::Execution::EX_MULT);
     
-    dp::Params pParams(_pDS2->allocParams());
-    pParams << sID;           
+    dp::Params pParams(pomDS->allocParams());
+    pParams << Globals::_currentUserID;           
 
     dp::DSColumns cols(pomDS->allocBindColumns(3));
-    cols << "tip" << td::string8 << "time" << td::int4 << "date" << td::string8;
+    cols << "tip" << td::string8 << "time" << td::time << "date" << td::string8;
     if (!pomDS->execute())
     {
         pomDS = nullptr;
