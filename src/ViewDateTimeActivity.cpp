@@ -1,4 +1,5 @@
 #include "ViewDateTimeActivity.h"
+#include "SendMessage.h"
 //#include "Globals.h"
 
 
@@ -277,6 +278,26 @@ td::INT4 ViewDateTimeActivity::findMaxID()
 
 bool  ViewDateTimeActivity::saveData()
 {
+    //nece se slati vise puta ukoliko nije registrovana promjena nego ce se poslati samo jedna poruka
+    if (!(_itemsToDelete.empty() && _itemsToUpdate.empty() && _itemsToInsert.empty())) {
+        std::vector<td::INT4> userIDs;
+        //svim studentima
+        dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT ID FROM KORISNICI WHERE PozicijaID=5");
+        dp::Columns pCols = pSelect->allocBindColumns(1);
+        td::INT4 id;
+        pCols << "ID" << id;
+        if (!pSelect->execute())
+            return false;
+        while (pSelect->moveNext())
+        {
+            userIDs.push_back(id);
+        }
+        td::String naslov = "Ispit!";
+        td::String poruka = "Registrovana je promjena u terminima ispita! ";
+        MsgSender msg;
+        msg.sendSystemMsgtoUsers(naslov, poruka, userIDs);
+
+    }
     dp::Transaction tran(_db);
     if (!eraseDateTime())
         return false;

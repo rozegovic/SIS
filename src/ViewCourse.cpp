@@ -97,6 +97,7 @@ ViewCourse::ViewCourse(): _db(dp::getMainDatabase())
 
     _elective.addItem(tr("mnd"), 0);  //obavezni
     _elective.addItem(tr("elctv"), 1); //izborni
+    _elective.selectIndex(0);
 
     populateData();
     loadComboBox("select ID_Smjera as ID, Naziv_Smjera as Name from Smjer", _idDep);

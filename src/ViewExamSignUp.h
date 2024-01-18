@@ -34,7 +34,7 @@ class ViewExamSignUp : public gui::View
 protected:
     gui::Label _lblIndeks;
     gui::LineEdit _indeks;
-
+ 
 
     gui::Label _lblName;
     gui::LineEdit _name;
@@ -50,8 +50,8 @@ protected:
     gui::Button _btnDEnroll;
     gui::Button _btnReload;
 
-
-
+  
+  
     gui::GridLayout _gl;
 
     dp::IDatabase* _db;
@@ -67,6 +67,7 @@ public:
     ~ViewExamSignUp();
     td::Variant ID_Pre1;
     td::Variant ID_Pre2;
+    td::INT4 ID_studenta;
 
 protected:
     void initTable1();
@@ -76,4 +77,8 @@ protected:
     virtual bool onClick(gui::Button* pBtn);
     void populateDataForTable1();
     void populateDataForTable2();
+    void SetCurrentStudentName();
+    void SetCurrentStudentSurname();
+    void SetCurrentStudentIndeks();
 };
+

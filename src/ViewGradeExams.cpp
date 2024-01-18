@@ -412,7 +412,12 @@ td::INT4 ViewGradeExams::findMaxID()
 
 void ViewGradeExams::insertValues(td::INT4 subjectID)
 {
-	dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("INSERT INTO OcjeneIspita (ID_Korisnika, ID_Aktivnosti) SELECT a.ID_Korisnika, a.ID_Aktivnosti FROM PolazniciAktivnosti a WHERE NOT EXISTS( SELECT 1 FROM OcjeneIspita WHERE OcjeneIspita.ID_Korisnika = a.ID_Korisnika AND OcjeneIspita.ID_Aktivnosti = a.ID_Aktivnosti);");
+	//-------mozda dodati da se ucitava u PolazniciAktivnosti tek nakon sto istekne vrijeme prijave-------potencijalno najbolje rjesenje
+	//----------taj select dodati ovdje iznad pSelecta
+	//	dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("INSERT INTO OcjeneLabZadace (ID_Korisnika, ID_Aktivnosti) SELECT a.ID_Studenta, b.ID_Aktivnosti FROM UpisPredmeta a JOIN Aktivnosti b ON a.ID_Predmeta = b.ID_Predmeta WHERE b.Tip_Aktivnosti IN(2, 5)AND NOT EXISTS(SELECT 1 FROM OcjeneLabZadace c WHERE c.ID_Korisnika = a.ID_Studenta AND c.ID_Aktivnosti = b.ID_Aktivnosti); ");
+// nesto poput ovog selecta - mozes vidjeti sa chatgpt da ti pomogne ako ne razumijes neki dio ovog selecta
+	dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("INSERT INTO OcjeneIspita (ID_Korisnika, ID_Aktivnosti) SELECT a.ID_Korisnika, a.ID_Aktivnosti FROM PolazniciAktivnosti a JOIN Aktivnosti b ON a.ID_Aktivnosti = b.ID_Aktivnosti WHERE b.Tip_Aktivnosti = 1 AND NOT EXISTS(SELECT 1 FROM OcjeneIspita WHERE OcjeneIspita.ID_Korisnika = a.ID_Korisnika AND OcjeneIspita.ID_Aktivnosti = a.ID_Aktivnosti);");
+	//--------------dodati provjeru za vrijeme ispita----mogu se ucitati samo ispiti koji su gotovi--provjeravati da li su 
 	if (!pSelect->execute())
 		return;
 	if (!pSelect->moveNext())

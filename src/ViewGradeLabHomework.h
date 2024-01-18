@@ -36,7 +36,8 @@ protected:
     gui::Label _lblGrade;
     gui::LineEdit _grade;
     gui::Label _lblActivityName;
-    gui::LineEdit _activityName;
+    gui::DBComboBox _activityName;
+
 
     gui::Label _lblCName;
     gui::LineEdit _cName;
@@ -49,13 +50,15 @@ protected:
     gui::Button _btnUpdate;
     gui::Button _btnSave;
     gui::Button _btnReport;
+    gui::Button _btnHWL;
+
 
 
     dp::IDatabase* _db;
     gui::GridLayout _gl;
     dp::IDataSetPtr _pDS;
     td::INT4 _SubjectID;
-    td::INT4 _ActivityID;
+    td::INT4 _ActivityID; //hard kodirano trenutno
     td::INT4 _UserID;
     gui::Image _imgHWGrades;
 
@@ -82,4 +85,9 @@ protected:
     td::INT4 getIDfromTable(int rowID);    // uradjeno + provjera
     td::INT4 findMaxID();     // uradjeno
     void insertValues(td::INT4 subjectID);
+    bool loadComboBox(td::String select, gui::DBComboBox& combo);
+    void openFile(gui::FileDialog* pFD);
+    void showOpenFileDialog();
+    virtual bool onChangedSelection(gui::DBComboBox* pCmb);
+
 };

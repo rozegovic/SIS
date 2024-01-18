@@ -55,6 +55,7 @@
 		<Res id="viewTicket" tr="Karta"></Res>
 		<Res id="viewCourseEnroll" tr="Predmeti upis"/>
 		<Res id="viewMessages" tr="Obavještenja"/>
+		<Res id="viewUpload" tr="Predaja zadace/laba"/>
 		<Res id="Withdraw" tr="Ispiši"/>
 
 		<Res id="ExamAttendanceRep" tr="Prijave na ispit"/>
@@ -243,6 +244,10 @@
 
 		
 		<Res id="Options" tr="Opcije"/>
+		<Res id="Active:" tr="Aktivno:"/>
+		<Res id="Committed:" tr="Predano:"/>
+		<Res id="Send" tr="Posalji"/>
+		<Res id="Sname" tr="Skracenica"/>
 		<!--Login-->
         <Res id = "WrongPass" tr = "Pogresna sifra!"/>
 		<Res id = "EnterCorrPass" tr = "Ukucajte ispravnu sifru"/>
