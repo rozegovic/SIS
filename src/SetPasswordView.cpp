@@ -64,8 +64,8 @@ bool SetPasswordView::onClick(gui::Button* pBtn){
         if(p1 == p2){
             SaveData();
             gui::NatObject::showAlert(tr("PwrdOK"), tr("CloseWnd"));
-  //     auto wnd = getAttachedWindow(2);
-//         wnd->close();
+       auto wnd = getParentWindow();
+        wnd->close();
             return true;
         }
         else
