@@ -179,7 +179,7 @@
 									<Res id="Report" tr="Izvještaj"/>
 		<Res id="ActivityRep" tr="Izvještaj aktivnosti"/>
 		<Res id="viewTimeSlot" tr="Prijava termina"/>
-		
+		<Res id="alertActivityRep" tr="Nema unesenih aktivnosti iz odabranog predmeta!"/>
 		
 		
 		
