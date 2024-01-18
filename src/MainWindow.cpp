@@ -543,7 +543,12 @@ bool MainWindow::showAttendanceView(td::INT4 SubjectID)
 
 bool MainWindow::showCurriculumView(td::INT4 _departmentID, td::INT4 _semesterID)
 {
-    //showSubjectChoose();
+    auto x = Globals::_currentUserRole;
+    if (x != 6)
+    {
+        showAlert(tr("AccessNotAllowed"), "");
+        return true;
+    }
     if (focusOnViewPositionWithID(View_CURRICULUM))
         return true;
 
