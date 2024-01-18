@@ -161,6 +161,15 @@ CREATE TABLE IF NOT EXISTS "UpisPredmet" (
 	FOREIGN KEY("ID_Predmeta") REFERENCES "Predmet"("ID_Predmeta"),
 	PRIMARY KEY("ID" AUTOINCREMENT)
 );
+
+CREATE TABLE "UpisPredmeta" (
+	"ID"	INTEGER,
+	"ID_Studenta"	INTEGER NOT NULL,
+	"ID_Predmeta"	INTEGER,
+	FOREIGN KEY("ID_Predmeta") REFERENCES "Predmet"("ID_Predmeta"),
+	PRIMARY KEY("ID" AUTOINCREMENT)
+);
+
 CREATE TABLE IF NOT EXISTS "Rokovi" (
 	"ID_Roka"	INTEGER NOT NULL,
 	"ID_Aktivnosti"	INTEGER NOT NULL,
