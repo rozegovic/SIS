@@ -40,7 +40,8 @@
         <Res id = "AttRepTT" tr = "Izvještaj o prijavama studenata na termine nastave"/>
 		
 		<Res id="SubjectChoose" tr="Izbor predmeta"/>
-		
+		<Res id="AccessFound" tr="Nisu pronađeni podaci"/>
+
 		
 		<Res id="viewUsers" tr="Korisnici"/>
 		<Res id="viewDeps" tr="Odsjeci"/>
@@ -134,6 +135,7 @@
 		<Res id="alertTSTF" tr="ID osoblja već postoji."/>
 		<Res id="succesEE" tr="Uspješno registrovane promjene u sistem."/>
 		<Res id="alertIND" tr="Indeks korisnika nije ispravno unesen."/>
+		<Res id="alertNp" tr="Nisu uneseni svi potrebni podaci."/>
 		<Res id="alertOver100" tr="Ukupan broj bodova ne može biti veći od 100."/>
 		
 		<Res id="failure" tr="Neuspješno Dodavanje!"/>
@@ -245,6 +247,23 @@
 		<Res id="Committed:" tr="Predano:"/>
 		<Res id="Send" tr="Posalji"/>
 		<Res id="Sname" tr="Skracenica"/>
+
+		<Res id="ActivityType" tr="Tip aktivnosti:"/>
+		<Res id="ActivityPoints" tr="Bodovi:"/>
+
+		<Res id="ActivityDateB" tr="Datum pocetka:"/>
+		<Res id="ActivityTimeB" tr="Vrijeme pocetka:"/>
+		<Res id="ActivityNameForDateTime" tr="Aktivnost:"/>
+		<Res id="Activity" tr="Aktivnost"/>
+
+		<Res id="ActivityDateE" tr="Datum kraja:"/>
+		<Res id="ActivityTimeE" tr="Vrijeme kraja:"/>
+		<Res id="ActivityDateF" tr="Datum prijave:"/>
+		<Res id="ActivityTimeF" tr="Vrijeme prijave:"/>
+		<Res id="viewGradeLabHw" tr="Ocjene dodataka"/>
+		<Res id="sifraP" tr="Skracenica"/>
+		<Res id="Task" tr="Zadatak"/>
+		
 		<!--Login-->
         <Res id = "WrongPass" tr = "Pogresna sifra!"/>
 		<Res id = "EnterCorrPass" tr = "Ukucajte ispravnu sifru"/>

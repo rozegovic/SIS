@@ -353,8 +353,12 @@ bool  ViewDateTimeActivity::saveData()
 
 bool ViewDateTimeActivity::canAdd()
 {
-    /*Vrsiti log provjeru vremena da li je vrijeme pocetka ispita u budnucnosti i da li manje od vremena kraj ispita vrijeme prijave vece od tren i prije pocetka
-    vrijeme ot prijave*/
+   /* td::Date _date;
+    td::Time _time;  
+    if(_dateE<_dateB||((_dateE==_dateB)&&_timeE<_timeB)) return false;
+    if(_dateE<_dateF||((_dateE==_dateF)&&_timeE<_timeF)) return false;
+    if(_dateB<_date||((_dateB==_date)&&_timeB<_time)) return false;*/
+  
     return true;
 }
 
