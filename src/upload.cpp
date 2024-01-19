@@ -29,7 +29,6 @@ ViewUpload::ViewUpload()
 {
 
     //_hlBtnsDB.append(_btnDEnroll);
-    _hlBtnsDB.append(_btnAddFile);
     _hlBtnsDB.appendSpacer();
     _hlBtnsDB.append(_btnReload);
     // _hlBtnsDB.appendSpace(20);
@@ -52,6 +51,8 @@ ViewUpload::ViewUpload()
 
     gc.appendRow(_lblFile);
     gc.appendCol(_titleFile, 4);
+    gc.appendCol(_btnAddFile, td::HAlignment::Right);
+
 
 
     gc.appendRow(_lblTable1, 0);
