@@ -178,7 +178,7 @@ void ViewSubject::populateTimeCombo(gui::DBComboBox& combo, td::String day)
 void ViewSubject::populateData()
 {
 	auto pDB = dp::getMainDatabase();
-	_pDS = pDB->createDataSet("select Ime as Name, Prezime as Surname, Korisnici.ID as sID from Korisnici, Upis, Predmet where Korisnici.PozicijaID==5 and Upis.ID_Smjera==Predmet.ID_Smjera and Predmet.Semestar==Upis.Semestar and Korisnici.Indeks==Upis.Indeks and Predmet.ID_Predmeta=?", dp::IDataSet::Execution::EX_MULT);
+	_pDS = pDB->createDataSet("select Ime as Name, Prezime as Surname, Korisnici.ID as sID from Korisnici, UpisPredmeta where Korisnici.PozicijaID==5 and Korisnici.ID=UpisPredmeta.Id_Studenta and UpisPredmeta.ID_Predmeta=?", dp::IDataSet::Execution::EX_MULT);
 	dp::Params pParams(_pDS->allocParams());
 	pParams << _SubjectID;
 	dp::DSColumns cols(_pDS->allocBindColumns(3));
