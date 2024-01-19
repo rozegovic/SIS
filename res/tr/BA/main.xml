@@ -147,9 +147,7 @@
 		<Res id="alertTSTF" tr="ID osoblja već postoji."/>
 		<Res id="succesEE" tr="Uspješno registrovane promjene u sistem."/>
 		<Res id="alertIND" tr="Indeks korisnika nije ispravno unesen."/>
-		<Res id="alertOver100" tr="Ukupan broj bodova ne može biti veći od 100."/>
 		
-		<Res id="failure" tr="Neuspješno Dodavanje!"/>
 		<Res id="succes" tr="Uspješna registracija!"/>
 		<Res id="newF" tr="Novi fakultet"/>
 		<Res id="Yes" tr="Da"/>
