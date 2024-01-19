@@ -10,13 +10,11 @@
 //#include "Globals.h"
 
 
-
-
 ViewTasks::ViewTasks(td::INT4 SubjectID) :
     _db(dp::getMainDatabase()),
     _LblActName(tr("Activity")),
-    _LblDateBegin(tr("ActivityDateB")),
-    _LblTimeBegin(tr("ActivityTimeB")),
+    _LblDateBegin(tr("ActivityDateP")),
+    _LblTimeBegin(tr("ActivityTimeP")),
     _lblType(tr("ActivityNameForDateTime")),
     _type(td::int4),
     _lblCName(tr("Course:")),
@@ -76,7 +74,7 @@ ViewTasks::ViewTasks(td::INT4 SubjectID) :
 
     gui::View::setLayout(&_gl);
     populateData();
-    loadComboBox("select ID_Aktivnosti as ID, Naziv_Aktivnosti as Naziv From Aktivnosti where Tip_Aktivnosti=1 and ID_Predmeta=?", _type);
+    loadComboBox("select ID_Aktivnosti as ID, Naziv_Aktivnosti as Naziv From Aktivnosti where Tip_Aktivnosti IN(2, 5) and ID_Predmeta=?", _type);
 
     /* if (_pDS->getNumberOfRows())
      {
@@ -105,23 +103,21 @@ bool ViewTasks::loadComboBox(td::String select, gui::DBComboBox& combo)
 void ViewTasks::populateData()
 {
     auto pDB = dp::getMainDatabase();
-    _pDS = pDB->createDataSet("SELECT a.Datum_Pocetka AS datumb,a.Vrijeme_Pocetka AS vrijemeb, a.Datum_Kraja AS datume, a.Vrijeme_Kraja AS vrijemee, a.Datum_Prijave AS datumf, a.Vrijeme_Prijave AS vrijemef,a.ID_Roka,a.ID_Aktivnosti,a.ID_Predmeta, b.Naziv_Aktivnosti FROM Rokovi a, Aktivnosti b where a.ID_Predmeta=? and b.Tip_Aktivnosti=1 and a.ID_Predmeta = b.ID_Predmeta and a.ID_Aktivnosti=b.ID_Aktivnosti", dp::IDataSet::Execution::EX_MULT);
+    _pDS = pDB->createDataSet("select a.ID, a.Datum_Predaje, a.Vrijeme_Predaje, a.ID_Aktivnosti, b.Naziv_Aktivnosti  from OpenPredaja a, Aktivnosti b where a.ID_Aktivnosti=b.ID_Aktivnosti and b.Tip_Aktivnosti IN(2, 5) and b.ID_Predmeta=?", dp::IDataSet::Execution::EX_MULT);
 
     dp::Params parDS(_pDS->allocParams());
-    //td::INT4 IDPredmeta = Globals::_IDSubjectSelection;
-
-    //u parDS ce se ucitavati Globals::CurrentActivity
     parDS << _SubjectID;
     td::String Predmet;
-    dp::DSColumns cols(_pDS->allocBindColumns(10));
-    cols << "datumb" << td::date << "vrijemeb" << td::time << "datume" << td::date << "vrijemee" << td::time << "datumf" << td::date << "vrijemef" << td::time << "ID_Roka" << td::int4 << "ID_Aktivnosti" << td::int4 << "ID_Predmeta" << td::int4 << "Naziv_Aktivnosti" << td::string8;
+
+    dp::DSColumns cols(_pDS->allocBindColumns(5));
+    cols << "ID" << td::int4 << "Datum_Predaje" << td::date << "Vrijeme_Predaje" << td::time << "ID_Aktivnosti" << td::int4 << "Naziv_Aktivnosti" << td::string8;
 
     if (!_pDS->execute())
     {
         _pDS = nullptr;
         return;
     }
-    _table.init(_pDS, { 9, 0, 1, 2, 3, 4 ,5, 6 });
+    _table.init(_pDS, { 4,1,2 });
 }
 void ViewTasks::SetCurrentSubject() {
     dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT Naziv_Predmeta FROM Predmet WHERE ID_Predmeta = ?");
@@ -171,14 +167,13 @@ bool ViewTasks::onChangedSelection(gui::TableEdit* pTE) {
 
         /*_Aktivnost.setValue(val);*/
 
-        val = row[0];
+        val = row[1];
         _dateB.setValue(val);
 
-        val = row[1];
+        val = row[2];
         _timeB.setValue(val);
 
-        val = row[7];
-        td::Variant var;
+        val = row[3];
         _type.setValue(val);
 
         return true;
@@ -190,30 +185,28 @@ void ViewTasks::populateDSRow(dp::IDataSet::Row& row, td::INT4 i)
 {
     td::Variant val;
     _dateB.getValue(val);
-    row[0].setValue(val);
-
-    _timeB.getValue(val);
     row[1].setValue(val);
 
+    _timeB.getValue(val);
+    row[2].setValue(val);
+
     td::Variant x = i;
-    row[6].setValue(x);
+    row[0].setValue(x);
 
     /*val = _ActivityID;*/
     /*row[7].setValue(val);*/
 
-    val = _SubjectID;
-    row[8].setValue(val);
     td::Variant var;
     _type.getValue(val);
-    row[7].setValue(val);
+    row[3].setValue(val);
     td::INT4 a = val.i4Val();
     SetActivityName(var, a);
-    row[9].setValue(var);
+    row[4].setValue(var);
 
 }
 td::INT4 ViewTasks::findMaxID()
 {
-    dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select ifnull(max(ID_Roka), 0) as maxid from Rokovi");
+    dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select ifnull(max(ID), 0) as maxid from OpenPredaja");
     dp::Columns pColumns = pSelect->allocBindColumns(1);
     td::INT4 maxID;
     pColumns << "maxid" << maxID;
@@ -307,8 +300,8 @@ bool  ViewTasks::saveData()
 
 bool ViewTasks::canAdd()
 {
-    /*Vrsiti log provjeru vremena da li je vrijeme pocetka ispita u budnucnosti i da li manje od vremena kraj ispita vrijeme prijave vece od tren i prije pocetka
-    vrijeme ot prijave*/
+    if (doesItDexist())
+        return false;
     return true;
 }
 bool ViewTasks::deleteTasks() {
@@ -335,7 +328,7 @@ bool ViewTasks::eraseTasks()
 
 {
     td::INT4 id;
-    dp::IStatementPtr pDeleteItem(_db->createStatement("DELETE from Rokovi where ID_Roka=?"));
+    dp::IStatementPtr pDeleteItem(_db->createStatement("DELETE from OpenPredaja where ID=?"));
     dp::Params pParams2(pDeleteItem->allocParams());
     pParams2 << id;
 
@@ -355,13 +348,20 @@ bool ViewTasks::eraseTasks()
 
 bool ViewTasks::insertTasks()
 {
-    dp::IStatementPtr pInsertCourseP(_db->createStatement("insert into Rokovi (ID_Roka, ID_Aktivnosti, Datum_Pocetka, Vrijeme_Pocetka, Datum_Kraja, Vrijeme_Kraja,Datum_Prijave, Vrijeme_Prijave,ID_Predmeta) values (?,?,?,?,?,?,?,?,?)"));
-    dp::Params pParams2(pInsertCourseP->allocParams());
-    td::INT4 id_roka, id_akt, id_pred;
-    td::Date datump, datumk, datumf;
-    td::Time vrijemep, vrijemek, vrijemef;
+    //dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT COALESCE(MAX(ID), 0) as id FROM OpenPredaja");
+    //dp::Columns pCols = pSelect->allocBindColumns(1);
+    //td::INT4 id;
+    //pCols << "id" << id;
+    //pSelect->execute();
+    //pSelect->moveNext();
 
-    pParams2 << id_roka << id_akt << datump << vrijemep << datumk << vrijemek << datumf << vrijemef << id_pred;
+    dp::IStatementPtr pInsertCourseP(_db->createStatement("insert into OpenPredaja (ID, Datum_Predaje, Vrijeme_Predaje, ID_Aktivnosti) values (?,?,?,?)"));
+    dp::Params pParams2(pInsertCourseP->allocParams());
+    td::INT4 id_akt, id;
+    td::Date datump;
+    td::Time vrijemep;
+    //  id++;
+    pParams2 << id << datump << vrijemep << id_akt;
 
     dp::IDataSet* pDS = _table.getDataSet();
     auto rowCnt = pDS->getNumberOfRows();
@@ -369,32 +369,18 @@ bool ViewTasks::insertTasks()
     {
 
         auto& row = pDS->getRow(iRow);
-        id_roka = row[6].i4Val();
-        if (std::find(_itemsToInsert.begin(), _itemsToInsert.end(), id_roka) == _itemsToInsert.end())
+        id = row[0].i4Val();
+        if (std::find(_itemsToInsert.begin(), _itemsToInsert.end(), id) == _itemsToInsert.end())
             continue;
 
         td::Variant val;
 
-        datump = row[0];
+        datump = row[1];
 
 
-        vrijemep = row[1];
+        vrijemep = row[2];
 
-        datumk = row[2];
-
-
-        vrijemek = row[3];
-
-
-        datumf = row[4];
-
-        vrijemef = row[5];
-
-
-
-        id_pred = _SubjectID;
-
-        val = row[7];
+        val = row[3];
 
         id_akt = val.i4Val();
 
@@ -430,10 +416,10 @@ bool ViewTasks::onClick(gui::Button* pBtn)
 
         return true;
     }
-
     if (pBtn == &_btnDelete2)
     {
         deleteTasks();
+
         return true;
     }
 
@@ -441,8 +427,11 @@ bool ViewTasks::onClick(gui::Button* pBtn)
     {
 
         td::INT4 itemid = findMaxID();
-        if (!canAdd())
+        if (!canAdd()) {
+            showAlert(tr("AlertCNA"), tr("Already exists!"));
             return true;
+        }
+
         _table.beginUpdate();
         auto& row = _table.getEmptyRow();
         populateDSRow(row, itemid);
@@ -464,13 +453,15 @@ bool ViewTasks::onClick(gui::Button* pBtn)
 
     return false;
 }
-bool ViewTasks::doesItDexist(td::Date d, td::Time t)
+bool ViewTasks::doesItDexist()
 {
     size_t nRows = _pDS->getNumberOfRows();
+    td::Variant val;
+    _type.getValue(val);
     for (size_t i = 0; i < nRows; ++i)
     {
         auto row = _pDS->getRow(i);
-        if (row[0].dateVal() == d && row[1].timeVal() == t)
+        if (row[3] == val)
             return true;
     }
     return false;
@@ -479,7 +470,7 @@ td::INT4 ViewTasks::getIDfromTable(int rowID)
 {
     dp::IDataSet* pDS = _table.getDataSet();
     auto& row = pDS->getRow(rowID);
-    return row[6].i4Val();
+    return row[0].i4Val();
 }
 
 
@@ -563,9 +554,82 @@ void ViewTasks::showOpenFileDialog()
 #endif
 }
 
+//gui::TextEdit* ViewTasks::getTextEdit()
+//{
+//    return ;
+//}
+
+//void ViewTasks::selectFiles()
+//{
+//    auto pFD = new gui::OpenFileDialog(this, tr("OpenF"), { {tr("TxtDocs"),"*.txt"}, {tr("PDFDocs"),"*.pdf"}, {tr("JPGSlike"),"*.jpg"}, {tr("PNGSlike"),"*.png"} });
+//
+//#ifdef USE_CALLBACKS
+//    pFD->openModal(&_callBackOpenFileDlg);
+//#else
+//    pFD->openModal([this](gui::FileDialog* pFD) {
+//        auto status = pFD->getStatus();
+//        if (status == gui::FileDialog::Status::OK) {
+//
+//            _attachedFiles.push_back(pFD->getFileName());
+//
+//            fo::fs::path filePathNow(_attachedFiles.last().c_str());/*
+//            td::String strFileName = filePathNow.filename().string();
+//            _titleFile.setTitle(strFileName);
+//            _titleFile.setBold();*/
+//        }
+//        });
+//#endif
+//}
 
 
-
+//bool ViewTasks::sendDocs()
+//{
+//    if (!dp::getMainDatabase()->isConnected())
+//    {
+//        gui::Alert::show(tr("Error"), tr("Problem with database..."));
+//        return false;
+//    }
+//
+//    dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT COALESCE(MAX(ID), 0) as id FROM DokumentiOpenPredaja");
+//    dp::Columns pCols = pSelect->allocBindColumns(1);
+//    td::INT4 id;
+//    pCols << "id" << id;
+//    pSelect->execute();
+//    pSelect->moveNext();
+//
+//    dp::IStatementPtr pStatIns = dp::getMainDatabase()->createStatement("INSERT INTO DokumentiOpenPredaja (ID, Dokumenti, ID_Dokumenta) VALUES (?, ?, ?)");
+//    dp::Params parDS(pStatIns->allocParams());
+//
+//    fo::fs::path filePathNow(_attachedFiles.last().c_str());
+//    td::String strFileName = filePathNow.filename().string();
+//    td::String fileExtension = filePathNow.filename().extension().string();
+//
+//    td::BLOB::Type typeFile = td::BLOB::Type::TYPE_BINARY_UNKNOWN;
+//    if (fileExtension.compareConstStr(".txt"))
+//        typeFile = td::BLOB::Type::TYPE_TXT;
+//    else if (fileExtension.compareConstStr(".pdf"))
+//        typeFile = td::BLOB::Type::TYPE_PDF;
+//    else if (fileExtension.compareConstStr(".jpg"))
+//        typeFile = td::BLOB::Type::TYPE_JPG;
+//    else if (fileExtension.compareConstStr(".png"))
+//        typeFile = td::BLOB::Type::TYPE_PNG;
+//
+//    td::BLOB dataIn(td::BLOB::SRC_FILE, 16384U, typeFile);
+//    td::INT4 d = 1;
+//    id++;
+//    parDS << id << dataIn<<d;
+//
+//    if (!dataIn.setInFileName(filePathNow))
+//    {
+//        gui::Alert::show(tr("Error"), tr("Did you delete selected file?"));
+//        return true;
+//    }
+//    dp::Transaction tr(_db);
+//
+//    if (!pStatIns->execute())
+//        return false;
+//    return true;
+//}
 
 bool ViewTasks::onAnswer(td::UINT4 questionID, gui::Alert::Answer answer)//??
 {
@@ -609,6 +673,4 @@ bool ViewTasks::onAnswer(td::UINT4 questionID, gui::Alert::Answer answer)//??
     }*/
     return false;
 }
-
-
 

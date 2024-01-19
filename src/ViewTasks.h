@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <algorithm>
 #include <gui/View.h>
 #include <gui/Label.h>
@@ -51,15 +51,15 @@ protected:
     gui::HorizontalLayout _hl;
     gui::Button _btnAdd;
     gui::Button _btnDelete;
-    gui::Button _btnDelete2;
     gui::Button _btnAddFile;
+    gui::Button _btnDelete2;
     //  gui::Button _btnUpdate;
     gui::Button _btnSave;
 
     dp::IDatabase* _db;
     gui::GridLayout _gl;
     dp::IDataSetPtr _pDS;
-    //::INT4 _ActivityID;
+    td::INT4 _ActivityID;
     td::INT4 _SubjectID;
     cnt::PushBackVector <td::String> _attachedFiles;
     ///*td::string8 _nazivakt;*/
@@ -73,7 +73,7 @@ protected:
     void populateData();
     bool onChangedSelection(gui::TableEdit* pTE);
     void populateDSRow(dp::IDataSet::Row& row, td::INT4 i);
-    bool doesItDexist(td::Date d, td::Time t);
+    bool doesItDexist();
     bool onClick(gui::Button* pBtn);
     bool saveData();
     bool canAdd();
@@ -85,5 +85,8 @@ protected:
     td::INT4 getIDfromTable(int rowID);
     td::INT4 findMaxID();
     void showOpenFileDialog();
+    void selectFiles();
+    bool sendDocs();
+    gui::TextEdit* getTextEdit();
     bool onAnswer(td::UINT4 questionID, gui::Alert::Answer answer);
 };
