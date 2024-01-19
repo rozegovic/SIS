@@ -8,11 +8,11 @@
 ViewUpload::ViewUpload()
     : _lblName(tr("namee:"))
 
-    ,_lblSurname(tr("surname:"))
-    ,_lblIndeks(tr("indeksUser:"))
+    , _lblSurname(tr("surname:"))
+    , _lblIndeks(tr("indeksUser:"))
 
-    ,_lblTable1(tr("Active:"))
-    ,_lblTable2(tr("Committed:"))
+    , _lblTable1(tr("Active:"))
+    , _lblTable2(tr("Committed:"))
     , _idPredaja(td::int4)
     , _lblFile(tr("Docs:"))
     , _titleFile("")
@@ -37,8 +37,6 @@ ViewUpload::ViewUpload()
     _btnDEnroll.setType(gui::Button::Type::Default);
     _btnEnroll.setType(gui::Button::Type::Constructive);
     // _btnWithdraw.setType(gui::Button::Type::Destructive);
-    
-
 
     gui::GridComposer gc(_gl);
 
@@ -52,8 +50,6 @@ ViewUpload::ViewUpload()
     gc.appendRow(_lblFile);
     gc.appendCol(_titleFile, 4);
     gc.appendCol(_btnAddFile, td::HAlignment::Right);
-
-
 
     gc.appendRow(_lblTable1, 0);
     gc.appendRow(_table1, 0);
@@ -69,6 +65,7 @@ ViewUpload::ViewUpload()
     populateDataForTable2();
 
     SetCurrentData();
+
     _indeks.setAsReadOnly();
     _name.setAsReadOnly();
     _surname.setAsReadOnly();
@@ -108,15 +105,18 @@ void ViewUpload::SetCurrentData() {
 }
 
 
+
+
+
 void ViewUpload::populateDataForTable1()
 {
     _pDS = dp::getMainDatabase()->createDataSet("SELECT pr.ID_Predaje, P.Naziv_Predmeta, P.Sifra_Predmeta, A.Naziv_Aktivnosti, r.Datum_Predaje, r.Vrijeme_Predaje, P.ID_Predmeta FROM Predmet P, Aktivnosti A, Predaja pr, OpenPredaja r where P.ID_Predmeta = A.ID_Predmeta and r.ID_Aktivnosti = A.ID_Aktivnosti and (A.Tip_Aktivnosti = 2 or A.Tip_Aktivnosti = 5) and pr.Predano = 0 and r.ID = pr.ID_OpenPredaja", dp::IDataSet::Execution::EX_MULT);
     dp::DSColumns cols(_pDS->allocBindColumns(7));
     cols << "ID_Predaje" << td::int4
-        << "Naziv_Predmeta" << td::string8 
+        << "Naziv_Predmeta" << td::string8
         << "Sifra_Predmeta" << td::string8 
         << "Naziv_Aktivnosti" << td::string8 
-        << "Datum_Predaje" << td::date 
+        << "Datum_Predaje" << td::date
         << "Vrijeme_Predaje" << td::time
         /* << "Reg_time" << td::time */ 
         << "ID_Predmeta" << td::int4;;
@@ -131,14 +131,14 @@ void ViewUpload::populateDataForTable1()
 }
 void ViewUpload::populateDataForTable2() // treba modifikovati select da radi kad se preda na zadnji dan da se uporedi vrijeme 
 {
-    _pDS2 = dp::getMainDatabase()->createDataSet("SELECT P.Naziv_Predmeta, P.Sifra_Predmeta, A.Naziv_Aktivnosti, r.Datum_Predaje, r.Vrijeme_Predaje, P.ID_Predmeta, pr.Datoteka FROM Predmet P, Aktivnosti A, Predaja pr, OpenPredaja r where P.ID_Predmeta = A.ID_Predmeta and r.ID_Aktivnosti = A.ID_Aktivnosti and (A.Tip_Aktivnosti = 2 or A.Tip_Aktivnosti = 5) and pr.Predano = 1 and r.ID = pr.ID_OpenPredaja", dp::IDataSet::Execution::EX_MULT);
+    _pDS2 = dp::getMainDatabase()->createDataSet("SELECT P.Naziv_Predmeta, P.Sifra_Predmeta, A.Naziv_Aktivnosti, r.Datum_Predaje, r.Vrijeme_Predaje, P.ID_Predmeta, pr.Datoteka FROM Predmet P, Aktivnosti A, Predaja pr, OpenPredaja r where P.ID_Predmeta = A.ID_Predmeta and r.ID_Aktivnosti = A.ID_Aktivnosti and (A.Tip_Aktivnosti = 2 or A.Tip_Aktivnosti = 5) and pr.Predano = 1 and r.ID = pr.ID_OpenPredaja", dp::IDataSet::Execution::EX_MULT); 
     dp::DSColumns cols(_pDS2->allocBindColumns(7));
-    cols << "Naziv_Predmeta" << td::string8 
-        << "Sifra_Predmeta" << td::string8 
-        << "Naziv_Aktivnosti" << td::string8 
-        << "Datum_Predaje" << td::date 
-        << "Vrijeme_Predaje" << td::time 
-        << "ID_Predmeta" << td::int4  
+    cols << "Naziv_Predmeta" << td::string8
+        << "Sifra_Predmeta" << td::string8
+        << "Naziv_Aktivnosti" << td::string8
+        << "Datum_Predaje" << td::date
+        << "Vrijeme_Predaje" << td::time
+        << "ID_Predmeta" << td::int4
         << "Datoteka" << td::string8; // treba vidjet koji tip podatka treba za datoteku
 
     if (!_pDS2->execute())
@@ -353,7 +353,7 @@ void ViewUpload::showOpenFileDialog()
                     int iRow = _table1.getFirstSelectedRow();
                     if (iRow < 0)
                         return true;
-                    
+
                     td::INT4 itemid = getIDfromTable(iRow);
 
                     static td::INT4 ID_predaje = itemid;
