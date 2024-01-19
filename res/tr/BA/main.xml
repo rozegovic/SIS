@@ -40,7 +40,8 @@
         <Res id = "AttRepTT" tr = "Izvještaj o prijavama studenata na termine nastave"/>
 		
 		<Res id="SubjectChoose" tr="Izbor predmeta"/>
-		
+		<Res id="AccessFound" tr="Nisu pronađeni podaci"/>
+
 		
 		<Res id="viewUsers" tr="Korisnici"/>
 		<Res id="viewDeps" tr="Odsjeci"/>
