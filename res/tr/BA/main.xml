@@ -135,6 +135,7 @@
 		<Res id="alertTSTF" tr="ID osoblja već postoji."/>
 		<Res id="succesEE" tr="Uspješno registrovane promjene u sistem."/>
 		<Res id="alertIND" tr="Indeks korisnika nije ispravno unesen."/>
+		<Res id="alertNp" tr="Nisu uneseni svi potrebni podaci."/>
 		<Res id="alertOver100" tr="Ukupan broj bodova ne može biti veći od 100."/>
 		
 		<Res id="failure" tr="Neuspješno Dodavanje!"/>
