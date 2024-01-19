@@ -31,8 +31,9 @@
 class ViewUpload : public gui::View
 {
 protected:
+    gui::NumericEdit _idPredaja;
     gui::Label _lblIndeks;
-   gui::LineEdit _indeks;
+    gui::LineEdit _indeks;
 
 
     gui::Label _lblName;

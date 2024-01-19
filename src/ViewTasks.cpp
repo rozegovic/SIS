@@ -113,7 +113,16 @@ void ViewTasks::populateData()
     parDS << _SubjectID;
     td::String Predmet;
     dp::DSColumns cols(_pDS->allocBindColumns(10));
-    cols << "datumb" << td::date << "vrijemeb" << td::time << "datume" << td::date << "vrijemee" << td::time << "datumf" << td::date << "vrijemef" << td::time << "ID_Roka" << td::int4 << "ID_Aktivnosti" << td::int4 << "ID_Predmeta" << td::int4 << "Naziv_Aktivnosti" << td::string8;
+    cols << "datumb" << td::date 
+        << "vrijemeb" << td::time 
+        << "datume" << td::date 
+        << "vrijemee" << td::time 
+        << "datumf" << td::date 
+        << "vrijemef" << td::time 
+        << "ID_Roka" << td::int4 
+        << "ID_Aktivnosti" << td::int4 
+        << "ID_Predmeta" << td::int4 
+        << "Naziv_Aktivnosti" << td::string8;
 
     if (!_pDS->execute())
     {
