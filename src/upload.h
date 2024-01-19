@@ -52,6 +52,7 @@ protected:
    gui::Button _btnDEnroll;
     gui::Button _btnReload;
     gui::Button _btnSend;
+    gui::Button _btnUnSend;
     gui::Button _btnAddFile;
 
 
@@ -84,4 +85,6 @@ protected:
    void SetCurrentData();
    void showOpenFileDialog();
    td::INT4 getIDfromTable(int rowID);
+   bool PredajaPredano(int rowID);
+   bool PredajaNePredano(int rowID);
 };
