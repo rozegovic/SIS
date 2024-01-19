@@ -71,10 +71,7 @@ public:
     {
         td::Variant semestar;
         _semester.getValue(semestar);
-        if (semestar > 0 && semestar != 0 && semestar < 30)
-            return semestar.i4Val();
-        else
-            return 1;
+        return semestar.i4Val();
     }
 
     td::INT4& getDepartmentID()

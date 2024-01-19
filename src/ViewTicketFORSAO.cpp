@@ -31,7 +31,7 @@ ViewTicketForSAO::ViewTicketForSAO()
 
 	populateAnsweredTickets();
 	populateOnHoldTickets();
-
+	
 }
 
 void ViewTicketForSAO::initOnHoldTable()
@@ -51,7 +51,7 @@ void ViewTicketForSAO::initAnsweredTable()
 	visCols << gui::ThSep::DoNotShowThSep << gui::Header(0, tr("nameUser"), "", 305) << gui::Header(1, tr("surnameUser"), "", 305) << gui::Header(2, tr("indexUser"), "", 305) << gui::Header(3, tr("typeOfTicket"), "", 305) << gui::Header(4, tr("titleOfTicket"), "", 305) << gui::Header(6, tr("status"), "", 305);
 	_answeredTickets.init(_pDS_answered);
 	if (_pDS_answered->getNumberOfRows()) {
-		_answeredTickets.selectRow(0, true, false);
+		_answeredTickets.selectRow(0, true,false);
 	}
 
 }
@@ -61,7 +61,7 @@ void ViewTicketForSAO::populateOnHoldTickets()
 	td::String setstr = "SELECT Korisnici.Ime as Name, Korisnici.Prezime as Surname,SAOStudentTicket.Indeks as StudentIndex, SAOStudentTicket.Ticket_Tip as TypeOfTicket, SAOStudentTicket.Req_Title as TitleofTicket, SAOStudentTicket.Status_ID as Status_ID, SAOTicket_Status.Status as Status, SAOStudentTicket.Request as Request From Korisnici, SAOStudentTicket, SAOTicket_Status where Korisnici.Indeks=SAOStudentTicket.Indeks AND Status_ID=1 AND SAOTicket_Status.ID=SAOStudentTicket.Status_ID";
 	_pDS_hold = dp::getMainDatabase()->createDataSet(setstr, dp::IDataSet::Execution::EX_MULT);
 	dp::DSColumns cols(_pDS_hold->allocBindColumns(8));
-	cols << "Name" << td::string8 << "Surname" << td::string8 << "StudentIndex" << td::string8 << "TypeOfTicket" << td::string8 << "TitleOfTicket" << td::string8 << "Status_ID" << td::int4 << "Status" << td::string8 << "Request" << td::string8;
+	cols << "Name" << td::string8 << "Surname" << td::string8 << "StudentIndex" << td::string8 << "TypeOfTicket" << td::string8 << "TitleOfTicket" << td::string8 <<"Status_ID"<<td::int4<< "Status" << td::string8 << "Request" << td::string8;
 	if (!_pDS_hold->execute())
 	{
 		_pDS_hold = nullptr;
@@ -260,7 +260,7 @@ bool ViewTicketForSAO::onClick(gui::Button* pBtn)
 		td::String request = getRequest();
 		td::String title = getTitle();*/
 		gui::Window* pParentWnd = getParentWindow();
-		auto pWnd = new WindowCertainRequest(pParentWnd, indeks, ime, prezime, tipKarte, status, request, title);
+		auto pWnd = new WindowCertainRequest(pParentWnd,indeks,ime,prezime,tipKarte,status,request,title);
 		pWnd->keepOnTopOfParent();
 		pWnd->open();
 		return true;

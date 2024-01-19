@@ -75,7 +75,5 @@ protected:
 	void initTable();
 	void populateTypeTicketCombo(gui::ComboBox& combo);
 	bool onChangedSelection(gui::ComboBox* pCmb);
-
 	void UpdateTable();
-
 };

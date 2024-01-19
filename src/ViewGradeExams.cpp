@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "ViewGradeExams.h"
 #include <td/Types.h>
 #include "Reports.h"
@@ -88,7 +88,7 @@ void ViewGradeExams::populateData()
 		_pDS = nullptr;
 		return;
 	}
-	_table.init(_pDS, { 4,5,3,2,6});
+	_table.init(_pDS, { 4,5,3,2,6 });
 }
 
 bool ViewGradeExams::onChangedSelection(gui::TableEdit* pTE)
@@ -261,7 +261,7 @@ bool ViewGradeExams::saveData()
 		MsgSender msg;
 		msg.sendSystemMsgtoUser(naslov, poruka, i);
 	}
-	_userids.clear(); 
+	_userids.clear();
 
 	return true;
 }
@@ -285,7 +285,7 @@ bool ViewGradeExams::onClick(gui::Button* pBtn)
 		row[6].toZero();
 		td::INT4 a = row[0].i4Val();
 		_userids.insert(a);
-	//	_table.updateRow(iRow);
+		//	_table.updateRow(iRow);
 		_table.endUpdate();
 
 		_itemsToDelete.push_back(itemid);
@@ -305,7 +305,7 @@ bool ViewGradeExams::onClick(gui::Button* pBtn)
 
 		_table.beginUpdate();
 		auto& row = _table.getCurrentRow();
-		
+
 		populateDSRow(row, itemid);
 		td::INT4 a = row[0].i4Val();
 		_userids.insert(a);

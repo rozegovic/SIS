@@ -9,6 +9,7 @@
 
 
 ViewCertainRequest::ViewCertainRequest(td::String ime, td::String prezime, td::String indeks, td::String tipKarte, td::String statusKarte, td::String sadrzajKarte, td::String naslovKarte)
+
     : _lblstudentsTicket(tr("Student's ticket"))
     , _namelbl(tr("nameUser"))
     , _surnamelbl(tr("surnameUser"))
@@ -30,7 +31,6 @@ ViewCertainRequest::ViewCertainRequest(td::String ime, td::String prezime, td::S
     _hlBtnsDB.appendSpacer();
     _hlBtnsDB.append(_btnSaveAttachment);
     //_hlBtnsDB.append(_btnOpenAttachment);
-
 
     _btnSend.setType(gui::Button::Type::Default);
     _btnSaveAttachment.setType(gui::Button::Type::Default);
@@ -85,7 +85,6 @@ ViewCertainRequest::ViewCertainRequest(td::String ime, td::String prezime, td::S
         _btnSend.hide(true, true);
         _btnSaveAttachment.hide(true, true);
     }
-
 
 }
 //void ViewCertainRequest::populateData(){
@@ -212,7 +211,6 @@ void ViewCertainRequest::showSaveFileDialog() {
             }
             showAlert("Successfully saved", "");
         });
-
 }
 
 bool ViewCertainRequest::onClick(gui::Button* pBtn)
@@ -223,15 +221,16 @@ bool ViewCertainRequest::onClick(gui::Button* pBtn)
             showAlert("Empty body!", "Do you want to enter your answer first?");
             return false;
         }
+
         td::String setstr = "Update SAOStudentTicket set Status_ID=2 where Indeks=";
         setstr.append(indeks);
         dp::IStatementPtr pUpdate(dp::getMainDatabase()->createStatement(setstr));
-
         if (!pUpdate->execute()) {
             showAlert("Error updating", "");
             return false;
         }
         _status.setValue("Obradjen");
+
         showAlert("Successfully sent", "");
         return true;
 
@@ -239,7 +238,6 @@ bool ViewCertainRequest::onClick(gui::Button* pBtn)
 
     if (pBtn == &_btnSaveAttachment)
     {
-
         td::String setstr1 = "select Name_attachment from SAOStudentTicket where Indeks =";
         setstr1.append(indeks);
         dp::IStatementPtr pSelFileName = dp::getMainDatabase()->createStatement(setstr1);

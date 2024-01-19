@@ -1,14 +1,18 @@
+//
+//  ReportAttData.h
+//  appSIS
+//
+//  Created by Amina Hajrić on 07.01.2024..
+//
 #pragma once
 #include <rpt/ReportData.h>
 #include <rpt/EntityData.h>
 #include <rpt/AutoElement.h>
-#include <dp/IDatabase.h>
-
 
 class DocumentData : public rpt::DocumentData
 {
-public:
-    DocumentData(td::INT4 SubjectID, td::String name)
+public: 
+    DocumentData(td::INT4 SubjectID)
         : rpt::DocumentData()
     {
         //has to be loaded from DB
@@ -18,8 +22,8 @@ public:
         in4Days.addDays(14);
 
         dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select Naziv_Predmeta from Predmet where ID_Predmeta=?");
-        dp::Params pParams2(pSelect->allocParams());
-        pParams2 << SubjectID;
+        dp::Params pParams(pSelect->allocParams());
+        pParams << SubjectID;
         td::String s;
         dp::Columns pColumns = pSelect->allocBindColumns(1);
         pColumns << "Naziv_Predmeta" << s;
@@ -27,9 +31,11 @@ public:
             return;
         if (!pSelect->moveNext())
             return;
-        _data[0] = name; //RPT_TXT_DOCUMENT_TYPE
+        
+        
+        _data[0] = "Studenti prijavljeni na termine nastave"; //RPT_TXT_DOCUMENT_TYPE
         _data[1] = s; //RPT_TXT_DOCUMENT_ID
-        //_data[2] = ;	 //RPT_DT_DOCUMENT_DATETIME
+        //_data[2] = now;     //RPT_DT_DOCUMENT_DATETIME
         //_data[3] = (td::INT4)14; //RPT_INT_DOCUMENT_PAYMENT_DAYS
         //_data[4] = (td::INT4)30; //RPT_INT_DOCUMENT_EXTRA_INTEREST_RATE_AFTER_DAYS
         //_data[5] = in4Days; //RPT_DT_DOCUMENT_PAYMENT_DEADLINE_DATETIME
@@ -90,4 +96,3 @@ public:
         //etc
     }
 };
-

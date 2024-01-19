@@ -35,10 +35,12 @@ private:
 
 protected:
 
+
 	gui::Label _onHoldTicketslbl;
 	gui::Label _answeredTicketslbl;
 	gui::TableEdit _answeredTickets;
 	gui::TableEdit _onHoldTickets;
+
 
 	gui::HorizontalLayout _hlBtnsDB;
 	gui::Button _btnOpen;
@@ -75,4 +77,5 @@ protected:
 	td::String getRequest();
 	td::String getTitle();*/
 	//td::String getStatus(td::INT4& val);
+
 };

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Report paperOrientation="portrait" paperSize="A4" zoom="200" resGroup="Intern" tr="Reports">
+    <Layout type="fall" lMargin="10" tMargin="10" rMargin="10" bMargin="10" memoH="MemoInternH" docH="Intro_LagerList">
+        <Header layout="vertical" dynamic="true" showOnEveryPage="true" showOnFirstPage="true" backClr="BackHead" font="BodyHead" height="9" hAlign="right" vAlign="center"> <!-- conditional == true means that belonging containers will be conditionaly drawn -->
+                <Line lineWidth="0.4" lineStyle="solid" height="0"/> <!-- width == -1 means it will take with of its parent-->
+                <Row visibleOnCondition="0" height="9"> <!-- visibleOnCondition == 0: it will be drawn always, 1: on first page, 2: on other pages-->
+                    <StaticText width="5"/>
+                    <TrText width="14" hAlign="left" name="Pos"/>
+                    <TrText width="16" hAlign="left" name="ime"/>
+                    <TrText width="45" hAlign="left" name="prezime"/>
+                </Row>
+                <Line lineWidth="0.4" lineStyle="solid" height="0"/>
+        </Header>
+        <!-- key: if nothing first column in body
+                  if key == '+' then first two column in body dataset
+                  in general number of + specify number of first columns in body -->
+        <Body key="" height="4.5" backClr2="BackBody" hAlign="right" vAlign="center" font="Body">
+            <StaticText width="5"/>
+            <Numeric type="int4" showThSep="false" hAlign="left"  width="14" name="#Pos"/>
+            <Text hAlign="left" font="Body" width="45" name="Name"/>
+            <Text hAlign="left" font="Body" width="45" name="LastName"/>
+        </Body>
+    
+        <Grouper name="" hAlign="left" vAlign="center" font="Grouper1">
+            <GHead height="5" backClr="BackGrouper1">
+                <Line lineWidth="0.2" lineStyle="solid" height="0"/>
+                <Row height="5">     <!-- visible only on first page -->
+                    <Time timeFmt="TimeWinShort" width="20" hAlign="left" name="Vrijeme"/>
+                </Row>
+            </GHead>
+        </Grouper>
+    
+        <Footer layout="vertical" height="5" hAlign="Right" vAlign="center">
+            <Line lineWidth="0.4" lineStyle="solid" height="0"/>
+        </Footer>
+        
+            
+    </Layout>
+</Report>

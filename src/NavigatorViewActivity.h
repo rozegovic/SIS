@@ -39,6 +39,7 @@ protected:
     gui::Image _imgActivity;
     gui::Image _imgSubject;
     gui::Image _imgTask;
+
     SwitcherViewActivity _switcherView;
 public:
     NavigatorViewActivity(td::INT4 ViewID, td::INT4 subjectID)
@@ -54,6 +55,7 @@ public:
         _navigator.setItem(0, &_imgActivity, tr("Activity"));
         _navigator.setItem(1, &_imgSubject, tr("Subject"));
         _navigator.setItem(2, &_imgTask, tr("Task"));
+
         _hl.append(_navigator);
         _hl.append(_switcherView);
         setLayout(&_hl);

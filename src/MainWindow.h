@@ -33,8 +33,6 @@ protected:
     gui::Image _imgUpload;
     gui::Image _imgExamLabHomework;
     gui::Image _imgSAOTicket;
-
-
     StatusBar _statBar;
 
 
@@ -78,7 +76,8 @@ protected:
     bool showGradeLabHomeworkView(td::INT4 SubjectID);
     bool showUpload();
 
-    bool showTicketForSaoView()
+    bool showTicketForSaoView();
+
 
     //bool onClick(gui::Dialog* pDlg, td::UINT4 dlgID) override;
 

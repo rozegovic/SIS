@@ -27,7 +27,7 @@
 
 class ViewGradeExams : public gui::View {
 protected:
-    gui::Label _lblName; 
+    gui::Label _lblName;
     gui::LineEdit _name;
     gui::Label _lblLName;
     gui::LineEdit _lName;
@@ -65,7 +65,7 @@ protected:
 
     std::vector<td::INT4> _itemsToDelete, _itemsToInsert, _itemsToUpdate;
 public:
-	ViewGradeExams(td::INT4 SubjectID);   // Adnan
+    ViewGradeExams(td::INT4 SubjectID);   // Adnan
 protected:
     void populateData();    // Adnan
     bool onChangedSelection(gui::TableEdit* pTE);    // Adnan
@@ -77,7 +77,7 @@ protected:
     bool saveData();    // uradjeno
     bool onClick(gui::Button* pBtn); // uradjeno
     void SetCurrentSubject();     // uradjeno
-   // void SetActivityName(td::Variant& val, td::INT4 br);    //---------Adnan-----moze se iskoristiti nesto poput ove funkcije za  ucitavanje ovih naziva
+    // void SetActivityName(td::Variant& val, td::INT4 br);    //---------Adnan-----moze se iskoristiti nesto poput ove funkcije za  ucitavanje ovih naziva
     td::INT4 getIDfromTable(int rowID);    // uradjeno + provjera
     td::INT4 findMaxID();     // uradjeno
     void insertValues(td::INT4 subjectID);

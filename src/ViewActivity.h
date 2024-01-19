@@ -1,4 +1,5 @@
 #pragma once
+#include <algorithm>
 #include <gui/View.h>
 #include <gui/Label.h>
 #include <gui/LineEdit.h>
@@ -26,13 +27,14 @@
 #include <gui/Color.h>
 
 
+
 enum class QuestionIDDDAAA : td::UINT2 { Saveee };
 
 class ViewActivity : public gui::View {
 protected:
     //gui::Label _lblID;
     gui::NumericEdit _id;       //id aktivnosti
-    gui::Label _lblName; 
+    gui::Label _lblName;
     gui::LineEdit _name;        //naziv aktivnosti
     //gui::Label _lblIDP; 
     td::INT4 _idP;      //id predmeta 
@@ -54,6 +56,7 @@ protected:
     gui::Button _btnDelete;
     gui::Button _btnUpdate;
     gui::Button _btnInsert;   //jedna    ove       mozda    treba
+    gui::Button _btnReport;
     //gui::Button _btnPushBack; //      od     dvije       ne 
     gui::GridLayout _gl;
 
@@ -64,10 +67,15 @@ protected:
 
     std::vector<td::INT4> _actsToDelete, _actsToInsert, _actsToUpdate;
     td::INT4 findMaxID();
+    td::INT4 SubjectID;
+    gui::Image _imgActivityRep;
 public:
     ViewActivity(td::INT4 SubjectID);
-  //  ViewActivity();
+    //  ViewActivity();  
+
     ~ViewActivity();
+    void ActivityReport(const gui::Image* pImage, td::INT4 SubjectID);
+
 protected:
     td::INT4 getIDfromTable(int rowID);
     bool canDelete(int iRow);     //adnan
@@ -85,7 +93,7 @@ protected:
     virtual bool onChangedSelection(gui::TableEdit* pTE);
     void populateDSRow(dp::IDataSet::Row& row, td::INT4 i);
     virtual bool onClick(gui::Button* pBtn);
-    bool insertActivity();   
+    bool insertActivity();
     void SetCurrentSubject();
     bool onAnswer(td::UINT4 questionID, gui::Alert::Answer answer);
     void SetActivityTypeName(td::Variant& val, td::INT4 br);
