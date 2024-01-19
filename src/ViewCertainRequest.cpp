@@ -8,7 +8,7 @@
 
 
 
-ViewCertainRequest::ViewCertainRequest(td::String ime,td::String prezime, td::String indeks, td::String tipKarte,td::String statusKarte,td::String sadrzajKarte,td::String naslovKarte)
+ViewCertainRequest::ViewCertainRequest(td::String ime, td::String prezime, td::String indeks, td::String tipKarte, td::String statusKarte, td::String sadrzajKarte, td::String naslovKarte)
     : _lblstudentsTicket(tr("Student's ticket"))
     , _namelbl(tr("nameUser"))
     , _surnamelbl(tr("surnameUser"))
@@ -18,23 +18,23 @@ ViewCertainRequest::ViewCertainRequest(td::String ime,td::String prezime, td::St
     , _statuslbl(tr("status"))
     , _answerlbl(tr("Answer:"))
     , _hlBtnsDB(3)
-    , _btnSend(tr("Send"),tr("SendTT"))
+    , _btnSend(tr("send"), tr("sendTT"))
     //, _btnOpenAttachment(tr("Open Attachment"), tr("Open AttachmentTT"))
     , _btnSaveAttachment(tr("SaveAttachment"), tr("SaveAttachmentTT"))
     , _gl(7, 6)
     , _db(dp::create(dp::IDatabase::ConnType::CT_SQLITE, dp::IDatabase::ServerType::SER_SQLITE3))
     , indeks(indeks)
 {
-  
+
     _hlBtnsDB.append(_btnSend);
     _hlBtnsDB.appendSpacer();
     _hlBtnsDB.append(_btnSaveAttachment);
     //_hlBtnsDB.append(_btnOpenAttachment);
 
-   
+
     _btnSend.setType(gui::Button::Type::Default);
     _btnSaveAttachment.setType(gui::Button::Type::Default);
-   // _btnOpenAttachment.setType(gui::Button::Type::Default);
+    // _btnOpenAttachment.setType(gui::Button::Type::Default);
 
     gui::GridComposer gc(_gl);
 
@@ -53,7 +53,7 @@ ViewCertainRequest::ViewCertainRequest(td::String ime,td::String prezime, td::St
     gc.appendCol(_status);
     gc.appendRow(_bodyOfTicket, 0);
     gc.appendRow(_answerlbl);
-    gc.appendRow(_answer,0);
+    gc.appendRow(_answer, 0);
     gc.appendRow(_hlBtnsDB, 0);
 
     gui::View::setLayout(&_gl);
@@ -76,16 +76,16 @@ ViewCertainRequest::ViewCertainRequest(td::String ime,td::String prezime, td::St
     _bodyOfTicket.setAsReadOnly();
 
     //populateData();
-    td::String status = "Obradjeno";
+    td::String status = "Obradjen";
     _answerlbl.setBold();
-    if (statusKarte== status)
+    if (statusKarte == status)
     {
         _answerlbl.hide(true, true);
         _answer.hide(true, true);
         _btnSend.hide(true, true);
         _btnSaveAttachment.hide(true, true);
     }
-   
+
 
 }
 //void ViewCertainRequest::populateData(){
@@ -157,7 +157,7 @@ void ViewCertainRequest::showSaveFileDialog() {
                 dp::Columns Cols(pSelFileName->allocBindColumns(1));
                 Cols << "Name_attachment" << fileName;
 
-               
+
                 if (!pSelFileName->execute())
                 {
                     showAlert("Error selecting name of file", "");
@@ -206,13 +206,13 @@ void ViewCertainRequest::showSaveFileDialog() {
                 }
                 if (!pSelBlob->moveNext())
                 {
-                    showAlert("Error selecting attachment", "");     
+                    showAlert("Error selecting attachment", "");
                     return;
                 }
             }
             showAlert("Successfully saved", "");
         });
-    
+
 }
 
 bool ViewCertainRequest::onClick(gui::Button* pBtn)
@@ -223,16 +223,15 @@ bool ViewCertainRequest::onClick(gui::Button* pBtn)
             showAlert("Empty body!", "Do you want to enter your answer first?");
             return false;
         }
-        td::String setstr = "Update SAOStudentTicket set Status=? where Indeks = ?";
-        td::String status = "Obradjeno";
+        td::String setstr = "Update SAOStudentTicket set Status_ID=2 where Indeks=";
+        setstr.append(indeks);
         dp::IStatementPtr pUpdate(dp::getMainDatabase()->createStatement(setstr));
-        dp::Params par(pUpdate->allocParams());
-        par << dp::toNCh(status, 30) << dp::toNCh(indeks, 30);
+
         if (!pUpdate->execute()) {
             showAlert("Error updating", "");
             return false;
         }
-        _status.setValue("Obradjeno");
+        _status.setValue("Obradjen");
         showAlert("Successfully sent", "");
         return true;
 
@@ -240,7 +239,7 @@ bool ViewCertainRequest::onClick(gui::Button* pBtn)
 
     if (pBtn == &_btnSaveAttachment)
     {
-        
+
         td::String setstr1 = "select Name_attachment from SAOStudentTicket where Indeks =";
         setstr1.append(indeks);
         dp::IStatementPtr pSelFileName = dp::getMainDatabase()->createStatement(setstr1);
@@ -265,6 +264,6 @@ bool ViewCertainRequest::onClick(gui::Button* pBtn)
         else showAlert("Student has no attachment", "");
         return true;
     }
-   
+
     return false;
 }

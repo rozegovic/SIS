@@ -34,17 +34,26 @@ class ViewTicketForSAO : public gui::View
 private:
 
 protected:
-	
-	gui::Label _ticketslbl;
-	gui::TableEdit _tickets;
 
+	gui::Label _onHoldTicketslbl;
+	gui::Label _answeredTicketslbl;
+	gui::TableEdit _answeredTickets;
+	gui::TableEdit _onHoldTickets;
 
 	gui::HorizontalLayout _hlBtnsDB;
 	gui::Button _btnOpen;
 
 	gui::GridLayout _gl;
 	dp::IDatabase* _db;
-	dp::IDataSetPtr _pDS;
+	dp::IDataSetPtr _pDS_hold;
+	dp::IDataSetPtr _pDS_answered;
+	td::String indeks;
+	td::String ime;
+	td::String prezime;
+	td::String tipKarte;
+	td::String status;
+	td::String request;
+	td::String title;
 
 
 public:
@@ -52,14 +61,18 @@ public:
 
 protected:
 
-	void populateTableData();
-	void initTable();
+	void populateOnHoldTickets();
+	void populateAnsweredTickets();
+	void initOnHoldTable();
+	void initAnsweredTable();
 	bool onClick(gui::Button* pBtn);
-	td::String getIndex();
+	bool onChangedSelection(gui::TableEdit* pTE);
+	/*td::String getIndex();
 	td::String getName();
 	td::String getSurname();
 	td::String getTypeOfTicket();
-	td::String getStatus();
+
 	td::String getRequest();
-	td::String getTitle();
+	td::String getTitle();*/
+	//td::String getStatus(td::INT4& val);
 };
