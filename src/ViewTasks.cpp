@@ -18,9 +18,9 @@ ViewTasks::ViewTasks(td::INT4 SubjectID) :
     _lblType(tr("ActivityNameForDateTime")),
     _type(td::int4),
     _lblCName(tr("Course:")),
-    _lblTable2(tr("Docs:")),
-    _btnAdd(tr("add"), tr("AddTT"))
+    _lblTable2(tr("Docs:"))
     , _titleFile("")
+    ,_btnAdd(tr("add"), tr("AddTT"))
     //, _btnUpdate(tr("Update"), tr("UpdateTT"))
     , _btnDelete(tr("Delete"), tr("DeleteTT"))
     , _btnSave(tr("Save"), tr("SaveTT"))
@@ -507,7 +507,7 @@ void ViewTasks::showOpenFileDialog()
     pFD->openModal([this](gui::FileDialog* pFD)
         {
             auto status = pFD->getStatus();
-            if (status == gui::FileDialog::Status::OK)
+            if (status == gui::FileDialog::Status::OK)  
             {
                 td::String strFileFullPath = pFD->getFileName();
                 td::String strContent;

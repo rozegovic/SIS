@@ -567,8 +567,10 @@ void ViewActivity::SetCurrentSubject() {
         td::Variant id = _id.getValue();
         td::Variant point = _points.getValue();
         td::Decimal2 x = point.dec2Val();
+        //showAlert(tr("succes"), tr("succesEE"));
         if (x > 10000)
         {
+            showAlert(tr("failure"), tr("alertOver100"));
             return false;
         }
 
@@ -593,8 +595,11 @@ void ViewActivity::SetCurrentSubject() {
         if (!pSelect->moveNext())
             return false;
 
-        if (sum + x > 10000)
+        if (sum + x >= 10000) {
+            showAlert(tr("failure"), tr("alertOver100"));
             return false;
+        }
+
 
         return true;
     }
