@@ -9,7 +9,7 @@
 #include <mu/IAppSettings.h>
 #include <gui/Image.h>
 #include <gui/Frame.h>
-
+#include <gui/View.h>
 
 void examAttendance(const gui::Image* pImage, td::INT4 SubjectID)
 {	
@@ -49,7 +49,8 @@ void examAttendance(const gui::Image* pImage, td::INT4 SubjectID)
 		if (nRows == 0)
 		{
 			//-----------------alert da nema ispita na predmetu ili nema prijavljenih studenata
-			//showAlert(tr("AccessNotAllowed"), "");
+			gui::View view;
+			view.showAlert(gui::tr("AccessFound"), "Nema studenata prijavljenih na ispit.");
 
 			return;
 		}
@@ -102,8 +103,8 @@ void examGrades(const gui::Image* pImage, td::INT4 SubjectID)
 		size_t nRows = pDP->getNumberOfRows();
 		if (nRows == 0)
 		{
-			//-----------------alert da nema ispita na predmetu ili nema prijavljenih studenata
-			//showAlert(tr("AccessNotAllowed"), "");
+			gui::View view;
+			view.showAlert(gui::tr("AccessFound"), "Nema studenata sa ocjenama na ispitu.");
 
 			return;
 		}
@@ -157,8 +158,8 @@ void homeworkGrades(const gui::Image* pImage, td::INT4 SubjectID)
 		size_t nRows = pDP->getNumberOfRows();
 		if (nRows == 0)
 		{
-			//-----------------alert da nema ispita na predmetu ili nema prijavljenih studenata
-			//showAlert(tr("AccessNotAllowed"), "");
+			gui::View view;
+			view.showAlert(gui::tr("AccessFound"), "Nema studenata sa ocjenama na zadaci.");
 
 			return;
 		}
@@ -211,8 +212,8 @@ void labGrades(const gui::Image* pImage, td::INT4 SubjectID)
 		size_t nRows = pDP->getNumberOfRows();
 		if (nRows == 0)
 		{
-			//-----------------alert da nema ispita na predmetu ili nema prijavljenih studenata
-			//showAlert(tr("AccessNotAllowed"), "");
+			gui::View view;
+			view.showAlert(gui::tr("AccessFound"), "Nema studenata sa ocjenama na laboratorijskoj vjezbi.");
 
 			return;
 		}
