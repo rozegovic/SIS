@@ -234,6 +234,8 @@
 		<Res id="AddFileTT" tr="Dodaj dokument"/>
 		<Res id="Docs:" tr="Dokumenti:"/>
 		
+		<Res id="viewTicketForSAO:" tr="SAO Karta"/>
+		
 		<Res id="tobeenrolledtocourse" tr="Studenti koji imaju mogućnost upisa"/>
 		<Res id="enrolledtocourse" tr="Studenti upisani na predmet"/>
 		<Res id="courselbl" tr="Predmet:"/>
