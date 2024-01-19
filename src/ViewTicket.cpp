@@ -1,6 +1,7 @@
-﻿#pragma once
+#pragma once
 #include "ViewTicket.h"
 #include "ViewIDs.h"
+#include "RequestUpdateWindow.h"
 
 ViewTicket::ViewTicket()
 	: _typelbl(tr("typeOfMessage"))
@@ -12,11 +13,13 @@ ViewTicket::ViewTicket()
 	, _titleFile("")
 	, _hlBtnsDB(4)
 	, _btnSend(tr("send"), tr("sendRequestTT"))
+	, _btnOpen(tr("open"), tr("openTT"))
 	, _gl(6, 6)
 	, _db(dp::create(dp::IDatabase::ConnType::CT_SQLITE, dp::IDatabase::ServerType::SER_SQLITE3))
 {
 
 	_hlBtnsDB.appendSpacer();
+	_hlBtnsDB.append(_btnOpen);
 	_hlBtnsDB.append(_btnSend);
 
 	_btnSend.setType(gui::Button::Type::Default);
@@ -59,12 +62,11 @@ bool ViewTicket::onChangedSelection(gui::ComboBox* pCmb)
 		case 0: _type.setValue(td::Variant("Upis")); break;
 		case 1: _type.setValue(td::Variant("Poruka")); break;
 		case 2: _type.setValue(td::Variant("Molba")); break;
-		case 3: _type.setValue(td::Variant("Žalba")); break;
+		case 3: _type.setValue(td::Variant("�alba")); break;
 		case 4: _type.setValue(td::Variant("Prijedlog")); break;
 		}
 		return true;
 	}
-
 	return false;
 }
 
@@ -91,6 +93,35 @@ bool ViewTicket::onClick(gui::Button* pBtn)
 		return true;
 	}
 
+	if (pBtn == &_btnOpen)
+	{
+		auto rowindex = _tableTickets.getFirstSelectedRow();
+
+		if (rowindex < 0)
+			return false;
+
+		auto pomDS = _tableTickets.getDataSet();
+		auto& row = pomDS->getRow(rowindex);
+
+		td::String tipKarte = row[0].getConstStr();
+		td::String naslov = row[1].getConstStr();
+		gui::TextEdit body;
+		body.setValue(row[3].getConstStr());
+		td::INT4 tableID = row[4].i4Val();
+		td::String indeks = row[5].getConstStr();
+
+		gui::Window* pParentWnd = getParentWindow();
+		auto pWnd = new RequestUpdateWindow(pParentWnd, tipKarte, naslov, body, tableID, indeks);
+		pWnd->keepOnTopOfParent();
+		pWnd->open();
+
+		UpdateTable();
+
+		_tableTickets.reload();
+
+		return true;
+	}
+
 	return false;
 }
 
@@ -110,16 +141,17 @@ bool ViewTicket::sendTicket()
 	pSelect->execute();
 	pSelect->moveNext();
 
-	dp::IStatementPtr pStatIns = dp::getMainDatabase()->createStatement("INSERT INTO SAOStudentTicket (ID, Indeks, Ticket_Tip, Req_Title, Request, Status, Attachment, Name_attachment) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+	dp::IStatementPtr pStatIns = dp::getMainDatabase()->createStatement("INSERT INTO SAOStudentTicket (ID, Indeks, Ticket_Tip, Req_Title, Request, Status_ID, Attachment, Name_attachment) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 	dp::Params parDS(pStatIns->allocParams());
 
 	id++;
-	td::String index, request, requestTitle, ticketName, status;
-	parDS << id << dp::toNCh(index, 30) << dp::toNCh(ticketName, 30) << dp::toNCh(requestTitle, 100) << dp::toNCh(request, 5000) << dp::toNCh(status, 50);
+	td::String index, request, requestTitle, ticketName;
+	td::INT4 status;
+	parDS << id << dp::toNCh(index, 30) << dp::toNCh(ticketName, 30) << dp::toNCh(requestTitle, 100) << dp::toNCh(request, 5000) << status;
 
 	td::Variant var;
 
-	status = tr("OnHold");
+	status = 1;
 	index = GetStudentIndeks().getConstStr();
 	_subject.getValue(var);
 	requestTitle = var.getConstStr();
@@ -130,6 +162,9 @@ bool ViewTicket::sendTicket()
 
 	if (!pStatIns->execute())
 	{
+		td::String errstr;
+		pStatIns->getErrorStr(errstr);
+		showAlert(errstr, "");
 		return false;
 	}
 	tr.commit();
@@ -153,7 +188,7 @@ bool ViewTicket::sendTicketWithAttachment()
 	pSelect->execute();
 	pSelect->moveNext();
 
-	dp::IStatementPtr pStatIns = dp::getMainDatabase()->createStatement("INSERT INTO SAOStudentTicket (ID, Indeks, Ticket_Tip, Req_Title, Request, Status, Attachment, Name_attachment) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+	dp::IStatementPtr pStatIns = dp::getMainDatabase()->createStatement("INSERT INTO SAOStudentTicket (ID, Indeks, Ticket_Tip, Req_Title, Request, Status_ID, Attachment, Name_attachment) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 	dp::Params parDS(pStatIns->allocParams());
 
 	fo::fs::path filePathNow(_attachedFiles.last().c_str());
@@ -173,8 +208,9 @@ bool ViewTicket::sendTicketWithAttachment()
 	td::BLOB dataIn(td::BLOB::SRC_FILE, 16384U, typeFile);
 
 	id++;
-	td::String index, request, requestTitle, ticketName, status;
-	parDS << id << dp::toNCh(index, 30) << dp::toNCh(ticketName, 30) << dp::toNCh(requestTitle, 100) << dp::toNCh(request, 5000) << dp::toNCh(status, 50) << dataIn << dp::toNCh(strFileName, 50);
+	td::String index, request, requestTitle, ticketName;
+	td::INT4 status;
+	parDS << id << dp::toNCh(index, 30) << dp::toNCh(ticketName, 30) << dp::toNCh(requestTitle, 100) << dp::toNCh(request, 5000) << status << dataIn << dp::toNCh(strFileName, 50);
 
 	if (!dataIn.setInFileName(filePathNow))
 	{
@@ -184,7 +220,7 @@ bool ViewTicket::sendTicketWithAttachment()
 
 	td::Variant var;
 
-	status = tr("OnHold");
+	status = 1;
 	index = GetStudentIndeks().getConstStr();
 	_subject.getValue(var);
 	requestTitle = var.getConstStr();
@@ -203,7 +239,6 @@ bool ViewTicket::sendTicketWithAttachment()
 	_body.setValue("");
 
 	_titleFile.setTitle("");
-
 	return true;
 }
 
@@ -287,16 +322,19 @@ void ViewTicket::initTable()
 
 void ViewTicket::populateTableData()
 {
-	td::String setIndex = "SELECT SAOStudentTicket.Ticket_Tip as type, SAOStudentTicket.Req_Title as title, SAOStudentTicket.Status as status FROM SAOStudentTicket WHERE SAOStudentTicket.Indeks=";
 
-	setIndex.append(GetStudentIndeks().getConstStr());
-	setIndex.append(" ORDER BY ID");
-	_pDS = dp::getMainDatabase()->createDataSet(setIndex, dp::IDataSet::Execution::EX_MULT);
-	dp::DSColumns cols(_pDS->allocBindColumns(3));
-	cols << "type" << td::string8 << "title" << td::string8 << "status" << td::string8;
+	td::String setstr = "SELECT SAOStudentTicket.Ticket_Tip as type, SAOStudentTicket.Req_Title as title, (SELECT SAOTicket_Status.Status as status FROM SAOTicket_Status WHERE SAOStudentTicket.Status_ID=SAOTicket_Status.ID) as status, SAOStudentTicket.Request as request, SAOStudentTicket.ID as reqID, SAOStudentTicket.Indeks as indeks  FROM SAOStudentTicket WHERE SAOStudentTicket.Indeks=";
+	setstr.append(GetStudentIndeks().getConstStr());
+
+	_pDS = dp::getMainDatabase()->createDataSet(setstr, dp::IDataSet::Execution::EX_MULT);
+	dp::DSColumns cols(_pDS->allocBindColumns(6));
+	cols << "type" << td::string8 << "title" << td::string8 << "status" << td::string8 << "request" << td::string8 << "reqID" << td::int4 << "indeks" << td::string8;
 
 	if (!_pDS->execute())
 	{
+		td::String errstr;
+		_pDS->getErrorStr(errstr);
+		showAlert(errstr, "U populateTableDAta");
 		_pDS = nullptr;
 		return;
 	}
@@ -304,3 +342,36 @@ void ViewTicket::populateTableData()
 	initTable();
 }
 
+
+void ViewTicket::UpdateTable() {
+
+	td::String setstr = "SELECT SAOStudentTicket.Ticket_Tip as type, SAOStudentTicket.Req_Title as title, (SELECT SAOTicket_Status.Status as status FROM SAOTicket_Status WHERE SAOStudentTicket.Status_ID=SAOTicket_Status.ID)as status, SAOStudentTicket.Request as request, SAOStudentTicket.ID as reqID, SAOStudentTicket.Indeks as indeks  FROM SAOStudentTicket WHERE SAOStudentTicket.Indeks=";
+	setstr.append(GetStudentIndeks().getConstStr());
+
+	auto pompDS = dp::getMainDatabase()->createDataSet(setstr, dp::IDataSet::Execution::EX_MULT);
+	dp::DSColumns cols(pompDS->allocBindColumns(6));
+	cols << "type" << td::string8 << "title" << td::string8 << "status" << td::string8 << "request" << td::string8 << "reqID" << td::int4 << "indeks" << td::string8;
+	if (!pompDS->execute())
+	{
+		pompDS = nullptr;
+		showAlert("errorReadingTable", "");
+		return;
+	}
+
+
+	_tableTickets.clean();
+
+
+	size_t nRows = pompDS->getNumberOfRows();
+	for (size_t i = 0; i < nRows; i++) {
+		_tableTickets.beginUpdate();
+		auto& rowpom = pompDS->getRow(i);
+		auto& row = _tableTickets.getEmptyRow();
+		row = rowpom;
+
+		_tableTickets.push_back();
+
+		_tableTickets.endUpdate();
+	}
+
+}

@@ -12,7 +12,7 @@
 
 
 void examAttendance(const gui::Image* pImage, td::INT4 SubjectID)
-{
+{	
 	//------------------TAKODER dodati select za upis u tabelu PolazniciAktivnosti - samo se ucitava nakon sto je proslo vrijeme prijave ispita
 	dp::IDatabase* pDB = dp::getMainDatabase();
 	td::String name = "Studenti prijavljeni na ispit";
@@ -40,6 +40,7 @@ void examAttendance(const gui::Image* pImage, td::INT4 SubjectID)
 
 		if (!pDP->execute())//sto ovdje nece ne znam...
 		{
+			//gui::Alert::show(tr("Error"), tr("Ne moze..."));
 			return;
 		}
 

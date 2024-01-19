@@ -3,52 +3,71 @@
 #include "ViewIDs.h"
 #include <td/StringConverter.h>
 
-ViewTimeSlot::ViewTimeSlot(td::INT4 SubjectID) :
+#include <dp/IDataSetDelegate.h>
+#include <dp/IDatabase.h>
+#include <dp/IDataSet.h>
+
+ViewTimeSlot::ViewTimeSlot(td::INT4 SubjectID,td::INT4 ViewID ) :
     _LblSubjName(tr("AttSubj"))
+    
     //, _LblType(tr("AttType")),
-    ,_hlBtnsDB(5)
+    ,_hlBtnsDB(4)
+    ,_lblTable2("Izabrani termin/i:")
     , _btnDEnroll(tr("DEnroll"))
-    , _btnReload(tr("Reload"))
+   // , _btnReload(tr("Reload"))
     , _btnEnroll(tr("Enroll"))
     //, _type(td::int4)
     , _db(dp::create(dp::IDatabase::ConnType::CT_SQLITE, dp::IDatabase::ServerType::SER_SQLITE3))
-    , _gl(3, 4)
+    , _gl(5, 4)
     , _SubjectID(SubjectID)
 {
+    setVisualID(ViewID);
    _hlBtnsDB.appendSpacer();
     _hlBtnsDB.append(_btnDEnroll);
-    _hlBtnsDB.append(_btnReload);
+//    _hlBtnsDB.append(_btnReload);
     _hlBtnsDB.append(_btnEnroll);
     _hlBtnsDB.appendSpacer();
     _btnDEnroll.setType(gui::Button::Type::Default);
     _btnEnroll.setType(gui::Button::Type::Constructive);
     _Subject.setAsReadOnly();
+
     gui::GridComposer gc(_gl);
     gc.appendRow(_LblSubjName);
     gc.appendCol(_Subject);
-   // gc.appendRow(_LblType);
-   // gc.appendCol(_type);
     gc.appendRow(_table, 0);
+    gc.appendRow(_lblTable2);
+    gc.appendRow(_table2, 0);
     gc.appendRow(_hlBtnsDB, 0);
+
     gui::View::setLayout(&_gl);
     getSubjectName();
-   
- 
+
     _db = dp::getMainDatabase();
 
     populateDataForTable();
-    _table.setBold();
+   // _table.setFont(gui::Font::ID::SystemSmallestBoldItalic);
+   // _table.setBold();
+    populateTable2();
+  //  _table2.setBold();
 }
+
 ViewTimeSlot::~ViewTimeSlot() {
 }
 
 void ViewTimeSlot::initTable()
 {
     gui::Columns visCols(_table.allocBindColumns(3));
-    visCols << gui::ThSep::DoNotShowThSep << gui::Header(0, tr("Type")) << gui::Header(1, tr("Time")) << gui::Header(2, tr("Date"));
+   // visCols << gui::ThSep::DoNotShowThSep << gui::Header(0, tr("Type")) << gui::Header(1, tr("Time")) << gui::Header(2, tr("Date"));
+    visCols << gui::Header(0, tr("Type")) << gui::Header(1, tr("Time")) << gui::Header(2, tr("Date"));
     _table.init(_pDS); 
 }
 
+void ViewTimeSlot::initTable2()
+{
+    gui::Columns visCols(_table2.allocBindColumns(3));
+    visCols  << gui::Header(0, tr("Type")) << gui::Header(1, tr("Time")) << gui::Header(2, tr("Date"));
+    _table2.init(_pDS2);             
+}
 
 bool ViewTimeSlot::IsEnrolled(td::INT4 ID_stud, td::INT4 ID_Pred) {
     auto pDB = dp::getMainDatabase();
@@ -75,13 +94,39 @@ bool ViewTimeSlot::IsEnrolled(td::INT4 ID_stud, td::INT4 ID_Pred) {
     return false;
 
 }
+
+bool ViewTimeSlot::IsTherePlace(td::INT4 tID) {
+      
+     // dp::IStatementPtr _pDS3 = dp::getMainDatabase()->createStatement("SELECT Max_br_pol as max, Br_prijavljenih as trenutnih FROM Termini WHERE Termini.ID = ? ");
+      _pDS3 = dp::getMainDatabase()->createStatement("SELECT Max_br_pol, Br_prijavljenih  FROM Termini WHERE ID = ? ");
+      
+      dp::Params pParams(_pDS3->allocParams());
+      pParams << tID;
+
+      dp::Columns pCols =_pDS3->allocBindColumns(2); ///
+      td::INT4 max ;
+      td::INT4 trenutnih ;
+     
+  //    pCols << "max " << max << "trenutnih" << trenutnih;
+      pCols << "Max_br_pol" << max << "Br_prijavljenih" << trenutnih;
+
+      if (!_pDS3->execute())
+          return false;
+      if (!_pDS3->moveNext())
+          return false;
+      
+      if (trenutnih == max) return false;
+      return true;
+ }
+ 
+
 void ViewTimeSlot::populateDataForTable()
 {
-    _pDS = dp::getMainDatabase()->createDataSet("SELECT b.Naziv AS tip, a.Vrijeme AS time, a.Datum AS date,a.TipPredavanjaID as idPred, a.ID as idTerm from Termini a, TipPredavanja b WHERE b.ID = a.TipPredavanjaID and a.TipPredavanjaID!=1  and a.Predmet_ID=?", dp::IDataSet::Execution::EX_MULT);
+    _pDS = dp::getMainDatabase()->createDataSet("SELECT b.Naziv AS tip, a.Vrijeme AS time, a.Dan AS date, a.TipPredavanjaID as idPred, a.ID as idTerm from Termini a, TipPredavanja b WHERE b.ID = a.TipPredavanjaID and a.TipPredavanjaID!=1 and a.Predmet_ID=?", dp::IDataSet::Execution::EX_MULT);
     dp::Params pParams(_pDS->allocParams());
     pParams << _SubjectID;
     dp::DSColumns cols(_pDS->allocBindColumns(5));
-    cols << "tip" << td::string8 << "time" << td::time << "date" << td::date<<"idPred"<<td::int4<<"idTerm"<<td::int4;
+    cols << "tip" << td::string8 << "time" << td::time << "date" << td::string8 <<"idPred"<<td::int4<<"idTerm"<<td::int4;
 
     if (!_pDS->execute())
     {
@@ -90,11 +135,32 @@ void ViewTimeSlot::populateDataForTable()
     }
     initTable();
 }
-void ViewTimeSlot::getSubjectName() {
 
+void ViewTimeSlot::populateTable2()
+{
+    auto sID = Globals::_currentUserID;
+  
+    _pDS2 = dp::getMainDatabase()->createDataSet("SELECT b.Naziv AS tip, a.Vrijeme AS time, a.Dan AS date, c.ID_Studenta as IDs from Termini a, TipPredavanja b, TerminiStudenti c WHERE c.ID_Termina = a.ID and c.TipPredavanjaID = b.ID and c.ID_Studenta = ?", dp::IDataSet::Execution::EX_MULT);
+    
+    dp::Params pParams(_pDS2->allocParams());
+    pParams << sID;           
+    
+    dp::DSColumns cols(_pDS2->allocBindColumns(3));
+    cols << "tip" << td::string8 << "time" << td::time << "date" << td::string8;
+    if (!_pDS2->execute())
+    {
+        _pDS2 = nullptr;
+        return;
+    }
+    initTable2();
+
+}
+
+
+void ViewTimeSlot::getSubjectName() {
+    
     dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT Naziv_Predmeta FROM Predmet WHERE ID_Predmeta = ?");
     dp::Params parDS(pSelect->allocParams());
-    //d::INT4 IDPredmeta = Globals::_IDSubjectSelection;
     parDS << _SubjectID;
     dp::Columns pCols = pSelect->allocBindColumns(1);
     td::String Predmet;
@@ -124,12 +190,14 @@ bool ViewTimeSlot::saveData1() { //upis
     tID = row[4].i4Val();
     pID = row[3].i4Val();
   
-    if (!pInsStat->execute())
+    if (!pInsStat->execute()){
+        tr.rollBack();
         return false;
+        
+    }
     tr.commit();
     return true;
 
- 
 }
 
 bool ViewTimeSlot::saveData2() { //ispis 
@@ -153,16 +221,14 @@ bool ViewTimeSlot::saveData2() { //ispis
 }
 
 bool ViewTimeSlot::onClick(gui::Button* pBtn)
-{//provjeru izvr�iti
-  
-
-    if (pBtn == &_btnReload)
+{
+   /* if (pBtn == &_btnReload)
     {
-      //  _table.reload();
-       // _table.selectRow(0, true);
+       // _table.reload();
+        UpdatePresentDataSet();
   
         return true;
-    }
+    }*/
     if (pBtn == &_btnEnroll)
     {
         td::INT4 tID, pID, sID;
@@ -174,27 +240,89 @@ bool ViewTimeSlot::onClick(gui::Button* pBtn)
         if (IsEnrolled(sID, pID))
         {
             showAlert(tr("alert"), tr("alertPr"));
-            return true;
+            return false;
         }
-
+    
+     if (!IsTherePlace(tID)) {   //funkcija u 97.liniji
+           showAlert(tr("alert"), ("Nazalost vise nema mjesta!"));
+           return false;
+    }
+        
         saveData1();
-      //  _table.reload();
-       // _table.selectRow(0, true);
+        UpdatePresentDataSet();
+        _pDS4 = dp::getMainDatabase()->createStatement("UPDATE Termini SET Br_prijavljenih = Br_prijavljenih + 1 WHERE ID = ? ");
+        //ovaj update radi u bazi, ali pokazivac ?
+        dp::Params pParams(_pDS4->allocParams());
+        pParams << tID;
+        if (!_pDS4->execute())
+            return false;
+        if (!_pDS4->moveNext())
+            return false;
+      
+    //  UpdatePresentDataSet();
+      //  _table2.reload();                    ///
         return true;
        
-        
-
     }
 
     if (pBtn == &_btnDEnroll)
     {
+        td::INT4 tID;
+        td::INT4 curRow = _pDS->getCurrentRowNo();
+        auto row = _pDS->getRow(curRow);
+        tID = row[4].i4Val();
+
         saveData2();
+        UpdatePresentDataSet();
+    
+    _pDS4 = dp::getMainDatabase()->createStatement("UPDATE Termini SET Br_prijavljenih = Br_prijavljenih - 1 WHERE ID = ? ");
+        dp::Params pParams(_pDS4->allocParams());
+        pParams << tID;
+        if (!_pDS4->execute())
+            return false;
+        if (!_pDS4->moveNext())
+            return false;
+       
+
         _table.reload();
+     //   _table2.reload();
         _table.selectRow(0, true);
+
+    //    UpdatePresentDataSet();
         return true;
 
     }
 
     return false;
+
+}
+
+void ViewTimeSlot::UpdatePresentDataSet() {
+   
+    auto sID = Globals::_currentUserID;
+    dp::IDataSetPtr pomDS = dp::getMainDatabase()->createDataSet("SELECT b.Naziv AS tip, a.Vrijeme AS time, a.Dan AS date from Termini a,  TipPredavanja b, TerminiStudenti c WHERE c.ID_Termina = a.ID and c.TipPredavanjaID = b.ID and c.ID_Studenta = ?", dp::IDataSet::Execution::EX_MULT);
+    
+    dp::Params pParams(pomDS->allocParams());
+    pParams << Globals::_currentUserID;           
+
+    dp::DSColumns cols(pomDS->allocBindColumns(3));
+    cols << "tip" << td::string8 << "time" << td::time << "date" << td::string8;
+    if (!pomDS->execute())
+    {
+        pomDS = nullptr;
+        return;
+    }
+
+    _table2.clean();
+
+    size_t nRows = pomDS->getNumberOfRows();
+    for (size_t i = 0; i < nRows; i++) {
+        _table2.beginUpdate();
+        auto& rowpom = pomDS->getRow(i);
+        auto& row = _table2.getEmptyRow();
+        row = rowpom;
+        _table2.push_back();
+        _table2.endUpdate();
+    }
 
 }

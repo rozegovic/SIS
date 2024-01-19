@@ -51,6 +51,7 @@ protected:
     gui::Label _titleFile;
     gui::TableEdit _table2;
 
+
     gui::HorizontalLayout _hlBtnsDB;
     gui::Button _btnAdd;
     gui::Button _btnDelete;
@@ -63,8 +64,8 @@ protected:
     dp::IDataSetPtr _pDS;
     //::INT4 _ActivityID;
     td::INT4 _SubjectID;
+    cnt::PushBackVector <td::String> _attachedFiles;
     ///*td::string8 _nazivakt;*/
-    gui::TextEdit _textEdit;
 
     gui::TableEdit _table;
     std::vector<td::INT4> _itemsToDelete, _itemsToInsert, _itemsToUpdate;
@@ -85,10 +86,9 @@ protected:
     void SetActivityName(td::Variant& val, td::INT4 br);
     td::INT4 getIDfromTable(int rowID);
     td::INT4 findMaxID();
-    void openFile(gui::FileDialog* pFD);
     void showOpenFileDialog();
+    void selectFiles();
+    bool sendDocs();
     gui::TextEdit* getTextEdit();
     bool onAnswer(td::UINT4 questionID, gui::Alert::Answer answer);
-    bool onClick(gui::FileDialog* pFD, td::UINT4 dlgID);
-    void saveFile(gui::FileDialog* pFD);
 };

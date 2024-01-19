@@ -49,8 +49,8 @@ public:
 
     {
         setMargins(0, 0, 0, 0);
-        _navigator.setItem(0, &_imgAttendance, tr("Attendance"));
-        _navigator.setItem(1, &_imgSubject, tr("Subject"));
+        _navigator.setItem(0, &_imgAttendance, tr("Termini"));
+        _navigator.setItem(1, &_imgSubject, tr("Attendance"));
         _hl.append(_navigator);
         _hl.append(_switcherView);
         setLayout(&_hl);
