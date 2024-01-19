@@ -211,7 +211,7 @@ CREATE TABLE IF NOT EXISTS "PolazniciAktivnosti" (
 	FOREIGN KEY("ID_Aktivnosti") REFERENCES "Aktivnosti"("ID_Aktivnosti"),
 	FOREIGN KEY("ID_Korisnika") REFERENCES "Korisnici"("ID")
 );
-CREATE TABLE IF NOT EXISTS "OpenPredaja" (
+CREATE TABLE "OpenPredaja" (
 	"ID"	INTEGER NOT NULL,
 	"Naziv"	TEXT NOT NULL,
 	"Datum_Predaje"	INTEGER NOT NULL,
@@ -255,7 +255,7 @@ CREATE TABLE "TerminiStudenti" (
 	FOREIGN KEY("ID_Studenta") REFERENCES "Korisnici"("ID"),
 	PRIMARY KEY("ID")
 );
-CREATE TABLE IF NOT EXISTS "Predaja" (
+CREATE TABLE "Predaja" (
 	"ID_Predaje"	INTEGER NOT NULL,
 	"ID_OpenPredaja"	INTEGER NOT NULL,
 	"ID_Studenta"	INTEGER NOT NULL,
@@ -264,9 +264,11 @@ CREATE TABLE IF NOT EXISTS "Predaja" (
 	"Datum_Predaje"	INTEGER NOT NULL,
 	"Vrijeme_Predaje"	INTEGER NOT NULL,
 	"Predano"	INTEGER NOT NULL,
+	"ID_Aktivnosti"	INTEGER NOT NULL,
+	FOREIGN KEY("ID_Aktivnosti") REFERENCES "Aktivnosti"("ID_Aktivnosti"),
+	FOREIGN KEY("ID_Studenta") REFERENCES "Korisnici"("ID"),
 	PRIMARY KEY("ID_Predaje"),
-	FOREIGN KEY("ID_OpenPredaja") REFERENCES "Rokovi"("ID_Roka"),
-	FOREIGN KEY("ID_Studenta") REFERENCES "Korisnici"("ID")
+	FOREIGN KEY("ID_OpenPredaja") REFERENCES "OpenPredaja"("ID")
 );
 
 CREATE TABLE IF NOT EXISTS SAOStudentTicket (
