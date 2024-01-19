@@ -20,7 +20,10 @@ ViewTasks::ViewTasks(td::INT4 SubjectID) :
     _lblType(tr("ActivityNameForDateTime")),
     _type(td::int4),
     _lblCName(tr("Course:")),
-    _btnAdd(tr("add"), tr("AddTT"))
+    _lblTable2(tr("Docs:"))
+    , _titleFile("")
+    ,_btnAdd(tr("add"), tr("AddTT"))
+
     //, _btnUpdate(tr("Update"), tr("UpdateTT"))
     , _btnDelete(tr("Delete"), tr("DeleteTT"))
     , _btnSave(tr("Save"), tr("SaveTT"))
@@ -64,9 +67,14 @@ ViewTasks::ViewTasks(td::INT4 SubjectID) :
     gc.appendCol(_LblTimeBegin);
     gc.appendCol(_timeB);
 
-    gc.appendRow(_btnAddFile);
 
     gc.appendRow(_table, 0);
+
+    gc.appendRow(_lblTable2);
+    gc.appendCol(_titleFile,2);
+    gc.appendCol(_btnAddFile, td::HAlignment::Right);
+    gc.appendRow(_textEdit, 0);
+
     gc.appendRow(_hlBtnsDB, 0);
 
     gui::View::setLayout(&_gl);
@@ -109,7 +117,16 @@ void ViewTasks::populateData()
     parDS << _SubjectID;
     td::String Predmet;
     dp::DSColumns cols(_pDS->allocBindColumns(10));
-    cols << "datumb" << td::date << "vrijemeb" << td::time << "datume" << td::date << "vrijemee" << td::time << "datumf" << td::date << "vrijemef" << td::time << "ID_Roka" << td::int4 << "ID_Aktivnosti" << td::int4 << "ID_Predmeta" << td::int4 << "Naziv_Aktivnosti" << td::string8;
+    cols << "datumb" << td::date 
+        << "vrijemeb" << td::time 
+        << "datume" << td::date 
+        << "vrijemee" << td::time 
+        << "datumf" << td::date 
+        << "vrijemef" << td::time 
+        << "ID_Roka" << td::int4 
+        << "ID_Aktivnosti" << td::int4 
+        << "ID_Predmeta" << td::int4 
+        << "Naziv_Aktivnosti" << td::string8;
 
     if (!_pDS->execute())
     {
@@ -539,17 +556,66 @@ void ViewTasks::selectFiles()
 #ifdef USE_CALLBACKS
     pFD->openModal(&_callBackOpenFileDlg);
 #else
-    pFD->openModal([this](gui::FileDialog* pFD) {
-        auto status = pFD->getStatus();
-        if (status == gui::FileDialog::Status::OK) {
 
-            _attachedFiles.push_back(pFD->getFileName());
+    //pFD->openModalWithID(WndID::FileOpenDlg, this);
+    pFD->openModal([this](gui::FileDialog* pFD)
+        {
+            auto status = pFD->getStatus();
+            if (status == gui::FileDialog::Status::OK)  
+            {
+                td::String strFileFullPath = pFD->getFileName();
+                td::String strContent;
 
-            fo::fs::path filePathNow(_attachedFiles.last().c_str());/*
-            td::String strFileName = filePathNow.filename().string();
-            _titleFile.setTitle(strFileName);
-            _titleFile.setBold();*/
-        }
+                if (fo::loadFileContent(strFileFullPath, strContent))
+                {
+                    gui::TextEdit* pTE = (*this).getTextEdit();
+                    pTE->setText(strContent);
+
+                    dp::IDatabase* pDB = dp::getMainDatabase();
+                    //dp::getMainDatabase() if I were connected to DB before
+
+                    dp::IStatementPtr pStatIns = pDB->createStatement("insert into DokumentiOpenPredaja(ID, Dokumenti, ID_Predaje) values(?, ?, ?)");
+                    dp::Params paramsInsert(pStatIns->allocParams());
+
+                    fo::fs::path filePath(strFileFullPath.c_str());
+                    //td::String strFileName = filePath.filename().string();//daj mi naziv fajla
+                    td::String fileExtension = filePath.filename().extension().string(); //daj mi tip fajla
+
+                    //tip BLOBa
+                    td::BLOB::Type typeFile = td::BLOB::Type::TYPE_BINARY_UNKNOWN;
+                    if (fileExtension.compareConstStr(".txt"))
+                        typeFile = td::BLOB::Type::TYPE_TXT;
+                    else if (fileExtension.compareConstStr(".pdf"))
+                        typeFile = td::BLOB::Type::TYPE_PDF;
+                    else if (fileExtension.compareConstStr(".jpg"))
+                        typeFile = td::BLOB::Type::TYPE_JPG;
+                    else if (fileExtension.compareConstStr(".png"))
+                        typeFile = td::BLOB::Type::TYPE_PNG;
+
+
+                    td::BLOB dataIn(td::BLOB::SRC_FILE, 16384U, typeFile);
+                    static td::INT4 ID = 1, ID_predaje = 1;
+                    paramsInsert << ID << dataIn << ID_predaje;
+                    ID++; ID_predaje++;
+                    //Neophodno, sa ove lokacije (strFileFullPath) se uzima BLOB
+                    if (!dataIn.setInFileName(strFileFullPath))
+                    {
+                        gui::Alert::show(tr("Error"), tr("Did you delete the selected file?"));
+                        return;
+                    }
+
+                    dp::Transaction transaction(pDB);
+
+                    //bool delOK = pStatDel->execute();
+                    bool insOK = pStatIns->execute();
+
+                    bool commitOK = transaction.commit();
+
+                    _titleFile.setTitle(filePath.filename());
+                    _titleFile.setBold();
+                }
+            }
+
         });
 #endif
 }

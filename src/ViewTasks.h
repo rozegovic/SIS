@@ -47,6 +47,11 @@ protected:
     gui::Label _lblCName;
     gui::LineEdit _cName;
 
+    gui::Label _lblTable2;
+    gui::Label _titleFile;
+    gui::TableEdit _table2;
+
+
     gui::HorizontalLayout _hlBtnsDB;
     gui::Button _btnAdd;
     gui::Button _btnDelete;
