@@ -63,15 +63,15 @@ ViewExamSignUp::ViewExamSignUp()
 
     _indeks.setAsReadOnly();
 
-  
+
     _name.setAsReadOnly();
-   
+
     _surname.setAsReadOnly();
 
 
     _lblTable1.setBold();
     _lblTable2.setBold();
-   
+
 }
 
 ViewExamSignUp::~ViewExamSignUp()
@@ -114,8 +114,8 @@ void ViewExamSignUp::populateDataForTable1()
 void ViewExamSignUp::populateDataForTable2()
 {
     _pDS2 = dp::getMainDatabase()->createDataSet("SELECT P.Naziv_Predmeta as Course_name, P.Sifra_Predmeta as Course_code, A.Naziv_Aktivnosti as Name_of_activity, R.Datum_Pocetka as Start_date, R.Vrijeme_Pocetka as Start_time, R.Vrijeme_Prijave as Reg_time, P.ID_Predmeta as id_pre, R.ID_Roka as id_roka FROM Predmet P INNER JOIN Aktivnosti A ON P.ID_Predmeta = A.ID_Predmeta INNER JOIN Rokovi R ON A.ID_Aktivnosti = R.ID_Aktivnosti INNER JOIN UpisPredmeta U ON P.ID_Predmeta = U.ID_Predmeta INNER JOIN Prijavljeni_ispiti PP ON P.ID_Predmeta = PP.ID_Predmeta AND A.ID_Predmeta = PP.ID_Predmeta AND R.ID_Roka = PP.ID_Roka AND U.ID_Studenta = PP.ID_Studenta AND U.ID_Predmeta = PP.ID_Predmeta AND PP.ID_Studenta = ? AND A.Tip_Aktivnosti = 1;", dp::IDataSet::Execution::EX_MULT);
-   dp::Params parDS2(_pDS2->allocParams());
-   parDS2 << Globals::_currentUserID;
+    dp::Params parDS2(_pDS2->allocParams());
+    parDS2 << Globals::_currentUserID;
     dp::DSColumns cols(_pDS2->allocBindColumns(8));
     cols << "Course_name" << td::string8 << "Course_code" << td::string8 << "Name_of_activity" << td::string8 << "Start_date" << td::date << "Start_time" << td::time << "Reg_time" << td::time << "id_pre" << td::int4 << "id_roka" << td::int4;
 
@@ -145,7 +145,7 @@ bool ViewExamSignUp::saveData1()
 
     td::INT4 ID_Pre1 = row[6].i4Val();
     td::INT4 ID_Roka = row[7].i4Val();
-    parDS << ID_Pre1 << ID_studenta<<ID_Roka;
+    parDS << ID_Pre1 << ID_studenta << ID_Roka;
     dp::Transaction tr(_db);
 
 
@@ -173,7 +173,7 @@ bool ViewExamSignUp::saveData2()
     auto& row = pDS->getRow(iRow);
 
     td::INT4 ID_Pre2 = row[6].i4Val();
-    parDS <<ID_studenta<< ID_Pre2;
+    parDS << ID_studenta << ID_Pre2;
 
 
     dp::Transaction tr(_db);
@@ -278,7 +278,7 @@ void ViewExamSignUp::SetCurrentStudentIndeks()
     td::String Indeks;
     pCols << "Indeks" << Indeks;
     if (!pSelect->execute()) {
-        Indeks ="Nema indeksa";
+        Indeks = "Nema indeksa";
     }
     while (pSelect->moveNext())
     {
