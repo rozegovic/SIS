@@ -140,10 +140,10 @@ void ViewTimeSlot::populateTable2()
 {
     auto sID = Globals::_currentUserID;
   
-    _pDS2 = dp::getMainDatabase()->createDataSet("SELECT b.Naziv AS tip, a.Vrijeme AS time, a.Dan AS date, c.ID_Studenta as IDs from Termini a, TipPredavanja b, TerminiStudenti c WHERE c.ID_Termina = a.ID and c.TipPredavanjaID = b.ID and c.ID_Studenta = ?", dp::IDataSet::Execution::EX_MULT);
+    _pDS2 = dp::getMainDatabase()->createDataSet("SELECT b.Naziv AS tip, a.Vrijeme AS time, a.Dan AS date, c.ID_Studenta as IDs from Termini a, TipPredavanja b, TerminiStudenti c WHERE c.ID_Termina = a.ID and c.TipPredavanjaID = b.ID and c.ID_Studenta = ? AND a.Predmet_ID = ?", dp::IDataSet::Execution::EX_MULT);
     
     dp::Params pParams(_pDS2->allocParams());
-    pParams << sID;           
+    pParams << sID << _SubjectID;
     
     dp::DSColumns cols(_pDS2->allocBindColumns(3));
     cols << "tip" << td::string8 << "time" << td::time << "date" << td::string8;

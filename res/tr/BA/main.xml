@@ -147,6 +147,8 @@
 		<Res id="alertTSTF" tr="ID osoblja već postoji."/>
 		<Res id="succesEE" tr="Uspješno registrovane promjene u sistem."/>
 		<Res id="alertIND" tr="Indeks korisnika nije ispravno unesen."/>
+		<Res id="alertNp" tr="Nisu uneseni svi potrebni podaci."/>
+
 		
 		<Res id="succes" tr="Uspješna registracija!"/>
 		<Res id="newF" tr="Novi fakultet"/>
