@@ -22,6 +22,7 @@ ViewUpload::ViewUpload()
     , _btnReload(tr("Reload"))
     , _btnEnroll(tr("Enroll"))
     , _btnSend(tr("Send"))
+    , _btnUnSend(tr("UnSend"))
     , _btnAddFile(tr("AddFile"), tr("AddFileTT"))
     //, _btnWithdraw(tr("Withdraw"), tr("WithdrawTT"))
     , _gl(7, 6)
@@ -34,6 +35,7 @@ ViewUpload::ViewUpload()
     // _hlBtnsDB.appendSpace(20);
     // _hlBtnsDB.append(_btnWithdraw);
     _hlBtnsDB.append(_btnSend);
+    _hlBtnsDB.append(_btnUnSend);
     _btnDEnroll.setType(gui::Button::Type::Default);
     _btnEnroll.setType(gui::Button::Type::Constructive);
     // _btnWithdraw.setType(gui::Button::Type::Destructive);
@@ -111,15 +113,17 @@ void ViewUpload::SetCurrentData() {
 void ViewUpload::populateDataForTable1()
 {
 
-    _pDS = dp::getMainDatabase()->createDataSet("SELECT P.Naziv_Predmeta, P.Sifra_Predmeta, A.Naziv_Aktivnosti, op.Datum_Predaje, op.Vrijeme_Predaje, P.ID_Predmeta FROM Predmet P, Aktivnosti A, Predaja pr, OpenPredaja op where P.ID_Predmeta = A.ID_Predmeta and (A.Tip_Aktivnosti = 2 or A.Tip_Aktivnosti = 5) and op.ID = pr.ID_OpenPredaja and pr.Predano = 0 and pr.ID_Aktivnosti = A.ID_Aktivnosti", dp::IDataSet::Execution::EX_MULT);
-    dp::DSColumns cols(_pDS->allocBindColumns(6));
-    cols << "Naziv_Predmeta" << td::string8 
-        << "Sifra_Predmeta" << td::string8 
-        << "Naziv_Aktivnosti" << td::string8 
+    _pDS = dp::getMainDatabase()->createDataSet("SELECT pr.ID_Predaje, P.Naziv_Predmeta, P.Sifra_Predmeta, A.Naziv_Aktivnosti, op.Datum_Predaje, op.Vrijeme_Predaje, P.ID_Predmeta, pr.NazivFajla FROM Predmet P, Aktivnosti A, Predaja pr, OpenPredaja op where P.ID_Predmeta = A.ID_Predmeta and (A.Tip_Aktivnosti = 2 or A.Tip_Aktivnosti = 5) and op.ID = pr.ID_OpenPredaja and pr.Predano = 0 and pr.ID_Aktivnosti = A.ID_Aktivnosti", dp::IDataSet::Execution::EX_MULT);
+    dp::DSColumns cols(_pDS->allocBindColumns(8));
+    cols << "ID_Predaje" << td::int4
+        << "Naziv_Predmeta" << td::string8
+        << "Sifra_Predmeta" << td::string8
+        << "Naziv_Aktivnosti" << td::string8
         << "Datum_Predaje" << td::date  //krajnji rok
         << "Vrijeme_Predaje" << td::time //krajnji rok
-        /* << "Reg_time" << td::time */ 
-        << "ID_Predmeta" << td::int4;;
+        << "ID_Predmeta" << td::int4
+        << "NazivFajla" << td::string8;
+        //<< "Datoteka" << td::string8; // treba vidjet koji tip podatka treba za datoteku
 
     if (!_pDS->execute())
     {
@@ -134,9 +138,17 @@ void ViewUpload::populateDataForTable2() // treba modifikovati select da radi ka
 
  // treba vidjet koji tip podatka treba za datoteku
 
-    _pDS2 = dp::getMainDatabase()->createDataSet("SELECT P.Naziv_Predmeta, P.Sifra_Predmeta, A.Naziv_Aktivnosti, op.Datum_Predaje, op.Vrijeme_Predaje, P.ID_Predmeta, pr.NazivFajla, pr.Datoteka FROM Predmet P, Aktivnosti A, Predaja pr, OpenPredaja op where P.ID_Predmeta = A.ID_Predmeta and (A.Tip_Aktivnosti = 2 or A.Tip_Aktivnosti = 5) and op.ID = pr.ID_OpenPredaja and pr.Predano = 1 and pr.ID_Aktivnosti = A.ID_Aktivnosti", dp::IDataSet::Execution::EX_MULT);
+    _pDS2 = dp::getMainDatabase()->createDataSet("SELECT pr.ID_Predaje, P.Naziv_Predmeta, P.Sifra_Predmeta, A.Naziv_Aktivnosti, op.Datum_Predaje, op.Vrijeme_Predaje, P.ID_Predmeta, pr.NazivFajla FROM Predmet P, Aktivnosti A, Predaja pr, OpenPredaja op where P.ID_Predmeta = A.ID_Predmeta and (A.Tip_Aktivnosti = 2 or A.Tip_Aktivnosti = 5) and op.ID = pr.ID_OpenPredaja and pr.Predano = 1 and pr.ID_Aktivnosti = A.ID_Aktivnosti", dp::IDataSet::Execution::EX_MULT);
     dp::DSColumns cols(_pDS2->allocBindColumns(8));
-    cols << "Naziv_Predmeta" << td::string8 << "Sifra_Predmeta" << td::string8 << "Naziv_Aktivnosti" << td::string8 << "Datum_Predaje" << td::date << "Vrijeme_Predaje" << td::time << "ID_Predmeta" << td::int4 << "NazivFajla" << td::string8 << "Datoteka" << td::string8; // treba vidjet koji tip podatka treba za datoteku
+    cols << "ID_Predaje" << td::int4
+        << "Naziv_Predmeta" << td::string8
+        << "Sifra_Predmeta" << td::string8
+        << "Naziv_Aktivnosti" << td::string8
+        << "Datum_Predaje" << td::date
+        << "Vrijeme_Predaje" << td::time
+        << "ID_Predmeta" << td::int4
+        << "NazivFajla" << td::string8;
+        //<< "Datoteka" << td::string8; // treba vidjet koji tip podatka treba za datoteku
 
     if (!_pDS2->execute())
     {
@@ -267,6 +279,29 @@ bool ViewUpload::onClick(gui::Button* pBtn)
         _table2.push_back();
         _table2.endUpdate();
         _table1.removeRow(iRow);
+        int id = row[0].i4Val();
+        
+        if (!PredajaPredano(id))
+            return false;
+
+        return true;
+    }
+    if (pBtn == &_btnUnSend) {
+        int iRow = _table2.getFirstSelectedRow();
+        auto& rowToBeDel = _table2.getCurrentRow();
+        if (iRow < 0)
+            return true;
+        _table1.beginUpdate();
+        auto& row = _table1.getEmptyRow();
+        row = rowToBeDel;
+        _table1.push_back();
+        _table1.endUpdate();
+        _table2.removeRow(iRow);
+        int id = row[0].i4Val();
+        
+        if (!PredajaNePredano(id))
+            return false;
+
         return true;
     }
 
@@ -326,11 +361,11 @@ void ViewUpload::showOpenFileDialog()
                     dp::IDatabase* pDB = dp::getMainDatabase();
                     //dp::getMainDatabase() if I were connected to DB before
 
-                    dp::IStatementPtr pStatIns = pDB->createStatement("UPDATE Predaja SET Datoteka = ? WHERE ID_Predaje = ?");
+                    dp::IStatementPtr pStatIns = pDB->createStatement("UPDATE Predaja SET Datoteka = ?, NazivFajla = ? WHERE ID_Predaje = ?;");
                     dp::Params paramsInsert(pStatIns->allocParams());
 
                     fo::fs::path filePath(strFileFullPath.c_str());
-                    //td::String strFileName = filePath.filename().string();//daj mi naziv fajla
+                    td::String strFileName = filePath.filename().string();//daj mi naziv fajla
                     td::String fileExtension = filePath.filename().extension().string(); //daj mi tip fajla
 
                     //tip BLOBa
@@ -350,11 +385,13 @@ void ViewUpload::showOpenFileDialog()
                     int iRow = _table1.getFirstSelectedRow();
                     if (iRow < 0)
                         return true;
-
-                    td::INT4 itemid = getIDfromTable(iRow);
+                    auto& row = _table1.getCurrentRow();
+                    td::INT4 itemid = row[0].i4Val();
+                    row[7] = strFileName;
 
                     static td::INT4 ID_predaje = itemid;
-                    paramsInsert << dataIn << ID_predaje;
+
+                    paramsInsert << dataIn << dp::toNCh(strFileName, 100) << ID_predaje;
                     //Neophodno, sa ove lokacije (strFileFullPath) se uzima BLOB
                     if (!dataIn.setInFileName(strFileFullPath))
                     {
@@ -382,4 +419,27 @@ td::INT4 ViewUpload::getIDfromTable(int rowID)
     dp::IDataSet* pDS = _table1.getDataSet();
     auto& row = pDS->getRow(rowID);
     return row[0].i4Val();
+}
+
+bool ViewUpload::PredajaPredano(int rowID) {
+    dp::IStatementPtr pUpdateStat(dp::getMainDatabase()->createStatement("UPDATE Predaja SET Predano = 1 WHERE ID_Predaje = ?;"));
+    dp::Params parDS(pUpdateStat->allocParams());
+    parDS << rowID;
+    //dp::Transaction tr(dp::getMainDatabase());
+    if (!pUpdateStat->execute())
+    {
+        return false;
+    }
+    //if (!tr.commit())
+        //tr.rollBack();
+}
+bool ViewUpload::PredajaNePredano(int rowID) {
+    dp::IStatementPtr pUpdateStat(dp::getMainDatabase()->createStatement("UPDATE Predaja SET Predano = 0 WHERE ID_Predaje = ?;"));
+    dp::Params parDS(pUpdateStat->allocParams());
+    parDS << rowID;
+    if (!pUpdateStat->execute())
+    {
+        return false;
+    }
+    return true;
 }
