@@ -134,6 +134,7 @@ bool ViewDepartment::canAdd()
     if (id < 0) {
         showAlert(tr("alert"), tr("alertNEG"));
         return false;
+
     }
 
     dp::IDataSet* pDS = _table.getDataSet();
@@ -157,6 +158,23 @@ bool ViewDepartment::canAdd()
         }
 
     }
+    td::Variant pom;
+    _id.getValue(pom);
+    if (pom.isZero()) {
+        showAlert(tr("alert"), tr("alertNp"));
+        return false;
+    }
+    _name.getValue(pom);
+    if (pom.isZero()) {
+        showAlert(tr("alert"), tr("alertNp"));
+        return false;
+    }
+    _shName.getValue(pom);
+    if (pom.isZero()) {
+        showAlert(tr("alert"), tr("alertNp"));
+        return false;
+    }
+
     return true;
 }
 

@@ -250,6 +250,32 @@ void ViewCourse::initTable(int type)
          showAlert(tr("alert"), tr("alertCRSM"));
          return false;
      }
+     _idCode.getValue(pom);
+     if(pom.isZero()){
+         showAlert(tr("alert"), tr("alertNp"));
+         return false;
+     }
+     _name.getValue(pom);
+     if (pom.isZero()) {
+         showAlert(tr("alert"), tr("alertNp"));
+         return false;
+      }
+     _semester.getValue(pom);
+     if (pom.isZero()) {
+         showAlert(tr("alert"), tr("alertNp"));
+         return false;
+     }
+     _ects.getValue(pom);
+
+     if (pom.isZero()) {
+         showAlert(tr("alert"), tr("alertNp"));
+         return false;
+     }
+     _maxNum.getValue(pom);
+     if (pom.isZero()) {
+         showAlert(tr("alert"), tr("alertNp"));
+         return false;
+     }
      return true;
  }
 
