@@ -260,7 +260,17 @@ bool ViewUpload::onClick(gui::Button* pBtn)
         return true;
     }
     if (pBtn == &_btnSend) {
-
+        int iRow = _table1.getFirstSelectedRow();
+        auto& rowToBeDel = _table1.getCurrentRow();
+        if (iRow < 0)
+            return true;
+        _table2.beginUpdate();
+        auto& row = _table2.getEmptyRow();
+        row = rowToBeDel;
+        _table2.push_back();
+        _table2.endUpdate();
+        _table1.removeRow(iRow);
+        return true;
     }
 
     if (pBtn == &_btnAddFile) {

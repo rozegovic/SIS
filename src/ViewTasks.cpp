@@ -26,7 +26,7 @@ ViewTasks::ViewTasks(td::INT4 SubjectID) :
     , _btnSave(tr("Save"), tr("SaveTT"))
     , _btnAddFile(tr("AddFile"), tr("AddFileTT"))
     , _hlBtnsDB(6)
-    , _gl(6, 4)
+    , _gl(7, 4)
     , _SubjectID(SubjectID)
 {
 
