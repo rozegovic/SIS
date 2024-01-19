@@ -84,8 +84,8 @@ void ViewMessages::populateData() {
         << "AuthorID" << td::int4
         << "Prezime" << td::string8
         << "Ime" << td::string8
-        << "Datum" << td::int4
-        << "Vrijeme" << td::int4;
+        << "Datum" << td::date
+        << "Vrijeme" << td::date;
 
     if (!_pDS->execute())
     {
