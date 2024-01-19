@@ -52,9 +52,8 @@ INSERT INTO "Aktivnosti" ("ID_Aktivnosti","ID_Predmeta","Procenat","Naziv_Aktivn
 INSERT INTO "Messages" ("ID","AuthorID","Subject","Poruke","Datum","Vrijeme") VALUES (3,-1,'dummykgfhgfhffjhfjfjfjfjvgkggkg','pokusajwahadhjdhfjkhsdfjkhsak',4628,23793);
 INSERT INTO "MsgReceivers" ("UserID","MsgID") VALUES (5,3);
 INSERT INTO "Rokovi" ("ID_Roka","ID_Aktivnosti","Datum_Pocetka","Vrijeme_Pocetka","Datum_Kraja","Vrijeme_Kraja","Datum_Prijave","Vrijeme_Prijave","ID_Predmeta") VALUES (1,5,20231229,90000,0,0,2555562,111427,1);
-INSERT INTO "Rokovi" ("ID_Roka","ID_Aktivnosti","Datum_Pocetka","Vrijeme_Pocetka","Datum_Kraja","Vrijeme_Kraja","Datum_Prijave","Vrijeme_Prijave","ID_Predmeta") VALUES (2,1,20220609,113000,0,0,545256,112023,2);
-INSERT INTO "Rokovi" ("ID_Roka","ID_Aktivnosti","Datum_Pocetka","Vrijeme_Pocetka","Datum_Kraja","Vrijeme_Kraja","Datum_Prijave","Vrijeme_Prijave","ID_Predmeta") VALUES (3,2,20230210,90000,0,0,515245,90705,3);
-INSERT INTO "Rokovi" ("ID_Roka","ID_Aktivnosti","Datum_Pocetka","Vrijeme_Pocetka","Datum_Kraja","Vrijeme_Kraja","Datum_Prijave","Vrijeme_Prijave","ID_Predmeta") VALUES (4,5,20230303,90000,0,0,515585,111111,4);
+INSERT INTO "Rokovi" ("ID_Roka","ID_Aktivnosti","Datum_Pocetka","Vrijeme_Pocetka","Datum_Kraja","Vrijeme_Kraja","Datum_Prijave","Vrijeme_Prijave","ID_Predmeta") VALUES (2,1,20220609,113000,0,0,545256,112023,3);
+INSERT INTO "Rokovi" ("ID_Roka","ID_Aktivnosti","Datum_Pocetka","Vrijeme_Pocetka","Datum_Kraja","Vrijeme_Kraja","Datum_Prijave","Vrijeme_Prijave","ID_Predmeta") VALUES (3,2,20230210,90000,0,0,515245,90705,4);
 INSERT INTO "Rokovi" ("ID_Roka","ID_Aktivnosti","Datum_Pocetka","Vrijeme_Pocetka","Datum_Kraja","Vrijeme_Kraja","Datum_Prijave","Vrijeme_Prijave","ID_Predmeta") VALUES (5,3,0,0,20220609,113000,0,0,2);
 INSERT INTO "Rokovi" ("ID_Roka","ID_Aktivnosti","Datum_Pocetka","Vrijeme_Pocetka","Datum_Kraja","Vrijeme_Kraja","Datum_Prijave","Vrijeme_Prijave","ID_Predmeta") VALUES (6,7,0,0,20230210,9000,0,112023,3);
 INSERT INTO "OcjeneIspita" ("ID","ID_Korisnika","ID_Aktivnosti","Ocjena") VALUES (1,2,2,'8');
@@ -127,5 +126,9 @@ INSERT INTO "Predaja" ("ID_Predaje","ID_OpenPredaja","ID_Studenta","Datoteka","D
 INSERT INTO "Predaja" ("ID_Predaje","ID_OpenPredaja","ID_Studenta","Datoteka","Datum_Predaje","Vrijeme_Predaje","Predano") VALUES (8,5,5,'dz5',20220607,174601,1);
 INSERT INTO "Predaja" ("ID_Predaje","ID_OpenPredaja","ID_Studenta","Datoteka","Datum_Predaje","Vrijeme_Predaje","Predano") VALUES (9,6,5,'lab5',20230207,152904,1);
 INSERT INTO "Predaja" ("ID_Predaje","ID_OpenPredaja","ID_Studenta","Datoteka","Datum_Predaje","Vrijeme_Predaje","Predano") VALUES (10,6,5,'lab3',20230206,192304,1);
+INSERT INTO UpisPredmeta(ID,ID_studenta,ID_Predmeta) VALUES (1,5,1);
+INSERT INTO UpisPredmeta(ID,ID_studenta,ID_Predmeta) VALUES (2,5,2);
+INSERT INTO UpisPredmeta(ID,ID_studenta,ID_Predmeta) VALUES (3,5,3);
+INSERT INTO UpisPredmeta(ID,ID_studenta,ID_Predmeta) VALUES (4,5,4);
 INSERT INTO SAOTicket_Status (ID,Status) VALUES (1,'Na čekanju');
 INSERT INTO SAOTicket_Status (ID,Status) VALUES (2,'Obrađen');

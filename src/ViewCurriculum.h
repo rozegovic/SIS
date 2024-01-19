@@ -68,13 +68,13 @@ protected:
     bool canDelete(int iRow);
     bool eraseCurriculum();
     bool saveData();
-    bool canAdd();
     bool existsInDepartment(td::INT4 id);
     bool canUpdate(int iRow);
     void populateData();
     bool updateCourse();
     bool loadComboBox(td::String select, gui::DBComboBox& combo);
     bool onChangedSelection(gui::TableEdit* pTE);
+    bool onChangedSelection(gui::DBComboBox* pCmb);
     void populateDSRow(dp::IDataSet::Row& row);
     //bool canAdd();    //trenutno ne treba 
     virtual bool onClick(gui::Button* pBtn);
@@ -83,4 +83,6 @@ protected:
     //bool onAnswer(td::UINT4 questionID, gui::Alert::Answer answer);
     void SetCurrentDepartment();
     void SetCurrentSemester();
+    void SetCurrentECTS();
+    bool canAdd();
 };

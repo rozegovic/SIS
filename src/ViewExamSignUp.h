@@ -67,6 +67,7 @@ public:
     ~ViewExamSignUp();
     td::Variant ID_Pre1;
     td::Variant ID_Pre2;
+    td::INT4 ID_studenta;
 
 protected:
     void initTable1();
@@ -76,4 +77,7 @@ protected:
     virtual bool onClick(gui::Button* pBtn);
     void populateDataForTable1();
     void populateDataForTable2();
+    void SetCurrentStudentName();
+    void SetCurrentStudentSurname();
+    void SetCurrentStudentIndeks();
 };
