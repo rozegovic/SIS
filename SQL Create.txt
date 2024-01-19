@@ -166,6 +166,7 @@ CREATE TABLE "UpisPredmeta" (
 	"ID"	INTEGER,
 	"ID_Studenta"	INTEGER NOT NULL,
 	"ID_Predmeta"	INTEGER,
+	FOREIGN KEY("ID_Studenta") REFERENCES "Korisnici"("ID"),
 	FOREIGN KEY("ID_Predmeta") REFERENCES "Predmet"("ID_Predmeta"),
 	PRIMARY KEY("ID" AUTOINCREMENT)
 );
