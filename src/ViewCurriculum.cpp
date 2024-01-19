@@ -53,8 +53,8 @@ ViewCurriculum::ViewCurriculum(td::INT4 _departmentID, td::INT4 _semesterID) : _
     populateData();
 
     SetCurrentDepartment();
-    SetCurrentSemester();
-    SetCurrentECTS();
+    SetCurrentSemester();/*
+    SetCurrentECTS();*/
     _department.setAsReadOnly();
     _semester.setAsReadOnly();
     loadComboBox("select ID_Predmeta as ID, Naziv_Predmeta as Name from Predmet where ID_Smjera=?", _course);
@@ -307,8 +307,10 @@ void ViewCurriculum::SetCurrentDepartment() {
 void ViewCurriculum::SetCurrentECTS() {
     dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT ECTS_bodovi FROM Predmet WHERE ID_Predmeta = ?");
     dp::Params parDS(pSelect->allocParams());
-    //d::INT4 IDPredmeta = Globals::_IDSubjectSelection;
-    td::INT4 id =_course.getSelectedIndex()+2;
+    ////d::INT4 IDPredmeta = Globals::_IDSubjectSelection;
+    td::Variant val(td::int4);
+    _course.getValue(val);
+    td::INT4 id =val.i4Val();
     parDS << id;
     dp::Columns pCols = pSelect->allocBindColumns(1);
     td::INT4 ects;
