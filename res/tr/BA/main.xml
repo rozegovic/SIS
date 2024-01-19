@@ -60,11 +60,12 @@
 
 		<Res id="ExamAttendanceRep" tr="Prijave na ispit"/>
 
-<Res id="Department" tr="Smjer"/>
-        <Res id="Semester" tr="Semestar"/>
-        <Res id="Course" tr="Predmet"/>
-        <Res id="Shortname" tr="Skraćenica"/>
-        <Res id="ECTS" tr="ECTS"/>
+<Res id="Department" tr="Smjer:"/>
+        <Res id="Semester" tr="Semestar:"/>
+        <Res id="Course" tr="Predmet:"/>
+        <Res id="Shortname" tr="Skraćenica:"/>
+        <Res id="ECTS" tr="ECTS:"/>
+		<Res id="Choose semester and department" tr="Odabir semestra i smjera"/>
 		
 		<Res id="SIS" tr="Studentski informacioni sistem"/>
 		<Res id="Sif" tr="Šifarnici"/>
