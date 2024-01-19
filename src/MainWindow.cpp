@@ -580,7 +580,7 @@ bool MainWindow::showExamSignUpView()
 
 bool MainWindow::showTicketView()
 {
-    if (!Globals::isStudent)
+    if (Globals::_currentUserRole!=5)
     {
         showAlert(tr("AccessNotAllowed"), "");
         return true;
@@ -596,7 +596,7 @@ bool MainWindow::showTicketView()
 
 bool MainWindow::showCourseEnrollView() {
 
-    if (!Globals::isAdmin && !Globals::isSAO)
+    if (Globals::_currentUserRole!=4 && Globals::_currentUserRole!=6)
     {
         showAlert(tr("AccessNotAllowed"), "");
         return true;
@@ -694,7 +694,11 @@ bool MainWindow::showGradeLabHomeworkView(td::INT4 SubjectID)
 
 bool MainWindow::showTicketForSaoView() {
 
-
+    if (Globals::_currentUserRole != 4)
+    {
+        showAlert(tr("AccessNotAllowed"), "");
+        return true;
+    }
 
     if (focusOnViewPositionWithID(View_SAOTICKET))
         return true;

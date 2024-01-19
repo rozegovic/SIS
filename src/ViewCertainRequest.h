@@ -48,7 +48,7 @@ protected:
 	gui::Label _answerlbl;
 	gui::TextEdit _bodyOfTicket;
 	gui::TextEdit _answer;
-	
+
 	//Bottom
 	gui::HorizontalLayout _hlBtnsDB;
 	gui::Button _btnSend;
@@ -60,7 +60,9 @@ protected:
 	td::String indeks;
 public:
 
-	ViewCertainRequest(td::String ime, td::String prezime, td::String indeks, td::String tipKarte,td::String statusKarte, td::String sadrzajKarte,td::String naslovKarte);
+
+	ViewCertainRequest(td::String ime, td::String prezime, td::String indeks, td::String tipKarte, td::String statusKarte, td::String sadrzajKarte, td::String naslovKarte);
+
 
 protected:
 
