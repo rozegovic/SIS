@@ -25,9 +25,7 @@
             <GHead height="5" backClr="BackGrouper1">
                 <Line lineWidth="0.2" lineStyle="solid" height="0"/>
                 <Row height="5">     <!-- visible only on first page -->
-                   <CompositeText hAlign="left" vAlign="center" font="Grouper1" width="-1">
-                        <Date dateFmt="DateWinLong" height="4" lbl="Date" name="Date"/>
-                    </CompositeText>
+                    <Time timeFmt="TimeWinShort" width="20" hAlign="left" name="Vrijeme"/>
                 </Row>
             </GHead>
         </Grouper>

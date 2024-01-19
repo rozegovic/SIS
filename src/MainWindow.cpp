@@ -83,8 +83,10 @@ void MainWindow::showLogin()
                 return true;
             }
             else
+            {
+              
                 close();
-
+            }
             return true;
         });
 
@@ -112,7 +114,13 @@ void MainWindow::showLogin()
 
 
 bool MainWindow::showSubjectChoose()
-{
+{     
+    if (!Globals::isAdmin && !Globals::isProfessor && !Globals::isAssistant)
+    {
+        showAlert(tr("AccessNotAllowed"), "");
+        return true;
+
+    }
 
     DialogChooseSubject* pDlg = new DialogChooseSubject(this);
     pDlg->setTitle(tr("SubjectChoose"));
@@ -121,9 +129,14 @@ bool MainWindow::showSubjectChoose()
             auto btnID = pDlg->getClickedButtonID();
             if (btnID == gui::Dialog::Button::ID::OK) {
                 auto dlgCS = static_cast<DialogChooseSubject*> (pDlg);
+                if (dlgCS->getComboBox().getNoOfItems() == 0)
+                {
+                    showAlert(tr("alert"), tr("alertNoProfesorSubject"));
+                    return false;
+                }
                 showAttendanceView(dlgCS->getSubjectID());
             }
-            else return true;
+             return true;
         });
 
     //pDlg->openModal(DlgID::Login, this);
@@ -133,7 +146,13 @@ bool MainWindow::showSubjectChoose()
 
 
 bool MainWindow::showSubjectChooseForTimeSlot()                                         ///
-{
+{   
+    if (!Globals::isAdmin && !Globals::isStudent)
+    {
+        showAlert(tr("AccessNotAllowed"), "");
+        return true;
+
+    }
 
     DialogChooseSubjectForTimeSlot* pDlg = new DialogChooseSubjectForTimeSlot(this);
     pDlg->setTitle(tr("SubjectChoose"));
@@ -142,9 +161,14 @@ bool MainWindow::showSubjectChooseForTimeSlot()                                 
             auto btnID = pDlg->getClickedButtonID();
             if (btnID == gui::Dialog::Button::ID::OK) {
                 auto dlgCS = static_cast<DialogChooseSubjectForTimeSlot*> (pDlg);
+                if (dlgCS->getComboBox().getNoOfItems() == 0)
+                {
+                    showAlert(tr("alert"), tr("alertNoSubject"));
+                    return false;
+                }
                 showTimeSlotView(dlgCS->getSubjectID());                              ///
             }
-            else return true;
+             return true;
         });
     return false;
 }
@@ -154,16 +178,11 @@ bool MainWindow::showTimeSlotView(td::INT4 SubjectID)
     if (focusOnViewPositionWithID(ViewID))
         return true;
 
-    auto x = Globals::_currentUserRole;
-    if (x != 5)
-    {
-        showAlert(tr("AccessNotAllowed"), "");
-        return true;
-    }
+  
     //showSubjectChooseForTimeSlot();
 
    // NavigatorView* pView = new NavigatorView(ViewID, SubjectID);
-    ViewTimeSlot* pView = new ViewTimeSlot(SubjectID);              ///
+    ViewTimeSlot* pView = new ViewTimeSlot(SubjectID, ViewID);              ///
     td::String a = (tr("viewTimeSlot"));
     dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select a.Naziv_Predmeta AS Naziv FROM Predmet a WHERE a.ID_Predmeta = ?");
     dp::Params pParams(pSelect->allocParams());
@@ -194,7 +213,7 @@ bool MainWindow::showCurriculum()
                 auto dlgCS = static_cast<DialogCurriculum*> (pDlg);
                 showCurriculumView(dlgCS->getDepartmentID(), dlgCS->getSemester());
             }
-            else return true;
+             return true;
         });
 
     //pDlg->openModalWithID(DlgID::Login, this);
@@ -311,7 +330,8 @@ bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc)
         switch (actionID)
         {
         case 10:
-        {
+        { 
+            if (_mainView.getNumberOfViews() > 0) return false;
             Globals::_currentUserRole = -1;
             Globals::_currentUserID = -1;
             //Globals::_IDSubjectSelection = -1;
@@ -340,7 +360,7 @@ bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc)
         break; case 50: return showAllSubjectChoose();
         break; case 60: return showSubjectChooseActivty();
         break; case 70: return showEnrollView();
-        break; case 80: return showSubjectChoose();
+      //  break; case 80: return showSubjectChoose();
         break; case 90: return showCurriculum();
         break; case 100: showMySubjectChoose(); return true;
         break; case 110: return showExamSignUpView();
@@ -372,15 +392,6 @@ bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc)
         }
     }
 
-
-
-
-    if (menuID == 20 && firstSubMenuID == 30 && lastSubMenuID == 30) {        ///
-        switch (actionID) {
-        break; case 80: return showSubjectChoose();
-        break; case 170: return showSubjectChooseForTimeSlot();
-        }
-    }
 
 
 
@@ -461,6 +472,11 @@ bool MainWindow::showCoursesView()
 
 bool MainWindow::showClassroomView()
 {
+    if (!Globals::isAdmin)
+    {
+        showAlert(tr("AccessNotAllowed"), "");
+        return true;
+}
     if (focusOnViewPositionWithID(View_CLASSROOM))
         return true;
 
@@ -576,7 +592,7 @@ bool MainWindow::showExamSignUpView()
 
 bool MainWindow::showTicketView()
 {
-    if (!Globals::isStudent)
+    if (Globals::_currentUserRole!=5)
     {
         showAlert(tr("AccessNotAllowed"), "");
         return true;
@@ -592,7 +608,7 @@ bool MainWindow::showTicketView()
 
 bool MainWindow::showCourseEnrollView() {
 
-    if (!Globals::isAdmin && !Globals::isSAO)
+    if (Globals::_currentUserRole!=4 && Globals::_currentUserRole!=6)
     {
         showAlert(tr("AccessNotAllowed"), "");
         return true;
@@ -686,7 +702,11 @@ bool MainWindow::showGradeLabHomeworkView(td::INT4 SubjectID)
 
 bool MainWindow::showTicketForSaoView() {
 
-
+    if (Globals::_currentUserRole != 4)
+    {
+        showAlert(tr("AccessNotAllowed"), "");
+        return true;
+    }
 
     if (focusOnViewPositionWithID(View_SAOTICKET))
         return true;

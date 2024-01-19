@@ -79,17 +79,21 @@ CREATE TABLE IF NOT EXISTS "Predmet" (
 );
 CREATE TABLE IF NOT EXISTS "Termini" (
 	"ID"	INTEGER NOT NULL,
-	"Datum"	INTEGER NOT NULL,
+	"Dan"	TEXT NOT NULL,
 	"TipPredavanjaID"	INTEGER NOT NULL,
 	"Predmet_ID"	INTEGER NOT NULL,
 	"Vrijeme"	INTEGER NOT NULL,
+	"Max_br_pol"	INTEGER,
+	"Br_prijavljenih"	INTEGER,
 	FOREIGN KEY("TipPredavanjaID") REFERENCES "TipPredavanja"("ID"),
-	FOREIGN KEY("Predmet_ID") REFERENCES "Predmet"("ID_Predmeta"),
-	CONSTRAINT "PK_Termini" PRIMARY KEY("ID")
+	CONSTRAINT "PK_Termini" PRIMARY KEY("ID"),
+	FOREIGN KEY("Predmet_ID") REFERENCES "Predmet"("ID_Predmeta")
+
 );
 CREATE TABLE IF NOT EXISTS "Prisustvo" (
 	"ID_termina"	INTEGER NOT NULL,
 	"ID_studenta"	INTEGER NOT NULL,
+	"Br_sedmice"	INTEGER NOT NULL,
 	FOREIGN KEY("ID_studenta") REFERENCES "Korisnici"("ID"),
 	FOREIGN KEY("ID_termina") REFERENCES "Termini"("ID")
 );
@@ -241,14 +245,15 @@ CREATE TABLE IF NOT EXISTS "Prijavljeni_ispiti" (
 	FOREIGN KEY("ID_Predmeta") REFERENCES "Predmet"("ID_Predmeta"),
 	FOREIGN KEY("ID_Roka") REFERENCES "Rokovi"("ID_Roka")
 );
-CREATE TABLE IF NOT EXISTS "TerminiStudenti" (
-	"ID_Studenta"	INTEGER NOT NULL,
+CREATE TABLE "TerminiStudenti" (
+	"ID"	INTEGER NOT NULL,
+	"ID_Studenta"	INTEGER,
 	"ID_Termina"	INTEGER,
 	"TipPredavanjaID"	INTEGER,
-	PRIMARY KEY("ID_Studenta"),
-	FOREIGN KEY("ID_Studenta") REFERENCES "Korisnici"("ID"),
+	FOREIGN KEY("TipPredavanjaID") REFERENCES "TipPredavanja"("ID"),
 	FOREIGN KEY("ID_Termina") REFERENCES "Termini"("ID"),
-	FOREIGN KEY("TipPredavanjaID") REFERENCES "TipPredavanja"("ID")
+	FOREIGN KEY("ID_Studenta") REFERENCES "Korisnici"("ID"),
+	PRIMARY KEY("ID")
 );
 CREATE TABLE IF NOT EXISTS "Predaja" (
 	"ID_Predaje"	INTEGER NOT NULL,
@@ -262,4 +267,21 @@ CREATE TABLE IF NOT EXISTS "Predaja" (
 	PRIMARY KEY("ID_Predaje"),
 	FOREIGN KEY("ID_OpenPredaja") REFERENCES "Rokovi"("ID_Roka"),
 	FOREIGN KEY("ID_Studenta") REFERENCES "Korisnici"("ID")
+);
+
+CREATE TABLE IF NOT EXISTS SAOStudentTicket (
+    ID INTEGER PRIMARY KEY NOT NULL,
+    Indeks TEXT NOT NULL,
+    Ticket_Tip TEXT NOT NULL,
+    Req_Title TEXT NOT NULL,
+    Request TEXT,
+    Status_ID INTEGER NOT NULL,
+    Attachment BLOB,
+    Name_attachment TEXT,
+	FOREIGN KEY (Status_ID) REFERENCES SAOTicket_Status(ID)
+);
+
+CREATE TABLE IF NOT EXISTS "SAOTicket_Status" (
+	"ID"	INTEGER PRIMARY KEY NOT NULL,
+	"Status"	TEXT NOT NULL
 );

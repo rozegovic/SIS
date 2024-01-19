@@ -33,14 +33,23 @@ private:
 protected:
     gui::Label _LblSubjName;
     gui::LineEdit _Subject;
-    gui::Label _LblDate;
-    gui::DateEdit _date;
     
+    gui::LineEdit _day;
+     
+    gui::Label _LblDay;
+    gui::ComboBox _dayCombo;
+  
     gui::Label _LblTime;
     gui::TimeEdit _time;
     
+    td::Time _Time;
+    
     gui::Label _LblType;
     gui::DBComboBox _type;
+    
+    gui::Label _LblMaxNum;
+    gui::NumericEdit _maxNum;
+   
     
     gui::HorizontalLayout _hlBtnsDB;
     gui::Button _btnAdd;
@@ -67,12 +76,15 @@ public:
     void AttendanceReport(const gui::Image* pImage);
 protected:
     void populateRoleCombo(gui::DBComboBox &combo);
+    void populateDayCombo(gui::ComboBox& combo);
     void populateData();
     bool onChangedSelection(gui::TableEdit* pTE);
+    bool onChangedSelection(gui::ComboBox* pCmb) override;
     void populateDSRow(dp::IDataSet::Row& row);
-    bool doesItDexist(td::Date d, td::Time t);
+    bool doesItDexist(td::Variant day, td::Time time);
     bool onClick(gui::Button* pBtn);
     void saveData();
+    void saveDataUpdate();
     void SetCurrentSubject();
     //void SendAddMsg();
     void SendMsg(td::INT4 MsgType);
