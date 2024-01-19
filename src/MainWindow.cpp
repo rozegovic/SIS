@@ -129,6 +129,11 @@ bool MainWindow::showSubjectChoose()
             auto btnID = pDlg->getClickedButtonID();
             if (btnID == gui::Dialog::Button::ID::OK) {
                 auto dlgCS = static_cast<DialogChooseSubject*> (pDlg);
+                if (dlgCS->getComboBox().getNoOfItems() == 0)
+                {
+                    showAlert(tr("alert"), tr("alertNoProfesorSubject"));
+                    return false;
+                }
                 showAttendanceView(dlgCS->getSubjectID());
             }
              return true;
@@ -156,6 +161,11 @@ bool MainWindow::showSubjectChooseForTimeSlot()                                 
             auto btnID = pDlg->getClickedButtonID();
             if (btnID == gui::Dialog::Button::ID::OK) {
                 auto dlgCS = static_cast<DialogChooseSubjectForTimeSlot*> (pDlg);
+                if (dlgCS->getComboBox().getNoOfItems() == 0)
+                {
+                    showAlert(tr("alert"), tr("alertNoSubject"));
+                    return false;
+                }
                 showTimeSlotView(dlgCS->getSubjectID());                              ///
             }
              return true;
@@ -172,7 +182,7 @@ bool MainWindow::showTimeSlotView(td::INT4 SubjectID)
     //showSubjectChooseForTimeSlot();
 
    // NavigatorView* pView = new NavigatorView(ViewID, SubjectID);
-    ViewTimeSlot* pView = new ViewTimeSlot(SubjectID);              ///
+    ViewTimeSlot* pView = new ViewTimeSlot(SubjectID, ViewID);              ///
     td::String a = (tr("viewTimeSlot"));
     dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select a.Naziv_Predmeta AS Naziv FROM Predmet a WHERE a.ID_Predmeta = ?");
     dp::Params pParams(pSelect->allocParams());

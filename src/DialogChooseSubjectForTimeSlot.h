@@ -3,6 +3,7 @@
 #include "ViewChooseSubjectForTimeSlot.h"
 #include "Globals.h"
 #include <dp/IDatabase.h>
+#include <gui/DBComboBox.h>
 
 
 
@@ -22,6 +23,7 @@ protected:
     }
 
 public:
+
     td::INT4 getSubjectID() {
         return  _viewTimeSlot.getSubjectID();
     }
@@ -55,12 +57,18 @@ public:
             ++counter;
             combo.addItem(name, id);
         }
-        if(counter == 0){
-            showAlert(tr("alert"), tr("alertNoSubjects"));
+       /* if (counter == 0) {
+            showAlert(tr("alert"), "alertNoSubjects");
             return false;
-        }
+        }*/
+        if(combo.getNoOfItems() > 0)
         combo.selectIndex(0);
         return true;
+
+    }
+    gui::DBComboBox& getComboBox()
+    {
+        return _viewTimeSlot.getComboBox();
 
     }
     ~DialogChooseSubjectForTimeSlot() {}

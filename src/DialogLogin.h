@@ -72,6 +72,7 @@ protected:
                 pWnd->keepOnTopOfParent();
                 pWnd->open();
 
+
             }
             Globals::_currentUserRole = userRole;
 

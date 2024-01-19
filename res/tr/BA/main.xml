@@ -319,9 +319,15 @@
         <Res id="PwrdErr" tr="Unesene šifre se ne poklapaju"/>
         
         <Res id="PwrdOK" tr="Uspješno postavljanje nove šifre!"/>
+        <Res id="DefaultPwrd" tr="Nova šifra ne može biti 'default'"/>
+        <Res id="NoPwrd" tr="Niste unijeli novu šifru"/>
         <Res id="CloseWnd" tr="Zatvorite ovaj prozor"/>
         
         <Res id="alertNoSubject" tr="Niste upisani niti na jedan predmet"/>
+		<Res id="alertNoProfesorSubject" tr="Niste profesor niti na jednom predmetu"/>
+		
+		
+		
     
 	</Translations>
 </DevRes>
