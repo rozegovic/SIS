@@ -48,8 +48,10 @@ protected:
     gui::LineEdit _cName;
 
     gui::HorizontalLayout _hlBtnsDB;
+    gui::HorizontalLayout _hl;
     gui::Button _btnAdd;
     gui::Button _btnDelete;
+    gui::Button _btnDelete2;
     gui::Button _btnAddFile;
     //  gui::Button _btnUpdate;
     gui::Button _btnSave;
@@ -75,15 +77,13 @@ protected:
     bool onClick(gui::Button* pBtn);
     bool saveData();
     bool canAdd();
-    bool eraseDateTime();
-    bool insertDateTime();
+    bool eraseTasks();
+    bool deleteTasks();
+    bool insertTasks();
     void SetCurrentSubject();
     void SetActivityName(td::Variant& val, td::INT4 br);
     td::INT4 getIDfromTable(int rowID);
     td::INT4 findMaxID();
     void showOpenFileDialog();
-    void selectFiles();
-    bool sendDocs();
-    gui::TextEdit* getTextEdit();
     bool onAnswer(td::UINT4 questionID, gui::Alert::Answer answer);
 };

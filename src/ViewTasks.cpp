@@ -23,9 +23,11 @@ ViewTasks::ViewTasks(td::INT4 SubjectID) :
     _btnAdd(tr("add"), tr("AddTT"))
     //, _btnUpdate(tr("Update"), tr("UpdateTT"))
     , _btnDelete(tr("Delete"), tr("DeleteTT"))
+    , _btnDelete2(tr("Delete2"), tr("Delete2TT"))
     , _btnSave(tr("Save"), tr("SaveTT"))
     , _btnAddFile(tr("AddFile"), tr("AddFileTT"))
     , _hlBtnsDB(6)
+    , _hl(3)
     , _gl(5, 4)
     , _SubjectID(SubjectID)
 {
@@ -64,7 +66,10 @@ ViewTasks::ViewTasks(td::INT4 SubjectID) :
     gc.appendCol(_LblTimeBegin);
     gc.appendCol(_timeB);
 
-    gc.appendRow(_btnAddFile);
+    _hl.append(_btnAddFile);
+    _hl.appendSpacer();
+    _hl.append(_btnDelete2);
+    gc.appendRow(_hl, 0);
 
     gc.appendRow(_table, 0);
     gc.appendRow(_hlBtnsDB, 0);
@@ -248,10 +253,10 @@ td::INT4 ViewTasks::findMaxID()
 bool  ViewTasks::saveData()
 {
     dp::Transaction tran(_db);
-    if (!eraseDateTime())
+    if (!eraseTasks())
         return false;
 
-    if (!insertDateTime())
+    if (!insertTasks())
         return false;
 
     if (tran.commit())
@@ -306,8 +311,27 @@ bool ViewTasks::canAdd()
     vrijeme ot prijave*/
     return true;
 }
+bool ViewTasks::deleteTasks() {
+    dp::IStatementPtr pDeleteItem(_db->createStatement("DELETE from DokumentiOpenPredaja where ID_Dokumenta=?"));
+    dp::Params pParams2(pDeleteItem->allocParams());
+    int iRow = _table.getFirstSelectedRow();
+    if (iRow < 0) {
+        return false;
+    }
+    td::Variant val;
+    dp::IDataSet* pDS = _table.getDataSet();
+    auto& row = pDS->getRow(iRow);
+    val = row[0];
+    td::INT4 id = val.i4Val();
+    pParams2 << id;
 
-bool ViewTasks::eraseDateTime()
+    if (!pDeleteItem->execute())
+    {
+        return false;
+    }
+    return true;
+}
+bool ViewTasks::eraseTasks()
 
 {
     td::INT4 id;
@@ -329,7 +353,7 @@ bool ViewTasks::eraseDateTime()
     return true;
 }
 
-bool ViewTasks::insertDateTime()
+bool ViewTasks::insertTasks()
 {
     dp::IStatementPtr pInsertCourseP(_db->createStatement("insert into Rokovi (ID_Roka, ID_Aktivnosti, Datum_Pocetka, Vrijeme_Pocetka, Datum_Kraja, Vrijeme_Kraja,Datum_Prijave, Vrijeme_Prijave,ID_Predmeta) values (?,?,?,?,?,?,?,?,?)"));
     dp::Params pParams2(pInsertCourseP->allocParams());
@@ -407,6 +431,12 @@ bool ViewTasks::onClick(gui::Button* pBtn)
         return true;
     }
 
+    if (pBtn == &_btnDelete2)
+    {
+        deleteTasks();
+        return true;
+    }
+
     if (pBtn == &_btnAdd)
     {
 
@@ -423,12 +453,10 @@ bool ViewTasks::onClick(gui::Button* pBtn)
         return true;
     }
     if (pBtn == &_btnAddFile) {
-            selectFiles();
+        showOpenFileDialog();
         return true;
     }
     if (pBtn == &_btnSave) {
-        sendDocs();
-        _attachedFiles.clean();
         showYesNoQuestionAsync(QuestionIDDDAAAA::Saveee, this, tr("alert"), tr("saveSure"), tr("Yes"), tr("No"));
 
         return true;
@@ -458,151 +486,86 @@ td::INT4 ViewTasks::getIDfromTable(int rowID)
 
 
 
-//void ViewTasks::showOpenFileDialog()
-//{
-//    //create OpenFile dialog and open it
-//    auto pFD = new gui::OpenFileDialog(this, tr("OpenF"), { {tr("TxtDocs"),"*.txt"}, {tr("PDFDocs"),"*.pdf"}, {tr("JPGSlike"),"*.jpg"}, {tr("PNGSlike"),"*.png"} });
-//#ifdef USE_CALLBACKS
-//    pFD->openModal(&_callBackOpenFileDlg);
-//#else
-//    //pFD->openModalWithID(WndID::FileOpenDlg, this);
-//    pFD->openModal([this](gui::FileDialog* pFD)
-//        {
-//            auto status = pFD->getStatus();
-//            if (status == gui::FileDialog::Status::OK)
-//            {
-//                td::String strFileFullPath = pFD->getFileName();
-//                td::String strContent;
-//
-//                if (fo::loadFileContent(strFileFullPath, strContent))
-//                {
-//                    dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT COALESCE(MAX(ID), 0) as id FROM DokumentiOpenPredaja");
-//                    dp::Columns pCols = pSelect->allocBindColumns(1);
-//                    td::INT4 id;
-//                    pCols << "id" << id;
-//                    pSelect->execute();
-//                    pSelect->moveNext();
-//                    dp::IDatabase* pDB = dp::getMainDatabase();
-//                    //dp::getMainDatabase() if I were connected to DB before
-//
-//                    dp::IStatementPtr pStatIns = pDB->createStatement("insert into DokumentiOpenPredaja(ID, Dokumenti, ID_Predaje) values(?, ?, ?)");
-//                    dp::Params paramsInsert(pStatIns->allocParams());
-//                    id++;
-//
-//                    fo::fs::path filePath(strFileFullPath.c_str());
-//                    td::String strFileName = filePath.filename().string();//daj mi naziv fajla
-//                    td::String fileExtension = filePath.filename().extension().string(); //daj mi tip fajla
-//
-//                    //tip BLOBa
-//                    td::BLOB::Type typeFile = td::BLOB::Type::TYPE_BINARY_UNKNOWN;
-//                    if (fileExtension.compareConstStr(".txt"))
-//                        typeFile = td::BLOB::Type::TYPE_TXT;
-//                    else if (fileExtension.compareConstStr(".pdf"))
-//                        typeFile = td::BLOB::Type::TYPE_PDF;
-//                    else if (fileExtension.compareConstStr(".jpg"))
-//                        typeFile = td::BLOB::Type::TYPE_JPG;
-//                    else if (fileExtension.compareConstStr(".png"))
-//                        typeFile = td::BLOB::Type::TYPE_PNG;
-//
-//
-//                    td::BLOB dataIn(td::BLOB::SRC_FILE, 16384U, typeFile);
-//                    td::INT4 ID = 1;
-//                    paramsInsert << id << dataIn << ID;
-//                    //Neophodno, sa ove lokacije (strFileFullPath) se uzima BLOB
-//                    if (!dataIn.setInFileName(strFileFullPath))
-//                    {
-//                        gui::Alert::show(tr("Error"), tr("Did you delete the selected file?"));
-//                        return;
-//                    }
-//
-//                    dp::Transaction transaction(pDB);
-//
-//                    //bool delOK = pStatDel->execute();
-//                    bool insOK = pStatIns->execute();
-//
-//                    bool commitOK = transaction.commit();
-//                }
-//            }
-//        });
-//#endif
-//}
-
-//gui::TextEdit* ViewTasks::getTextEdit()
-//{
-//    return ;
-//}
-
-void ViewTasks::selectFiles()
+void ViewTasks::showOpenFileDialog()
 {
+    //create OpenFile dialog and open it
     auto pFD = new gui::OpenFileDialog(this, tr("OpenF"), { {tr("TxtDocs"),"*.txt"}, {tr("PDFDocs"),"*.pdf"}, {tr("JPGSlike"),"*.jpg"}, {tr("PNGSlike"),"*.png"} });
-
 #ifdef USE_CALLBACKS
     pFD->openModal(&_callBackOpenFileDlg);
 #else
-    pFD->openModal([this](gui::FileDialog* pFD) {
-        auto status = pFD->getStatus();
-        if (status == gui::FileDialog::Status::OK) {
+    //pFD->openModalWithID(WndID::FileOpenDlg, this);
+    pFD->openModal([this](gui::FileDialog* pFD)
+        {
+            auto status = pFD->getStatus();
+            if (status == gui::FileDialog::Status::OK)
+            {
+                td::String strFileFullPath = pFD->getFileName();
+                td::String strContent;
 
-            _attachedFiles.push_back(pFD->getFileName());
+                if (fo::loadFileContent(strFileFullPath, strContent))
+                {
+                    dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT COALESCE(MAX(ID), 0) as id FROM DokumentiOpenPredaja");
+                    dp::Columns pCols = pSelect->allocBindColumns(1);
+                    td::INT4 id;
+                    pCols << "id" << id;
+                    pSelect->execute();
+                    pSelect->moveNext();
+                    dp::IDatabase* pDB = dp::getMainDatabase();
+                    //dp::getMainDatabase() if I were connected to DB before
 
-            fo::fs::path filePathNow(_attachedFiles.last().c_str());/*
-            td::String strFileName = filePathNow.filename().string();
-            _titleFile.setTitle(strFileName);
-            _titleFile.setBold();*/
-        }
+                    dp::IStatementPtr pStatIns = pDB->createStatement("insert into DokumentiOpenPredaja(ID, Naziv, Dokumenti, ID_Dokumenta) values(?, ?, ?, ?)");
+                    dp::Params paramsInsert(pStatIns->allocParams());
+                    id++;
+
+                    fo::fs::path filePath(strFileFullPath.c_str());
+                    td::String strFileName = filePath.filename().string();//daj mi naziv fajla
+                    td::String fileExtension = filePath.filename().extension().string(); //daj mi tip fajla
+
+                    //tip BLOBa
+                    td::BLOB::Type typeFile = td::BLOB::Type::TYPE_BINARY_UNKNOWN;
+                    if (fileExtension.compareConstStr(".txt"))
+                        typeFile = td::BLOB::Type::TYPE_TXT;
+                    else if (fileExtension.compareConstStr(".pdf"))
+                        typeFile = td::BLOB::Type::TYPE_PDF;
+                    else if (fileExtension.compareConstStr(".jpg"))
+                        typeFile = td::BLOB::Type::TYPE_JPG;
+                    else if (fileExtension.compareConstStr(".png"))
+                        typeFile = td::BLOB::Type::TYPE_PNG;
+
+                    td::BLOB dataIn(td::BLOB::SRC_FILE, 16384U, typeFile);
+
+                    int iRow = _table.getFirstSelectedRow();
+                    if (iRow < 0) {
+                        return;
+                    }
+                    td::Variant val;
+                    dp::IDataSet* pDS = _table.getDataSet();
+                    auto& row = pDS->getRow(iRow);
+                    val = row[0];
+                    td::INT4 ID = val.i4Val();
+                    paramsInsert << id << dp::toNCh(strFileName, MESSAGE_HEADER_LEN) << dataIn << ID;
+                    //Neophodno, sa ove lokacije (strFileFullPath) se uzima BLOB
+                    if (!dataIn.setInFileName(strFileFullPath))
+                    {
+                        gui::Alert::show(tr("Error"), tr("Did you delete the selected file?"));
+                        return;
+                    }
+
+                    dp::Transaction transaction(pDB);
+
+                    //bool delOK = pStatDel->execute();
+                    bool insOK = pStatIns->execute();
+
+                    bool commitOK = transaction.commit();
+                }
+            }
         });
 #endif
 }
 
 
-bool ViewTasks::sendDocs()
-{
-    if (!dp::getMainDatabase()->isConnected())
-    {
-        gui::Alert::show(tr("Error"), tr("Problem with database..."));
-        return false;
-    }
 
-    dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT COALESCE(MAX(ID), 0) as id FROM DokumentiOpenPredaja");
-    dp::Columns pCols = pSelect->allocBindColumns(1);
-    td::INT4 id;
-    pCols << "id" << id;
-    pSelect->execute();
-    pSelect->moveNext();
 
-    dp::IStatementPtr pStatIns = dp::getMainDatabase()->createStatement("INSERT INTO DokumentiOpenPredaja (ID, Dokumenti, ID_Dokumenta) VALUES (?, ?, ?)");
-    dp::Params parDS(pStatIns->allocParams());
-
-    fo::fs::path filePathNow(_attachedFiles.last().c_str());
-    td::String strFileName = filePathNow.filename().string();
-    td::String fileExtension = filePathNow.filename().extension().string();
-
-    td::BLOB::Type typeFile = td::BLOB::Type::TYPE_BINARY_UNKNOWN;
-    if (fileExtension.compareConstStr(".txt"))
-        typeFile = td::BLOB::Type::TYPE_TXT;
-    else if (fileExtension.compareConstStr(".pdf"))
-        typeFile = td::BLOB::Type::TYPE_PDF;
-    else if (fileExtension.compareConstStr(".jpg"))
-        typeFile = td::BLOB::Type::TYPE_JPG;
-    else if (fileExtension.compareConstStr(".png"))
-        typeFile = td::BLOB::Type::TYPE_PNG;
-
-    td::BLOB dataIn(td::BLOB::SRC_FILE, 16384U, typeFile);
-    td::INT4 d = 1;
-    id++;
-    parDS << id << dataIn<<d;
-
-    if (!dataIn.setInFileName(filePathNow))
-    {
-        gui::Alert::show(tr("Error"), tr("Did you delete selected file?"));
-        return true;
-    }
-    dp::Transaction tr(_db);
-
-    if (!pStatIns->execute())
-        return false;
-    return true;
-}
 
 bool ViewTasks::onAnswer(td::UINT4 questionID, gui::Alert::Answer answer)//??
 {
