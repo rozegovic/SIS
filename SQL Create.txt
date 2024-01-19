@@ -245,6 +245,7 @@ CREATE TABLE IF NOT EXISTS "Predaja" (
 	"ID_Predaje"	INTEGER NOT NULL,
 	"ID_OpenPredaja"	INTEGER NOT NULL,
 	"ID_Studenta"	INTEGER NOT NULL,
+	"NazivFajla"	TEXT NOT NULL,
 	"Datoteka"	BLOB NOT NULL,
 	"Datum_Predaje"	INTEGER NOT NULL,
 	"Vrijeme_Predaje"	INTEGER NOT NULL,
