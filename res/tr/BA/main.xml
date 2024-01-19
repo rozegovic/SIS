@@ -247,6 +247,23 @@
 		<Res id="Committed:" tr="Predano:"/>
 		<Res id="Send" tr="Posalji"/>
 		<Res id="Sname" tr="Skracenica"/>
+
+		<Res id="ActivityType" tr="Tip aktivnosti:"/>
+		<Res id="ActivityPoints" tr="Bodovi:"/>
+
+		<Res id="ActivityDateB" tr="Datum pocetka:"/>
+		<Res id="ActivityTimeB" tr="Vrijeme pocetka:"/>
+		<Res id="ActivityNameForDateTime" tr="Aktivnost:"/>
+		<Res id="Activity" tr="Aktivnost"/>
+
+		<Res id="ActivityDateE" tr="Datum kraja:"/>
+		<Res id="ActivityTimeE" tr="Vrijeme kraja:"/>
+		<Res id="ActivityDateF" tr="Datum prijave:"/>
+		<Res id="ActivityTimeF" tr="Vrijeme prijave:"/>
+		<Res id="viewGradeLabHw" tr="Ocjene dodataka"/>
+		<Res id="sifraP" tr="Skracenica"/>
+		<Res id="Task" tr="Zadatak"/>
+		
 		<!--Login-->
         <Res id = "WrongPass" tr = "Pogresna sifra!"/>
 		<Res id = "EnterCorrPass" tr = "Ukucajte ispravnu sifru"/>

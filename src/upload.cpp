@@ -116,8 +116,8 @@ void ViewUpload::populateDataForTable1()
     cols << "Naziv_Predmeta" << td::string8 
         << "Sifra_Predmeta" << td::string8 
         << "Naziv_Aktivnosti" << td::string8 
-        << "Datum_Predaje" << td::date 
-        << "Vrijeme_Predaje" << td::time
+        << "Datum_Predaje" << td::date  //krajnji rok
+        << "Vrijeme_Predaje" << td::time //krajnji rok
         /* << "Reg_time" << td::time */ 
         << "ID_Predmeta" << td::int4;;
 
