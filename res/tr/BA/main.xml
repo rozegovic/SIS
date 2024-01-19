@@ -15,11 +15,9 @@
 		
 		<Res id = "AttSubj" tr = "Predmet:"/>
 
-        <Res id = "AttDay" tr = "Dan:"/>
+        <Res id = "AttDate" tr = "Datum:"/>
 
         <Res id = "AttTime" tr = "Vrijeme:"/>
-
-		<Res id = "AttMaxNum" tr = "Maksimalni broj studenata:"/>
 
         <Res id = "AttType" tr = "Tip predavanja:"/>
 
@@ -35,18 +33,8 @@
 
         <Res id = "AttUpdateTT" tr = "Ažuriraj termine"/>
 
-        <Res id = "alertAttAdd" tr = "Već postoji termin za odabrani dan i vrijeme"/>
-		 <Res id = "alertAttUpdate" tr = "Ne postoji termin za odabrani dan i vrijeme koji se može ažurirati"/>
+        <Res id = "alertAttTxt" tr = "Već postoji termin za odabrani datum i vrijeme"/>
 		
-		<Res id="Monday" tr="Ponedeljak"/>
-	    <Res id="Tuesday" tr="Utorak"/>
-		<Res id="Wednesday" tr="Srijeda"/>
-		<Res id="Thursday" tr="Četvrtak"/>
-		<Res id="Friday" tr="Petak"/>
-		<Res id="Saturday" tr="Subota"/>
-		<Res id="Sunday" tr="Nedelja"/>
-							
-
         <Res id = "AttReport" tr = "Izvještaj"/>
         
         <Res id = "AttRepTT" tr = "Izvještaj o prijavama studenata na termine nastave"/>
@@ -72,12 +60,11 @@
 
 		<Res id="ExamAttendanceRep" tr="Prijave na ispit"/>
 
-<Res id="Department" tr="Smjer:"/>
-        <Res id="Semester" tr="Semestar:"/>
-        <Res id="Course" tr="Predmet:"/>
-        <Res id="Shortname" tr="Skraćenica:"/>
-        <Res id="ECTS" tr="ECTS:"/>
-		<Res id="Choose semester and department" tr="Odabir semestra i smjera"/>
+<Res id="Department" tr="Smjer"/>
+        <Res id="Semester" tr="Semestar"/>
+        <Res id="Course" tr="Predmet"/>
+        <Res id="Shortname" tr="Skraćenica"/>
+        <Res id="ECTS" tr="ECTS"/>
 		
 		<Res id="SIS" tr="Studentski informacioni sistem"/>
 		<Res id="Sif" tr="Šifarnici"/>
@@ -147,7 +134,9 @@
 		<Res id="alertTSTF" tr="ID osoblja već postoji."/>
 		<Res id="succesEE" tr="Uspješno registrovane promjene u sistem."/>
 		<Res id="alertIND" tr="Indeks korisnika nije ispravno unesen."/>
+		<Res id="alertOver100" tr="Ukupan broj bodova ne može biti veći od 100."/>
 		
+		<Res id="failure" tr="Neuspješno Dodavanje!"/>
 		<Res id="succes" tr="Uspješna registracija!"/>
 		<Res id="newF" tr="Novi fakultet"/>
 		<Res id="Yes" tr="Da"/>
@@ -155,34 +144,28 @@
                         <Res id="username" tr="Korisničko ime:"/>
                         <Res id="password" tr="Šifra:"/>
                        
-                        <Res id="NumSeats" tr="Broj mjesta:"/>
-                        <Res id="Location" tr="Lokacija:"/>
-                        <Res id="Type" tr="Tip:"/>
+                        <Res id="NumSeats" tr="Broj mjesta"/>
+                        <Res id="Location" tr="Lokacija"/>
+                        <Res id="Type" tr="Tip"/>
                         <Res id="Update" tr="Ažuriraj"/>
                         <Res id="Attendance" tr="Prisustvo"/>
                         <Res id="Login" tr="Prijava"/>
-                        <Res id="SubjName" tr="Ime:"/>
-						 <Res id="Name" tr="Ime"/>
-						 <Res id="Surname" tr="Prezime"/>
-                         <Res id="SubjSurname" tr="Prezime:"/>
-                         <Res id="SubjDate" tr="Datum:"/>
-						 <Res id="SubjWeek" tr="Nastavna sedmica:"/>
-						 <Res id="Subjdate" tr="Datum"/>
-						 <Res id="SubjDay" tr="Dan:"/>
-                         <Res id="SubjTime" tr="Vrijeme:"/>
-                         <Res id="SubjPresent" tr="Prisutan"/>
-                          <Res id="SubjNotPresent" tr="Nije prisutan"/>
+                        <Res id="Name" tr="Ime"/>
+                         <Res id="Surname" tr="Prezime"/>
+                         <Res id="Date" tr="Datum"/>
+                         <Res id="Time" tr="Vrijeme"/>
+                         <Res id="Present" tr="Prisutan"/>
+                          <Res id="NotPresent" tr="Nije prisutan"/>
                           <Res id="StatUser" tr="Korisnik:"/>
                          <Res id="StatRole" tr="Uloga:"/>
                          <Res id="Subject" tr="Predmet"/>
                             <Res id="alertPr" tr="Vec ste unijeli prisustvo ovog studenta za ovaj termin"/>
-							 <Res id="alertAttNegative" tr="Broj mjesta ne može biti negativan"/>
-							<Res id="SubjTablePresent" tr="Prisutni za ovaj termin:"/>
+							<Res id="tablePresent" tr="Prisutni za ovaj termin:"/>
 							<Res id="alertNoTerm" tr="Niste odabrali ni jedan termin"/>
 									<Res id="Report" tr="Izvještaj"/>
 		<Res id="ActivityRep" tr="Izvještaj aktivnosti"/>
 		<Res id="viewTimeSlot" tr="Prijava termina"/>
-		<Res id="alertActivityRep" tr="Nema unesenih aktivnosti iz odabranog predmeta!"/>
+		
 		
 		
 		
@@ -236,8 +219,6 @@
 		<Res id="AddFileTT" tr="Dodaj dokument"/>
 		<Res id="Docs:" tr="Dokumenti:"/>
 		
-		<Res id="viewTicketForSAO:" tr="SAO Karta"/>
-		
 		<Res id="tobeenrolledtocourse" tr="Studenti koji imaju mogućnost upisa"/>
 		<Res id="enrolledtocourse" tr="Studenti upisani na predmet"/>
 		<Res id="courselbl" tr="Predmet:"/>
@@ -254,11 +235,6 @@
 		<Res id="send" tr="Pošalji"/>
 		<Res id="sendRequestTT" tr="Pošalji trenutni zahtjev"/>
 		<Res id="OnHold" tr="Na Čekanju"/>
-		
-		<Res id="open" tr="Otvori"/>
-		<Res id="openTT" tr="Više informacija"/>
-		<Res id="attachmentAddLbl" tr="Privitak"/>
-		<Res id="attachmentlbl" tr="Dodaj privitak:"/>
 		
 		
 		<Res id="AccessNotAllowed" tr="Nemate pravo pristupa"/>
@@ -315,28 +291,8 @@
 		<Res id="viewGradeLabHW" tr="Ocjene dodataka"/>
 		<Res id="viewExamLabHomework" tr="Ocjena dodataka"/>
 
-        <Res id="alertLoginCreate" tr="Greška pri kreiranju logina"/>
-        <Res id="alertLoginDelete" tr="Greška pri brisanju logina"/>
-        
-        <Res id="RoleErr" tr="Problem pri određivanju uloge korisnika"/>
-        
-        <Res id="NewPwrd" tr="Nova šifra: "/>
-        <Res id="RepeatPwrd" tr="Ponovo unesite šifru: "/>
-        <Res id="HNewPwrd" tr="Postavljanje nove korisničke šifre"/>
-        <Res id="SetPassword" tr="Nova šifra"/>
-        <Res id="PwrdErr" tr="Unesene šifre se ne poklapaju"/>
-        
-        <Res id="PwrdOK" tr="Uspješno postavljanje nove šifre!"/>
-        <Res id="DefaultPwrd" tr="Nova šifra ne može biti 'default'"/>
-        <Res id="NoPwrd" tr="Niste unijeli novu šifru"/>
-        <Res id="CloseWnd" tr="Zatvorite ovaj prozor"/>
-        
-        <Res id="alertNoSubject" tr="Niste upisani niti na jedan predmet"/>
-		<Res id="alertNoProfesorSubject" tr="Niste profesor niti na jednom predmetu"/>
-		
-		
-		
-    
+
+
 	</Translations>
 </DevRes>
 

@@ -25,11 +25,13 @@
 #include <gui/ImageView.h>
 #include <gui/Color.h>
 #include "Globals.h"
+#include <gui/FileDialog.h>
 
 
 class ViewUpload : public gui::View
 {
 protected:
+    gui::NumericEdit _idPredaja;
     gui::Label _lblIndeks;
    gui::LineEdit _indeks;
 
@@ -40,6 +42,8 @@ protected:
     gui::LineEdit _surname;
     gui::Label _lblTable1;
    gui::Label _lblTable2;
+    gui::Label _lblFile;
+    gui::Label _titleFile;
 
     gui::TableEdit _table1;
    gui::TableEdit _table2;
@@ -48,6 +52,7 @@ protected:
    gui::Button _btnDEnroll;
     gui::Button _btnReload;
     gui::Button _btnSend;
+    gui::Button _btnAddFile;
 
 
 
@@ -58,6 +63,7 @@ protected:
     dp::IDataSetPtr _pDS2 = nullptr;
     td::INT4 _paramFrom;  //mozda kasnije potrebni
     td::INT4 _paramTo;    //mozda kasnije potrebni
+    td::String _attachedFile;
 
     std::vector<td::INT4> _depsToDelete, _depsToInsert, _depsToUpdate;
 
@@ -75,4 +81,7 @@ protected:
    void populateDataForTable1();
    void populateDataForTable2();
     //virtual bool onChangedSelection(gui::TableEdit* pTE);
+   void SetCurrentData();
+   void showOpenFileDialog();
+   td::INT4 getIDfromTable(int rowID);
 };
