@@ -263,6 +263,9 @@
 		<Res id="viewGradeLabHw" tr="Ocjene dodataka"/>
 		<Res id="sifraP" tr="Skracenica"/>
 		<Res id="Task" tr="Zadatak"/>
+
+		<Res id="ActivityDateP" tr="Datum kraja:"/>
+		<Res id="ActivityTimeP" tr="Vrijeme kraja:"/>
 		
 		<!--Login-->
         <Res id = "WrongPass" tr = "Pogresna sifra!"/>
