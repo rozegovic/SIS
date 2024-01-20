@@ -7,6 +7,7 @@
 #include <gui/Alert.h>
 #include <fo/FileOperations.h>
 #include <td/BLOB.h>
+#include "Globals.h"
 
 
 ViewGradeLabHomework::ViewGradeLabHomework(td::INT4 SubjectID) : _db(dp::getMainDatabase())
@@ -374,7 +375,8 @@ bool ViewGradeLabHomework::onClick(gui::Button* pBtn)
 		return true;
 	}
 	if (pBtn == &_btnSave) {
-		saveData();
+		showYesNoQuestionAsync(QuestionID::Save, this, tr("alert"), tr("saveSure"), tr("Yes"), tr("No"));
+		return true;
 	}
 	if (pBtn == &_btnReport) {
 		dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT Tip_Aktivnosti FROM Aktivnosti WHERE ID_Aktivnosti = ?");
@@ -583,12 +585,18 @@ void ViewGradeLabHomework::showOpenFileDialog()
 
 					fo::fs::path filePath(strFolderName.c_str());
 
-
-					
 					dp::IDatabase* pDB = dp::getMainDatabase();
 					dp::IStatementPtr pStatSel = pDB->createStatement("SELECT a.NazivFajla as Name from Predaja a, OpenPredaja b where a.ID_Studenta = ? and b.ID_Aktivnosti = ? and b.ID = a.ID_OpenPredaja");
 					dp::IStatementPtr pStatSelBlob = pDB->createStatement("SELECT a.Datoteka as Data from Predaja a, OpenPredaja b where a.ID_Studenta = ? and b.ID_Aktivnosti = ? and b.ID = a.ID_OpenPredaja");
-					td::INT4 ID = 5;
+					int iRow = _table.getFirstSelectedRow();
+					if (iRow < 0) {
+						return;
+					}
+					td::Variant val;
+					dp::IDataSet* pDS = _table.getDataSet();
+					auto& row = pDS->getRow(iRow);
+					val = row[0];
+					td::INT4 ID = val.i4Val();
 					dp::Params pStatSelParams(pStatSel->allocParams());
 					pStatSelParams << ID<<_ActivityID;
 					dp::Params pStatSelBlobParams(pStatSelBlob->allocParams());
@@ -715,3 +723,17 @@ void ViewGradeLabHomework::showOpenFileDialog()
 
 }
 #endif
+
+
+bool ViewGradeLabHomework::onAnswer(td::UINT4 questionID, gui::Alert::Answer answer)
+{
+	if ((QuestionID)questionID == QuestionID::Save)
+	{
+		if (answer == gui::Alert::Answer::Yes) {
+			saveData();
+			showAlert(tr("succes"), tr("succesEE"));
+		}
+		return true;
+	}
+	return false;
+}

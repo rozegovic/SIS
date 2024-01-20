@@ -3,6 +3,7 @@
 #include <td/Types.h>
 #include "Reports.h"
 #include "SendMessage.h"
+#include "Globals.h"
 
 ViewGradeExams::ViewGradeExams(td::INT4 SubjectID) : _db(dp::getMainDatabase())
 , _lblName(tr("userName:"))
@@ -253,15 +254,15 @@ bool ViewGradeExams::saveData()
 		_itemsToInsert.clear();
 		_itemsToUpdate.clear();
 	}
-
 	for (auto i : _userids) {
 
 		td::String naslov = "Ocjena!";
-		td::String poruka = "Unesena je ocjena za odredenu aktivnost! ";
+		td::String poruka = "Unesena je ocjena za odredenu aktivnost!";
 		MsgSender msg;
 		msg.sendSystemMsgtoUser(naslov, poruka, i);
 	}
 	_userids.clear();
+
 
 	return true;
 }
@@ -334,7 +335,8 @@ bool ViewGradeExams::onClick(gui::Button* pBtn)
 		return true;
 	}
 	if (pBtn == &_btnSave) {
-		saveData();
+		showYesNoQuestionAsync(QuestionID::Save, this, tr("alert"), tr("saveSure"), tr("Yes"), tr("No"));
+		return true;
 	}
 	if (pBtn == &_btnReport) {
 		examGrades(&_imgExamGrades, _SubjectID);
@@ -430,4 +432,17 @@ void ViewGradeExams::insertValues(td::INT4 subjectID)
 		return;
 	if (!pSelect->moveNext())
 		return;
+}
+
+bool ViewGradeExams::onAnswer(td::UINT4 questionID, gui::Alert::Answer answer)
+{
+	if ((QuestionID)questionID == QuestionID::Save)
+	{
+		if (answer == gui::Alert::Answer::Yes) {
+			saveData();
+			showAlert(tr("succes"), tr("succesEE"));
+		}
+		return true;
+	}
+	return false;
 }
