@@ -188,13 +188,14 @@ CREATE TABLE IF NOT EXISTS "Rokovi" (
 	FOREIGN KEY("ID_Aktivnosti") REFERENCES "Aktivnosti"("ID_Aktivnosti"),
 	PRIMARY KEY("ID_Roka")
 );
-CREATE TABLE IF NOT EXISTS "DokumentiOpenPredaja" (
+CREATE TABLE "DokumentiOpenPredaja" (
 	"ID"	INTEGER NOT NULL,
+	"Naziv"	TEXT NOT NULL,
 	"Dokumenti"	BLOB,
 	"ID_Dokumenta"	INTEGER NOT NULL,
-	FOREIGN KEY("ID_Dokumenta") REFERENCES "OpenPredaja"("ID"),
-	PRIMARY KEY("ID")
-);
+	PRIMARY KEY("ID"),
+	FOREIGN KEY("ID_Dokumenta") REFERENCES "OpenPredaja"("ID")
+)
 CREATE TABLE IF NOT EXISTS "OcjeneIspita" (
 	"ID"	INTEGER NOT NULL,
 	"ID_Korisnika"	INTEGER NOT NULL,
@@ -213,13 +214,12 @@ CREATE TABLE IF NOT EXISTS "PolazniciAktivnosti" (
 );
 CREATE TABLE "OpenPredaja" (
 	"ID"	INTEGER NOT NULL,
-	"Naziv"	TEXT NOT NULL,
 	"Datum_Predaje"	INTEGER NOT NULL,
 	"Vrijeme_Predaje"	INTEGER NOT NULL,
 	"ID_Aktivnosti"	INTEGER NOT NULL,
 	PRIMARY KEY("ID"),
 	FOREIGN KEY("ID_Aktivnosti") REFERENCES "Aktivnosti"("ID_Aktivnosti")
-);
+)
 CREATE TABLE IF NOT EXISTS "OcjeneLabZadace" (
 	"ID"	INTEGER NOT NULL,
 	"ID_Korisnika"	INTEGER NOT NULL,
