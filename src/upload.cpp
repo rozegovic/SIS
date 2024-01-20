@@ -116,20 +116,20 @@ void ViewUpload::populateDataForTable1()
     //_pDS = dp::getMainDatabase()->createDataSet("SELECT pr.ID_Predaje, P.Naziv_Predmeta, P.Sifra_Predmeta, A.Naziv_Aktivnosti, op.Datum_Predaje, op.Vrijeme_Predaje, P.ID_Predmeta, pr.NazivFajla FROM Predmet P, Aktivnosti A, Predaja pr, OpenPredaja op where P.ID_Predmeta = A.ID_Predmeta and (A.Tip_Aktivnosti = 2 or A.Tip_Aktivnosti = 5) and op.ID = pr.ID_OpenPredaja and pr.Predano = 0 and pr.ID_Aktivnosti = A.ID_Aktivnosti", dp::IDataSet::Execution::EX_MULT);
      
     
-   _pDS = dp::getMainDatabase()->createDataSet("SELECT pr.ID_Predaje, P.Naziv_Predmeta, P.Sifra_Predmeta, A.Naziv_Aktivnosti, op.Datum_Predaje, op.Vrijeme_Predaje, P.ID_Predmeta FROM Predmet P, Aktivnosti A, Predaja pr, OpenPredaja op, UpisPredmeta up where up.ID_Studenta = pr.ID_Studenta and pr.ID_Studenta = ? and P.ID_Predmeta = A.ID_Predmeta and up.ID_Predmeta = P.ID_Predmeta and (A.Tip_Aktivnosti = 2 or A.Tip_Aktivnosti = 5) and op.ID = pr.ID_OpenPredaja and pr.Predano = 0 and pr.ID_Aktivnosti = A.ID_Aktivnosti", dp::IDataSet::Execution::EX_MULT);
-   dp::Params parDS(_pDS->allocParams());
+    //_pDS = dp::getMainDatabase()->createDataSet("SELECT pr.ID_Predaje, P.Naziv_Predmeta, P.Sifra_Predmeta, A.Naziv_Aktivnosti, op.Datum_Predaje, op.Vrijeme_Predaje, P.ID_Predmeta FROM Predmet P, Aktivnosti A, Predaja pr, OpenPredaja op, UpisPredmeta up where up.ID_Studenta = pr.ID_Studenta and pr.ID_Studenta = ? and P.ID_Predmeta = A.ID_Predmeta and up.ID_Predmeta = P.ID_Predmeta and (A.Tip_Aktivnosti = 2 or A.Tip_Aktivnosti = 5) and op.ID = pr.ID_OpenPredaja and pr.Predano = 0 and pr.ID_Aktivnosti = A.ID_Aktivnosti", dp::IDataSet::Execution::EX_MULT);
+    _pDS = dp::getMainDatabase()->createDataSet("SELECT P.Naziv_Predmeta, P.Sifra_Predmeta, A.Naziv_Aktivnosti, op.Datum_Predaje, op.Vrijeme_Predaje, P.ID_Predmeta FROM Predmet P, Aktivnosti A, Predaja pr, OpenPredaja op, UpisPredmeta up where up.ID_Studenta = ? and P.ID_Predmeta = A.ID_Predmeta and up.ID_Predmeta = P.ID_Predmeta and (A.Tip_Aktivnosti = 2 or A.Tip_Aktivnosti = 5) and op.ID_Aktivnosti = A.ID_Aktivnosti", dp::IDataSet::Execution::EX_MULT);//Dodati NOT EXIST za provjeru da li postoji u Predaji vec neki red da se ne dodaje u prvu tabelu.
+    dp::Params parDS(_pDS->allocParams());
    parDS << Globals::_currentUserID; // id;
     
 
-    dp::DSColumns cols(_pDS->allocBindColumns(7));
-    cols << "ID_Predaje" << td::int4
+    dp::DSColumns cols(_pDS->allocBindColumns(6));
+    cols //<< "ID_Predaje" << td::int4
         << "Naziv_Predmeta" << td::string8
         << "Sifra_Predmeta" << td::string8
         << "Naziv_Aktivnosti" << td::string8
         << "Datum_Predaje" << td::date  //krajnji rok
         << "Vrijeme_Predaje" << td::time //krajnji rok
         << "ID_Predmeta" << td::int4;
-        //<< "Datoteka" << td::string8;
         //<< "Datoteka" << td::string8; // treba vidjet koji tip podatka treba za datoteku
 
     if (!_pDS->execute())
@@ -138,14 +138,29 @@ void ViewUpload::populateDataForTable1()
         return;
     }
     //initTable1();
-    _table1.init(_pDS,0);
+    _table1.init(_pDS,{1,3,4,5});
+    td::Date d;
+    td::Time t;
+    td::Date dnow(true);
+    td::Time tnow(true);
+    dp::IDataSet* pDS = _table1.getDataSet();
+    auto nRows = pDS->getNumberOfRows();
+    for (size_t i = 0; i < nRows; ++i) {
+        auto& row = pDS->getRow(i);
+        d = row[2];
+        t = row[3];
+        if (dnow < d)
+            _table1.removeRow(i);
+        else if (dnow == d && tnow < t)
+            _table1.removeRow(i);
+    }
 }
 void ViewUpload::populateDataForTable2() // treba modifikovati select da radi kad se preda na zadnji dan da se uporedi vrijeme 
 {
 
  // treba vidjet koji tip podatka treba za datoteku
 
-    _pDS2 = dp::getMainDatabase()->createDataSet("SELECT pr.ID_Predaje, P.Naziv_Predmeta, P.Sifra_Predmeta, A.Naziv_Aktivnosti, op.Datum_Predaje, op.Vrijeme_Predaje, P.ID_Predmeta, pr.NazivFajla FROM Predmet P, Aktivnosti A, Predaja pr, OpenPredaja op, UpisPredmeta up where up.ID_Studenta = pr.ID_Studenta and pr.ID_Studenta = ? and P.ID_Predmeta = A.ID_Predmeta and up.ID_Predmeta = P.ID_Predmeta and (A.Tip_Aktivnosti = 2 or A.Tip_Aktivnosti = 5) and op.ID = pr.ID_OpenPredaja and pr.Predano = 1 and pr.ID_Aktivnosti = A.ID_Aktivnosti", dp::IDataSet::Execution::EX_MULT);
+    _pDS2 = dp::getMainDatabase()->createDataSet("SELECT pr.ID_Predaje, P.Naziv_Predmeta, P.Sifra_Predmeta, A.Naziv_Aktivnosti, op.Datum_Predaje, op.Vrijeme_Predaje, P.ID_Predmeta, pr.NazivFajla FROM Predmet P, Aktivnosti A, Predaja pr, OpenPredaja op, UpisPredmeta up where up.ID_Studenta = pr.ID_Studenta and pr.ID_Studenta = ? and P.ID_Predmeta = A.ID_Predmeta and up.ID_Predmeta = P.ID_Predmeta and (A.Tip_Aktivnosti = 2 or A.Tip_Aktivnosti = 5) and op.ID = pr.ID_OpenPredaja and pr.ID_Aktivnosti = A.ID_Aktivnosti", dp::IDataSet::Execution::EX_MULT);
     dp::Params parDS2(_pDS2->allocParams());
     parDS2 << Globals::_currentUserID; // id;
     
