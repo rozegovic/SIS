@@ -113,16 +113,23 @@ void ViewUpload::SetCurrentData() {
 void ViewUpload::populateDataForTable1()
 {
 
-    _pDS = dp::getMainDatabase()->createDataSet("SELECT pr.ID_Predaje, P.Naziv_Predmeta, P.Sifra_Predmeta, A.Naziv_Aktivnosti, op.Datum_Predaje, op.Vrijeme_Predaje, P.ID_Predmeta, pr.NazivFajla FROM Predmet P, Aktivnosti A, Predaja pr, OpenPredaja op where P.ID_Predmeta = A.ID_Predmeta and (A.Tip_Aktivnosti = 2 or A.Tip_Aktivnosti = 5) and op.ID = pr.ID_OpenPredaja and pr.Predano = 0 and pr.ID_Aktivnosti = A.ID_Aktivnosti", dp::IDataSet::Execution::EX_MULT);
-    dp::DSColumns cols(_pDS->allocBindColumns(8));
+    //_pDS = dp::getMainDatabase()->createDataSet("SELECT pr.ID_Predaje, P.Naziv_Predmeta, P.Sifra_Predmeta, A.Naziv_Aktivnosti, op.Datum_Predaje, op.Vrijeme_Predaje, P.ID_Predmeta, pr.NazivFajla FROM Predmet P, Aktivnosti A, Predaja pr, OpenPredaja op where P.ID_Predmeta = A.ID_Predmeta and (A.Tip_Aktivnosti = 2 or A.Tip_Aktivnosti = 5) and op.ID = pr.ID_OpenPredaja and pr.Predano = 0 and pr.ID_Aktivnosti = A.ID_Aktivnosti", dp::IDataSet::Execution::EX_MULT);
+     
+    
+   _pDS = dp::getMainDatabase()->createDataSet("SELECT pr.ID_Predaje, P.Naziv_Predmeta, P.Sifra_Predmeta, A.Naziv_Aktivnosti, op.Datum_Predaje, op.Vrijeme_Predaje, P.ID_Predmeta FROM Predmet P, Aktivnosti A, Predaja pr, OpenPredaja op, UpisPredmeta up where up.ID_Studenta = pr.ID_Studenta and pr.ID_Studenta = ? and P.ID_Predmeta = A.ID_Predmeta and up.ID_Predmeta = P.ID_Predmeta and (A.Tip_Aktivnosti = 2 or A.Tip_Aktivnosti = 5) and op.ID = pr.ID_OpenPredaja and pr.Predano = 0 and pr.ID_Aktivnosti = A.ID_Aktivnosti", dp::IDataSet::Execution::EX_MULT);
+   dp::Params parDS(_pDS->allocParams());
+   parDS << Globals::_currentUserID; // id;
+    
+
+    dp::DSColumns cols(_pDS->allocBindColumns(7));
     cols << "ID_Predaje" << td::int4
         << "Naziv_Predmeta" << td::string8
         << "Sifra_Predmeta" << td::string8
         << "Naziv_Aktivnosti" << td::string8
         << "Datum_Predaje" << td::date  //krajnji rok
         << "Vrijeme_Predaje" << td::time //krajnji rok
-        << "ID_Predmeta" << td::int4
-        << "NazivFajla" << td::string8;
+        << "ID_Predmeta" << td::int4;
+        //<< "Datoteka" << td::string8;
         //<< "Datoteka" << td::string8; // treba vidjet koji tip podatka treba za datoteku
 
     if (!_pDS->execute())
@@ -138,7 +145,10 @@ void ViewUpload::populateDataForTable2() // treba modifikovati select da radi ka
 
  // treba vidjet koji tip podatka treba za datoteku
 
-    _pDS2 = dp::getMainDatabase()->createDataSet("SELECT pr.ID_Predaje, P.Naziv_Predmeta, P.Sifra_Predmeta, A.Naziv_Aktivnosti, op.Datum_Predaje, op.Vrijeme_Predaje, P.ID_Predmeta, pr.NazivFajla FROM Predmet P, Aktivnosti A, Predaja pr, OpenPredaja op where P.ID_Predmeta = A.ID_Predmeta and (A.Tip_Aktivnosti = 2 or A.Tip_Aktivnosti = 5) and op.ID = pr.ID_OpenPredaja and pr.Predano = 1 and pr.ID_Aktivnosti = A.ID_Aktivnosti", dp::IDataSet::Execution::EX_MULT);
+    _pDS2 = dp::getMainDatabase()->createDataSet("SELECT pr.ID_Predaje, P.Naziv_Predmeta, P.Sifra_Predmeta, A.Naziv_Aktivnosti, op.Datum_Predaje, op.Vrijeme_Predaje, P.ID_Predmeta, pr.NazivFajla FROM Predmet P, Aktivnosti A, Predaja pr, OpenPredaja op, UpisPredmeta up where up.ID_Studenta = pr.ID_Studenta and pr.ID_Studenta = ? and P.ID_Predmeta = A.ID_Predmeta and up.ID_Predmeta = P.ID_Predmeta and (A.Tip_Aktivnosti = 2 or A.Tip_Aktivnosti = 5) and op.ID = pr.ID_OpenPredaja and pr.Predano = 1 and pr.ID_Aktivnosti = A.ID_Aktivnosti", dp::IDataSet::Execution::EX_MULT);
+    dp::Params parDS2(_pDS2->allocParams());
+    parDS2 << Globals::_currentUserID; // id;
+    
     dp::DSColumns cols(_pDS2->allocBindColumns(8));
     cols << "ID_Predaje" << td::int4
         << "Naziv_Predmeta" << td::string8
