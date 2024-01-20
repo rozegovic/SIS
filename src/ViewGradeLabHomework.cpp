@@ -7,6 +7,7 @@
 #include <gui/Alert.h>
 #include <fo/FileOperations.h>
 #include <td/BLOB.h>
+#include "Globals.h"
 
 
 ViewGradeLabHomework::ViewGradeLabHomework(td::INT4 SubjectID) : _db(dp::getMainDatabase())
@@ -374,7 +375,8 @@ bool ViewGradeLabHomework::onClick(gui::Button* pBtn)
 		return true;
 	}
 	if (pBtn == &_btnSave) {
-		saveData();
+		showYesNoQuestionAsync(QuestionID::Save, this, tr("alert"), tr("saveSure"), tr("Yes"), tr("No"));
+		return true;
 	}
 	if (pBtn == &_btnReport) {
 		dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT Tip_Aktivnosti FROM Aktivnosti WHERE ID_Aktivnosti = ?");
@@ -715,3 +717,17 @@ void ViewGradeLabHomework::showOpenFileDialog()
 
 }
 #endif
+
+
+bool ViewGradeLabHomework::onAnswer(td::UINT4 questionID, gui::Alert::Answer answer)
+{
+	if ((QuestionID)questionID == QuestionID::Save)
+	{
+		if (answer == gui::Alert::Answer::Yes) {
+			saveData();
+			showAlert(tr("succes"), tr("succesEE"));
+		}
+		return true;
+	}
+	return false;
+}

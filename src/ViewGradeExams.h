@@ -81,4 +81,5 @@ protected:
     td::INT4 getIDfromTable(int rowID);    // uradjeno + provjera
     td::INT4 findMaxID();     // uradjeno
     void insertValues(td::INT4 subjectID);
+    bool onAnswer(td::UINT4 questionID, gui::Alert::Answer answer);
 };

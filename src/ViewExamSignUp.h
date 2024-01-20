@@ -80,4 +80,5 @@ protected:
     void SetCurrentStudentName();
     void SetCurrentStudentSurname();
     void SetCurrentStudentIndeks();
+    bool onAnswer(td::UINT4 questionID, gui::Alert::Answer answer);
 };

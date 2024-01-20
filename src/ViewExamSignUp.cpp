@@ -201,6 +201,7 @@ bool ViewExamSignUp::onClick(gui::Button* pBtn)
     }
     if (pBtn == &_btnEnroll)
     {
+        showYesNoQuestionAsync(QuestionID::Save, this, tr("alert"), tr("saveSure"), tr("Yes"), tr("No"));
         saveData1();
         _table1.reload();
         _table1.selectRow(0, true);
@@ -212,6 +213,7 @@ bool ViewExamSignUp::onClick(gui::Button* pBtn)
 
     if (pBtn == &_btnDEnroll)
     {
+        showYesNoQuestionAsync(QuestionID::Save, this, tr("alert"), tr("saveSure"), tr("Yes"), tr("No"));
         saveData2();
         _table1.reload();
         _table1.selectRow(0, true);
@@ -287,4 +289,17 @@ void ViewExamSignUp::SetCurrentStudentIndeks()
         _indeks.setValue(val);
 
     }
+
+}
+
+bool ViewExamSignUp::onAnswer(td::UINT4 questionID, gui::Alert::Answer answer)
+{
+    if ((QuestionID)questionID == QuestionID::Save)
+    {
+        if (answer == gui::Alert::Answer::Yes) {
+            showAlert(tr("succes"), tr("succesEE"));
+        }
+        return true;
+    }
+    return false;
 }

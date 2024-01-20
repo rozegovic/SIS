@@ -86,4 +86,5 @@ protected:
     void SetActivityName(td::Variant& val, td::INT4 br);
     td::INT4 getIDfromTable(int rowID);
     td::INT4 findMaxID();
+    bool onAnswer(td::UINT4 questionID, gui::Alert::Answer answer);
 };

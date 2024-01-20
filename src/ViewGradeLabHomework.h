@@ -89,5 +89,6 @@ protected:
     void openFile(gui::FileDialog* pFD);
     void showOpenFileDialog();
     virtual bool onChangedSelection(gui::DBComboBox* pCmb);
+    bool onAnswer(td::UINT4 questionID, gui::Alert::Answer answer);
 
 };
