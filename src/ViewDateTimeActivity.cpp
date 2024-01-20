@@ -1,6 +1,7 @@
 #include "ViewDateTimeActivity.h"
 #include "SendMessage.h"
-//#include "Globals.h"
+#include <td/Types.h>
+#include "Globals.h"
 
 
 ViewDateTimeActivity::ViewDateTimeActivity(td::INT4 SubjectID) :
@@ -478,7 +479,8 @@ bool ViewDateTimeActivity::onClick(gui::Button* pBtn)
         return true;
     }
     if (pBtn == &_btnSave) {
-        saveData();
+        showYesNoQuestionAsync(QuestionID::Save, this, tr("alert"), tr("saveSure"), tr("Yes"), tr("No"));
+        return true;
         //  _table.reload();
     }
 
@@ -500,4 +502,17 @@ td::INT4 ViewDateTimeActivity::getIDfromTable(int rowID)
     dp::IDataSet* pDS = _table.getDataSet();
     auto& row = pDS->getRow(rowID);
     return row[6].i4Val();
+}
+
+bool ViewDateTimeActivity::onAnswer(td::UINT4 questionID, gui::Alert::Answer answer)
+{
+    if ((QuestionID)questionID == QuestionID::Save)
+    {
+        if (answer == gui::Alert::Answer::Yes) {
+            saveData();
+            showAlert(tr("succes"), tr("succesEE"));
+        }
+        return true;
+    }
+    return false;
 }

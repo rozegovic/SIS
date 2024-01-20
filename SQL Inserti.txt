@@ -120,16 +120,18 @@ INSERT INTO "UpisPredmeta" ("ID","ID_Studenta","ID_Predmeta") VALUES (4,5,4);
 INSERT INTO "Prijavljeni_ispiti" ("ID_Predmeta","ID_Studenta","ID_Roka") VALUES (4,5,4);
 
 
-INSERT INTO "Predaja" ("ID_Predaje","ID_OpenPredaja","ID_Studenta","NazivFajla","Datoteka","Datum_Predaje","Vrijeme_Predaje","Predano","ID_Aktivnosti") VALUES (1,6,5,'xxxx1','lab1',0,0,0,7);
-INSERT INTO "Predaja" ("ID_Predaje","ID_OpenPredaja","ID_Studenta","NazivFajla","Datoteka","Datum_Predaje","Vrijeme_Predaje","Predano","ID_Aktivnosti") VALUES (2,5,5,'xxxx2','dz1',0,0,0,3);
-INSERT INTO "Predaja" ("ID_Predaje","ID_OpenPredaja","ID_Studenta","NazivFajla","Datoteka","Datum_Predaje","Vrijeme_Predaje","Predano","ID_Aktivnosti") VALUES (3,5,5,'xxxx3','dz2',20220604,174601,1,3);
-INSERT INTO "Predaja" ("ID_Predaje","ID_OpenPredaja","ID_Studenta","NazivFajla","Datoteka","Datum_Predaje","Vrijeme_Predaje","Predano","ID_Aktivnosti") VALUES (4,6,5,'xxxx4','lab2',20230205,205904,1,7);
-INSERT INTO "Predaja" ("ID_Predaje","ID_OpenPredaja","ID_Studenta","NazivFajla","Datoteka","Datum_Predaje","Vrijeme_Predaje","Predano","ID_Aktivnosti") VALUES (5,6,5,'xxxx5','lab4',0,0,0,7);
-INSERT INTO "Predaja" ("ID_Predaje","ID_OpenPredaja","ID_Studenta","NazivFajla","Datoteka","Datum_Predaje","Vrijeme_Predaje","Predano","ID_Aktivnosti") VALUES (6,5,5,'xxxx6','dz3',0,0,0,8);
-INSERT INTO "Predaja" ("ID_Predaje","ID_OpenPredaja","ID_Studenta","NazivFajla","Datoteka","Datum_Predaje","Vrijeme_Predaje","Predano","ID_Aktivnosti") VALUES (7,5,5,'xxxx7','dz4',0,0,0,8);
-INSERT INTO "Predaja" ("ID_Predaje","ID_OpenPredaja","ID_Studenta","NazivFajla","Datoteka","Datum_Predaje","Vrijeme_Predaje","Predano","ID_Aktivnosti") VALUES (8,5,5,'xxxx8','dz5',20220607,174601,1,8);
-INSERT INTO "Predaja" ("ID_Predaje","ID_OpenPredaja","ID_Studenta","NazivFajla","Datoteka","Datum_Predaje","Vrijeme_Predaje","Predano","ID_Aktivnosti") VALUES (9,6,5,'xxxx9','lab5',20230207,152904,1,9);
-INSERT INTO "Predaja" ("ID_Predaje","ID_OpenPredaja","ID_Studenta","NazivFajla","Datoteka","Datum_Predaje","Vrijeme_Predaje","Predano","ID_Aktivnosti") VALUES (10,6,5,'xxxx10','lab3',20230206,192304,1,9);
+INSERT INTO "Predaja" ("ID_Predaje","ID_OpenPredaja","ID_Studenta","NazivFajla","Datoteka","Datum_Predaje","Vrijeme_Predaje","Predano","ID_Aktivnosti") VALUES (1,1,5,'xxxx1','lab1',0,0,0,7);
+INSERT INTO "Predaja" ("ID_Predaje","ID_OpenPredaja","ID_Studenta","NazivFajla","Datoteka","Datum_Predaje","Vrijeme_Predaje","Predano","ID_Aktivnosti") VALUES (2,2,5,'xxxx2','dz1',0,0,0,3);
+INSERT INTO "Predaja" ("ID_Predaje","ID_OpenPredaja","ID_Studenta","NazivFajla","Datoteka","Datum_Predaje","Vrijeme_Predaje","Predano","ID_Aktivnosti") VALUES (3,3,5,'xxxx3','dz2',20220604,174601,1,3);
+INSERT INTO "Predaja" ("ID_Predaje","ID_OpenPredaja","ID_Studenta","NazivFajla","Datoteka","Datum_Predaje","Vrijeme_Predaje","Predano","ID_Aktivnosti") VALUES (4,4,5,'xxxx4','lab2',20230205,205904,1,7);
+INSERT INTO "Predaja" ("ID_Predaje","ID_OpenPredaja","ID_Studenta","NazivFajla","Datoteka","Datum_Predaje","Vrijeme_Predaje","Predano","ID_Aktivnosti") VALUES (5,5,5,'xxxx5','lab4',0,0,0,7);
+INSERT INTO "Predaja" ("ID_Predaje","ID_OpenPredaja","ID_Studenta","NazivFajla","Datoteka","Datum_Predaje","Vrijeme_Predaje","Predano","ID_Aktivnosti") VALUES (6,6,5,'xxxx6','dz3',0,0,0,8);
+INSERT INTO "Predaja" ("ID_Predaje","ID_OpenPredaja","ID_Studenta","NazivFajla","Datoteka","Datum_Predaje","Vrijeme_Predaje","Predano","ID_Aktivnosti") VALUES (7,7,5,'xxxx7','dz4',0,0,0,8);
+INSERT INTO "Predaja" ("ID_Predaje","ID_OpenPredaja","ID_Studenta","NazivFajla","Datoteka","Datum_Predaje","Vrijeme_Predaje","Predano","ID_Aktivnosti") VALUES (8,8,5,'xxxx8','dz5',20220607,174601,1,8);
+INSERT INTO "Predaja" ("ID_Predaje","ID_OpenPredaja","ID_Studenta","NazivFajla","Datoteka","Datum_Predaje","Vrijeme_Predaje","Predano","ID_Aktivnosti") VALUES (9,9,5,'xxxx9','lab5',20230207,152904,1,9);
+INSERT INTO "Predaja" ("ID_Predaje","ID_OpenPredaja","ID_Studenta","NazivFajla","Datoteka","Datum_Predaje","Vrijeme_Predaje","Predano","ID_Aktivnosti") VALUES (10,10,5,'xxxx10','lab3',20230206,192304,1,9);
+INSERT INTO "Predaja" ("ID_Predaje","ID_OpenPredaja","ID_Studenta","NazivFajla","Datoteka","Datum_Predaje","Vrijeme_Predaje","Predano","ID_Aktivnosti") VALUES (11,11,5,'xxxx11','lab11',27022022,192304,1,9);
+INSERT INTO "Predaja" ("ID_Predaje","ID_OpenPredaja","ID_Studenta","NazivFajla","Datoteka","Datum_Predaje","Vrijeme_Predaje","Predano","ID_Aktivnosti") VALUES (12,12,5,'xxxx12','lab12',0,0,0,9);
 
 
 
