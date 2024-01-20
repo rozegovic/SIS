@@ -583,12 +583,18 @@ void ViewGradeLabHomework::showOpenFileDialog()
 
 					fo::fs::path filePath(strFolderName.c_str());
 
-
-					
 					dp::IDatabase* pDB = dp::getMainDatabase();
 					dp::IStatementPtr pStatSel = pDB->createStatement("SELECT a.NazivFajla as Name from Predaja a, OpenPredaja b where a.ID_Studenta = ? and b.ID_Aktivnosti = ? and b.ID = a.ID_OpenPredaja");
 					dp::IStatementPtr pStatSelBlob = pDB->createStatement("SELECT a.Datoteka as Data from Predaja a, OpenPredaja b where a.ID_Studenta = ? and b.ID_Aktivnosti = ? and b.ID = a.ID_OpenPredaja");
-					td::INT4 ID = 5;
+					int iRow = _table.getFirstSelectedRow();
+					if (iRow < 0) {
+						return;
+					}
+					td::Variant val;
+					dp::IDataSet* pDS = _table.getDataSet();
+					auto& row = pDS->getRow(iRow);
+					val = row[0];
+					td::INT4 ID = val.i4Val();
 					dp::Params pStatSelParams(pStatSel->allocParams());
 					pStatSelParams << ID<<_ActivityID;
 					dp::Params pStatSelBlobParams(pStatSelBlob->allocParams());
