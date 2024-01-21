@@ -499,9 +499,9 @@ bool ViewGradeLabHomework::loadComboBox(td::String select, gui::DBComboBox& comb
 
 	while (pSelect->moveNext())
 	{
-		if (dnow > d)
+		/*if (dnow > d)
 			combo.addItem(name, id);
-		else if (dnow == d && tnow > t)
+		else if (dnow == d && tnow > t)*/
 			combo.addItem(name, id);
 
 	}
