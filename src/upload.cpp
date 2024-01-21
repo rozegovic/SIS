@@ -117,18 +117,19 @@ void ViewUpload::populateDataForTable1()
      
     
     //_pDS = dp::getMainDatabase()->createDataSet("SELECT pr.ID_Predaje, P.Naziv_Predmeta, P.Sifra_Predmeta, A.Naziv_Aktivnosti, op.Datum_Predaje, op.Vrijeme_Predaje, P.ID_Predmeta FROM Predmet P, Aktivnosti A, Predaja pr, OpenPredaja op, UpisPredmeta up where up.ID_Studenta = pr.ID_Studenta and pr.ID_Studenta = ? and P.ID_Predmeta = A.ID_Predmeta and up.ID_Predmeta = P.ID_Predmeta and (A.Tip_Aktivnosti = 2 or A.Tip_Aktivnosti = 5) and op.ID = pr.ID_OpenPredaja and pr.Predano = 0 and pr.ID_Aktivnosti = A.ID_Aktivnosti", dp::IDataSet::Execution::EX_MULT);
-    _pDS = dp::getMainDatabase()->createDataSet("SELECT P.Naziv_Predmeta, P.Sifra_Predmeta, A.Naziv_Aktivnosti, op.Datum_Predaje, op.Vrijeme_Predaje, P.ID_Predmeta FROM Predmet P, Aktivnosti A, Predaja pr, OpenPredaja op, UpisPredmeta up where up.ID_Studenta = ? and P.ID_Predmeta = A.ID_Predmeta and up.ID_Predmeta = P.ID_Predmeta and (A.Tip_Aktivnosti = 2 or A.Tip_Aktivnosti = 5) and op.ID_Aktivnosti = A.ID_Aktivnosti", dp::IDataSet::Execution::EX_MULT);//Dodati NOT EXIST za provjeru da li postoji u Predaji vec neki red da se ne dodaje u prvu tabelu.
+    // dodati ucitavanje id iz openpredaja na mjesto 0 u jednu i drugu tabelu
+    _pDS = dp::getMainDatabase()->createDataSet("SELECT op.ID, P.Naziv_Predmeta, P.Sifra_Predmeta, A.Naziv_Aktivnosti, op.Datum_Predaje as date, op.Vrijeme_Predaje as time, P.ID_Predmeta FROM Predmet P, Aktivnosti A, OpenPredaja op, UpisPredmeta up where up.ID_Studenta = ? and P.ID_Predmeta = A.ID_Predmeta and up.ID_Predmeta = P.ID_Predmeta and (A.Tip_Aktivnosti = 2 or A.Tip_Aktivnosti = 5) and op.ID_Aktivnosti = A.ID_Aktivnosti and NOT EXISTS( SELECT 1 FROM Predaja WHERE Predaja.ID_OpenPredaja = op.ID); ", dp::IDataSet::Execution::EX_MULT);//Dodati NOT EXIST za provjeru da li postoji u Predaji vec neki red da se ne dodaje u prvu tabelu.
     dp::Params parDS(_pDS->allocParams());
    parDS << Globals::_currentUserID; // id;
     
 
-    dp::DSColumns cols(_pDS->allocBindColumns(6));
-    cols //<< "ID_Predaje" << td::int4
+    dp::DSColumns cols(_pDS->allocBindColumns(7));
+    cols << "ID" << td::int4
         << "Naziv_Predmeta" << td::string8
         << "Sifra_Predmeta" << td::string8
         << "Naziv_Aktivnosti" << td::string8
-        << "Datum_Predaje" << td::date  //krajnji rok
-        << "Vrijeme_Predaje" << td::time //krajnji rok
+        << "date" << td::date  //krajnji rok
+        << "time" << td::time //krajnji rok
         << "ID_Predmeta" << td::int4;
         //<< "Datoteka" << td::string8; // treba vidjet koji tip podatka treba za datoteku
 
@@ -138,8 +139,8 @@ void ViewUpload::populateDataForTable1()
         return;
     }
     //initTable1();
-    _table1.init(_pDS,{1,3,4,5});
-    td::Date d;
+   _table1.init(_pDS,{1,3,4,5});
+  /*  td::Date d;
     td::Time t;
     td::Date dnow(true);
     td::Time tnow(true);
@@ -147,25 +148,26 @@ void ViewUpload::populateDataForTable1()
     auto nRows = pDS->getNumberOfRows();
     for (size_t i = 0; i < nRows; ++i) {
         auto& row = pDS->getRow(i);
-        d = row[2];
-        t = row[3];
+        d = row[3];
+        t = row[4];
         if (dnow < d)
             _table1.removeRow(i);
         else if (dnow == d && tnow < t)
             _table1.removeRow(i);
-    }
+    }*/
 }
 void ViewUpload::populateDataForTable2() // treba modifikovati select da radi kad se preda na zadnji dan da se uporedi vrijeme 
 {
 
  // treba vidjet koji tip podatka treba za datoteku
 
-    _pDS2 = dp::getMainDatabase()->createDataSet("SELECT pr.ID_Predaje, P.Naziv_Predmeta, P.Sifra_Predmeta, A.Naziv_Aktivnosti, op.Datum_Predaje, op.Vrijeme_Predaje, P.ID_Predmeta, pr.NazivFajla FROM Predmet P, Aktivnosti A, Predaja pr, OpenPredaja op, UpisPredmeta up where up.ID_Studenta = pr.ID_Studenta and pr.ID_Studenta = ? and P.ID_Predmeta = A.ID_Predmeta and up.ID_Predmeta = P.ID_Predmeta and (A.Tip_Aktivnosti = 2 or A.Tip_Aktivnosti = 5) and op.ID = pr.ID_OpenPredaja and pr.ID_Aktivnosti = A.ID_Aktivnosti", dp::IDataSet::Execution::EX_MULT);
+    _pDS2 = dp::getMainDatabase()->createDataSet("SELECT op.ID, pr.ID_Predaje, P.Naziv_Predmeta, P.Sifra_Predmeta, A.Naziv_Aktivnosti, pr.Datum_Predaje, pr.Vrijeme_Predaje, P.ID_Predmeta, pr.NazivFajla FROM Predmet P, Aktivnosti A, Predaja pr, OpenPredaja op, UpisPredmeta up where up.ID_Studenta = pr.ID_Studenta and pr.ID_Studenta = ? and P.ID_Predmeta = A.ID_Predmeta and up.ID_Predmeta = P.ID_Predmeta and op.ID_Aktivnosti = A.ID_Aktivnosti and op.ID = pr.ID_OpenPredaja", dp::IDataSet::Execution::EX_MULT);
     dp::Params parDS2(_pDS2->allocParams());
     parDS2 << Globals::_currentUserID; // id;
     
-    dp::DSColumns cols(_pDS2->allocBindColumns(8));
-    cols << "ID_Predaje" << td::int4
+    dp::DSColumns cols(_pDS2->allocBindColumns(9));
+    cols << "ID" << td::int4
+        << "ID_Predaje" << td::int4
         << "Naziv_Predmeta" << td::string8
         << "Sifra_Predmeta" << td::string8
         << "Naziv_Aktivnosti" << td::string8
@@ -182,7 +184,7 @@ void ViewUpload::populateDataForTable2() // treba modifikovati select da radi ka
    }
     //initTable2();
 
-    _table2.init(_pDS2,0);
+    _table2.init(_pDS2, {2,4,5,6,8});
 }
 
 
@@ -300,6 +302,7 @@ bool ViewUpload::onClick(gui::Button* pBtn)
             return true;
         _table2.beginUpdate();
         auto& row = _table2.getEmptyRow();
+        // row[0]=finmaxid ??????
         row = rowToBeDel;
         _table2.push_back();
         _table2.endUpdate();
@@ -335,28 +338,6 @@ bool ViewUpload::onClick(gui::Button* pBtn)
         return true;
     }
 
-//    if (pBtn == &_btnEnroll)
-//    {
-//        saveData1();
-//        _table1.reload();
-//        _table1.selectRow(0, true);
-//        _table2.reload();
-//        _table2.selectRow(0, true);
-//        return true;
-//
-//    }
-//
-//    if (pBtn == &_btnDEnroll)
-//    {
-//        saveData2();
-//        _table1.reload();
-//        _table1.selectRow(0, true);
-//        _table2.reload();
-//        _table2.selectRow(0, true);
-//        return true;
-//
-//    }
-
     return false;
 
 }
@@ -386,7 +367,7 @@ void ViewUpload::showOpenFileDialog()
                     dp::IDatabase* pDB = dp::getMainDatabase();
                     //dp::getMainDatabase() if I were connected to DB before
 
-                    dp::IStatementPtr pStatIns = pDB->createStatement("UPDATE Predaja SET Datoteka = ?, NazivFajla = ? WHERE ID_Predaje = ?;");
+                    dp::IStatementPtr pStatIns = pDB->createStatement("insert into Predaja values(?,?,?,?,?,?,?)");
                     dp::Params paramsInsert(pStatIns->allocParams());
 
                     fo::fs::path filePath(strFileFullPath.c_str());
@@ -410,13 +391,16 @@ void ViewUpload::showOpenFileDialog()
                     int iRow = _table1.getFirstSelectedRow();
                     if (iRow < 0)
                         return true;
-                    auto& row = _table1.getCurrentRow();
-                    td::INT4 itemid = row[0].i4Val();
-                    row[7] = strFileName;
-
-                    static td::INT4 ID_predaje = itemid;
-
-                    paramsInsert << dataIn << dp::toNCh(strFileName, 100) << ID_predaje;
+                    dp::IDataSet* pDS = _table1.getDataSet();
+                    auto& row = pDS->getRow(iRow);
+                    td::INT4 idp = findMaxID();
+                   // row[7] = strFileName;
+                    td::INT4 op = row[0].i4Val();
+                    td::Date d(true);
+                    td::Time t(true);
+                   // static td::INT4 ID_predaje = itemid;
+                    //paramsInsert <<idp<<vrijedsnot row[0] << globals currentUserID  << dp::toNCh(strFileName, 100) << dataIn << date(now) << time (now);
+                    paramsInsert << idp << op << Globals::_currentUserID << dp::toNCh(strFileName, 100) << dataIn << d << t;
                     //Neophodno, sa ove lokacije (strFileFullPath) se uzima BLOB
                     if (!dataIn.setInFileName(strFileFullPath))
                     {
@@ -467,4 +451,18 @@ bool ViewUpload::PredajaNePredano(int rowID) {
         return false;
     }
     return true;
+}
+
+td::INT4 ViewUpload::findMaxID()
+{
+    dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select ifnull(max(ID_Predaje), 0) as maxid from Predaja");
+    dp::Columns pColumns = pSelect->allocBindColumns(1);
+    td::INT4 maxID;
+    pColumns << "maxid" << maxID;
+    if (!pSelect->execute())
+        return false;
+    if (!pSelect->moveNext())
+        return false;
+
+    return ++maxID;
 }

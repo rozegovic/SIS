@@ -87,4 +87,5 @@ protected:
    td::INT4 getIDfromTable(int rowID);
    bool PredajaPredano(int rowID);
    bool PredajaNePredano(int rowID);
+   td::INT4 findMaxID();
 };
