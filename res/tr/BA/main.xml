@@ -258,15 +258,24 @@
 
 		<Res id="ActivityDateE" tr="Datum kraja:"/>
 		<Res id="ActivityTimeE" tr="Vrijeme kraja:"/>
-		<Res id="ActivityDateF" tr="Datum prijave:"/>
-		<Res id="ActivityTimeF" tr="Vrijeme prijave:"/>
+		<Res id="ActivityDateF" tr="Datum pocetka ispita:"/>
+		<Res id="ActivityTimeF" tr="Vrijeme pocetka ispita:"/>
 		<Res id="viewGradeLabHw" tr="Ocjene dodataka"/>
 		<Res id="sifraP" tr="Skracenica"/>
 		<Res id="Task" tr="Zadatak"/>
 
 		<Res id="ActivityDateP" tr="Datum kraja:"/>
 		<Res id="ActivityTimeP" tr="Vrijeme kraja:"/>
+
+		<Res id="Documents" tr="Dokumenti"/>
+		<Res id="Delete2" tr="Obrisi"/>
+		<Res id="Delete1" tr="Obrisi sve dokumente"/>
+		<Res id="Delete2TT" tr="Obrisi odabrani dokumet"/>
+		<Res id="UnSend" tr="Ponisti slanje"/>
 		
+
+
+
 		<!--Login-->
         <Res id = "WrongPass" tr = "Pogresna sifra!"/>
 		<Res id = "EnterCorrPass" tr = "Ukucajte ispravnu sifru"/>
