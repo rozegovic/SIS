@@ -134,12 +134,12 @@ bool ViewCurriculum::existsInDepartment(td::INT4 id)
 
 void ViewCurriculum::populateData()
 {
-    _pDS = _db->createDataSet("SELECT Predmet.ID_Predmeta, Curriculum.Shortname, Curriculum.ECTS from Curriculum, Predmet WHERE Curriculum.ID_Predmeta=Predmet.ID_Predmeta", dp::IDataSet::Execution::EX_MULT);
+    _pDS = _db->createDataSet("SELECT Predmet.ID_Predmeta as IDP, Curriculum.Shortname, Curriculum.ECTS from Curriculum, Predmet WHERE Curriculum.ID_Predmeta=Predmet.ID_Predmeta", dp::IDataSet::Execution::EX_MULT);
 
 
     //specify columns to obtain from the data provider
     dp::DSColumns cols(_pDS->allocBindColumns(3));
-    cols << "ID_Predmeta" << td::int4 << "Shortname" << td::string8
+    cols << "IDP" << td::int4 << "Shortname" << td::string8
         << "ECTS" << td::int4;
 
     if (!_pDS->execute())

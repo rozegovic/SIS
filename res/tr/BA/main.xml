@@ -272,10 +272,26 @@
 		<Res id="Delete1" tr="Obrisi sve dokumente"/>
 		<Res id="Delete2TT" tr="Obrisi odabrani dokumet"/>
 		<Res id="UnSend" tr="Ponisti slanje"/>
+
+		<Res id="dateR" tr="Krajnji datum za predaju"/>
+		<Res id="timeR" tr="Krajnje vrijeme za predaju"/>
+		<Res id="nameP" tr="Naziv predmeta"/>
+		<Res id="dateP" tr="Datum predaje"/>
+		<Res id="timeP" tr="Vrijeme predaje"/>
+		<Res id="DatName" tr="Naziv datoteke"/>
+		<Res id="naziv" tr="Naziv"/>
+		<Res id="IDA" tr="ID aktivnosti"/>
+		<Res id="nameS" tr="Naziv predmeta"/>
+		<Res id="desA" tr="Opis aktivnosti"/>
+
+		<Res id="datumb" tr="Datum pocetka"/>
+		<Res id="vrijemeb" tr="Vrijeme pocetka"/>
+		<Res id="datume" tr="Datum kraja"/>
+		<Res id="vrijemee" tr="Vrijeme kraja"/>
+		<Res id="datumf" tr="Datum pocetka ispita"/>
+		<Res id="vrijemef" tr="Vrijeme pocetka ispita"/>
+		<Res id="IDP" tr="ID predmeta"/>
 		
-
-
-
 		<!--Login-->
         <Res id = "WrongPass" tr = "Pogresna sifra!"/>
 		<Res id = "EnterCorrPass" tr = "Ukucajte ispravnu sifru"/>

@@ -217,17 +217,17 @@ void ViewActivity::SetCurrentSubject() {
     {
         auto pDB = dp::getMainDatabase();
 
-        _pDS = _db->createDataSet("select a.ID_Aktivnosti, a.Naziv_Aktivnosti, p.Naziv_Predmeta, a.Procenat, a.Opis_Aktivnosti, v.Naziv ,a.Tip_Aktivnosti, a.ID_Predmeta from Aktivnosti a, Predmet p, VrstaAktivnosti v where p.ID_Predmeta = ? and p.ID_Predmeta = a.ID_Predmeta and a.Tip_Aktivnosti = v.ID", dp::IDataSet::Execution::EX_MULT);
+        _pDS = _db->createDataSet("select a.ID_Aktivnosti as IDA, a.Naziv_Aktivnosti, p.Naziv_Predmeta as nameS, a.Procenat, a.Opis_Aktivnosti as desA, v.Naziv ,a.Tip_Aktivnosti, a.ID_Predmeta from Aktivnosti a, Predmet p, VrstaAktivnosti v where p.ID_Predmeta = ? and p.ID_Predmeta = a.ID_Predmeta and a.Tip_Aktivnosti = v.ID", dp::IDataSet::Execution::EX_MULT);
         dp::Params params(_pDS->allocParams());
         params << _idP;
 
            //specify columns to obtain from the data provider
         dp::DSColumns cols(_pDS->allocBindColumns(8));
-        cols << "ID_Aktivnosti" << td::int4
+        cols << "IDA" << td::int4
             << "Naziv_Aktivnosti" << td::string8
-            << "Naziv_Predmeta" << td::string8
+            << "nameS" << td::string8
             << "Procenat" << td::decimal2
-            << "Opis_Aktivnosti" << td::string8
+            << "desA" << td::string8
             << "Naziv" << td::string8
             << "Tip_Aktivnosti" << td::int4
             << "ID_Predmeta" << td::int4;

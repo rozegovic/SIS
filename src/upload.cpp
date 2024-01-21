@@ -118,18 +118,18 @@ void ViewUpload::populateDataForTable1()
     
     //_pDS = dp::getMainDatabase()->createDataSet("SELECT pr.ID_Predaje, P.Naziv_Predmeta, P.Sifra_Predmeta, A.Naziv_Aktivnosti, op.Datum_Predaje, op.Vrijeme_Predaje, P.ID_Predmeta FROM Predmet P, Aktivnosti A, Predaja pr, OpenPredaja op, UpisPredmeta up where up.ID_Studenta = pr.ID_Studenta and pr.ID_Studenta = ? and P.ID_Predmeta = A.ID_Predmeta and up.ID_Predmeta = P.ID_Predmeta and (A.Tip_Aktivnosti = 2 or A.Tip_Aktivnosti = 5) and op.ID = pr.ID_OpenPredaja and pr.Predano = 0 and pr.ID_Aktivnosti = A.ID_Aktivnosti", dp::IDataSet::Execution::EX_MULT);
     // dodati ucitavanje id iz openpredaja na mjesto 0 u jednu i drugu tabelu
-    _pDS = dp::getMainDatabase()->createDataSet("SELECT op.ID, P.Naziv_Predmeta, P.Sifra_Predmeta, A.Naziv_Aktivnosti, op.Datum_Predaje as date, op.Vrijeme_Predaje as time, P.ID_Predmeta FROM Predmet P, Aktivnosti A, OpenPredaja op, UpisPredmeta up where up.ID_Studenta = ? and P.ID_Predmeta = A.ID_Predmeta and up.ID_Predmeta = P.ID_Predmeta and (A.Tip_Aktivnosti = 2 or A.Tip_Aktivnosti = 5) and op.ID_Aktivnosti = A.ID_Aktivnosti and NOT EXISTS( SELECT 1 FROM Predaja WHERE Predaja.ID_OpenPredaja = op.ID); ", dp::IDataSet::Execution::EX_MULT);//Dodati NOT EXIST za provjeru da li postoji u Predaji vec neki red da se ne dodaje u prvu tabelu.
+    _pDS = dp::getMainDatabase()->createDataSet("SELECT op.ID, P.Naziv_Predmeta as nameP, P.Sifra_Predmeta, A.Naziv_Aktivnosti, op.Datum_Predaje as dateR, op.Vrijeme_Predaje as timeR, P.ID_Predmeta FROM Predmet P, Aktivnosti A, OpenPredaja op, UpisPredmeta up where up.ID_Studenta = ? and P.ID_Predmeta = A.ID_Predmeta and up.ID_Predmeta = P.ID_Predmeta and (A.Tip_Aktivnosti = 2 or A.Tip_Aktivnosti = 5) and op.ID_Aktivnosti = A.ID_Aktivnosti and NOT EXISTS( SELECT 1 FROM Predaja WHERE Predaja.ID_OpenPredaja = op.ID); ", dp::IDataSet::Execution::EX_MULT);//Dodati NOT EXIST za provjeru da li postoji u Predaji vec neki red da se ne dodaje u prvu tabelu.
     dp::Params parDS(_pDS->allocParams());
    parDS << Globals::_currentUserID; // id;
     
 
     dp::DSColumns cols(_pDS->allocBindColumns(7));
     cols << "ID" << td::int4
-        << "Naziv_Predmeta" << td::string8
+        << "nameP" << td::string8
         << "Sifra_Predmeta" << td::string8
         << "Naziv_Aktivnosti" << td::string8
-        << "date" << td::date  //krajnji rok
-        << "time" << td::time //krajnji rok
+        << "dateR" << td::date  //krajnji rok
+        << "timeR" << td::time //krajnji rok
         << "ID_Predmeta" << td::int4;
         //<< "Datoteka" << td::string8; // treba vidjet koji tip podatka treba za datoteku
 
@@ -161,20 +161,20 @@ void ViewUpload::populateDataForTable2() // treba modifikovati select da radi ka
 
  // treba vidjet koji tip podatka treba za datoteku
 
-    _pDS2 = dp::getMainDatabase()->createDataSet("SELECT op.ID, pr.ID_Predaje, P.Naziv_Predmeta, P.Sifra_Predmeta, A.Naziv_Aktivnosti, pr.Datum_Predaje, pr.Vrijeme_Predaje, P.ID_Predmeta, pr.NazivFajla FROM Predmet P, Aktivnosti A, Predaja pr, OpenPredaja op, UpisPredmeta up where up.ID_Studenta = pr.ID_Studenta and pr.ID_Studenta = ? and P.ID_Predmeta = A.ID_Predmeta and up.ID_Predmeta = P.ID_Predmeta and op.ID_Aktivnosti = A.ID_Aktivnosti and op.ID = pr.ID_OpenPredaja", dp::IDataSet::Execution::EX_MULT);
+    _pDS2 = dp::getMainDatabase()->createDataSet("SELECT op.ID, pr.ID_Predaje, P.Naziv_Predmeta as nameP, P.Sifra_Predmeta, A.Naziv_Aktivnosti, pr.Datum_Predaje as dateP, pr.Vrijeme_Predaje as timeP, P.ID_Predmeta, pr.NazivFajla as DatName FROM Predmet P, Aktivnosti A, Predaja pr, OpenPredaja op, UpisPredmeta up where up.ID_Studenta = pr.ID_Studenta and pr.ID_Studenta = ? and P.ID_Predmeta = A.ID_Predmeta and up.ID_Predmeta = P.ID_Predmeta and op.ID_Aktivnosti = A.ID_Aktivnosti and op.ID = pr.ID_OpenPredaja", dp::IDataSet::Execution::EX_MULT);
     dp::Params parDS2(_pDS2->allocParams());
     parDS2 << Globals::_currentUserID; // id;
     
     dp::DSColumns cols(_pDS2->allocBindColumns(9));
     cols << "ID" << td::int4
         << "ID_Predaje" << td::int4
-        << "Naziv_Predmeta" << td::string8
+        << "nameP" << td::string8
         << "Sifra_Predmeta" << td::string8
         << "Naziv_Aktivnosti" << td::string8
-        << "Datum_Predaje" << td::date
-        << "Vrijeme_Predaje" << td::time
+        << "dateP" << td::date
+        << "timeP" << td::time
         << "ID_Predmeta" << td::int4
-        << "NazivFajla" << td::string8;
+        << "DatName" << td::string8;
         //<< "Datoteka" << td::string8; // treba vidjet koji tip podatka treba za datoteku
 
     if (!_pDS2->execute())

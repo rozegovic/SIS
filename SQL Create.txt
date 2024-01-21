@@ -263,7 +263,6 @@ CREATE TABLE "Predaja" (
 	"Datoteka"	BLOB NOT NULL,
 	"Datum_Predaje"	INTEGER NOT NULL,
 	"Vrijeme_Predaje"	INTEGER NOT NULL,
-	"Predano"	INTEGER NOT NULL,
 	"ID_Aktivnosti"	INTEGER NOT NULL,
 	FOREIGN KEY("ID_Aktivnosti") REFERENCES "Aktivnosti"("ID_Aktivnosti"),
 	FOREIGN KEY("ID_Studenta") REFERENCES "Korisnici"("ID"),

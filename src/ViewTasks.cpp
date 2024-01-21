@@ -103,14 +103,14 @@ bool ViewTasks::loadComboBox(td::String select, gui::DBComboBox& combo)
 void ViewTasks::populateData()
 {
     auto pDB = dp::getMainDatabase();
-    _pDS = pDB->createDataSet("select a.ID, a.Datum_Predaje, a.Vrijeme_Predaje, a.ID_Aktivnosti, b.Naziv_Aktivnosti  from OpenPredaja a, Aktivnosti b where a.ID_Aktivnosti=b.ID_Aktivnosti and b.Tip_Aktivnosti IN(2, 5) and b.ID_Predmeta=?", dp::IDataSet::Execution::EX_MULT);
+    _pDS = pDB->createDataSet("select a.ID, a.Datum_Predaje as dateP, a.Vrijeme_Predaje as timeP, a.ID_Aktivnosti, b.Naziv_Aktivnosti  from OpenPredaja a, Aktivnosti b where a.ID_Aktivnosti=b.ID_Aktivnosti and b.Tip_Aktivnosti IN(2, 5) and b.ID_Predmeta=?", dp::IDataSet::Execution::EX_MULT);
 
     dp::Params parDS(_pDS->allocParams());
     parDS << _SubjectID;
     td::String Predmet;
 
     dp::DSColumns cols(_pDS->allocBindColumns(5));
-    cols << "ID" << td::int4 << "Datum_Predaje" << td::date << "Vrijeme_Predaje" << td::time << "ID_Aktivnosti" << td::int4 << "Naziv_Aktivnosti" << td::string8;
+    cols << "ID" << td::int4 << "dateP" << td::date << "timeP" << td::time << "ID_Aktivnosti" << td::int4 << "Naziv_Aktivnosti" << td::string8;
 
     if (!_pDS->execute())
     {
