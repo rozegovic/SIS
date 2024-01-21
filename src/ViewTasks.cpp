@@ -20,7 +20,7 @@ ViewTasks::ViewTasks(td::INT4 SubjectID) :
     _lblCName(tr("Course:")),
     _btnAdd(tr("add"), tr("AddTT"))
     //, _btnUpdate(tr("Update"), tr("UpdateTT"))
-    , _btnDelete(tr("Delete"), tr("DeleteTT"))
+    , _btnDelete(tr("Delete1"), tr("DeleteTT"))
     , _btnDelete2(tr("Delete2"), tr("Delete2TT"))
     , _btnSave(tr("Save"), tr("SaveTT"))
     , _btnAddFile(tr("AddFile"), tr("AddFileTT"))

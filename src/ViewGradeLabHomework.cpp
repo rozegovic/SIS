@@ -23,7 +23,7 @@ ViewGradeLabHomework::ViewGradeLabHomework(td::INT4 SubjectID) : _db(dp::getMain
 , _btnDelete(tr("Delete"))
 , _btnUpdate(tr("Update"))
 , _btnReport(tr("Report"))
-, _btnHWL(tr("Predano"))
+, _btnHWL(tr("Documents"))
 , _hlBtns(5)
 , _gl(6, 4) // pazi na brojeve----neka budu tri reda ovih labela (naziv aktivnosti i naziv predmeta, ime i prezime, indeks i ocjena)
 , _SubjectID(SubjectID)
