@@ -352,8 +352,8 @@ bool ViewGradeExams::onClick(gui::Button* pBtn)
 		td::Variant val;
 		dp::IDataSet* pDS = _table.getDataSet();
 		auto& row = pDS->getRow(iRow);
-		td::INT4 id_kor = row[0].i4Val();;
-		examGrade(&_imgExamGrades, _SubjectID, id_kor);
+		td::INT4 id_akt = row[1].i4Val();;
+		examGrade(&_imgExamGrades, _SubjectID, id_akt);
 		// pada zbog pristupa nedozvoljenim lokacijama - PROBLEM
 		return true;
 	}

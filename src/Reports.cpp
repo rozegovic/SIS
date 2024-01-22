@@ -73,7 +73,7 @@ void examAttendance(const gui::Image* pImage, td::INT4 SubjectID)
 
 }
 
-void examGrade(const gui::Image* pImage, td::INT4 SubjectID, td::INT4 id_kor)
+void examGrade(const gui::Image* pImage, td::INT4 SubjectID, td::INT4 id_akt)
 {
 	dp::IDatabase* pDB = dp::getMainDatabase();
 	td::String name = "Ocjene studenata na ispitu";
@@ -88,7 +88,7 @@ void examGrade(const gui::Image* pImage, td::INT4 SubjectID, td::INT4 id_kor)
 	//#endif
 		//Body 
 	{
-		dp::IDataSet* pDP(pDB->createDataSet("SELECT a.ID_Korisnika, a.ID_Aktivnosti, b.Naziv_Aktivnosti, c.Indeks, c.Ime, c.Prezime, d.Ocjena FROM PolazniciAktivnosti a JOIN Aktivnosti b ON a.ID_Aktivnosti = b.ID_Aktivnosti JOIN Korisnici c ON a.ID_Korisnika = c.ID JOIN OcjeneIspita d ON b.ID_Aktivnosti = d.ID_Aktivnosti AND a.ID_Korisnika = d.ID_Korisnika WHERE b.ID_Predmeta = ? AND a.ID_Korisnika=? AND b.Tip_Aktivnosti = 1 AND d.Ocjena IS NOT NULL"));
+		dp::IDataSet* pDP(pDB->createDataSet("SELECT a.ID_Korisnika, a.ID_Aktivnosti, b.Naziv_Aktivnosti, c.Indeks, c.Ime, c.Prezime, d.Ocjena FROM PolazniciAktivnosti a JOIN Aktivnosti b ON a.ID_Aktivnosti = b.ID_Aktivnosti JOIN Korisnici c ON a.ID_Korisnika = c.ID JOIN OcjeneIspita d ON b.ID_Aktivnosti = d.ID_Aktivnosti AND a.ID_Korisnika = d.ID_Korisnika WHERE b.ID_Predmeta = ? AND a.ID_Aktivnosti=? AND b.Tip_Aktivnosti = 1 AND d.Ocjena IS NOT NULL"));
 
 		//#ifdef REPTEST
 		it << rpt::ContainerType::CNT_Body << pDP; //define field and its data
@@ -96,7 +96,7 @@ void examGrade(const gui::Image* pImage, td::INT4 SubjectID, td::INT4 id_kor)
 		dp::DSColumns cols(pDP->allocBindColumns(7));
 		cols << "ID_Korisnika" << td::int4 << "ID_Aktivnosti" << td::int4 << "Naziv_Aktivnosti" << td::string8 << "Indeks" << td::string8 << "Ime" << td::string8 << "Prezime" << td::string8 << "Ocjena" << td::string8;
 		dp::Params pars = pDP->allocParams();
-		pars << SubjectID<< id_kor;
+		pars << SubjectID<< id_akt;
 
 
 		if (!pDP->execute())
