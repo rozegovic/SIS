@@ -71,6 +71,7 @@ protected:
     std::vector<td::INT4> _itemsToDelete, _itemsToInsert, _itemsToUpdate;
 public:
     ViewDateTimeActivity(td::INT4 SubjectID);
+   void refresh();
 protected:
     bool loadComboBox(td::String select, gui::DBComboBox& combo);
     void populateData();
