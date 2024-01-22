@@ -26,7 +26,7 @@
 #include <gui/ImageView.h>
 #include <gui/Color.h>
 #include "ViewDateTimeActivity.h"
-
+#include "ViewTasks.h"
 
 
 enum class QuestionIDDDAAA : td::UINT2 { Saveee };
@@ -71,9 +71,10 @@ protected:
     td::INT4 SubjectID;
     gui::Image _imgActivityRep;
     ViewDateTimeActivity* _dateTime;
+    ViewTasks* _task;
 
 public:
-    ViewActivity(td::INT4 SubjectID, ViewDateTimeActivity* DateTime);
+    ViewActivity(td::INT4 SubjectID, ViewDateTimeActivity* DateTime, ViewTasks* Task);
     //  ViewActivity();  
 
     ~ViewActivity();

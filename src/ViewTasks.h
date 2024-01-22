@@ -68,6 +68,7 @@ protected:
     std::vector<td::INT4> _itemsToDelete, _itemsToInsert, _itemsToUpdate;
 public:
     ViewTasks(td::INT4 SubjectID);
+    void refresh1();
 protected:
     bool loadComboBox(td::String select, gui::DBComboBox& combo);
     void populateData();

@@ -124,7 +124,7 @@ td::INT4 ViewActivity::findMaxID() // Eminina funkcija :-D
 //    loadComboBox("select ID as ID, Naziv as Naziv from VrstaAktivnosti", _type);
 //}
 
-ViewActivity::ViewActivity(td::INT4 SubjectID, ViewDateTimeActivity* DateTime) : _db(dp::getMainDatabase()) //ovaj konstruktor se koristi jer je u switcheru
+ViewActivity::ViewActivity(td::INT4 SubjectID, ViewDateTimeActivity* DateTime, ViewTasks* Task) : _db(dp::getMainDatabase()) //ovaj konstruktor se koristi jer je u switcheru
 , _id(td::int4)
 , _lblName(tr("Activity:"))
 , _idP(SubjectID)
@@ -151,6 +151,7 @@ ViewActivity::ViewActivity(td::INT4 SubjectID, ViewDateTimeActivity* DateTime) :
 {
     setVisualID(View_ACTIVITY);
     _dateTime = DateTime;
+    _task = Task;
     _hlBtns.appendSpace(4);
     _hlBtns.append(_btnSave, td::HAlignment::Right);
     _hlBtns.appendSpacer();
@@ -352,6 +353,7 @@ void ViewActivity::SetCurrentSubject() {
             _actsToUpdate.clear();
         }
         _dateTime->refresh();
+        _task->refresh1();
         return true;
     }
     //----------------Vjerovatno ce trebati modifikovati---------------------
@@ -537,6 +539,7 @@ void ViewActivity::SetCurrentSubject() {
         if (pBtn == &_btnSave)//??
         {
             showYesNoQuestionAsync(QuestionIDDDAAA::Saveee, this, tr("alert"), tr("saveSure"), tr("Yes"), tr("No"));
+
          
             return true;
         }

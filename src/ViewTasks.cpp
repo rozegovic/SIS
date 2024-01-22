@@ -554,82 +554,7 @@ void ViewTasks::showOpenFileDialog()
 #endif
 }
 
-//gui::TextEdit* ViewTasks::getTextEdit()
-//{
-//    return ;
-//}
 
-//void ViewTasks::selectFiles()
-//{
-//    auto pFD = new gui::OpenFileDialog(this, tr("OpenF"), { {tr("TxtDocs"),"*.txt"}, {tr("PDFDocs"),"*.pdf"}, {tr("JPGSlike"),"*.jpg"}, {tr("PNGSlike"),"*.png"} });
-//
-//#ifdef USE_CALLBACKS
-//    pFD->openModal(&_callBackOpenFileDlg);
-//#else
-//    pFD->openModal([this](gui::FileDialog* pFD) {
-//        auto status = pFD->getStatus();
-//        if (status == gui::FileDialog::Status::OK) {
-//
-//            _attachedFiles.push_back(pFD->getFileName());
-//
-//            fo::fs::path filePathNow(_attachedFiles.last().c_str());/*
-//            td::String strFileName = filePathNow.filename().string();
-//            _titleFile.setTitle(strFileName);
-//            _titleFile.setBold();*/
-//        }
-//        });
-//#endif
-//}
-
-
-//bool ViewTasks::sendDocs()
-//{
-//    if (!dp::getMainDatabase()->isConnected())
-//    {
-//        gui::Alert::show(tr("Error"), tr("Problem with database..."));
-//        return false;
-//    }
-//
-//    dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT COALESCE(MAX(ID), 0) as id FROM DokumentiOpenPredaja");
-//    dp::Columns pCols = pSelect->allocBindColumns(1);
-//    td::INT4 id;
-//    pCols << "id" << id;
-//    pSelect->execute();
-//    pSelect->moveNext();
-//
-//    dp::IStatementPtr pStatIns = dp::getMainDatabase()->createStatement("INSERT INTO DokumentiOpenPredaja (ID, Dokumenti, ID_Dokumenta) VALUES (?, ?, ?)");
-//    dp::Params parDS(pStatIns->allocParams());
-//
-//    fo::fs::path filePathNow(_attachedFiles.last().c_str());
-//    td::String strFileName = filePathNow.filename().string();
-//    td::String fileExtension = filePathNow.filename().extension().string();
-//
-//    td::BLOB::Type typeFile = td::BLOB::Type::TYPE_BINARY_UNKNOWN;
-//    if (fileExtension.compareConstStr(".txt"))
-//        typeFile = td::BLOB::Type::TYPE_TXT;
-//    else if (fileExtension.compareConstStr(".pdf"))
-//        typeFile = td::BLOB::Type::TYPE_PDF;
-//    else if (fileExtension.compareConstStr(".jpg"))
-//        typeFile = td::BLOB::Type::TYPE_JPG;
-//    else if (fileExtension.compareConstStr(".png"))
-//        typeFile = td::BLOB::Type::TYPE_PNG;
-//
-//    td::BLOB dataIn(td::BLOB::SRC_FILE, 16384U, typeFile);
-//    td::INT4 d = 1;
-//    id++;
-//    parDS << id << dataIn<<d;
-//
-//    if (!dataIn.setInFileName(filePathNow))
-//    {
-//        gui::Alert::show(tr("Error"), tr("Did you delete selected file?"));
-//        return true;
-//    }
-//    dp::Transaction tr(_db);
-//
-//    if (!pStatIns->execute())
-//        return false;
-//    return true;
-//}
 
 bool ViewTasks::onAnswer(td::UINT4 questionID, gui::Alert::Answer answer)//??
 {
@@ -674,3 +599,9 @@ bool ViewTasks::onAnswer(td::UINT4 questionID, gui::Alert::Answer answer)//??
     return false;
 }
 
+void ViewTasks::refresh1()
+{
+    // populateData();
+    onChangedSelection(&_table);
+    loadComboBox("select ID_Aktivnosti as ID, Naziv_Aktivnosti as Naziv From Aktivnosti where Tip_Aktivnosti IN(2, 5) and ID_Predmeta=?", _type);
+}

@@ -16,8 +16,8 @@ protected:
 
 public:
     SwitcherViewActivity(td::UINT4 subjectid)
-        : gui::ViewSwitcher(2)
-        , _viewActivity(subjectid,&_viewDateTime)
+        : gui::ViewSwitcher(3)
+        , _viewActivity(subjectid,&_viewDateTime, &_viewTasks)
         , _viewDateTime(subjectid) 
         , _viewTasks(subjectid)
     {
