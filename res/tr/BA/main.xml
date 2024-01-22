@@ -219,6 +219,7 @@
 		<Res id="PorukeTT" tr="Poruke"/>
 		<Res id="AddFile" tr="Dodaj dokument"/>
 		<Res id="AddFileTT" tr="Dodaj dokument"/>
+		<Res id="SendFile" tr="Pošalji dokument"/>
 		<Res id="Docs:" tr="Dokumenti:"/>
 		
 		<Res id="tobeenrolledtocourse" tr="Studenti koji imaju mogućnost upisa"/>

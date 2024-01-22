@@ -84,8 +84,10 @@ protected:
     //virtual bool onChangedSelection(gui::TableEdit* pTE);
    void SetCurrentData();
    void showOpenFileDialog();
-   td::INT4 getIDfromTable(int rowID);
+   td::INT4 getIDfromTable1(int rowID);//Ove dvije su beskorisne sad za sad...
+   td::INT4 getIDfromTable2(int rowID);//
    bool PredajaPredano(int rowID);
    bool PredajaNePredano(int rowID);
    td::INT4 findMaxID();
+   bool UnSend();
 };

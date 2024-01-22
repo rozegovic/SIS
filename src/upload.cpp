@@ -23,7 +23,7 @@ ViewUpload::ViewUpload()
     , _btnEnroll(tr("Enroll"))
     , _btnSend(tr("Send"))
     , _btnUnSend(tr("UnSend"))
-    , _btnAddFile(tr("AddFile"), tr("AddFileTT"))
+    , _btnAddFile(tr("SendFile"), tr("AddFileTT"))
     //, _btnWithdraw(tr("Withdraw"), tr("WithdrawTT"))
     , _gl(7, 6)
     , _db(dp::create(dp::IDatabase::ConnType::CT_SQLITE, dp::IDatabase::ServerType::SER_SQLITE3))
@@ -34,7 +34,7 @@ ViewUpload::ViewUpload()
     _hlBtnsDB.append(_btnReload);
     // _hlBtnsDB.appendSpace(20);
     // _hlBtnsDB.append(_btnWithdraw);
-    _hlBtnsDB.append(_btnSend);
+    //_hlBtnsDB.append(_btnSend);
     _hlBtnsDB.append(_btnUnSend);
     _btnDEnroll.setType(gui::Button::Type::Default);
     _btnEnroll.setType(gui::Button::Type::Constructive);
@@ -188,103 +188,7 @@ void ViewUpload::populateDataForTable2() // treba modifikovati select da radi ka
 }
 
 
-//bool ViewExamSignUp::saveData1()
-//{
-//    //ovo je kada su svi updateovani
-//
-//    dp::IStatementPtr pInsStat(_db->createStatement("UPDATE Polozeni_Predmeti SET Prijavljen = 1 WHERE ID_Studenta = 5 AND ID_Predmeta = ?"));
-//
-//    dp::Params parDS(pInsStat->allocParams());
-//
-//    parDS << ID_Pre1;
-//
-//
-//    dp::Transaction tr(_db);
-//
-//
-//
-//    size_t nRows = _pDS2->getNumberOfRows();
-//    for (size_t i = 0; i < nRows; i++) {
-//        auto row = _pDS2->getRow(i);
-//
-//        if (!pInsStat->execute())
-//            return false;
-//
-//    }
-//    tr.commit();
-//    return true;
-//}
-//
-//bool ViewExamSignUp::saveData2()
-//{
-//    //ovo je kada su svi updateovani
-//
-//    dp::IStatementPtr pInsStat(_db->createStatement("UPDATE Polozeni_Predmeti SET Prijavljen = 0 WHERE ID_Studenta = 5 AND ID_Predmeta = ?"));
-//
-//    dp::Params parDS(pInsStat->allocParams());
-//
-//    parDS << ID_Pre2;
-//
-//
-//    dp::Transaction tr(_db);
-//
-//
-//
-//    size_t nRows = _pDS2->getNumberOfRows();
-//    for (size_t i = 0; i < nRows; i++) {
-//        auto row = _pDS2->getRow(i);
-//
-//        if (!pInsStat->execute())
-//            return false;
-//
-//    }
-//    tr.commit();
-//    return true;
-//}
-//
-//
-//
-//bool ViewExamSignUp::onChangedSelection(gui::TableEdit* pTE)
-//{
-//    if (pTE == &_table2)
-//    {
-//        int iRow = _table2.getFirstSelectedRow();
-//        if (iRow < 0)
-//        {
-//            _name.toZero();
-//            return true;
-//        }
-//        // td::Variant val;
-//        dp::IDataSet* pDS = _table2.getDataSet();
-//        auto& row = pDS->getRow(iRow);
-//
-//        ID_Pre2 = row[6];
-//
-//        return true;
-//    }
-//
-//    if (pTE == &_table1)
-//    {
-//        int iRow = _table1.getFirstSelectedRow();
-//        if (iRow < 0)
-//        {
-//            _name.toZero();
-//            return true;
-//        }
-//        // td::Variant val;
-//        dp::IDataSet* pDS = _table1.getDataSet();
-//        auto& row = pDS->getRow(iRow);
-//
-//        ID_Pre1 = row[6];
-//
-//        return true;
-//    }
-//    return false;
-//}
-//
-//
-//
-//
+
 bool ViewUpload::onClick(gui::Button* pBtn)
 {
     if (pBtn == &_btnReload)
@@ -295,46 +199,51 @@ bool ViewUpload::onClick(gui::Button* pBtn)
         _table2.selectRow(0, true);
         return true;
     }
-    if (pBtn == &_btnSend) {
-        int iRow = _table1.getFirstSelectedRow();
-        auto& rowToBeDel = _table1.getCurrentRow();
-        if (iRow < 0)
-            return true;
-        _table2.beginUpdate();
-        auto& row = _table2.getEmptyRow();
-        // row[0]=finmaxid ??????
-        row = rowToBeDel;
-        _table2.push_back();
-        _table2.endUpdate();
-        _table1.removeRow(iRow);
-        int id = row[0].i4Val();
-        
-        if (!PredajaPredano(id))
-            return false;
+    //if (pBtn == &_btnSend) {
+    //    int iRow = _table1.getFirstSelectedRow();
+    //    auto& rowToBeDel = _table1.getCurrentRow();
+    //    if (iRow < 0)
+    //        return true;
+    //    _table2.beginUpdate();
+    //    auto& row = _table2.getEmptyRow();
+    //    // row[0]=finmaxid ??????
+    //    row = rowToBeDel;
+    //    _table2.push_back();
+    //    _table2.endUpdate();
+    //    _table1.removeRow(iRow);
+    //    int id = row[0].i4Val();
+    //    
+    //    if (!PredajaPredano(id))
+    //        return false;
 
-        return true;
-    }
+    //    return true;
+    //}
     if (pBtn == &_btnUnSend) {
-        int iRow = _table2.getFirstSelectedRow();
-        auto& rowToBeDel = _table2.getCurrentRow();
-        if (iRow < 0)
-            return true;
-        _table1.beginUpdate();
-        auto& row = _table1.getEmptyRow();
-        row = rowToBeDel;
-        _table1.push_back();
-        _table1.endUpdate();
-        _table2.removeRow(iRow);
-        int id = row[0].i4Val();
-        
-        if (!PredajaNePredano(id))
-            return false;
+        //int iRow = _table2.getFirstSelectedRow();
+        //auto& rowToBeDel = _table2.getCurrentRow();
+        //if (iRow < 0)
+        //    return true;
+        //_table1.beginUpdate();
+        //auto& row = _table1.getEmptyRow();
+        //row = rowToBeDel;
+        //_table1.push_back();
+        //_table1.endUpdate();
+        //_table2.removeRow(iRow);
+        //int id = row[0].i4Val();
+        //
+        //if (!PredajaNePredano(id))
+        //    return false;
 
+        UnSend();
         return true;
     }
 
     if (pBtn == &_btnAddFile) {
         showOpenFileDialog();
+        _table1.reload();
+        _table1.selectRow(0, true);
+        _table2.reload();
+        _table2.selectRow(0, true);
         return true;
     }
 
@@ -417,15 +326,27 @@ void ViewUpload::showOpenFileDialog()
 
                     _titleFile.setTitle(filePath.filename());
                     _titleFile.setBold();
+
+                    _table1.reload();
+                    _table1.selectRow(0, true);
+                    _table2.reload();
+                    _table2.selectRow(0, true);
                 }
             }
         });
 #endif
 }
 
-td::INT4 ViewUpload::getIDfromTable(int rowID)
+td::INT4 ViewUpload::getIDfromTable1(int rowID)
 {
     dp::IDataSet* pDS = _table1.getDataSet();
+    auto& row = pDS->getRow(rowID);
+    return row[0].i4Val();
+}
+
+td::INT4 ViewUpload::getIDfromTable2(int rowID)
+{
+    dp::IDataSet* pDS = _table2.getDataSet();
     auto& row = pDS->getRow(rowID);
     return row[0].i4Val();
 }
@@ -465,4 +386,22 @@ td::INT4 ViewUpload::findMaxID()
         return false;
 
     return ++maxID;
+}
+
+bool ViewUpload::UnSend() {
+    dp::IStatementPtr pDelete = dp::getMainDatabase()->createStatement("DELETE FROM Predaja WHERE ID_OpenPredaja = ?;");
+    dp::Params parDS2(pDelete->allocParams());
+    int iRow = _table2.getFirstSelectedRow();
+    auto& row = _pDS2->getRow(iRow);
+    td::INT4 idpr = row[0].i4Val();
+    parDS2 << idpr; // id;
+    if (!pDelete->execute())
+        return false;
+
+    _table1.reload();
+    _table1.selectRow(0, true);
+    _table2.reload();
+    _table2.selectRow(0, true);
+
+    return true;
 }
