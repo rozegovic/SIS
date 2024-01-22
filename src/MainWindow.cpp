@@ -204,6 +204,12 @@ bool MainWindow::showTimeSlotView(td::INT4 SubjectID)
 
 bool MainWindow::showCurriculum()
 {
+    auto x = Globals::_currentUserRole;
+    if (x != 6)
+    {
+        showAlert(tr("AccessNotAllowed"), "");
+        return true;
+    }
     DialogCurriculum* pDlg = new DialogCurriculum(this);
     pDlg->setTitle(tr("Choose semester and department"));
     pDlg->openModal([this](gui::Dialog::Button::ID btn, gui::Dialog* pDlg)
@@ -582,7 +588,7 @@ bool MainWindow::showExamSignUpView()
         return true;
     }
 
-    if (focusOnViewPositionWithID(View_CURRICULUM))
+    if (focusOnViewPositionWithID(View_EXAM))
         return true;
 
     ViewExamSignUp* pView = new ViewExamSignUp;

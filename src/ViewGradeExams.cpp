@@ -12,15 +12,16 @@ ViewGradeExams::ViewGradeExams(td::INT4 SubjectID) : _db(dp::getMainDatabase())
 , _lblGrade(tr("grade:")) // napomena za Eminu - poslije dodati send message
 , _lblActivityName(tr("activityName:"))
 , _lblCName(tr("courseName:"))
+, _btnReport1(tr("Report1"))
 , _btnAdd(tr("add"))
 , _btnSave(tr("save"))
 , _btnDelete(tr("Delete"))
 , _btnUpdate(tr("Update"))
 , _btnReport(tr("Report"))
-, _hlBtns(5)
+, _hlBtns(6)
 , _gl(6, 4) // pazi na brojeve----neka budu tri reda ovih labela (naziv aktivnosti i naziv predmeta, ime i prezime, indeks i ocjena)
 , _SubjectID(SubjectID)
-, _report(1)
+, _report(3)
 , _imgExamGrades(":complex")
 {
 
@@ -32,8 +33,9 @@ ViewGradeExams::ViewGradeExams(td::INT4 SubjectID) : _db(dp::getMainDatabase())
 	_hlBtns.append(_btnUpdate);
 	_hlBtns.appendSpacer();
 
-	_report.append(_btnReport, td::HAlignment::Right);
-
+	_report.appendSpacer(1);
+	_report.append(_btnReport);
+	_report.append(_btnReport1, td::HAlignment::Right);
 	//  _btnUpdate.setType(gui::Button::Type::Default);
 	_btnSave.setType(gui::Button::Type::Default);
 	_btnDelete.setType(gui::Button::Type::Destructive);
@@ -341,6 +343,19 @@ bool ViewGradeExams::onClick(gui::Button* pBtn)
 	if (pBtn == &_btnReport) {
 		examGrades(&_imgExamGrades, _SubjectID);
 		// pada zbog pristupa nedozvoljenim lokacijama - PROBLEM
+	}
+	if (pBtn == &_btnReport1) {
+		int iRow = _table.getFirstSelectedRow();
+		if (iRow < 0) {
+			return false;
+		}
+		td::Variant val;
+		dp::IDataSet* pDS = _table.getDataSet();
+		auto& row = pDS->getRow(iRow);
+		td::INT4 id_kor = row[0].i4Val();;
+		examGrade(&_imgExamGrades, _SubjectID, id_kor);
+		// pada zbog pristupa nedozvoljenim lokacijama - PROBLEM
+		return true;
 	}
 	return false;
 }

@@ -20,7 +20,6 @@ protected:
     gui::NumericEdit _semester;
     gui::GridLayout _gl;
     dp::IDatabase* _db;
-    dp::IDataSet* _pDS = nullptr;
 
 public:
     ViewCurriculumDialog()

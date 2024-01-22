@@ -75,8 +75,7 @@ protected:
 
 public:
     ViewActivity(td::INT4 SubjectID, ViewDateTimeActivity* DateTime, ViewTasks* Task);
-    //  ViewActivity();  
-
+    //  ViewActivity(); 
     ~ViewActivity();
     void ActivityReport(const gui::Image* pImage, td::INT4 SubjectID);
 

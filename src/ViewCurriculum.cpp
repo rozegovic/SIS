@@ -4,8 +4,8 @@
 #include "ViewCurriculumDialog.h"
 
 
-ViewCurriculum::ViewCurriculum(td::INT4 _departmentID, td::INT4 _semesterID) : _db(dp::getMainDatabase())
-, _lblDepartment(tr("Department"))
+ViewCurriculum::ViewCurriculum(td::INT4 _departmentID, td::INT4 _semesterID) : 
+ _lblDepartment(tr("Department"))
 , _lblSemester(tr("Semester"))
 , _semester(td::int4)
 , _lblCourse(tr("Course"))
@@ -21,6 +21,7 @@ ViewCurriculum::ViewCurriculum(td::INT4 _departmentID, td::INT4 _semesterID) : _
 , _btnPushBack(tr("PushBack"), tr("PushBackTT"))
 , _departmentID(_departmentID)
 , _semesterID(_semesterID)
+, _db(dp::getMainDatabase())
 , _gl(5, 4)
 {
     setVisualID(View_CURRICULUM);
@@ -57,8 +58,8 @@ ViewCurriculum::ViewCurriculum(td::INT4 _departmentID, td::INT4 _semesterID) : _
     SetCurrentECTS();*/
     _department.setAsReadOnly();
     _semester.setAsReadOnly();
-    loadComboBox("select ID_Predmeta as ID, Naziv_Predmeta as Name from Predmet where ID_Smjera=?", _course);
-    loadComboBox("select ID_Predmeta as ID, Sifra_Predmeta as Name from Predmet where ID_Smjera=?", _shortname);
+    loadComboBox("select ID_Predmeta as ID, Naziv_Predmeta as Name from Predmet where ID_Smjera=? and Semestar=?", _course);
+    loadComboBox("select ID_Predmeta as ID, Sifra_Predmeta as Name from Predmet where ID_Smjera=? and Semestar=?", _shortname);
     _table.init(_pDS, { 0, 1, 2 });
     if (_pDS->getNumberOfRows())
     {
@@ -156,7 +157,7 @@ bool ViewCurriculum::loadComboBox(td::String select, gui::DBComboBox& combo)
     dp::IStatementPtr pSelect = _db->createStatement(select.c_str());
     dp::Params parDS(pSelect->allocParams());
     //d::INT4 IDPredmeta = Globals::_IDSubjectSelection;
-    parDS << _departmentID;
+    parDS << _departmentID<<_semesterID;
     dp::Columns pCols = pSelect->allocBindColumns(2);
     td::String name;
     td::INT4 id;
