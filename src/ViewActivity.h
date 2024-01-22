@@ -25,6 +25,7 @@
 #include <fo/FileOperations.h>
 #include <gui/ImageView.h>
 #include <gui/Color.h>
+#include "ViewDateTimeActivity.h"
 
 
 
@@ -64,13 +65,15 @@ protected:
     dp::IDataSet* _pDS = nullptr;
     td::INT4 _paramFrom;
     td::INT4 _paramTo;
-
+    
     std::vector<td::INT4> _actsToDelete, _actsToInsert, _actsToUpdate;
     td::INT4 findMaxID();
     td::INT4 SubjectID;
     gui::Image _imgActivityRep;
+    ViewDateTimeActivity* _dateTime;
+
 public:
-    ViewActivity(td::INT4 SubjectID);
+    ViewActivity(td::INT4 SubjectID, ViewDateTimeActivity* DateTime);
     //  ViewActivity();  
 
     ~ViewActivity();
@@ -98,5 +101,3 @@ protected:
     bool onAnswer(td::UINT4 questionID, gui::Alert::Answer answer);
     void SetActivityTypeName(td::Variant& val, td::INT4 br);
 };
-
-
