@@ -15,6 +15,7 @@
 #include <mu/IAppSettings.h>
 #include <gui/Image.h>
 #include <gui/Frame.h>
+#include "ViewDateTimeActivity.h"
 
 
 
@@ -123,7 +124,7 @@ td::INT4 ViewActivity::findMaxID() // Eminina funkcija :-D
 //    loadComboBox("select ID as ID, Naziv as Naziv from VrstaAktivnosti", _type);
 //}
 
-ViewActivity::ViewActivity(td::INT4 SubjectID) : _db(dp::getMainDatabase()) //ovaj konstruktor se koristi jer je u switcheru
+ViewActivity::ViewActivity(td::INT4 SubjectID, ViewDateTimeActivity* DateTime) : _db(dp::getMainDatabase()) //ovaj konstruktor se koristi jer je u switcheru
 , _id(td::int4)
 , _lblName(tr("Activity:"))
 , _idP(SubjectID)
@@ -149,6 +150,7 @@ ViewActivity::ViewActivity(td::INT4 SubjectID) : _db(dp::getMainDatabase()) //ov
 //ne bi trebalo da jos ista fali
 {
     setVisualID(View_ACTIVITY);
+    _dateTime = DateTime;
     _hlBtns.appendSpace(4);
     _hlBtns.append(_btnSave, td::HAlignment::Right);
     _hlBtns.appendSpacer();
@@ -349,6 +351,7 @@ void ViewActivity::SetCurrentSubject() {
             _actsToInsert.clear();
             _actsToUpdate.clear();
         }
+        _dateTime->refresh();
         return true;
     }
     //----------------Vjerovatno ce trebati modifikovati---------------------
@@ -433,7 +436,6 @@ void ViewActivity::SetCurrentSubject() {
             _actsToDelete.clear(); 
             _actsToInsert.clear(); 
             _actsToUpdate.clear(); 
-
             return true;
         }
 
@@ -455,6 +457,7 @@ void ViewActivity::SetCurrentSubject() {
                     _actsToInsert.erase(std::remove(_actsToInsert.begin(), _actsToInsert.end(), itemid), _actsToInsert.end());
                     _actsToUpdate.erase(std::remove(_actsToUpdate.begin(), _actsToUpdate.end(), itemid), _actsToUpdate.end());
                 });
+      
             return true;
         }
 
@@ -476,7 +479,7 @@ void ViewActivity::SetCurrentSubject() {
 
             if (std::find(_actsToInsert.begin(), _actsToInsert.end(), itemid) == _actsToInsert.end())
                 _actsToUpdate.push_back(itemid); 
-
+           
             return true;
         }
 
@@ -499,7 +502,8 @@ void ViewActivity::SetCurrentSubject() {
             _table.endUpdate(); 
 
             _actsToUpdate.erase(std::remove(_actsToUpdate.begin(), _actsToUpdate.end(), id), _actsToUpdate.end());
-            _actsToInsert.push_back(id); 
+            _actsToInsert.push_back(id);
+         
             return true; 
         }
 
@@ -525,6 +529,7 @@ void ViewActivity::SetCurrentSubject() {
 
             _actsToUpdate.erase(std::remove(_actsToUpdate.begin(), _actsToUpdate.end(), itemid), _actsToUpdate.end());
             _actsToInsert.push_back(itemid);
+        
             return true;
         }
 
@@ -532,11 +537,12 @@ void ViewActivity::SetCurrentSubject() {
         if (pBtn == &_btnSave)//??
         {
             showYesNoQuestionAsync(QuestionIDDDAAA::Saveee, this, tr("alert"), tr("saveSure"), tr("Yes"), tr("No"));
-
+         
             return true;
         }
         if (pBtn == &_btnReport) {
             ActivityReport(&_imgActivityRep, SubjectID);
+  
             return true;
         }
         return false;
