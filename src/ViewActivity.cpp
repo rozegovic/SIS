@@ -15,6 +15,7 @@
 #include <mu/IAppSettings.h>
 #include <gui/Image.h>
 #include <gui/Frame.h>
+#include "ViewDateTimeActivity.h"
 
 
 
@@ -123,7 +124,7 @@ td::INT4 ViewActivity::findMaxID() // Eminina funkcija :-D
 //    loadComboBox("select ID as ID, Naziv as Naziv from VrstaAktivnosti", _type);
 //}
 
-ViewActivity::ViewActivity(td::INT4 SubjectID) : _db(dp::getMainDatabase()) //ovaj konstruktor se koristi jer je u switcheru
+ViewActivity::ViewActivity(td::INT4 SubjectID, ViewDateTimeActivity* DateTime) : _db(dp::getMainDatabase()) //ovaj konstruktor se koristi jer je u switcheru
 , _id(td::int4)
 , _lblName(tr("Activity:"))
 , _idP(SubjectID)
@@ -149,6 +150,7 @@ ViewActivity::ViewActivity(td::INT4 SubjectID) : _db(dp::getMainDatabase()) //ov
 //ne bi trebalo da jos ista fali
 {
     setVisualID(View_ACTIVITY);
+    _dateTime = DateTime;
     _hlBtns.appendSpace(4);
     _hlBtns.append(_btnSave, td::HAlignment::Right);
     _hlBtns.appendSpacer();
@@ -217,17 +219,17 @@ void ViewActivity::SetCurrentSubject() {
     {
         auto pDB = dp::getMainDatabase();
 
-        _pDS = _db->createDataSet("select a.ID_Aktivnosti as IDA, a.Naziv_Aktivnosti, p.Naziv_Predmeta as nameS, a.Procenat, a.Opis_Aktivnosti as desA, v.Naziv ,a.Tip_Aktivnosti, a.ID_Predmeta from Aktivnosti a, Predmet p, VrstaAktivnosti v where p.ID_Predmeta = ? and p.ID_Predmeta = a.ID_Predmeta and a.Tip_Aktivnosti = v.ID", dp::IDataSet::Execution::EX_MULT);
+        _pDS = _db->createDataSet("select a.ID_Aktivnosti, a.Naziv_Aktivnosti, p.Naziv_Predmeta, a.Procenat, a.Opis_Aktivnosti, v.Naziv ,a.Tip_Aktivnosti, a.ID_Predmeta from Aktivnosti a, Predmet p, VrstaAktivnosti v where p.ID_Predmeta = ? and p.ID_Predmeta = a.ID_Predmeta and a.Tip_Aktivnosti = v.ID", dp::IDataSet::Execution::EX_MULT);
         dp::Params params(_pDS->allocParams());
         params << _idP;
 
            //specify columns to obtain from the data provider
         dp::DSColumns cols(_pDS->allocBindColumns(8));
-        cols << "IDA" << td::int4
+        cols << "ID_Aktivnosti" << td::int4
             << "Naziv_Aktivnosti" << td::string8
-            << "nameS" << td::string8
+            << "Naziv_Predmeta" << td::string8
             << "Procenat" << td::decimal2
-            << "desA" << td::string8
+            << "Opis_Aktivnosti" << td::string8
             << "Naziv" << td::string8
             << "Tip_Aktivnosti" << td::int4
             << "ID_Predmeta" << td::int4;
@@ -349,6 +351,7 @@ void ViewActivity::SetCurrentSubject() {
             _actsToInsert.clear();
             _actsToUpdate.clear();
         }
+        _dateTime->refresh();
         return true;
     }
     //----------------Vjerovatno ce trebati modifikovati---------------------
@@ -433,7 +436,6 @@ void ViewActivity::SetCurrentSubject() {
             _actsToDelete.clear(); 
             _actsToInsert.clear(); 
             _actsToUpdate.clear(); 
-
             return true;
         }
 
@@ -455,6 +457,7 @@ void ViewActivity::SetCurrentSubject() {
                     _actsToInsert.erase(std::remove(_actsToInsert.begin(), _actsToInsert.end(), itemid), _actsToInsert.end());
                     _actsToUpdate.erase(std::remove(_actsToUpdate.begin(), _actsToUpdate.end(), itemid), _actsToUpdate.end());
                 });
+      
             return true;
         }
 
@@ -476,7 +479,7 @@ void ViewActivity::SetCurrentSubject() {
 
             if (std::find(_actsToInsert.begin(), _actsToInsert.end(), itemid) == _actsToInsert.end())
                 _actsToUpdate.push_back(itemid); 
-
+           
             return true;
         }
 
@@ -499,7 +502,8 @@ void ViewActivity::SetCurrentSubject() {
             _table.endUpdate(); 
 
             _actsToUpdate.erase(std::remove(_actsToUpdate.begin(), _actsToUpdate.end(), id), _actsToUpdate.end());
-            _actsToInsert.push_back(id); 
+            _actsToInsert.push_back(id);
+         
             return true; 
         }
 
@@ -525,6 +529,7 @@ void ViewActivity::SetCurrentSubject() {
 
             _actsToUpdate.erase(std::remove(_actsToUpdate.begin(), _actsToUpdate.end(), itemid), _actsToUpdate.end());
             _actsToInsert.push_back(itemid);
+        
             return true;
         }
 
@@ -532,11 +537,12 @@ void ViewActivity::SetCurrentSubject() {
         if (pBtn == &_btnSave)//??
         {
             showYesNoQuestionAsync(QuestionIDDDAAA::Saveee, this, tr("alert"), tr("saveSure"), tr("Yes"), tr("No"));
-
+         
             return true;
         }
         if (pBtn == &_btnReport) {
             ActivityReport(&_imgActivityRep, SubjectID);
+  
             return true;
         }
         return false;
