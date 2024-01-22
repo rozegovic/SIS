@@ -494,12 +494,12 @@ void ViewActivity::SetCurrentSubject() {
             if (!canAdd()) 
                 return true; 
 
-            td::INT4 itemid = getIDfromTable(iRow); 
+           // td::INT4 itemid = getIDfromTable(iRow); 
             td::INT4 id = findMaxID(); 
 
             _table.beginUpdate(); 
             auto& row = _table.getEmptyRow(); 
-            populateDSRow(row, itemid); 
+            populateDSRow(row, id); 
             _table.insertRow(iRow); 
             _table.endUpdate(); 
 
