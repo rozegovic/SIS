@@ -360,11 +360,12 @@ bool  ViewDateTimeActivity::saveData()
 
 bool ViewDateTimeActivity::canAdd()
 {
-   /* td::Date _date;
-    td::Time _time;  
-    if(_dateE<_dateB||((_dateE==_dateB)&&_timeE<_timeB)) return false;
-    if(_dateE<_dateF||((_dateE==_dateF)&&_timeE<_timeF)) return false;
-    if(_dateB<_date||((_dateB==_date)&&_timeB<_time)) return false;*/
+    td::Date _date(true);
+    td::Time _time(true);  
+    if(_dateE.getValue() <_dateB.getValue() || ((_dateE.getValue() == _dateB.getValue()) && _timeE.getValue() <_timeB.getValue())) return false;
+    if(_dateE.getValue() <_dateF.getValue() ||((_dateE.getValue() ==_dateF.getValue())&&_timeE.getValue() <_timeF.getValue())) return false;
+    if (_dateF.getValue() < _dateB.getValue() || ((_dateF.getValue() == _dateB.getValue()) && _timeF.getValue() < _timeB.getValue())) return false;
+    if(_dateB.getValue() <_date||((_dateB.getValue() ==_date)&&_timeB.getValue() <_time)) return false;
   
     return true;
 }
@@ -474,7 +475,10 @@ bool ViewDateTimeActivity::onClick(gui::Button* pBtn)
 
         td::INT4 itemid = findMaxID();
         if (!canAdd())
-            return true;
+        {
+            showAlert("Upozorenje", "Neispravan Datum!");
+            return false;
+        }
         _table.beginUpdate();
         auto& row = _table.getEmptyRow();
         populateDSRow(row, itemid);
