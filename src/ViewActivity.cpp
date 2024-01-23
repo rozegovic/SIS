@@ -608,6 +608,23 @@ void ViewActivity::SetCurrentSubject() {
             return false;
         }
 
+        td::Variant pom;
+        _name.getValue(pom);
+        if (pom.isZero()) {
+            showAlert(tr("alert"), tr("alertNp"));
+            return false;
+        }
+        _points.getValue(pom);
+        if (pom.isZero()) {
+            showAlert(tr("alert"), tr("alertNp"));
+            return false;
+        }
+        _desAct.getValue(pom);
+        if (pom.isZero()) {
+            showAlert(tr("alert"), tr("alertNp"));
+            return false;
+        }
+        
         return true;
     }
 
