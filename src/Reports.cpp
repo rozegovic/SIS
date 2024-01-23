@@ -13,12 +13,19 @@
 
 void examAttendance(const gui::Image* pImage, td::INT4 SubjectID)
 {	
-	dp::IStatementPtr pSelect2 = dp::getMainDatabase()->createStatement("INSERT INTO PolazniciAktivnosti (ID_Korisnika, ID_Aktivnosti) SELECT a.ID_Studenta, b.ID_Aktivnosti FROM Prijavljeni_ispiti a JOIN Rokovi b ON a.ID_Roka = b.ID_Roka WHERE NOT EXISTS ( SELECT 1 FROM PolazniciAktivnosti pa WHERE pa.ID_Korisnika = a.ID_Studenta AND pa.ID_Aktivnosti = b.ID_Aktivnosti )");
+	td::Date d(true);
+	td::Time t(true);
+	dp::IStatementPtr pSelect2 = dp::getMainDatabase()->createStatement("INSERT INTO PolazniciAktivnosti (ID_Korisnika, ID_Aktivnosti) SELECT a.ID_Studenta, b.ID_Aktivnosti FROM Prijavljeni_ispiti a JOIN Rokovi b ON a.ID_Roka = b.ID_Roka WHERE NOT EXISTS ( SELECT 1 FROM PolazniciAktivnosti pa WHERE pa.ID_Korisnika = a.ID_Studenta AND pa.ID_Aktivnosti = b.ID_Aktivnosti ) AND b.Datum_Prijave < ? AND b.Vrijeme_Prijave < ?");
+	dp::Params pParams2(pSelect2->allocParams());
+	pParams2 << d << t;
+	//dp::IStatementPtr pSelect2 = dp::getMainDatabase()->createStatement("INSERT INTO PolazniciAktivnosti (ID_Korisnika, ID_Aktivnosti) SELECT a.ID_Studenta, b.ID_Aktivnosti FROM Prijavljeni_ispiti a JOIN Rokovi b ON a.ID_Roka = b.ID_Roka WHERE NOT EXISTS ( SELECT 1 FROM PolazniciAktivnosti pa WHERE pa.ID_Korisnika = a.ID_Studenta AND pa.ID_Aktivnosti = b.ID_Aktivnosti )");
 	dp::Transaction a(dp::getMainDatabase());
 	if (!pSelect2->execute())
 		return;
 	a.commit();
 	//------------------TAKODER dodati select za upis u tabelu PolazniciAktivnosti - samo se ucitava nakon sto je proslo vrijeme prijave ispita
+
+	// trenutno ucitava nakon isteka roka za prijavu - moguce popraiti ucitavanjem iz tabele Prijavljeni ispiti
 	dp::IDatabase* pDB = dp::getMainDatabase();
 	td::String name = "Studenti prijavljeni na ispit";
 	//#ifdef REPTEST

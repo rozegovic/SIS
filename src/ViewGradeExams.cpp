@@ -434,7 +434,12 @@ void ViewGradeExams::insertValues(td::INT4 subjectID)
 	//----------taj select dodati ovdje iznad pSelecta
 	//	dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("INSERT INTO OcjeneLabZadace (ID_Korisnika, ID_Aktivnosti) SELECT a.ID_Studenta, b.ID_Aktivnosti FROM UpisPredmeta a JOIN Aktivnosti b ON a.ID_Predmeta = b.ID_Predmeta WHERE b.Tip_Aktivnosti IN(2, 5)AND NOT EXISTS(SELECT 1 FROM OcjeneLabZadace c WHERE c.ID_Korisnika = a.ID_Studenta AND c.ID_Aktivnosti = b.ID_Aktivnosti); ");
 // nesto poput ovog selecta - mozes vidjeti sa chatgpt da ti pomogne ako ne razumijes neki dio ovog selecta
-	dp::IStatementPtr pSelect2 = dp::getMainDatabase()->createStatement("INSERT INTO PolazniciAktivnosti (ID_Korisnika, ID_Aktivnosti) SELECT a.ID_Studenta, b.ID_Aktivnosti FROM Prijavljeni_ispiti a JOIN Rokovi b ON a.ID_Roka = b.ID_Roka WHERE NOT EXISTS ( SELECT 1 FROM PolazniciAktivnosti pa WHERE pa.ID_Korisnika = a.ID_Studenta AND pa.ID_Aktivnosti = b.ID_Aktivnosti )");
+	td::Date d(true);
+	td::Time t(true);
+	dp::IStatementPtr pSelect2 = dp::getMainDatabase()->createStatement("INSERT INTO PolazniciAktivnosti (ID_Korisnika, ID_Aktivnosti) SELECT a.ID_Studenta, b.ID_Aktivnosti FROM Prijavljeni_ispiti a JOIN Rokovi b ON a.ID_Roka = b.ID_Roka WHERE NOT EXISTS ( SELECT 1 FROM PolazniciAktivnosti pa WHERE pa.ID_Korisnika = a.ID_Studenta AND pa.ID_Aktivnosti = b.ID_Aktivnosti ) AND b.Datum_Prijave < ? AND b.Vrijeme_Prijave < ?");
+	dp::Params pParams2(pSelect2->allocParams());
+	pParams2 << d << t;
+	//dp::IStatementPtr pSelect2 = dp::getMainDatabase()->createStatement("INSERT INTO PolazniciAktivnosti (ID_Korisnika, ID_Aktivnosti) SELECT a.ID_Studenta, b.ID_Aktivnosti FROM Prijavljeni_ispiti a JOIN Rokovi b ON a.ID_Roka = b.ID_Roka WHERE NOT EXISTS ( SELECT 1 FROM PolazniciAktivnosti pa WHERE pa.ID_Korisnika = a.ID_Studenta AND pa.ID_Aktivnosti = b.ID_Aktivnosti )");
 	dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("INSERT INTO OcjeneIspita (ID_Korisnika, ID_Aktivnosti) SELECT a.ID_Korisnika, a.ID_Aktivnosti FROM PolazniciAktivnosti a JOIN Aktivnosti b ON a.ID_Aktivnosti = b.ID_Aktivnosti WHERE b.Tip_Aktivnosti = 1 AND NOT EXISTS(SELECT 1 FROM OcjeneIspita WHERE OcjeneIspita.ID_Korisnika = a.ID_Korisnika AND OcjeneIspita.ID_Aktivnosti = a.ID_Aktivnosti);");
 	dp::Transaction a(dp::getMainDatabase());
 	if (!pSelect2->execute())
@@ -445,7 +450,14 @@ void ViewGradeExams::insertValues(td::INT4 subjectID)
 		return;
 	//if (!pSelect->moveNext())
 	//	return;
-	a.commit();
+	bool isOK=a.commit();
+	return;
+	/*dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("INSERT INTO OcjeneIspita (ID_Korisnika, ID_Aktivnosti) SELECT a.ID_Korisnika, a.ID_Aktivnosti FROM PolazniciAktivnosti a JOIN Aktivnosti b ON a.ID_Aktivnosti = b.ID_Aktivnosti WHERE b.Tip_Aktivnosti = 1 AND NOT EXISTS(SELECT 1 FROM OcjeneIspita WHERE OcjeneIspita.ID_Korisnika = a.ID_Korisnika AND OcjeneIspita.ID_Aktivnosti = a.ID_Aktivnosti);");
+	dp::Transaction b(dp::getMainDatabase());
+	if (!pSelect->moveNext())
+		return;
+	b.commit();*/
+
 }
 
 bool ViewGradeExams::onAnswer(td::UINT4 questionID, gui::Alert::Answer answer)
