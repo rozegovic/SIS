@@ -21,6 +21,8 @@ ViewExamSignUp::ViewExamSignUp()
     //, _btnWithdraw(tr("Withdraw"), tr("WithdrawTT"))
     , _gl(6, 6)
     , _db(dp::create(dp::IDatabase::ConnType::CT_SQLITE, dp::IDatabase::ServerType::SER_SQLITE3))
+    , d1(true)
+    , d2(true)
 {
 
     _hlBtnsDB.append(_btnDEnroll);
@@ -97,7 +99,7 @@ void ViewExamSignUp::initTable2()
 
 void ViewExamSignUp::populateDataForTable1()
 {
-    td::Date d1(true);
+   // td::Date d1(true);
     _pDS = dp::getMainDatabase()->createDataSet("SELECT P.Naziv_Predmeta as Course_name, P.Sifra_Predmeta as Course_code, Ak.Naziv_Aktivnosti as Name_of_activity, a.Datum_Prijave as Reg_date, a.Vrijeme_Pocetka as Start_time, a.Vrijeme_Prijave as Reg_time, P.ID_Predmeta as id_pre, a.ID_Roka as id_roka FROM Rokovi a INNER JOIN UpisPredmeta b ON a.ID_Predmeta = b.ID_Predmeta INNER JOIN Aktivnosti Ak ON Ak.ID_Aktivnosti = a.ID_Aktivnosti INNER JOIN Predmet P ON P.ID_Predmeta = a.ID_Predmeta LEFT JOIN Prijavljeni_ispiti c ON a.ID_Roka = c.ID_Roka AND b.ID_Studenta = c.ID_Studenta WHERE c.ID_Roka IS NULL AND b.ID_Studenta = ? AND a.Datum_Prijave>? AND Ak.Tip_Aktivnosti = 1", dp::IDataSet::Execution::EX_MULT);
     dp::Params parDS(_pDS->allocParams());
     //td::INT4 id = Globals::_currentUserID;
@@ -114,7 +116,7 @@ void ViewExamSignUp::populateDataForTable1()
 }
 void ViewExamSignUp::populateDataForTable2()
 {
-    td::Date d2(true);
+   // td::Date d2(true);
     _pDS2 = dp::getMainDatabase()->createDataSet("SELECT P.Naziv_Predmeta as Course_name, P.Sifra_Predmeta as Course_code, A.Naziv_Aktivnosti as Name_of_activity, R.Datum_Prijave as Reg_date, R.Vrijeme_Pocetka as Start_time, R.Vrijeme_Prijave as Reg_time, P.ID_Predmeta as id_pre, R.ID_Roka as id_roka FROM Predmet P INNER JOIN Aktivnosti A ON P.ID_Predmeta = A.ID_Predmeta INNER JOIN Rokovi R ON A.ID_Aktivnosti = R.ID_Aktivnosti INNER JOIN UpisPredmeta U ON P.ID_Predmeta = U.ID_Predmeta INNER JOIN Prijavljeni_ispiti PP ON P.ID_Predmeta = PP.ID_Predmeta AND A.ID_Predmeta = PP.ID_Predmeta AND R.ID_Roka = PP.ID_Roka AND U.ID_Studenta = PP.ID_Studenta AND U.ID_Predmeta = PP.ID_Predmeta AND PP.ID_Studenta = ? AND R.Datum_Prijave > ? AND A.Tip_Aktivnosti = 1;", dp::IDataSet::Execution::EX_MULT);
     dp::Params parDS2(_pDS2->allocParams());
     parDS2 << Globals::_currentUserID << d2;

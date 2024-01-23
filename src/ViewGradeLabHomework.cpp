@@ -123,7 +123,7 @@ void ViewGradeLabHomework::populateData()
 	_pDS = _db->createDataSet("SELECT d.ID_Korisnika, d.ID_Aktivnosti, b.Naziv_Aktivnosti, c.Indeks, c.Ime, c.Prezime, d.Ocjena as Procenat, d.ID FROM Aktivnosti b, Korisnici c, OcjeneLabZadace d WHERE d.ID_Aktivnosti = b.ID_Aktivnosti and d.ID_Korisnika = c.ID AND b.ID_Predmeta = ? AND b.ID_Aktivnosti=? AND b.Tip_Aktivnosti IN(5, 2) ORDER BY b.Naziv_Aktivnosti DESC", dp::IDataSet::Execution::EX_MULT);
 
 	dp::Params parDS(_pDS->allocParams());
-	parDS << _SubjectID<<_ActivityID;
+	parDS << _SubjectID << _ActivityID;
 
 	dp::DSColumns cols(_pDS->allocBindColumns(8));
 	cols << "ID_Korisnika" << td::int4 << "ID_Aktivnosti" << td::int4 << "Naziv_Aktivnosti" << td::string8 << "Indeks" << td::string8 << "Ime" << td::string8 << "Prezime" << td::string8 << "Procenat" << td::string8 << "ID" << td::int4;
@@ -311,8 +311,6 @@ bool ViewGradeLabHomework::onClick(gui::Button* pBtn)
 	if (pBtn == &_btnDelete)
 	{
 
-
-
 		int iRow = _table.getFirstSelectedRow();
 		if (iRow < 0)
 			return true;
@@ -474,10 +472,16 @@ td::INT4 ViewGradeLabHomework::findMaxID()
 void ViewGradeLabHomework::insertValues(td::INT4 subjectID)
 {
 	dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("INSERT INTO OcjeneLabZadace (ID_Korisnika, ID_Aktivnosti) SELECT a.ID_Studenta, b.ID_Aktivnosti FROM UpisPredmeta a JOIN Aktivnosti b ON a.ID_Predmeta = b.ID_Predmeta WHERE b.Tip_Aktivnosti IN(2, 5)AND NOT EXISTS(SELECT 1 FROM OcjeneLabZadace c WHERE c.ID_Korisnika = a.ID_Studenta AND c.ID_Aktivnosti = b.ID_Aktivnosti); ");
+
+	dp::IStatementPtr pSelect2 = dp::getMainDatabase()->createStatement("INSERT INTO PolazniciAktivnosti (ID_Korisnika, ID_Aktivnosti) SELECT a.ID_Studenta, b.ID_Aktivnosti FROM UpisPredmeta a JOIN Aktivnosti b ON a.ID_Predmeta = b.ID_Predmeta WHERE b.Tip_Aktivnosti IN(2, 5)AND NOT EXISTS(SELECT 1 FROM PolazniciAktivnosti c WHERE c.ID_Korisnika = a.ID_Studenta AND c.ID_Aktivnosti = b.ID_Aktivnosti); ");
+	dp::Transaction t(dp::getMainDatabase());
 	if (!pSelect->execute())
 		return;
-	if (!pSelect->moveNext())
+	if (!pSelect2->execute())
 		return;
+	t.commit();
+	/*if (!pSelect->moveNext())
+		return;*/
 }
 
 bool ViewGradeLabHomework::loadComboBox(td::String select, gui::DBComboBox& combo)
@@ -532,44 +536,6 @@ void ViewGradeLabHomework::showOpenFileDialog()
 #ifdef USE_CALLBACKS
 	pFD->openModal(&_callBackOpenFileDlg);
 #else
-
-//
-//	auto& row = _table.getCurrentRow();
-//	td::INT4 id = row[0].i4Val();	
-//	dp::IDatabase* pDB = dp::getMainDatabase();
-//	dp::IStatementPtr pStatIns = pDB->createStatement("SELECT Datoteka from Predaja where ID_Studenta=?"); 
-//	dp::Params paramsInsert(pStatIns->allocParams());
-//	paramsInsert << id;
-//
-//	dp::Columns pColumns = pStatIns->allocBindColumns(1);
-//
-//
-//	td::BLOB::Type typeFile = td::BLOB::Type::TYPE_TXT;
-//	//td::BLOB BLOBout(td::BLOB::SRC_FILE, 16384U, typeFile);
-//	const void* blobDataPtr;
-//	size_t blobSize;
-//
-//	pColumns << "Datoteka" << blobDataPtr << blobSize;
-//
-//	if (!pStatIns->execute())
-//		return;
-//	/*if (!pStatIns->moveNext())
-//		return;*/
-//
-//	
-//	//td::String strFileFullPath = pFD->getFileName();
-//
-//	// Create a temporary file to store the content
-//	std::string tempFilePath = "C:\\Users\\Emina\\Work\\TempFile.txt";  // Adjust the path as needed
-//	std::ofstream tempFile(tempFilePath, std::ios::binary);
-//	tempFile.write(reinterpret_cast<const char*>(blobDataPtr), blobSize);
-//	tempFile.close();
-//
-//
-//#ifdef MU_WINDOWS
-//	ShellExecute(NULL, "open", tempFilePath.c_str(), NULL, NULL, SW_SHOWNORMAL);
-//#endif
-
 
 //------------------------------------------------------------------moveNext problem
 	
@@ -662,64 +628,6 @@ void ViewGradeLabHomework::showOpenFileDialog()
 
 				}
 			});
-
-
-
-
-
-
-
-
-
-
-
-
-
-//	auto& row = _table.getCurrentRow();
-//	td::INT4 id = row[0].i4Val();
-//	dp::IDatabase* pDB = dp::getMainDatabase();
-//	dp::IStatementPtr pStatIns = pDB->createStatement("SELECT Datoteka from Predaja where ID_Studenta=?");
-//	dp::Params paramsInsert(pStatIns->allocParams());
-//	paramsInsert << id;
-//	//td::INT4 k;
-//	dp::Columns pColumns = pStatIns->allocBindColumns(1);
-//	//pColumns << "ID_openPredaja" << k;
-//	//
-//	//if (!pStatIns->execute())
-//	//	return;
-//
-//	//if (!pStatIns->moveNext())
-//	//	return;
-//	td::BLOB blob;
-//	const void* blobDataPtr = nullptr;;
-//	size_t blobSize;
-//	pColumns << "Datoteka" << reinterpret_cast<const char*>(blobDataPtr) << blobSize;
-//	//pColumns << "Datoteka" << blob;
-//
-//	if (!pStatIns->execute())
-//		return;
-//
-//	//if (!pStatIns->moveNext())
-//	//	return;
-//
-//
-//
-//	// Check if BLOB data is not empty
-//	if (blobSize == 0)
-//	{
-//		// Handle the case where the BLOB data is empty
-//		return;
-//	}
-//
-//	// Create a temporary file to store the content
-//	std::string tempFilePath = "C:\\Users\\Emina\\Work\\TempFile.pdf";  // Adjust the path as needed
-//	std::ofstream tempFile(tempFilePath, std::ios::binary);
-//	tempFile.write(static_cast<const char*>(blobDataPtr), blobSize);
-//	tempFile.close();
-//
-//#ifdef MU_WINDOWS
-//	ShellExecute(NULL, "open", tempFilePath.c_str(), NULL, NULL, SW_SHOWNORMAL);
-//#endif
 
 }
 #endif
