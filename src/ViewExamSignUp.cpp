@@ -82,14 +82,14 @@ ViewExamSignUp::~ViewExamSignUp()
 void ViewExamSignUp::initTable1()
 {
     gui::Columns visCols(_table1.allocBindColumns(8));
-    visCols << gui::ThSep::DoNotShowThSep << gui::Header(0, tr("Naz_pred")) << gui::Header(1, tr("sifra_pred")) << gui::Header(2, tr("naz_akt")) << gui::Header(3, tr("poc")) << gui::Header(4, tr("v_akt")) << gui::Header(5, tr("vr_prijave")) << gui::Header(6, tr("id_pre")) << gui::Header(7, tr("id_roka"));
+    visCols << gui::ThSep::DoNotShowThSep << gui::Header(0, tr("Naz_pred")) << gui::Header(1, tr("sifra_pred")) << gui::Header(2, tr("naz_akt")) << gui::Header(3, tr("")) << gui::Header(4, tr("v_akt")) << gui::Header(5, tr("vr_prijave")) << gui::Header(6, tr("id_pre")) << gui::Header(7, tr("id_roka"));
     _table1.init(_pDS); //ne radi kada se stavi {0,1,2,3,4,5} kao drugi parametar
 
 }
 void ViewExamSignUp::initTable2()
 {
     gui::Columns visCols(_table2.allocBindColumns(8));
-    visCols << gui::ThSep::DoNotShowThSep << gui::Header(0, tr("Naz_pred")) << gui::Header(1, tr("sifra_pred")) << gui::Header(2, tr("naz_akt")) << gui::Header(3, tr("poc")) << gui::Header(4, tr("v_akt")) << gui::Header(5, tr("vr_prijave")) << gui::Header(6, tr("id_pre")) << gui::Header(7, tr("id_roka"));
+    visCols << gui::ThSep::DoNotShowThSep << gui::Header(0, tr("Naz_pred")) << gui::Header(1, tr("sifra_pred")) << gui::Header(2, tr("naz_akt")) << gui::Header(3, tr("dat_prijave")) << gui::Header(4, tr("v_akt")) << gui::Header(5, tr("vr_prijave")) << gui::Header(6, tr("id_pre")) << gui::Header(7, tr("id_roka"));
     _table2.init(_pDS2);//ne radi kada se stavi {0,1,2,3,4,5} kao drugi parametar
 
 }
@@ -97,12 +97,13 @@ void ViewExamSignUp::initTable2()
 
 void ViewExamSignUp::populateDataForTable1()
 {
-    _pDS = dp::getMainDatabase()->createDataSet("SELECT P.Naziv_Predmeta as Course_name, P.Sifra_Predmeta as Course_code, Ak.Naziv_Aktivnosti as Name_of_activity, a.Datum_Pocetka as Start_date, a.Vrijeme_Pocetka as Start_time, a.Vrijeme_Prijave as Reg_time, P.ID_Predmeta as id_pre, a.ID_Roka as id_roka FROM Rokovi a INNER JOIN UpisPredmeta b ON a.ID_Predmeta = b.ID_Predmeta INNER JOIN Aktivnosti Ak ON Ak.ID_Aktivnosti = a.ID_Aktivnosti INNER JOIN Predmet P ON P.ID_Predmeta = a.ID_Predmeta LEFT JOIN Prijavljeni_ispiti c ON a.ID_Roka = c.ID_Roka AND b.ID_Studenta = c.ID_Studenta WHERE c.ID_Roka IS NULL AND b.ID_Studenta = ? AND Ak.Tip_Aktivnosti = 1;", dp::IDataSet::Execution::EX_MULT);
+    td::Date d1(true);
+    _pDS = dp::getMainDatabase()->createDataSet("SELECT P.Naziv_Predmeta as Course_name, P.Sifra_Predmeta as Course_code, Ak.Naziv_Aktivnosti as Name_of_activity, a.Datum_Prijave as Reg_date, a.Vrijeme_Pocetka as Start_time, a.Vrijeme_Prijave as Reg_time, P.ID_Predmeta as id_pre, a.ID_Roka as id_roka FROM Rokovi a INNER JOIN UpisPredmeta b ON a.ID_Predmeta = b.ID_Predmeta INNER JOIN Aktivnosti Ak ON Ak.ID_Aktivnosti = a.ID_Aktivnosti INNER JOIN Predmet P ON P.ID_Predmeta = a.ID_Predmeta LEFT JOIN Prijavljeni_ispiti c ON a.ID_Roka = c.ID_Roka AND b.ID_Studenta = c.ID_Studenta WHERE c.ID_Roka IS NULL AND b.ID_Studenta = ? AND a.Datum_Prijave>? AND Ak.Tip_Aktivnosti = 1", dp::IDataSet::Execution::EX_MULT);
     dp::Params parDS(_pDS->allocParams());
     //td::INT4 id = Globals::_currentUserID;
-    parDS << Globals::_currentUserID; // id;
+    parDS << Globals::_currentUserID << d1; // id;
     dp::DSColumns cols(_pDS->allocBindColumns(8));
-    cols << "Course_name" << td::string8 << "Course_code" << td::string8 << "Name_of_activity" << td::string8 << "Start_date" << td::date << "Start_time" << td::time << "Reg_time" << td::time << "id_pre" << td::int4 << "id_roka" << td::int4;
+    cols << "Course_name" << td::string8 << "Course_code" << td::string8 << "Name_of_activity" << td::string8 << "Reg_date" << td::date << "Start_time" << td::time << "Reg_time" << td::time << "id_pre" << td::int4 << "id_roka" << td::int4;
 
     if (!_pDS->execute())
     {
@@ -113,11 +114,12 @@ void ViewExamSignUp::populateDataForTable1()
 }
 void ViewExamSignUp::populateDataForTable2()
 {
-    _pDS2 = dp::getMainDatabase()->createDataSet("SELECT P.Naziv_Predmeta as Course_name, P.Sifra_Predmeta as Course_code, A.Naziv_Aktivnosti as Name_of_activity, R.Datum_Pocetka as Start_date, R.Vrijeme_Pocetka as Start_time, R.Vrijeme_Prijave as Reg_time, P.ID_Predmeta as id_pre, R.ID_Roka as id_roka FROM Predmet P INNER JOIN Aktivnosti A ON P.ID_Predmeta = A.ID_Predmeta INNER JOIN Rokovi R ON A.ID_Aktivnosti = R.ID_Aktivnosti INNER JOIN UpisPredmeta U ON P.ID_Predmeta = U.ID_Predmeta INNER JOIN Prijavljeni_ispiti PP ON P.ID_Predmeta = PP.ID_Predmeta AND A.ID_Predmeta = PP.ID_Predmeta AND R.ID_Roka = PP.ID_Roka AND U.ID_Studenta = PP.ID_Studenta AND U.ID_Predmeta = PP.ID_Predmeta AND PP.ID_Studenta = ? AND A.Tip_Aktivnosti = 1;", dp::IDataSet::Execution::EX_MULT);
+    td::Date d2(true);
+    _pDS2 = dp::getMainDatabase()->createDataSet("SELECT P.Naziv_Predmeta as Course_name, P.Sifra_Predmeta as Course_code, A.Naziv_Aktivnosti as Name_of_activity, R.Datum_Prijave as Reg_date, R.Vrijeme_Pocetka as Start_time, R.Vrijeme_Prijave as Reg_time, P.ID_Predmeta as id_pre, R.ID_Roka as id_roka FROM Predmet P INNER JOIN Aktivnosti A ON P.ID_Predmeta = A.ID_Predmeta INNER JOIN Rokovi R ON A.ID_Aktivnosti = R.ID_Aktivnosti INNER JOIN UpisPredmeta U ON P.ID_Predmeta = U.ID_Predmeta INNER JOIN Prijavljeni_ispiti PP ON P.ID_Predmeta = PP.ID_Predmeta AND A.ID_Predmeta = PP.ID_Predmeta AND R.ID_Roka = PP.ID_Roka AND U.ID_Studenta = PP.ID_Studenta AND U.ID_Predmeta = PP.ID_Predmeta AND PP.ID_Studenta = ? AND R.Datum_Prijave > ? AND A.Tip_Aktivnosti = 1;", dp::IDataSet::Execution::EX_MULT);
     dp::Params parDS2(_pDS2->allocParams());
-    parDS2 << Globals::_currentUserID;
+    parDS2 << Globals::_currentUserID << d2;
     dp::DSColumns cols(_pDS2->allocBindColumns(8));
-    cols << "Course_name" << td::string8 << "Course_code" << td::string8 << "Name_of_activity" << td::string8 << "Start_date" << td::date << "Start_time" << td::time << "Reg_time" << td::time << "id_pre" << td::int4 << "id_roka" << td::int4;
+    cols << "Course_name" << td::string8 << "Course_code" << td::string8 << "Name_of_activity" << td::string8 << "Reg_date" << td::date << "Start_time" << td::time << "Reg_time" << td::time << "id_pre" << td::int4 << "id_roka" << td::int4;
 
     if (!_pDS2->execute())
     {
@@ -201,7 +203,6 @@ bool ViewExamSignUp::onClick(gui::Button* pBtn)
     }
     if (pBtn == &_btnEnroll)
     {
-        showYesNoQuestionAsync(QuestionID::Save, this, tr("alert"), tr("saveSure"), tr("Yes"), tr("No"));
         saveData1();
         _table1.reload();
         _table1.selectRow(0, true);
@@ -213,7 +214,6 @@ bool ViewExamSignUp::onClick(gui::Button* pBtn)
 
     if (pBtn == &_btnDEnroll)
     {
-        showYesNoQuestionAsync(QuestionID::Save, this, tr("alert"), tr("saveSure"), tr("Yes"), tr("No"));
         saveData2();
         _table1.reload();
         _table1.selectRow(0, true);
@@ -289,17 +289,4 @@ void ViewExamSignUp::SetCurrentStudentIndeks()
         _indeks.setValue(val);
 
     }
-
-}
-
-bool ViewExamSignUp::onAnswer(td::UINT4 questionID, gui::Alert::Answer answer)
-{
-    if ((QuestionID)questionID == QuestionID::Save)
-    {
-        if (answer == gui::Alert::Answer::Yes) {
-            showAlert(tr("succes"), tr("succesEE"));
-        }
-        return true;
-    }
-    return false;
 }
