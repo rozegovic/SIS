@@ -13,9 +13,9 @@ ViewTimeSlot::ViewTimeSlot(td::INT4 SubjectID,td::INT4 ViewID ) :
     //, _LblType(tr("AttType")),
     ,_hlBtnsDB(4)
     ,_lblTable2("Izabrani termin/i:")
-    , _btnDEnroll(tr("DEnroll"))
+    , _btnDEnroll(tr("StuDEnroll"))
    // , _btnReload(tr("Reload"))
-    , _btnEnroll(tr("Enroll"))
+    , _btnEnroll(tr("StuEnroll"))
     //, _type(td::int4)
     , _db(dp::create(dp::IDatabase::ConnType::CT_SQLITE, dp::IDatabase::ServerType::SER_SQLITE3))
     , _gl(5, 4)
@@ -27,7 +27,7 @@ ViewTimeSlot::ViewTimeSlot(td::INT4 SubjectID,td::INT4 ViewID ) :
 //    _hlBtnsDB.append(_btnReload);
     _hlBtnsDB.append(_btnEnroll);
     _hlBtnsDB.appendSpacer();
-    _btnDEnroll.setType(gui::Button::Type::Default);
+    _btnDEnroll.setType(gui::Button::Type::Destructive);
     _btnEnroll.setType(gui::Button::Type::Constructive);
     _Subject.setAsReadOnly();
 
@@ -58,14 +58,14 @@ void ViewTimeSlot::initTable()
 {
     gui::Columns visCols(_table.allocBindColumns(3));
    // visCols << gui::ThSep::DoNotShowThSep << gui::Header(0, tr("Type")) << gui::Header(1, tr("Time")) << gui::Header(2, tr("Date"));
-    visCols << gui::Header(0, tr("Type")) << gui::Header(1, tr("Time")) << gui::Header(2, tr("Date"));
+    visCols << gui::Header(0, tr("Type")) << gui::Header(1, tr("Time")) << gui::Header(2, tr("Day"));
     _table.init(_pDS); 
 }
 
 void ViewTimeSlot::initTable2()
 {
     gui::Columns visCols(_table2.allocBindColumns(3));
-    visCols  << gui::Header(0, tr("Type")) << gui::Header(1, tr("Time")) << gui::Header(2, tr("Date"));
+    visCols  << gui::Header(0, tr("Type")) << gui::Header(1, tr("Time")) << gui::Header(2, tr("Day"));
     _table2.init(_pDS2);             
 }
 
@@ -185,6 +185,7 @@ bool ViewTimeSlot::saveData1() { //upis
     td::INT4 sID, tID,pID;
     parDS << sID << tID << pID;
     sID = Globals::_currentUserID;
+    
     td::INT4 curRow = _pDS->getCurrentRowNo();
     auto row = _pDS->getRow(curRow);
     tID = row[4].i4Val();
@@ -239,7 +240,7 @@ bool ViewTimeSlot::onClick(gui::Button* pBtn)
         pID = row[3].i4Val();
         if (IsEnrolled(sID, pID))
         {
-            showAlert(tr("alert"), tr("alertPr"));
+            showAlert(tr("alert"), tr("alertStu"));
             return false;
         }
     

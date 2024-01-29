@@ -174,6 +174,7 @@
                          <Res id="StatRole" tr="Uloga:"/>
                          <Res id="Subject" tr="Predmet"/>
                             <Res id="alertPr" tr="Vec ste unijeli prisustvo ovog studenta za ovaj termin"/>
+							  <Res id="alertStu" tr="Vec ste prijavljeni na ovaj tip termina"/>
 							 <Res id="alertAttNegative" tr="Broj mjesta ne može biti negativan"/>
 							<Res id="SubjTablePresent" tr="Prisutni za ovaj termin:"/>
 							<Res id="alertNoTerm" tr="Niste odabrali ni jedan termin"/>
@@ -273,8 +274,8 @@
 		<Res id="nenrolled:" tr="Neprijavljeni ispiti:"/>
 		<Res id="enrolled:" tr="Prijavljeni ispiti:"/>
 		
-		<Res id="DEnroll" tr="Odjavi"/>
-
+		<Res id="StuDEnroll" tr="Odjavi"/>
+        <Res id="StuEnroll" tr="Prijavi"/>
 
 
 		
