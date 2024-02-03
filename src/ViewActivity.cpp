@@ -124,6 +124,7 @@ td::INT4 ViewActivity::findMaxID() // Eminina funkcija :-D
 //    loadComboBox("select ID as ID, Naziv as Naziv from VrstaAktivnosti", _type);
 //}
 
+
 ViewActivity::ViewActivity(td::INT4 SubjectID, ViewDateTimeActivity* DateTime, ViewTasks* Task) : _db(dp::getMainDatabase()) //ovaj konstruktor se koristi jer je u switcheru
 , _id(td::int4)
 , _lblName(tr("Activity:"))
@@ -354,6 +355,7 @@ void ViewActivity::SetCurrentSubject() {
         }
         _dateTime->refresh();
         _task->refresh1();
+
         return true;
     }
     //----------------Vjerovatno ce trebati modifikovati---------------------
@@ -539,7 +541,6 @@ void ViewActivity::SetCurrentSubject() {
         if (pBtn == &_btnSave)//??
         {
             showYesNoQuestionAsync(QuestionIDDDAAA::Saveee, this, tr("alert"), tr("saveSure"), tr("Yes"), tr("No"));
-
          
             return true;
         }
