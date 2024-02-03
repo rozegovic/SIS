@@ -165,6 +165,7 @@
 							<Res id="tablePresent" tr="Prisutni za ovaj termin:"/>
 							<Res id="alertNoTerm" tr="Niste odabrali ni jedan termin"/>
 									<Res id="Report" tr="Izvještaj"/>
+									<Res id="Report1" tr="Izvještaj ispita"/>
 		<Res id="ActivityRep" tr="Izvještaj aktivnosti"/>
 		<Res id="viewTimeSlot" tr="Prijava termina"/>
 		
@@ -219,6 +220,7 @@
 		<Res id="PorukeTT" tr="Poruke"/>
 		<Res id="AddFile" tr="Dodaj dokument"/>
 		<Res id="AddFileTT" tr="Dodaj dokument"/>
+		<Res id="SendFile" tr="Pošalji dokument"/>
 		<Res id="Docs:" tr="Dokumenti:"/>
 		
 		<Res id="tobeenrolledtocourse" tr="Studenti koji imaju mogućnost upisa"/>
@@ -247,6 +249,51 @@
 		<Res id="Committed:" tr="Predano:"/>
 		<Res id="Send" tr="Posalji"/>
 		<Res id="Sname" tr="Skracenica"/>
+
+		<Res id="ActivityType" tr="Tip aktivnosti:"/>
+		<Res id="ActivityPoints" tr="Bodovi:"/>
+
+		<Res id="ActivityDateB" tr="Datum pocetka:"/>
+		<Res id="ActivityTimeB" tr="Vrijeme pocetka:"/>
+		<Res id="ActivityNameForDateTime" tr="Aktivnost:"/>
+		<Res id="Activity" tr="Aktivnost"/>
+
+		<Res id="ActivityDateE" tr="Datum kraja:"/>
+		<Res id="ActivityTimeE" tr="Vrijeme kraja:"/>
+		<Res id="ActivityDateF" tr="Datum pocetka ispita:"/>
+		<Res id="ActivityTimeF" tr="Vrijeme pocetka ispita:"/>
+		<Res id="viewGradeLabHw" tr="Ocjene dodataka"/>
+		<Res id="sifraP" tr="Skracenica"/>
+		<Res id="Task" tr="Zadatak"/>
+
+		<Res id="ActivityDateP" tr="Datum kraja:"/>
+		<Res id="ActivityTimeP" tr="Vrijeme kraja:"/>
+
+		<Res id="Documents" tr="Dokumenti"/>
+		<Res id="Delete2" tr="Obrisi"/>
+		<Res id="Delete1" tr="Obrisi sve dokumente"/>
+		<Res id="Delete2TT" tr="Obrisi odabrani dokumet"/>
+		<Res id="UnSend" tr="Ponisti slanje"/>
+
+		<Res id="dateR" tr="Krajnji datum za predaju"/>
+		<Res id="timeR" tr="Krajnje vrijeme za predaju"/>
+		<Res id="nameP" tr="Naziv predmeta"/>
+		<Res id="dateP" tr="Datum predaje"/>
+		<Res id="timeP" tr="Vrijeme predaje"/>
+		<Res id="DatName" tr="Naziv datoteke"/>
+		<Res id="naziv" tr="Naziv"/>
+		<Res id="IDA" tr="ID aktivnosti"/>
+		<Res id="nameS" tr="Naziv predmeta"/>
+		<Res id="desA" tr="Opis aktivnosti"/>
+
+		<Res id="datumb" tr="Datum pocetka"/>
+		<Res id="vrijemeb" tr="Vrijeme pocetka"/>
+		<Res id="datume" tr="Datum kraja"/>
+		<Res id="vrijemee" tr="Vrijeme kraja"/>
+		<Res id="datumf" tr="Datum pocetka ispita"/>
+		<Res id="vrijemef" tr="Vrijeme pocetka ispita"/>
+		<Res id="IDP" tr="ID predmeta"/>
+		
 		<!--Login-->
         <Res id = "WrongPass" tr = "Pogresna sifra!"/>
 		<Res id = "EnterCorrPass" tr = "Ukucajte ispravnu sifru"/>

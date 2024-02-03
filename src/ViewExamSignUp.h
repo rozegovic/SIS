@@ -49,7 +49,8 @@ protected:
     gui::Button _btnEnroll;
     gui::Button _btnDEnroll;
     gui::Button _btnReload;
-
+    td::Date d1;
+    td::Date d2;
 
 
     gui::GridLayout _gl;
@@ -80,4 +81,5 @@ protected:
     void SetCurrentStudentName();
     void SetCurrentStudentSurname();
     void SetCurrentStudentIndeks();
+    //bool onAnswer(td::UINT4 questionID, gui::Alert::Answer answer);
 };

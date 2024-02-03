@@ -7,6 +7,7 @@
 #include <gui/Alert.h>
 #include <fo/FileOperations.h>
 #include <td/BLOB.h>
+#include "Globals.h"
 
 
 ViewGradeLabHomework::ViewGradeLabHomework(td::INT4 SubjectID) : _db(dp::getMainDatabase())
@@ -22,7 +23,7 @@ ViewGradeLabHomework::ViewGradeLabHomework(td::INT4 SubjectID) : _db(dp::getMain
 , _btnDelete(tr("Delete"))
 , _btnUpdate(tr("Update"))
 , _btnReport(tr("Report"))
-, _btnHWL(tr("Predano"))
+, _btnHWL(tr("Documents"))
 , _hlBtns(5)
 , _gl(6, 4) // pazi na brojeve----neka budu tri reda ovih labela (naziv aktivnosti i naziv predmeta, ime i prezime, indeks i ocjena)
 , _SubjectID(SubjectID)
@@ -122,7 +123,7 @@ void ViewGradeLabHomework::populateData()
 	_pDS = _db->createDataSet("SELECT d.ID_Korisnika, d.ID_Aktivnosti, b.Naziv_Aktivnosti, c.Indeks, c.Ime, c.Prezime, d.Ocjena as Procenat, d.ID FROM Aktivnosti b, Korisnici c, OcjeneLabZadace d WHERE d.ID_Aktivnosti = b.ID_Aktivnosti and d.ID_Korisnika = c.ID AND b.ID_Predmeta = ? AND b.ID_Aktivnosti=? AND b.Tip_Aktivnosti IN(5, 2) ORDER BY b.Naziv_Aktivnosti DESC", dp::IDataSet::Execution::EX_MULT);
 
 	dp::Params parDS(_pDS->allocParams());
-	parDS << _SubjectID<<_ActivityID;
+	parDS << _SubjectID << _ActivityID;
 
 	dp::DSColumns cols(_pDS->allocBindColumns(8));
 	cols << "ID_Korisnika" << td::int4 << "ID_Aktivnosti" << td::int4 << "Naziv_Aktivnosti" << td::string8 << "Indeks" << td::string8 << "Ime" << td::string8 << "Prezime" << td::string8 << "Procenat" << td::string8 << "ID" << td::int4;
@@ -310,8 +311,6 @@ bool ViewGradeLabHomework::onClick(gui::Button* pBtn)
 	if (pBtn == &_btnDelete)
 	{
 
-
-
 		int iRow = _table.getFirstSelectedRow();
 		if (iRow < 0)
 			return true;
@@ -374,7 +373,8 @@ bool ViewGradeLabHomework::onClick(gui::Button* pBtn)
 		return true;
 	}
 	if (pBtn == &_btnSave) {
-		saveData();
+		showYesNoQuestionAsync(QuestionID::Save, this, tr("alert"), tr("saveSure"), tr("Yes"), tr("No"));
+		return true;
 	}
 	if (pBtn == &_btnReport) {
 		dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT Tip_Aktivnosti FROM Aktivnosti WHERE ID_Aktivnosti = ?");
@@ -472,10 +472,16 @@ td::INT4 ViewGradeLabHomework::findMaxID()
 void ViewGradeLabHomework::insertValues(td::INT4 subjectID)
 {
 	dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("INSERT INTO OcjeneLabZadace (ID_Korisnika, ID_Aktivnosti) SELECT a.ID_Studenta, b.ID_Aktivnosti FROM UpisPredmeta a JOIN Aktivnosti b ON a.ID_Predmeta = b.ID_Predmeta WHERE b.Tip_Aktivnosti IN(2, 5)AND NOT EXISTS(SELECT 1 FROM OcjeneLabZadace c WHERE c.ID_Korisnika = a.ID_Studenta AND c.ID_Aktivnosti = b.ID_Aktivnosti); ");
+
+	dp::IStatementPtr pSelect2 = dp::getMainDatabase()->createStatement("INSERT INTO PolazniciAktivnosti (ID_Korisnika, ID_Aktivnosti) SELECT a.ID_Studenta, b.ID_Aktivnosti FROM UpisPredmeta a JOIN Aktivnosti b ON a.ID_Predmeta = b.ID_Predmeta WHERE b.Tip_Aktivnosti IN(2, 5)AND NOT EXISTS(SELECT 1 FROM PolazniciAktivnosti c WHERE c.ID_Korisnika = a.ID_Studenta AND c.ID_Aktivnosti = b.ID_Aktivnosti); ");
+	dp::Transaction t(dp::getMainDatabase());
 	if (!pSelect->execute())
 		return;
-	if (!pSelect->moveNext())
+	if (!pSelect2->execute())
 		return;
+	t.commit();
+	/*if (!pSelect->moveNext())
+		return;*/
 }
 
 bool ViewGradeLabHomework::loadComboBox(td::String select, gui::DBComboBox& combo)
@@ -488,17 +494,20 @@ bool ViewGradeLabHomework::loadComboBox(td::String select, gui::DBComboBox& comb
 	td::INT4 id;
 	td::Date d;
 	td::Time t;
-	td::Date dnow;
-	td::Time tnow;
+	td::Date dnow(true);
+	td::Time tnow(true);
 
-	pCols << "ID" << id << "Name" << name<<"d"<<d<<"t"<<t;
+	pCols << "ID" << id << "Name" << name << "d" << d << "t" << t;
 	if (!pSelect->execute())
 		return false;
 
 	while (pSelect->moveNext())
 	{
-		if(dnow<d||(dnow==d&&tnow<t))  
-		combo.addItem(name, id);
+		/*if (dnow > d)
+			combo.addItem(name, id);
+		else if (dnow == d && tnow > t)*/
+			combo.addItem(name, id);
+
 	}
 	//combo.selectIndex(0, );
 	return true;
@@ -528,44 +537,6 @@ void ViewGradeLabHomework::showOpenFileDialog()
 	pFD->openModal(&_callBackOpenFileDlg);
 #else
 
-//
-//	auto& row = _table.getCurrentRow();
-//	td::INT4 id = row[0].i4Val();	
-//	dp::IDatabase* pDB = dp::getMainDatabase();
-//	dp::IStatementPtr pStatIns = pDB->createStatement("SELECT Datoteka from Predaja where ID_Studenta=?"); 
-//	dp::Params paramsInsert(pStatIns->allocParams());
-//	paramsInsert << id;
-//
-//	dp::Columns pColumns = pStatIns->allocBindColumns(1);
-//
-//
-//	td::BLOB::Type typeFile = td::BLOB::Type::TYPE_TXT;
-//	//td::BLOB BLOBout(td::BLOB::SRC_FILE, 16384U, typeFile);
-//	const void* blobDataPtr;
-//	size_t blobSize;
-//
-//	pColumns << "Datoteka" << blobDataPtr << blobSize;
-//
-//	if (!pStatIns->execute())
-//		return;
-//	/*if (!pStatIns->moveNext())
-//		return;*/
-//
-//	
-//	//td::String strFileFullPath = pFD->getFileName();
-//
-//	// Create a temporary file to store the content
-//	std::string tempFilePath = "C:\\Users\\Emina\\Work\\TempFile.txt";  // Adjust the path as needed
-//	std::ofstream tempFile(tempFilePath, std::ios::binary);
-//	tempFile.write(reinterpret_cast<const char*>(blobDataPtr), blobSize);
-//	tempFile.close();
-//
-//
-//#ifdef MU_WINDOWS
-//	ShellExecute(NULL, "open", tempFilePath.c_str(), NULL, NULL, SW_SHOWNORMAL);
-//#endif
-
-
 //------------------------------------------------------------------moveNext problem
 	
 		auto pFD = new gui::SelectFolderDialog(this, tr("SelectFolder"));
@@ -580,12 +551,18 @@ void ViewGradeLabHomework::showOpenFileDialog()
 
 					fo::fs::path filePath(strFolderName.c_str());
 
-
-					
 					dp::IDatabase* pDB = dp::getMainDatabase();
 					dp::IStatementPtr pStatSel = pDB->createStatement("SELECT a.NazivFajla as Name from Predaja a, OpenPredaja b where a.ID_Studenta = ? and b.ID_Aktivnosti = ? and b.ID = a.ID_OpenPredaja");
 					dp::IStatementPtr pStatSelBlob = pDB->createStatement("SELECT a.Datoteka as Data from Predaja a, OpenPredaja b where a.ID_Studenta = ? and b.ID_Aktivnosti = ? and b.ID = a.ID_OpenPredaja");
-					td::INT4 ID = 5;
+					int iRow = _table.getFirstSelectedRow();
+					if (iRow < 0) {
+						return;
+					}
+					td::Variant val;
+					dp::IDataSet* pDS = _table.getDataSet();
+					auto& row = pDS->getRow(iRow);
+					val = row[0];
+					td::INT4 ID = val.i4Val();
 					dp::Params pStatSelParams(pStatSel->allocParams());
 					pStatSelParams << ID<<_ActivityID;
 					dp::Params pStatSelBlobParams(pStatSelBlob->allocParams());
@@ -652,63 +629,19 @@ void ViewGradeLabHomework::showOpenFileDialog()
 				}
 			});
 
-
-
-
-
-
-
-
-
-
-
-
-
-//	auto& row = _table.getCurrentRow();
-//	td::INT4 id = row[0].i4Val();
-//	dp::IDatabase* pDB = dp::getMainDatabase();
-//	dp::IStatementPtr pStatIns = pDB->createStatement("SELECT Datoteka from Predaja where ID_Studenta=?");
-//	dp::Params paramsInsert(pStatIns->allocParams());
-//	paramsInsert << id;
-//	//td::INT4 k;
-//	dp::Columns pColumns = pStatIns->allocBindColumns(1);
-//	//pColumns << "ID_openPredaja" << k;
-//	//
-//	//if (!pStatIns->execute())
-//	//	return;
-//
-//	//if (!pStatIns->moveNext())
-//	//	return;
-//	td::BLOB blob;
-//	const void* blobDataPtr = nullptr;;
-//	size_t blobSize;
-//	pColumns << "Datoteka" << reinterpret_cast<const char*>(blobDataPtr) << blobSize;
-//	//pColumns << "Datoteka" << blob;
-//
-//	if (!pStatIns->execute())
-//		return;
-//
-//	//if (!pStatIns->moveNext())
-//	//	return;
-//
-//
-//
-//	// Check if BLOB data is not empty
-//	if (blobSize == 0)
-//	{
-//		// Handle the case where the BLOB data is empty
-//		return;
-//	}
-//
-//	// Create a temporary file to store the content
-//	std::string tempFilePath = "C:\\Users\\Emina\\Work\\TempFile.pdf";  // Adjust the path as needed
-//	std::ofstream tempFile(tempFilePath, std::ios::binary);
-//	tempFile.write(static_cast<const char*>(blobDataPtr), blobSize);
-//	tempFile.close();
-//
-//#ifdef MU_WINDOWS
-//	ShellExecute(NULL, "open", tempFilePath.c_str(), NULL, NULL, SW_SHOWNORMAL);
-//#endif
-
 }
 #endif
+
+
+bool ViewGradeLabHomework::onAnswer(td::UINT4 questionID, gui::Alert::Answer answer)
+{
+	if ((QuestionID)questionID == QuestionID::Save)
+	{
+		if (answer == gui::Alert::Answer::Yes) {
+			saveData();
+			showAlert(tr("succes"), tr("succesEE"));
+		}
+		return true;
+	}
+	return false;
+}

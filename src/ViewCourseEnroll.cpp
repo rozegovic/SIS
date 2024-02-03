@@ -125,10 +125,10 @@ void ViewCourseEnroll::populateDepartmentCombo(gui::DBComboBox& combo)
 void ViewCourseEnroll::populateCourseCombo(gui::DBComboBox& combo, td::String smjer, td::String semestar)
 {
     td::String str;
-    str.append("SELECT ID_Predmeta,Naziv_Predmeta FROM Predmet WHERE ID_Smjera=");
-    str.append(smjer);
-    str.append(" AND Semestar=");
+    str.append("SELECT p.ID_Predmeta, p.Naziv_Predmeta FROM Predmet p JOIN Curriculum c ON p.ID_Predmeta = c.ID_Predmeta WHERE p.Semestar =");
     str.append(semestar);
+    str.append(" AND c.ID_Smjera = ");
+    str.append(smjer);
 
     dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement(str);
     dp::Columns pCols = pSelect->allocBindColumns(2);

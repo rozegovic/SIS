@@ -52,8 +52,8 @@ protected:
     gui::Button _btnPushBack;
     gui::GridLayout _gl;
     //dp::IDatabase* _db;
-    dp::IDatabasePtr _db;
-    dp::IDataSetPtr _pDS;
+    dp::IDatabase* _db;
+    dp::IDataSet* _pDS;
     //  td::INT4 _paramFrom;
      // td::INT4 _paramTo;
     td::INT4 _departmentID;
@@ -66,19 +66,16 @@ public:
 protected:
     td::INT4 getIDfromTable(int rowID);
     bool canDelete(int iRow);
-    bool eraseCurriculum();
     bool saveData();
     bool existsInDepartment(td::INT4 id);
     bool canUpdate(int iRow);
     void populateData();
-    bool updateCourse();
     bool loadComboBox(td::String select, gui::DBComboBox& combo);
     bool onChangedSelection(gui::TableEdit* pTE);
     bool onChangedSelection(gui::DBComboBox* pCmb);
     void populateDSRow(dp::IDataSet::Row& row);
     //bool canAdd();    //trenutno ne treba 
     virtual bool onClick(gui::Button* pBtn);
-    bool insertCurriculum();
     bool doesIDexist(td::INT4 id);
     //bool onAnswer(td::UINT4 questionID, gui::Alert::Answer answer);
     void SetCurrentDepartment();
