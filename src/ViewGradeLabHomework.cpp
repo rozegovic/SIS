@@ -9,6 +9,8 @@
 #include <td/BLOB.h>
 #include "Globals.h"
 
+//--------------vazno
+//------------------------pitati za popravku prvu lab pa zadaca ne ucitava ocjenu na zadaci
 
 ViewGradeLabHomework::ViewGradeLabHomework(td::INT4 SubjectID) : _db(dp::getMainDatabase())
 , _lblName(tr("userName:"))
@@ -382,17 +384,15 @@ bool ViewGradeLabHomework::onClick(gui::Button* pBtn)
 		//d::INT4 IDPredmeta = Globals::_IDSubjectSelection;
 		parDS << _ActivityID;
 		dp::Columns pCols = pSelect->allocBindColumns(1);
+		td::INT4 pp=_ActivityID;
 		td::INT4 id;
 		pCols << "Tip_Aktivnosti" << id;
 		if (!pSelect->execute())
 			return false;
 		if (!pSelect->moveNext())
 			return false;
+		extraGrades(&_imgHWGrades, _SubjectID, id); 
 
-		if(id==2)
-			homeworkGrades(&_imgHWGrades, _SubjectID); 
-		else if(id==5)
-			labGrades(&_imgHWGrades, _SubjectID);
 	}
 	if (pBtn == &_btnHWL) {
 		
