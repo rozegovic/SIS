@@ -54,6 +54,8 @@ MainWindow::MainWindow()
     setTitle(tr("SIS"));
     _mainMenuBar.setAsMain(this);
     setCentralView(&_mainView);
+    //setCentralView(&_etf);
+
     setStatusBar(&_statBar);
 
     //load report resources
@@ -81,6 +83,7 @@ void MainWindow::showLogin()
             auto btnID = pDlg->getClickedButtonID();
             if (btnID == gui::Dialog::Button::ID::OK) {
                 _statBar.UpdateStatusBar();
+                _mainView.reset();
                 return true;
             }
             else
