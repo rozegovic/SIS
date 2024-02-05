@@ -3,6 +3,7 @@
 #include <gui/VerticalLayout.h>
 #include <gui/Image.h>
 #include <gui/ImageView.h>
+#include <gui/TabView.h>
 
 //------------------Klasa za prikaz slike etf bez ikakvih dodataka
 
@@ -14,6 +15,7 @@ protected:
 
 public:
     ETFBackground(): _etf(":ETF")
+       // , gui::TabView(gui::TabHeader::Type::FitToText, 8, 64)
     {
 
     }

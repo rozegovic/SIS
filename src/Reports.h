@@ -10,5 +10,6 @@
 
 void examAttendance(const gui::Image*, td::INT4 SubjectID);
 void examGrades(const gui::Image*, td::INT4 SubjectID);
-void extraGrades(const gui::Image*, td::INT4 SubjectID, td::INT4 type);
+void homeworkGrades(const gui::Image*, td::INT4 SubjectID);
+void labGrades(const gui::Image*, td::INT4 SubjectID);
 void examGrade(const gui::Image*, td::INT4 SubjectID, td::INT4 id_kor);
