@@ -9,6 +9,7 @@
 #include "MenuBar.h"
 #include "DynTabView.h"
 #include "StatusBar.h"
+#include "CanvasETF.h"
 
 class MainWindow : public gui::Window
 {
@@ -34,12 +35,14 @@ protected:
     gui::Image _imgExamLabHomework;
     gui::Image _imgSAOTicket;
     StatusBar _statBar;
-
+    ETFBackground _etf;
 
 protected:
     void onInitialAppearance() override
     {
         showLogin();
+        //ako neko ima ideju -_-
+       // _mainView.setAsCentralViewInWindow();
     }
 public:
     MainWindow();

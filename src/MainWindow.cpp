@@ -26,7 +26,7 @@
 #include "NavigatorViewActivity.h"
 #include "ViewTimeSlot.h"
 #include "ViewGradeLabHomework.h"
-
+#include "CanvasETF.h"
 #include "ViewTicketFORSAO.h"
 
 
@@ -65,6 +65,7 @@ MainWindow::MainWindow()
         assert(false);
         return;
     }
+
 }
 
 void MainWindow::showLogin()
