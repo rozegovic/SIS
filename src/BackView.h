@@ -20,15 +20,16 @@ public:
     : _splitter(gui::SplitterLayout::Orientation::Horizontal, gui::SplitterLayout::AuxiliaryCell::First) 
     , _leftCanvas(&_middleCanvas)
     {
-
+        
         _splitter.setContent(_leftCanvas, _middleCanvas);
         setLayout(&_splitter);
     }
 
     void reset() {
         _middleCanvas.reset();
+        
         _leftCanvas.reset();
-
+        
     }
     /*void measure(CellInfo& ci) override
     {

@@ -4,6 +4,8 @@
 #include <gui/ImageView.h>
 #include <gui/SplitterLayout.h>
 #include "MiddleCanvas.h"
+#include <vector>
+#include <gui/DrawableString.h>
 
 //-------------------izbrisati sliku etf (tu samo da se nesto prikazuje)!!!
 class FarLeftCanvas : public gui::Canvas
@@ -12,14 +14,45 @@ private:
 protected:
     gui::Image _etf;
     MiddleCanvas* _middleCanvas;
+    
+    //Grupa 2
+    gui::Shape _rect;
+    std::vector<gui::DrawableString> _subjects;
+    
+    
 public:
     FarLeftCanvas( MiddleCanvas* canvas)
         : _etf(":ETF")
      //   , _middleCanvas(canvas)
     {
+       
         _middleCanvas = canvas;
+        
+        //Grupa 2
+       // createStrings();
+//        gui::Rect r(50, 50, 200, 150);
+//        float lw = 5;
+//        _rect.createRect(r, lw);
     }
+    
+    //Grupa2
+    bool createStrings() {
+        dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select a.Naziv_Predmeta AS Naziv FROM Predmet a, UpisPredmeta b WHERE b.ID_Studenta = ? AND  b.ID_Predmeta = a.ID_Predmeta");
+        dp::Params pParams(pSelect->allocParams());
+        pParams << Globals::_currentUserID;
+        dp::Columns pCols = pSelect->allocBindColumns(1);
+        td::String name;
+       // gui::DrawableString drawableName;
+        pCols << "Naziv" << name;
+        if (!pSelect->execute())
+            return false;
 
+        while (pSelect->moveNext()) {
+            gui::DrawableString drawableName(name);
+            _subjects.push_back(drawableName);
+        }
+            return false;
+    }
     void onDraw(const gui::Rect& rect) override {
         const bool check = false;
         // pogled za profesora i asistenta ------ grupa 3
@@ -64,12 +97,30 @@ public:
         else if (Globals::_currentUserID == 5) {
             gui::Size sz;
             getSize(sz);
-            gui::Point cp(sz.width / 2, sz.height / 2);
-            td::INT4 x = cp.x;
-            td::INT4 y = cp.y;
-
-            gui::Rect imgRect(x - 15 - x / 4, y - 15 - y / 4, x + 15 + x / 4, y + 15 + y / 4);
-            _etf.draw(imgRect, gui::Image::AspectRatio::Keep, td::HAlignment::Center, td::VAlignment::Center);
+          //  createStrings();
+            std::vector<gui::DrawableString> test;
+            test.push_back(gui::DrawableString("aaaa"));
+            test.push_back(gui::DrawableString("bbbb"));
+            test.push_back(gui::DrawableString("cccc"));
+            gui::Rect r(0, 0, sz.width, 50);
+            float lw = 5;
+            _rect.createRect(r, lw);
+           // gui::Rect imgRect(450, 50, 650, 150);
+            for(auto subj : test){
+                gui::Shape::drawRect(r,td::ColorID::WhiteSmoke, td::ColorID::Navy, 4, td::LinePattern::Solid);
+                subj.draw(r, gui::Font::ID::SystemBold, td::ColorID::Navy, td::TextAlignment::Center, td::VAlignment::Center);
+               
+                r.translate(0, 50);
+            }
+//            gui::Size sz;
+//            getSize(sz);
+//            gui::Point cp(sz.width / 2, sz.height / 2);
+//            td::INT4 x = cp.x;
+//            td::INT4 y = cp.y;
+//
+//            gui::Rect imgRect(x - 15 - x / 4, y - 15 - y / 4, x + 15 + x / 4, y + 15 + y / 4);
+//            _etf.draw(imgRect, gui::Image::AspectRatio::Keep, td::HAlignment::Center, td::VAlignment::Center);
+            
         }
         // kada nema ulogovane osobe
        /* else if(Globals::isLogged==check){
