@@ -103,13 +103,14 @@ public:
             test.push_back(gui::DrawableString("bbbb"));
             test.push_back(gui::DrawableString("cccc"));
             gui::Rect r(0, 0, sz.width, 50);
+            gui::Point pt(10, 0);
             float lw = 5;
             _rect.createRect(r, lw);
            // gui::Rect imgRect(450, 50, 650, 150);
             for(auto subj : test){
                 gui::Shape::drawRect(r,td::ColorID::WhiteSmoke, td::ColorID::Navy, 4, td::LinePattern::Solid);
-                subj.draw(r, gui::Font::ID::SystemBold, td::ColorID::Navy, td::TextAlignment::Center, td::VAlignment::Center);
-               
+                subj.draw(pt, gui::Font::ID::SystemBold, td::ColorID::Navy);
+                pt.translate(0,50);
                 r.translate(0, 50);
             }
 //            gui::Size sz;
