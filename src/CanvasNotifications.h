@@ -23,13 +23,41 @@ public:
     void onDraw(const gui::Rect& rect) override {
         gui::Size sz;
         getSize(sz);
-        gui::Point cp(sz.width / 2, sz.height / 2);
-        td::INT4 x = cp.x;
-        td::INT4 y = cp.y;
 
-        gui::Rect imgRect(x - 15 - x / 4, y - 15 - y / 4, x + 15 + x / 4, y + 15 + y / 4);
-        _etf.draw(imgRect, gui::Image::AspectRatio::Keep, td::HAlignment::Center, td::VAlignment::Center); //no
+        //problem je sto se ne mogu skrolat poruke vec treba promijeniti size prozora da se sve vidi 
+        //dodati provjeru da se ne ispisuje obavijest za ispit ako je rok za prijavu istog istekao
 
+        dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT a.Subject, a.Poruke "
+            "  FROM Messages a "
+            "  JOIN MsgReceivers mr ON mr.MsgID = a.ID "
+            "   WHERE mr.UserID = ? ");
+        dp::Params parDS(pSelect->allocParams());
+        parDS << Globals::_currentUserID;
+        dp::Columns pCols = pSelect->allocBindColumns(2);
+        td::String Subject, Poruke;
+        pCols << "Subject" << Subject << "Poruke" << Poruke;
+        if (!pSelect->execute()) {
+            Subject = "Greska";
+            Poruke = "Greska";
+        }
+        gui::Rect imgRect(0, 0, sz.width, 60);
+        gui::Point pt(10, 0);
+        gui::Point pt2(10, 30);
+        while (pSelect->moveNext())
+        {
+            gui::Shape::drawRect(imgRect, td::ColorID::LightGray, td::ColorID::MidnightBlue, 2, td::LinePattern::Solid);
+            gui::DrawableString tekst = Subject;
+            gui::DrawableString tekst2 = Poruke;
+            tekst.draw(pt, gui::Font::ID::SystemLargerBold, td::ColorID::Navy);
+            tekst2.draw(pt2, gui::Font::ID::SystemNormal, td::ColorID::Navy);
+            pt.translate(0, 70);
+            pt2.translate(0, 70);
+            imgRect.translate(0, 70);
 
+        }
+
+    };
+    void reset() {
+        reDraw();
     };
 };

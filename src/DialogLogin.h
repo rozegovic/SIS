@@ -98,6 +98,8 @@ protected:
                 Globals::isStudent = true;
                
             }
+            // po potrebi ovjde dodati 
+            //  Globals::isLogged = true;
 
         }
       

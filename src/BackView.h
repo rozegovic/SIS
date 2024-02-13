@@ -3,53 +3,49 @@
 #include <gui/Image.h>
 #include <gui/ImageView.h>
 #include <gui/SplitterLayout.h>
-#include "ChatsForTStaff.h"
-#include "ConvoForTStaff.h"
-#include "ChatsForSAO.h"
-#include "ConvoForSAO.h"
-#include "CanvasETF.h"
-#include "CanvasSubject.h"
+#include "MiddleCanvas.h"
+#include "FarLeftCanvas.h"
 #include "Globals.h"
-
-//----------------------Svaka grupa treba zakometarisati sve osim onog uslova koji njima treba
-//----------------------sve znaci sve osim linije _splitter(...)
-//----------------------trenutno radi za grupu 3
-
 
 class BackView : public gui::View
 {
 private:
 protected:
-    ChatsTS _chatsTS;
-    ConvoTS _convoTS;
-    ChatsSAO _chatsSAO;
-    ConvoSAO _convoSAO;
-    ETFBackground _etf;
-    SubjectShow _subject;
+    FarLeftCanvas _leftCanvas;
+    MiddleCanvas _middleCanvas;   //  vjerovatno ce leftCanvas morati primati pokazivac na srednji
     gui::SplitterLayout _splitter;
 
 public:
     BackView()
-    : _splitter(gui::SplitterLayout::Orientation::Horizontal, gui::SplitterLayout::AuxiliaryCell::First) //potrebna nam dva ova???
+    : _splitter(gui::SplitterLayout::Orientation::Horizontal, gui::SplitterLayout::AuxiliaryCell::First) 
+    , _leftCanvas(&_middleCanvas)
     {
-        //grupa 3 je prvi if, drugi je grupa 1, treci je grupa 2
-      /*  if(Globals::_currentUserID ==1 || Globals::_currentUserID ==3) 
-        {*/
-            _splitter.setContent(_chatsTS, _convoTS);
-        ///*}
 
-        //else if (Globals::_currentUserID == 4)
-        //{
-          //  _splitter.setContent(_chatsSAO, _convoSAO);
-        //}
-
-        //else if (Globals::_currentUserID == 5)
-        //{
-          //  _splitter.setContent(_subject, _etf);
-        //}*/
-
+        _splitter.setContent(_leftCanvas, _middleCanvas);
         setLayout(&_splitter);
     }
 
+    void reset() {
+        _middleCanvas.reset();
+        _leftCanvas.reset();
 
+    }
+    /*void measure(CellInfo& ci) override
+    {
+        gui::Size imgSize;
+        _image.getSize(imgSize);
+        ci.minHor = imgSize.width;
+        ci.minVer = imgSize.height;
+        ci.nResHor = 0;
+        ci.nResVer = 0;
+    }
+    void reMeasure(CellInfo& ci) override
+    {
+        gui::Size imgSize;
+        _image.getSize(imgSize);
+        ci.minHor = imgSize.width;
+        ci.minVer = imgSize.height;
+        ci.nResHor = 0;
+        ci.nResVer = 0;
+    }*/
 };
