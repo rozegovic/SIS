@@ -20,15 +20,15 @@ public:
 	CanvasView()
 		: _splitter(gui::SplitterLayout::Orientation::Horizontal, gui::SplitterLayout::AuxiliaryCell::Second)
 	{
-		/*if (Globals::_currentUserID == 6)
-		{
-			setBackgroundView(&_etf);
-		}
-		else
-		{*/
-		_splitter.setContent(_backgroundView, _notificationsView);
+		_splitter.setContent(_backgroundView, _notificationsView);    // pokusaj i ovo implementirati preko funkcija 
 		setLayout(&_splitter);
-		//}
+	}
+	void reset() {
+
+		_backgroundView.reset();
+		_notificationsView.reset();
+
+		//_splitter.disable();    // da li ista radi???
 	}
 };
 
