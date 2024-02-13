@@ -4,6 +4,8 @@
 #include "ViewLogin.h"
 #include <dp/IDatabase.h>
 #include "Globals.h"
+#include "ViewIDs.h"
+
 #include "SetPasswordWindow.h"
 #include "WindowMessages.h"
 class  DialogLogin : public gui::Dialog

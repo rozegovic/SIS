@@ -3,6 +3,7 @@
 #include <td/Types.h>
 #include "Reports.h"
 #include "SendMessage.h"
+#include "Globals.h"
 
 ViewGradeExams::ViewGradeExams(td::INT4 SubjectID) : _db(dp::getMainDatabase())
 , _lblName(tr("userName:"))
@@ -11,15 +12,16 @@ ViewGradeExams::ViewGradeExams(td::INT4 SubjectID) : _db(dp::getMainDatabase())
 , _lblGrade(tr("grade:")) // napomena za Eminu - poslije dodati send message
 , _lblActivityName(tr("activityName:"))
 , _lblCName(tr("courseName:"))
+, _btnReport1(tr("Report1"))
 , _btnAdd(tr("add"))
 , _btnSave(tr("save"))
 , _btnDelete(tr("Delete"))
 , _btnUpdate(tr("Update"))
 , _btnReport(tr("Report"))
-, _hlBtns(5)
+, _hlBtns(6)
 , _gl(6, 4) // pazi na brojeve----neka budu tri reda ovih labela (naziv aktivnosti i naziv predmeta, ime i prezime, indeks i ocjena)
 , _SubjectID(SubjectID)
-, _report(1)
+, _report(3)
 , _imgExamGrades(":complex")
 {
 
@@ -31,8 +33,9 @@ ViewGradeExams::ViewGradeExams(td::INT4 SubjectID) : _db(dp::getMainDatabase())
 	_hlBtns.append(_btnUpdate);
 	_hlBtns.appendSpacer();
 
-	_report.append(_btnReport, td::HAlignment::Right);
-
+	_report.appendSpacer(1);
+	_report.append(_btnReport);
+	_report.append(_btnReport1, td::HAlignment::Right);
 	//  _btnUpdate.setType(gui::Button::Type::Default);
 	_btnSave.setType(gui::Button::Type::Default);
 	_btnDelete.setType(gui::Button::Type::Destructive);
@@ -253,15 +256,15 @@ bool ViewGradeExams::saveData()
 		_itemsToInsert.clear();
 		_itemsToUpdate.clear();
 	}
-
 	for (auto i : _userids) {
 
 		td::String naslov = "Ocjena!";
-		td::String poruka = "Unesena je ocjena za odredenu aktivnost! ";
+		td::String poruka = "Unesena je ocjena za odredenu aktivnost!";
 		MsgSender msg;
 		msg.sendSystemMsgtoUser(naslov, poruka, i);
 	}
 	_userids.clear();
+
 
 	return true;
 }
@@ -334,11 +337,25 @@ bool ViewGradeExams::onClick(gui::Button* pBtn)
 		return true;
 	}
 	if (pBtn == &_btnSave) {
-		saveData();
+		showYesNoQuestionAsync(QuestionID::Save, this, tr("alert"), tr("saveSure"), tr("Yes"), tr("No"));
+		return true;
 	}
 	if (pBtn == &_btnReport) {
 		examGrades(&_imgExamGrades, _SubjectID);
 		// pada zbog pristupa nedozvoljenim lokacijama - PROBLEM
+	}
+	if (pBtn == &_btnReport1) {
+		int iRow = _table.getFirstSelectedRow();
+		if (iRow < 0) {
+			return false;
+		}
+		td::Variant val;
+		dp::IDataSet* pDS = _table.getDataSet();
+		auto& row = pDS->getRow(iRow);
+		td::INT4 id_akt = row[1].i4Val();;
+		examGrade(&_imgExamGrades, _SubjectID, id_akt);
+		// pada zbog pristupa nedozvoljenim lokacijama - PROBLEM
+		return true;
 	}
 	return false;
 }
@@ -411,10 +428,47 @@ td::INT4 ViewGradeExams::findMaxID()
 }
 
 void ViewGradeExams::insertValues(td::INT4 subjectID)
+//insert koji prepisuje sve studente koji se nalaze u tabeli prijavljeni ispiti i sve ih prepisati u polaznici aktivnosti pri cemu se ne smiju ponavljati i nema brisanja 
 {
-	dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("INSERT INTO OcjeneIspita (ID_Korisnika, ID_Aktivnosti) SELECT a.ID_Korisnika, a.ID_Aktivnosti FROM PolazniciAktivnosti a WHERE NOT EXISTS( SELECT 1 FROM OcjeneIspita WHERE OcjeneIspita.ID_Korisnika = a.ID_Korisnika AND OcjeneIspita.ID_Aktivnosti = a.ID_Aktivnosti);");
+	//-------mozda dodati da se ucitava u PolazniciAktivnosti tek nakon sto istekne vrijeme prijave-------potencijalno najbolje rjesenje
+	//----------taj select dodati ovdje iznad pSelecta
+	//	dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("INSERT INTO OcjeneLabZadace (ID_Korisnika, ID_Aktivnosti) SELECT a.ID_Studenta, b.ID_Aktivnosti FROM UpisPredmeta a JOIN Aktivnosti b ON a.ID_Predmeta = b.ID_Predmeta WHERE b.Tip_Aktivnosti IN(2, 5)AND NOT EXISTS(SELECT 1 FROM OcjeneLabZadace c WHERE c.ID_Korisnika = a.ID_Studenta AND c.ID_Aktivnosti = b.ID_Aktivnosti); ");
+// nesto poput ovog selecta - mozes vidjeti sa chatgpt da ti pomogne ako ne razumijes neki dio ovog selecta
+	td::Date d(true);
+	td::Time t(true);
+	dp::IStatementPtr pSelect2 = dp::getMainDatabase()->createStatement("INSERT INTO PolazniciAktivnosti (ID_Korisnika, ID_Aktivnosti) SELECT a.ID_Studenta, b.ID_Aktivnosti FROM Prijavljeni_ispiti a JOIN Rokovi b ON a.ID_Roka = b.ID_Roka WHERE NOT EXISTS ( SELECT 1 FROM PolazniciAktivnosti pa WHERE pa.ID_Korisnika = a.ID_Studenta AND pa.ID_Aktivnosti = b.ID_Aktivnosti ) AND b.Datum_Prijave < ? AND b.Vrijeme_Prijave < ?");
+	dp::Params pParams2(pSelect2->allocParams());
+	pParams2 << d << t;
+	//dp::IStatementPtr pSelect2 = dp::getMainDatabase()->createStatement("INSERT INTO PolazniciAktivnosti (ID_Korisnika, ID_Aktivnosti) SELECT a.ID_Studenta, b.ID_Aktivnosti FROM Prijavljeni_ispiti a JOIN Rokovi b ON a.ID_Roka = b.ID_Roka WHERE NOT EXISTS ( SELECT 1 FROM PolazniciAktivnosti pa WHERE pa.ID_Korisnika = a.ID_Studenta AND pa.ID_Aktivnosti = b.ID_Aktivnosti )");
+	dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("INSERT INTO OcjeneIspita (ID_Korisnika, ID_Aktivnosti) SELECT a.ID_Korisnika, a.ID_Aktivnosti FROM PolazniciAktivnosti a JOIN Aktivnosti b ON a.ID_Aktivnosti = b.ID_Aktivnosti WHERE b.Tip_Aktivnosti = 1 AND NOT EXISTS(SELECT 1 FROM OcjeneIspita WHERE OcjeneIspita.ID_Korisnika = a.ID_Korisnika AND OcjeneIspita.ID_Aktivnosti = a.ID_Aktivnosti);");
+	dp::Transaction a(dp::getMainDatabase());
+	if (!pSelect2->execute())
+		return;
+
+	//--------------dodati provjeru za vrijeme ispita----mogu se ucitati samo ispiti koji su gotovi--provjeravati da li su 
 	if (!pSelect->execute())
 		return;
+	//if (!pSelect->moveNext())
+	//	return;
+	bool isOK=a.commit();
+	return;
+	/*dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("INSERT INTO OcjeneIspita (ID_Korisnika, ID_Aktivnosti) SELECT a.ID_Korisnika, a.ID_Aktivnosti FROM PolazniciAktivnosti a JOIN Aktivnosti b ON a.ID_Aktivnosti = b.ID_Aktivnosti WHERE b.Tip_Aktivnosti = 1 AND NOT EXISTS(SELECT 1 FROM OcjeneIspita WHERE OcjeneIspita.ID_Korisnika = a.ID_Korisnika AND OcjeneIspita.ID_Aktivnosti = a.ID_Aktivnosti);");
+	dp::Transaction b(dp::getMainDatabase());
 	if (!pSelect->moveNext())
 		return;
+	b.commit();*/
+
+}
+
+bool ViewGradeExams::onAnswer(td::UINT4 questionID, gui::Alert::Answer answer)
+{
+	if ((QuestionID)questionID == QuestionID::Save)
+	{
+		if (answer == gui::Alert::Answer::Yes) {
+			saveData();
+			showAlert(tr("succes"), tr("succesEE"));
+		}
+		return true;
+	}
+	return false;
 }

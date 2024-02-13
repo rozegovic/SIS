@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <algorithm>
 #include <gui/View.h>
 #include <gui/Label.h>
@@ -47,47 +47,47 @@ protected:
     gui::Label _lblCName;
     gui::LineEdit _cName;
 
-    gui::Label _lblTable2;
-    gui::TableEdit _table2;
-
     gui::HorizontalLayout _hlBtnsDB;
+    gui::HorizontalLayout _hl;
     gui::Button _btnAdd;
     gui::Button _btnDelete;
     gui::Button _btnAddFile;
+    gui::Button _btnDelete2;
     //  gui::Button _btnUpdate;
     gui::Button _btnSave;
 
     dp::IDatabase* _db;
     gui::GridLayout _gl;
     dp::IDataSetPtr _pDS;
-    //::INT4 _ActivityID;
+    td::INT4 _ActivityID;
     td::INT4 _SubjectID;
+    cnt::PushBackVector <td::String> _attachedFiles;
     ///*td::string8 _nazivakt;*/
-    gui::TextEdit _textEdit;
 
     gui::TableEdit _table;
     std::vector<td::INT4> _itemsToDelete, _itemsToInsert, _itemsToUpdate;
 public:
     ViewTasks(td::INT4 SubjectID);
+    void refresh1();
 protected:
     bool loadComboBox(td::String select, gui::DBComboBox& combo);
     void populateData();
     bool onChangedSelection(gui::TableEdit* pTE);
     void populateDSRow(dp::IDataSet::Row& row, td::INT4 i);
-    bool doesItDexist(td::Date d, td::Time t);
+    bool doesItDexist();
     bool onClick(gui::Button* pBtn);
     bool saveData();
     bool canAdd();
-    bool eraseDateTime();
-    bool insertDateTime();
+    bool eraseTasks();
+    bool deleteTasks();
+    bool insertTasks();
     void SetCurrentSubject();
     void SetActivityName(td::Variant& val, td::INT4 br);
     td::INT4 getIDfromTable(int rowID);
     td::INT4 findMaxID();
-    void openFile(gui::FileDialog* pFD);
     void showOpenFileDialog();
+    void selectFiles();
+    bool sendDocs();
     gui::TextEdit* getTextEdit();
     bool onAnswer(td::UINT4 questionID, gui::Alert::Answer answer);
-    bool onClick(gui::FileDialog* pFD, td::UINT4 dlgID);
-    void saveFile(gui::FileDialog* pFD);
 };

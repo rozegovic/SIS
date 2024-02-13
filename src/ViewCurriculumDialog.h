@@ -20,7 +20,7 @@ protected:
     gui::NumericEdit _semester;
     gui::GridLayout _gl;
     dp::IDatabase* _db;
-    dp::IDataSet* _pDS = nullptr;
+
 public:
     ViewCurriculumDialog()
         : _lblDepartment(tr("Department"))
@@ -36,7 +36,7 @@ public:
         _gl.insert(0, 1, _department);
         _gl.insert(1, 0, _lblSemester);
         _gl.insert(1, 1, _semester);
-
+        _semester.setValue(1);
         gui::View::setLayout(&_gl);
     }
 
@@ -80,5 +80,14 @@ public:
         _department.getValue(val);
         return val.i4Val();
 
+    }
+    bool canAdd()
+    {
+        td::Variant pom = _semester.getValue();
+        if (pom < 1) {
+            showAlert(tr("alert"), tr("alertCRSS"));
+            return false;
+        }
+        return true;
     }
 };

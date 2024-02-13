@@ -1,5 +1,7 @@
 #include "ViewDateTimeActivity.h"
-//#include "Globals.h"
+#include "SendMessage.h"
+#include <td/Types.h>
+#include "Globals.h"
 
 
 ViewDateTimeActivity::ViewDateTimeActivity(td::INT4 SubjectID) :
@@ -81,6 +83,12 @@ _btnAdd(tr("add"), tr("AddTT"))
      {
          _table.selectRow(0, true);
      }*/
+}
+void ViewDateTimeActivity::refresh()
+{
+   // populateData();
+    onChangedSelection(&_table);
+    loadComboBox("select ID_Aktivnosti as ID, Naziv_Aktivnosti as Naziv From Aktivnosti where Tip_Aktivnosti=1 and ID_Predmeta=?", _type);
 }
 bool ViewDateTimeActivity::loadComboBox(td::String select, gui::DBComboBox& combo)
 {
@@ -277,6 +285,26 @@ td::INT4 ViewDateTimeActivity::findMaxID()
 
 bool  ViewDateTimeActivity::saveData()
 {
+    //nece se slati vise puta ukoliko nije registrovana promjena nego ce se poslati samo jedna poruka
+    if (!(_itemsToDelete.empty() && _itemsToUpdate.empty() && _itemsToInsert.empty())) {
+        std::vector<td::INT4> userIDs;
+        //svim studentima
+        dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT ID FROM KORISNICI WHERE PozicijaID=5");
+        dp::Columns pCols = pSelect->allocBindColumns(1);
+        td::INT4 id;
+        pCols << "ID" << id;
+        if (!pSelect->execute())
+            return false;
+        while (pSelect->moveNext())
+        {
+            userIDs.push_back(id);
+        }
+        td::String naslov = "Ispit!";
+        td::String poruka = "Registrovana je promjena u terminima ispita! ";
+        MsgSender msg;
+        msg.sendSystemMsgtoUsers(naslov, poruka, userIDs);
+
+    }
     dp::Transaction tran(_db);
     if (!eraseDateTime())
         return false;
@@ -332,8 +360,13 @@ bool  ViewDateTimeActivity::saveData()
 
 bool ViewDateTimeActivity::canAdd()
 {
-    /*Vrsiti log provjeru vremena da li je vrijeme pocetka ispita u budnucnosti i da li manje od vremena kraj ispita vrijeme prijave vece od tren i prije pocetka
-    vrijeme ot prijave*/
+    td::Date _date(true);
+    td::Time _time(true);  
+    if(_dateE.getValue() <_dateB.getValue() || ((_dateE.getValue() == _dateB.getValue()) && _timeE.getValue() <_timeB.getValue())) return false;
+    if(_dateE.getValue() >_dateF.getValue() ||((_dateE.getValue() ==_dateF.getValue())&&_timeE.getValue() >_timeF.getValue())) return false;
+    if (_dateF.getValue() < _dateB.getValue() || ((_dateF.getValue() == _dateB.getValue()) && _timeF.getValue() < _timeB.getValue())) return false;
+    if(_dateB.getValue() <_date||((_dateB.getValue() ==_date)&&_timeB.getValue() <_time)) return false;
+  
     return true;
 }
 
@@ -442,7 +475,10 @@ bool ViewDateTimeActivity::onClick(gui::Button* pBtn)
 
         td::INT4 itemid = findMaxID();
         if (!canAdd())
-            return true;
+        {
+            showAlert("Upozorenje", "Neispravan Datum!");
+            return false;
+        }
         _table.beginUpdate();
         auto& row = _table.getEmptyRow();
         populateDSRow(row, itemid);
@@ -453,7 +489,8 @@ bool ViewDateTimeActivity::onClick(gui::Button* pBtn)
         return true;
     }
     if (pBtn == &_btnSave) {
-        saveData();
+        showYesNoQuestionAsync(QuestionID::Save, this, tr("alert"), tr("saveSure"), tr("Yes"), tr("No"));
+        return true;
         //  _table.reload();
     }
 
@@ -475,4 +512,17 @@ td::INT4 ViewDateTimeActivity::getIDfromTable(int rowID)
     dp::IDataSet* pDS = _table.getDataSet();
     auto& row = pDS->getRow(rowID);
     return row[6].i4Val();
+}
+
+bool ViewDateTimeActivity::onAnswer(td::UINT4 questionID, gui::Alert::Answer answer)
+{
+    if ((QuestionID)questionID == QuestionID::Save)
+    {
+        if (answer == gui::Alert::Answer::Yes) {
+            saveData();
+            showAlert(tr("succes"), tr("succesEE"));
+        }
+        return true;
+    }
+    return false;
 }

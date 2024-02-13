@@ -13,7 +13,7 @@ ViewDepartment::ViewDepartment()
     , _btnAdd(tr("add"))
     , _btnSave(tr("save"))
     , _btnReload(tr("Reload"), tr("ReloadTT"))
-    , _lblShName(tr("name"))
+    , _lblShName(tr("Sname"))
     //, _btnRemoveAll(tr("DelAll"), tr("DelAllTT"))
     , _btnDelete(tr("Delete"), tr("DeleteTT"))
     , _btnUpdate(tr("Update"), tr("UpdateTT"))
@@ -134,6 +134,7 @@ bool ViewDepartment::canAdd()
     if (id < 0) {
         showAlert(tr("alert"), tr("alertNEG"));
         return false;
+
     }
 
     dp::IDataSet* pDS = _table.getDataSet();
@@ -157,6 +158,23 @@ bool ViewDepartment::canAdd()
         }
 
     }
+    td::Variant pom;
+    _id.getValue(pom);
+    if (pom.isZero()) {
+        showAlert(tr("alert"), tr("alertNp"));
+        return false;
+    }
+    _name.getValue(pom);
+    if (pom.isZero()) {
+        showAlert(tr("alert"), tr("alertNp"));
+        return false;
+    }
+    _shName.getValue(pom);
+    if (pom.isZero()) {
+        showAlert(tr("alert"), tr("alertNp"));
+        return false;
+    }
+
     return true;
 }
 

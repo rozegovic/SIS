@@ -97,6 +97,7 @@ ViewCourse::ViewCourse(): _db(dp::getMainDatabase())
 
     _elective.addItem(tr("mnd"), 0);  //obavezni
     _elective.addItem(tr("elctv"), 1); //izborni
+    _elective.selectIndex(0);
 
     populateData();
     loadComboBox("select ID_Smjera as ID, Naziv_Smjera as Name from Smjer", _idDep);
@@ -247,6 +248,32 @@ void ViewCourse::initTable(int type)
      pom = _maxNum.getValue();
      if (pom < 1) {
          showAlert(tr("alert"), tr("alertCRSM"));
+         return false;
+     }
+     _idCode.getValue(pom);
+     if(pom.isZero()){
+         showAlert(tr("alert"), tr("alertNp"));
+         return false;
+     }
+     _name.getValue(pom);
+     if (pom.isZero()) {
+         showAlert(tr("alert"), tr("alertNp"));
+         return false;
+      }
+     _semester.getValue(pom);
+     if (pom.isZero()) {
+         showAlert(tr("alert"), tr("alertNp"));
+         return false;
+     }
+     _ects.getValue(pom);
+
+     if (pom.isZero()) {
+         showAlert(tr("alert"), tr("alertNp"));
+         return false;
+     }
+     _maxNum.getValue(pom);
+     if (pom.isZero()) {
+         showAlert(tr("alert"), tr("alertNp"));
          return false;
      }
      return true;

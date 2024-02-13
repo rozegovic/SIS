@@ -74,6 +74,10 @@ ViewCourseEnroll::ViewCourseEnroll() :
     populateSemesterCombo(_semesterCombo);
     populateCourseCombo(_course);
 
+    _department.selectIndex(0);
+    _semesterCombo.selectIndex(0);
+    _course.selectIndex(0);
+
     _name.setAsReadOnly();
     _surname.setAsReadOnly();
     _index.setAsReadOnly();
@@ -121,10 +125,10 @@ void ViewCourseEnroll::populateDepartmentCombo(gui::DBComboBox& combo)
 void ViewCourseEnroll::populateCourseCombo(gui::DBComboBox& combo, td::String smjer, td::String semestar)
 {
     td::String str;
-    str.append("SELECT ID_Predmeta,Naziv_Predmeta FROM Predmet WHERE ID_Smjera=");
-    str.append(smjer);
-    str.append(" AND Semestar=");
+    str.append("SELECT p.ID_Predmeta, p.Naziv_Predmeta FROM Predmet p JOIN Curriculum c ON p.ID_Predmeta = c.ID_Predmeta WHERE p.Semestar =");
     str.append(semestar);
+    str.append(" AND c.ID_Smjera = ");
+    str.append(smjer);
 
     dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement(str);
     dp::Columns pCols = pSelect->allocBindColumns(2);
@@ -149,19 +153,21 @@ void ViewCourseEnroll::populateSemesterCombo(gui::ComboBox& combo)
     combo.addItem("IV");
     combo.addItem("V");
     combo.addItem("VI");
+    combo.addItem("VII");
 }
 
 void ViewCourseEnroll::populateDataForEnrolledStudents() {
 
     td::String str;
 
-    str.append("SELECT Korisnici.ID AS IDUser,  Korisnici.Ime AS nameUser, Korisnici.Prezime AS surnameUser,  Korisnici.Indeks AS indexUser,  Upis.ID_Smjera AS departID,  Upis.Semestar AS semesterUser  FROM  Korisnici JOIN Upis ON Korisnici.Indeks = Upis.Indeks AND Upis.Semestar= 3 JOIN UpisPredmet ON UpisPredmet.ID_Predmeta = 1 JOIN Predmet ON UpisPredmet.ID_Predmeta = Predmet.ID_Predmeta WHERE UpisPredmet.Indeks=Korisnici.Indeks AND Predmet.Naziv_Predmeta = '' AND Korisnici.ID != 0 AND Korisnici.ID != -1;");
+    str.append("SELECT Korisnici.ID AS IDUser,  Korisnici.Ime AS nameUser, Korisnici.Prezime AS surnameUser,  Korisnici.Indeks AS indexUser,  Upis.ID_Smjera AS departID,  Upis.Semestar AS semesterUser  FROM  Korisnici JOIN Upis ON Korisnici.Indeks = Upis.Indeks AND Upis.Semestar=3 JOIN UpisPredmeta ON UpisPredmeta.ID_Predmeta = Predmet.ID_Predmeta JOIN Predmet ON UpisPredmeta.ID_Predmeta = Predmet.ID_Predmeta WHERE UpisPredmeta.ID_Studenta=Korisnici.ID AND Predmet.Naziv_Predmeta = '' AND Korisnici.ID != 0 AND Korisnici.ID != -1");
 
     _pDS2 = dp::getMainDatabase()->createDataSet(str, dp::IDataSet::Execution::EX_MULT);
     dp::DSColumns cols(_pDS2->allocBindColumns(6));
     cols << "IDUser" << td::int4 << "nameUser" << td::string8 << "surnameUser" << td::string8 << "indexUser" << td::string8 << "departID" << td::int4 << "semesterUser";
     if (!_pDS2->execute())
     {
+        showAlert("Citanje DataEnrollStudents", "");
         _pDS2 = nullptr;
         return;
     }
@@ -172,7 +178,7 @@ void ViewCourseEnroll::populateDataForStudents()
 {
     td::String str;
 
-    str.append("SELECT Korisnici.ID AS IDUser,  Korisnici.Ime AS nameUser,  Korisnici.Prezime AS surnameUser,  Korisnici.Indeks AS indexUser,  Upis.ID_Smjera AS departID, Upis.Semestar AS semesterUser FROM Korisnici JOIN Upis ON Korisnici.Indeks = Upis.Indeks WHERE NOT EXISTS ( SELECT 1 FROM UpisPredmet JOIN Predmet ON UpisPredmet.ID_Predmeta = Predmet.ID_Predmeta WHERE UpisPredmet.Indeks = Upis.Indeks AND Predmet.Naziv_Predmeta = '') AND Korisnici.ID != 0 AND Korisnici.ID != -1");
+    str.append("SELECT Korisnici.ID AS IDUser,  Korisnici.Ime AS nameUser,  Korisnici.Prezime AS surnameUser,  Korisnici.Indeks AS indexUser,  Upis.ID_Smjera AS departID, Upis.Semestar AS semesterUser FROM Korisnici JOIN Upis ON Korisnici.Indeks = Upis.Indeks WHERE NOT EXISTS ( SELECT 1 FROM UpisPredmeta JOIN Predmet ON UpisPredmeta.ID_Predmeta = Predmet.ID_Predmeta WHERE UpisPredmeta.ID_Studenta = (SELECT Korisnici.ID FROM Korisnici JOIN Upis ON Upis.Indeks=Korisnici.Indeks) AND Predmet.Naziv_Predmeta = '') AND Korisnici.ID != 0 AND Korisnici.ID != -1");
 
     _pDS = dp::getMainDatabase()->createDataSet(str, dp::IDataSet::Execution::EX_MULT);
     dp::DSColumns cols(_pDS->allocBindColumns(6));
@@ -180,6 +186,7 @@ void ViewCourseEnroll::populateDataForStudents()
 
     if (!_pDS->execute())
     {
+        showAlert("Citanje DataForStudents", "");
         _pDS = nullptr;
         return;
     }
@@ -200,6 +207,30 @@ bool ViewCourseEnroll::onChangedSelection(gui::TableEdit* pTE) {
         auto& row = pDS->getRow(iRow);
         val = row[0];
         
+        val = row[1];
+        _name.setValue(val);
+
+        val = row[2];
+        _surname.setValue(val);
+
+        val = row[3];
+        _index.setValue(val);
+
+        return true;
+    }
+
+    if (pTE == &_tableEnrolled) {
+        int iRow = _tableEnrolled.getFirstSelectedRow();
+        if (iRow < 0) {
+            return true;
+        }
+        td::Variant val;
+        dp::IDataSet* pDS = _tableEnrolled.getDataSet();
+        auto& row = pDS->getRow(iRow);
+        val = row[0];
+
+
+        _name.setAsReadOnly(false);
         val = row[1];
         _name.setValue(val);
 
@@ -240,6 +271,7 @@ bool ViewCourseEnroll::onChangedSelection(gui::ComboBox* pCmb)
         case 3: _semester.setValue(4); break;
         case 4: _semester.setValue(5); break;
         case 5: _semester.setValue(6); break;
+        case 6: _semester.setValue(7); break;
         }
 
         return true;
@@ -307,7 +339,7 @@ bool ViewCourseEnroll::onClick(gui::Button* pBtn)
         int iRow = _tableEnrolled.getFirstSelectedRow();
 
         td::String str;
-        str.append("DELETE FROM UpisPredmet WHERE Indeks = ? AND ID_Predmeta = (SELECT ID_Predmeta FROM Predmet WHERE Naziv_Predmeta = '");
+        str.append("DELETE FROM UpisPredmeta WHERE ID_Studenta = (SELECT Korisnici.ID FROM Korisnici WHERE Korisnici.Indeks = ? ) AND ID_Predmeta = (SELECT ID_Predmeta FROM Predmet WHERE Naziv_Predmeta = '");
         str.append(_course.getSelectedText());
         str.append("')");
 
@@ -316,7 +348,10 @@ bool ViewCourseEnroll::onClick(gui::Button* pBtn)
         parDS << dp::toNCh(_tableEnrolled.getCurrentRow()[3],30);
 
         if (!pDel->execute())
+        {
+            showAlert("NE BRISEEE", "");
             return false;
+        }
 
         if (iRow < 0)
             return true;
@@ -349,6 +384,7 @@ bool ViewCourseEnroll::onClick(gui::Button* pBtn)
             return true;
         }
     }
+
     if (pBtn == &_btnSave)
     {
         showYesNoQuestionAsync(QuestionID::Save, this, tr("alert"), tr("saveSure"), tr("Yes"), tr("No"));
@@ -362,9 +398,9 @@ bool ViewCourseEnroll::saveEnrolls()
 {
     td::String str;
 
-    str.append("INSERT INTO UpisPredmet (Indeks, ID_Predmeta)  SELECT ?, (SELECT ID_Predmeta FROM Predmet WHERE Naziv_Predmeta = '");
+    str.append("INSERT INTO UpisPredmeta (ID_Studenta, ID_Predmeta)  SELECT (SELECT Korisnici.ID FROM Korisnici WHERE Korisnici.Indeks = ? ), (SELECT ID_Predmeta FROM Predmet WHERE Naziv_Predmeta = '");
     str.append(_course.getSelectedText());
-    str.append("') WHERE NOT EXISTS ( SELECT 1 FROM UpisPredmet WHERE Indeks = ? AND ID_Predmeta = (SELECT ID_Predmeta FROM Predmet WHERE Naziv_Predmeta = '");
+    str.append("') WHERE NOT EXISTS ( SELECT 1 FROM UpisPredmeta WHERE ID = (SELECT Korisnici.ID FROM Korisnici WHERE Korisnici.Indeks = ? ) AND ID_Predmeta = (SELECT ID_Predmeta FROM Predmet WHERE Naziv_Predmeta = '");
     str.append(_course.getSelectedText());
     str.append("'))");
 
@@ -412,9 +448,9 @@ void ViewCourseEnroll::UpdateEnrollDataSet() {
 
     td::String str;
 
-    str.append("SELECT Korisnici.ID AS IDUser,  Korisnici.Ime AS nameUser, Korisnici.Prezime AS surnameUser,  Korisnici.Indeks AS indexUser,  Upis.ID_Smjera AS departID,  Upis.Semestar AS semesterUser  FROM  Korisnici JOIN Upis ON Korisnici.Indeks = Upis.Indeks JOIN UpisPredmet ON UpisPredmet.ID_Predmeta=(SELECT Predmet.ID_Predmeta FROM Predmet WHERE Predmet.Naziv_Predmeta='");
+    str.append("SELECT Korisnici.ID AS IDUser,  Korisnici.Ime AS nameUser, Korisnici.Prezime AS surnameUser,  Korisnici.Indeks AS indexUser,  Upis.ID_Smjera AS departID,  Upis.Semestar AS semesterUser  FROM  Korisnici JOIN Upis ON Korisnici.Indeks = Upis.Indeks JOIN UpisPredmeta ON UpisPredmeta.ID_Predmeta=(SELECT Predmet.ID_Predmeta FROM Predmet WHERE Predmet.Naziv_Predmeta='");
     str.append(_course.getSelectedText());
-    str.append("')JOIN Predmet ON UpisPredmet.ID_Predmeta = Predmet.ID_Predmeta WHERE UpisPredmet.Indeks=Korisnici.Indeks AND Korisnici.ID != 0 AND Korisnici.ID != -1");
+    str.append("')JOIN Predmet ON UpisPredmeta.ID_Predmeta = Predmet.ID_Predmeta WHERE UpisPredmeta.ID_Studenta=Korisnici.ID AND Korisnici.ID != 0 AND Korisnici.ID != -1");
 
 
     dp::IDataSetPtr pompDS = dp::getMainDatabase()->createDataSet(str, dp::IDataSet::Execution::EX_MULT);
@@ -422,6 +458,7 @@ void ViewCourseEnroll::UpdateEnrollDataSet() {
     cols << "IDUser" << td::int4 << "nameUser" << td::string8 << "surnameUser" << td::string8 << "indexUser" << td::string8 << "departID" << td::int4 << "semesterUser" << td::int4;
     if (!pompDS->execute())
     {
+        showAlert("Citanje EnrollDataSet", "");
         pompDS=nullptr;
         return;
     }
@@ -442,6 +479,23 @@ void ViewCourseEnroll::UpdateEnrollDataSet() {
         _tableEnrolled.endUpdate();
     }
 
+    int iRow = _tableEnrolled.getFirstSelectedRow();
+    if (iRow < 0) {
+        return;
+    }
+    td::Variant val;
+    dp::IDataSet* pDS = _tableEnrolled.getDataSet();
+    auto& row = pDS->getRow(iRow);
+    val = row[0];
+
+    val = row[1];
+    _name.setValue(val);
+
+    val = row[2];
+    _surname.setValue(val);
+
+    val = row[3];
+    _index.setValue(val);
      
 
    /* if (_pDS2.getPtr() != nullptr) {
@@ -492,9 +546,15 @@ void ViewCourseEnroll::UpdateEnrollDataSet() {
 
 void ViewCourseEnroll::UpdateStudentDataSet(){
 
+    if (_course.getSelectedIndex() == -1)
+    {
+        _tableStudents.clean();
+        return;
+    }
+
     td::String str;
 
-    str.append("SELECT Korisnici.ID AS IDUser,  Korisnici.Ime AS nameUser,  Korisnici.Prezime AS surnameUser,  Korisnici.Indeks AS indexUser,  Upis.ID_Smjera AS departID, Upis.Semestar AS semesterUser FROM Korisnici JOIN Upis ON Korisnici.Indeks = Upis.Indeks WHERE NOT EXISTS ( SELECT 1 FROM UpisPredmet JOIN Predmet ON UpisPredmet.ID_Predmeta = Predmet.ID_Predmeta WHERE UpisPredmet.Indeks = Upis.Indeks AND Predmet.Naziv_Predmeta = '");
+    str.append("SELECT Korisnici.ID AS IDUser,  Korisnici.Ime AS nameUser,  Korisnici.Prezime AS surnameUser,  Korisnici.Indeks AS indexUser,  Upis.ID_Smjera AS departID, Upis.Semestar AS semesterUser FROM Korisnici JOIN Upis ON Korisnici.Indeks = Upis.Indeks WHERE NOT EXISTS ( SELECT 1 FROM UpisPredmeta JOIN Predmet ON UpisPredmeta.ID_Predmeta = Predmet.ID_Predmeta WHERE UpisPredmeta.ID_Studenta =Korisnici.ID AND Predmet.Naziv_Predmeta = '");
     str.append(_course.getSelectedText());
     str.append("') AND Korisnici.ID != 0 AND Korisnici.ID != -1 AND Upis.Semestar=");
     str.append(std::to_string(_semesterCombo.getSelectedIndex()+1));
@@ -504,6 +564,7 @@ void ViewCourseEnroll::UpdateStudentDataSet(){
     cols << "IDUser" << td::int4 << "nameUser" << td::string8 << "surnameUser" << td::string8 << "indexUser" << td::string8 << "departID" << td::int4 << "semesterUser" << td::int4;
     if (!pompDS->execute())
     {
+        showAlert("Citanje StudentDataSet", "");
         pompDS = nullptr;
         return;
     }
@@ -523,5 +584,25 @@ void ViewCourseEnroll::UpdateStudentDataSet(){
 
         _tableStudents.endUpdate();
     }
+
+
+    int iRow = _tableStudents.getFirstSelectedRow();
+    if (iRow < 0) {
+        return;
+    }
+    td::Variant val;
+    dp::IDataSet* pDS = _tableStudents.getDataSet();
+    auto& row = pDS->getRow(iRow);
+    val = row[0];
+
+    val = row[1];
+    _name.setValue(val);
+
+    val = row[2];
+    _surname.setValue(val);
+
+    val = row[3];
+    _index.setValue(val);
+
 
 }
