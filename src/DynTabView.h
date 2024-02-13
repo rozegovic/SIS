@@ -11,19 +11,21 @@ class DynTabView : public gui::TabView
 private:
 	Default _backgroundView;
 	CanvasView _userBackView;
+	gui::Image _imgUsers;
 
 protected:
 public:
 	DynTabView()
 		: gui::TabView(gui::TabHeader::Type::FitToText, 8, 64)
+		, _imgUsers(":complex")
+
 	{
 		//setBackgroundView(&_backgroundView);
-		//setBackgroundView(&_userBackView);
+		setBackgroundView(&_userBackView);
 
 	}
 
 	void reset() {
-		//_backgroundView.disable();
-		setBackgroundView(&_userBackView);
+		_userBackView.reset();
 	};
 };

@@ -345,12 +345,14 @@ bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc)
             Globals::_currentUserRole = -1;
             Globals::_currentUserID = -1;
             //Globals::_IDSubjectSelection = -1;
-
+            // po potrebi ovjde dodati 
+            //  Globals::isLogged = false;
             Globals::isAdmin = false;
             Globals::isProfessor = false;
             Globals::isAssistant = false;
             Globals::isStudent = false;
             Globals::isSAO = false;
+            _mainView.reset();
             showLogin();
             return true;
         }
