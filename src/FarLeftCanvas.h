@@ -6,18 +6,24 @@
 #include "MiddleCanvas.h"
 
 //-------------------izbrisati sliku etf (tu samo da se nesto prikazuje)!!!
+
 class FarLeftCanvas : public gui::Canvas
 {
 private:
 protected:
     gui::Image _etf;
     MiddleCanvas* _middleCanvas;
+    int i;
+    gui::Shape _shapeCircle1;
 public:
-    FarLeftCanvas( MiddleCanvas* canvas)
+    FarLeftCanvas(MiddleCanvas* canvas)
         : _etf(":ETF")
-     //   , _middleCanvas(canvas)
+        , gui::Canvas({ gui::InputDevice::Event::PrimaryClicks })
+
     {
         _middleCanvas = canvas;
+
+
     }
 
     void onDraw(const gui::Rect& rect) override {
@@ -42,6 +48,7 @@ public:
             _etf.draw(imgRect, gui::Image::AspectRatio::Keep, td::HAlignment::Left); //no
             _etf.draw(imgRect, gui::Image::AspectRatio::Keep, td::HAlignment::Right); //no
             gui::Shape::drawRect(imgRect, td::ColorID::Blue, 2, td::LinePattern::Dot);
+
 
             for (int i = 0; i < 3; i++) {
                 imgRect.translate(0, 110);
@@ -81,6 +88,7 @@ public:
     };
 
     void reset() {
+
         reDraw();  
     };
 
@@ -88,9 +96,9 @@ public:
     // ideja za implementaciju otvaranja chata
     // treba dodati funkciju za klik
     // vjerovatno treba slati neki parametar i napraviti novu funkciju u middlecanvasu
-    //void openMiddleCanvas() {
-    //    _middleCanvas->reset();
-    //};
+    void openMiddleCanvas() {
+        _middleCanvas->reset();
+    };
    /* void measure(CellInfo& ci) 
     {
         gui::Size imgSize;
@@ -109,4 +117,13 @@ public:
         ci.nResHor = 0;
         ci.nResVer = 0;
     }*/
+
+
+    void onPrimaryButtonPressed(const gui::InputDevice& inputDevice) override {
+
+        openMiddleCanvas();
+        if (inputDevice.getType() == gui::InputDevice::Type::Mouse && inputDevice.getButton() == gui::InputDevice::Button::Primary) {
+           // openMiddleCanvas();
+        }
+    }
 };
