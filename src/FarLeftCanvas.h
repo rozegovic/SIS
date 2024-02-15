@@ -16,6 +16,7 @@ protected:
     MiddleCanvas* _middleCanvas;
     int i;
     gui::Shape _shapeCircle1;
+    std::vector<std::pair<std::string, td::INT4>> users;
 public:
     FarLeftCanvas(MiddleCanvas* canvas)
         : _etf(":ETF")
@@ -36,7 +37,6 @@ public:
             gui::DrawableString _user;
             dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT ID, Prezime, Ime FROM Korisnici");
             dp::Columns pCols = pSelect->allocBindColumns(3);
-            std::vector<std::pair<std::string, td::INT4>> users;
             pSelect->execute();
 
             while (pSelect->moveNext()) {
@@ -61,7 +61,7 @@ public:
                     ++it;
                 }
             }
-            //abecedno sortiranje
+            //abecedno sortiranje po prezimenu
             std::sort(users.begin(), users.end(), [](const auto& a, const auto& b) {
                 return a.first < b.first;
                 });
