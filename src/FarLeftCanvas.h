@@ -4,6 +4,7 @@
 #include <gui/ImageView.h>
 #include <gui/SplitterLayout.h>
 #include "MiddleCanvas.h"
+#include <algorithm>
 
 //-------------------izbrisati sliku etf (tu samo da se nesto prikazuje)!!!
 
@@ -32,6 +33,40 @@ public:
         if (Globals::_currentUserID == 1 || Globals::_currentUserID == 3) {
             gui::Size sz;
             getSize(sz);
+            gui::DrawableString _user;
+            dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT ID, Prezime, Ime FROM Korisnici");
+            dp::Columns pCols = pSelect->allocBindColumns(3);
+            std::vector<std::pair<std::string, td::INT4>> users;
+            pSelect->execute();
+
+            while (pSelect->moveNext()) {
+                std::string username, userlastname;
+                td::INT4 id;
+                pCols << "ID" << id;
+                pCols << "Ime" << username;
+                pCols << "Prezime" << userlastname;
+                std::string fullname = userlastname;
+                fullname += ' ';
+                fullname += username;
+                users.push_back(std::make_pair(fullname, id));
+            }
+
+            //brisanje sistema iz korisnika
+            auto it = users.begin();
+            while (it != users.end()) {
+                if (it->second == -1) {
+                    it = users.erase(it);
+                }
+                else {
+                    ++it;
+                }
+            }
+            //abecedno sortiranje
+            std::sort(users.begin(), users.end(), [](const auto& a, const auto& b) {
+                return a.first < b.first;
+                });
+
+          
             //gui::Point cp(sz.width / 2, sz.height / 2);
             //td::INT4 x = cp.x;
             //td::INT4 y = cp.y
