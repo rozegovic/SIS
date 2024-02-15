@@ -17,11 +17,15 @@ protected:
     int i;
     gui::Shape _shapeCircle1;
     std::vector<std::pair<td::String,td::INT4>> users;
+
+    td::INT4 _brojChat; // varijabla koja definise broj pravougaonika
+    td::INT4 _visinaChata;  // varijabla d iz gui::Rect imgRect(a,b,c,d)
 public:
     FarLeftCanvas(MiddleCanvas* canvas)
         : _etf(":ETF")
         , gui::Canvas({ gui::InputDevice::Event::PrimaryClicks })
-
+        , _brojChat(3)
+        , _visinaChata(100)
     {
         _middleCanvas = canvas;
 
@@ -47,7 +51,8 @@ public:
                 pCols << "Prezime" << userlastname;
                 td::String fullname = userlastname;
                 fullname += username;
-                users.push_back(std::make_pair(fullname, 0));
+                // users.push_back(std::make_pair(fullname, 0)); // mislim da treba id umjesto nule??
+                users.push_back(std::make_pair(fullname, id));
             }
 
             //brisanje sistema iz korisnika
@@ -78,13 +83,13 @@ public:
             //ovo treba da se popuni unutrasnjost pravougaonika imenom.
 
 
-            gui::Rect imgRect(0, 0, sz.width, 100);
+            gui::Rect imgRect(0, 0, sz.width, _visinaChata);
             _etf.draw(imgRect, gui::Image::AspectRatio::Keep, td::HAlignment::Left); //no
             _etf.draw(imgRect, gui::Image::AspectRatio::Keep, td::HAlignment::Right); //no
             gui::Shape::drawRect(imgRect, td::ColorID::Blue, 2, td::LinePattern::Dot);
 
 
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < _brojChat; i++) {
                 imgRect.translate(0, 110);
                 _etf.draw(imgRect, gui::Image::AspectRatio::Keep, td::HAlignment::Left);
                 gui::Shape::drawRect(imgRect, td::ColorID::Red, 5, td::LinePattern::DashEq);
@@ -154,10 +159,33 @@ public:
 
 
     void onPrimaryButtonPressed(const gui::InputDevice& inputDevice) override {
+        double tempk = 0;
 
-        openMiddleCanvas();
+        int a = 0;
+        td::INT4 IdUserChat;
+
+        //--kratki test da li radi da kad se pritisne na odredjeni pravougaonik vrati se taj id---
+        for (int i = 0; i < _brojChat + 1; i++) {
+            users.push_back(std::make_pair("xxxxxx", i + 5));
+        }
+
+        //--------------------------------------------------
+
+        for (int i = 0; i < _brojChat + 1; i++) {
+
+            // if (tempk < int(inputDevice.getFramePoint().y) && inputDevice.getFramePoint().y < (tempk + _visinaChata)) {
+            if (tempk < int(inputDevice.getModelPoint().y) && inputDevice.getModelPoint().y < (tempk + _visinaChata)) {
+                a = i;
+                IdUserChat = users[i].second;
+                //IdUserChat = i; // ovo se poslije brise
+                _middleCanvas->Reset(IdUserChat);
+            }
+            tempk = tempk + _visinaChata;
+        }
+
+        // openMiddleCanvas();
         if (inputDevice.getType() == gui::InputDevice::Type::Mouse && inputDevice.getButton() == gui::InputDevice::Button::Primary) {
-           // openMiddleCanvas();
+            // openMiddleCanvas();
         }
     }
 

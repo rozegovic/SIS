@@ -101,7 +101,9 @@ public:
         reDraw();
     };
 
-
+    void Reset(td::INT4 userID) {
+        reDraw();
+    };
 
     void onPrimaryButtonPressed(const gui::InputDevice& inputDevice) override {
 
