@@ -16,7 +16,7 @@ protected:
     MiddleCanvas* _middleCanvas;
     int i;
     gui::Shape _shapeCircle1;
-    std::vector<std::pair<std::string, td::INT4>> users;
+    std::vector<std::pair<td::String,td::INT4>> users;
 public:
     FarLeftCanvas(MiddleCanvas* canvas)
         : _etf(":ETF")
@@ -40,21 +40,20 @@ public:
             pSelect->execute();
 
             while (pSelect->moveNext()) {
-                std::string username, userlastname;
+                td::String username, userlastname;
                 td::INT4 id;
                 pCols << "ID" << id;
                 pCols << "Ime" << username;
                 pCols << "Prezime" << userlastname;
-                std::string fullname = userlastname;
-                fullname += ' ';
+                td::String fullname = userlastname;
                 fullname += username;
-                users.push_back(std::make_pair(fullname, id));
+                users.push_back(std::make_pair(fullname, 0));
             }
 
             //brisanje sistema iz korisnika
             auto it = users.begin();
             while (it != users.end()) {
-                if (it->second == -1) {
+                if (it->second ==  ( - 1)) {
                     it = users.erase(it);
                 }
                 else {
