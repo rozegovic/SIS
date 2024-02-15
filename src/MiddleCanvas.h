@@ -108,5 +108,10 @@ public:
         reDraw();
         
     }
-
+    bool getModelSize(gui::Size& modelSize) const override
+    {
+        modelSize.width = 1300;
+        modelSize.height = 550;
+        return true;
+    }
 };
