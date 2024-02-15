@@ -99,6 +99,9 @@ public:
             getSize(sz);
           //  createStrings();
             std::vector<gui::DrawableString> test;
+            //for (int i = 0; i < _subjects.size(); i++) {
+         //test.push_back(gui::DrawableString(_subjects.at(i))); }
+
             test.push_back(gui::DrawableString("aaaa"));
             test.push_back(gui::DrawableString("bbbb"));
             test.push_back(gui::DrawableString("cccc"));
