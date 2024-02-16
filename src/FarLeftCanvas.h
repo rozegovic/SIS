@@ -14,9 +14,8 @@ private:
 protected:
     gui::Image _etf;
     MiddleCanvas* _middleCanvas;
-    int i;
     gui::Shape _shapeCircle1;
-    std::vector<std::pair<td::String,td::INT4>> users;
+    std::vector<std::pair<std::string,td::INT4>> users;
 public:
     FarLeftCanvas(MiddleCanvas* canvas)
         : _etf(":ETF")
@@ -34,20 +33,20 @@ public:
         if (Globals::_currentUserID == 1 || Globals::_currentUserID == 3) {
             gui::Size sz;
             getSize(sz);
-            gui::DrawableString _user;
             dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT ID, Prezime, Ime FROM Korisnici");
             dp::Columns pCols = pSelect->allocBindColumns(3);
-            pSelect->execute();
-
-            while (pSelect->moveNext()) {
-                td::String username, userlastname;
-                td::INT4 id;
-                pCols << "ID" << id;
-                pCols << "Ime" << username;
-                pCols << "Prezime" << userlastname;
-                td::String fullname = userlastname;
-                fullname += username;
-                users.push_back(std::make_pair(fullname, 0));
+            td::String username, userlastname;
+            td::INT4 id;
+            pCols << "ID" << id << "Ime" << username << "Prezime" << userlastname;
+            if (!pSelect->execute()) {
+                username = "Greska";
+                userlastname = "Greska";
+            }
+            while(pSelect->moveNext()){
+                std::string fullname = userlastname.c_str();
+                fullname += ' ';
+                fullname += username.c_str();
+                users.push_back(std::make_pair(fullname, id));
             }
 
             //brisanje sistema iz korisnika
@@ -55,16 +54,16 @@ public:
             while (it != users.end()) {
                 if (it->second ==  ( - 1)) {
                     it = users.erase(it);
+                    break;
                 }
                 else {
                     ++it;
                 }
             }
-            //abecedno sortiranje po prezimenu
-            std::sort(users.begin(), users.end(), [](const auto& a, const auto& b) {
-                return a.first < b.first;
-                });
-
+            ////abecedno sortiranje po prezimenu
+            //std::sort(users.begin(), users.end(), [&](const auto& a, const auto& b) {
+            //    return a.first < b.first;
+            //    });
           
             //gui::Point cp(sz.width / 2, sz.height / 2);
             //td::INT4 x = cp.x;
@@ -76,17 +75,24 @@ public:
             //--------------------------------------naredna linija zakomentarisana 
             //_pDS = dp::getMainDatabase()->createDataSet("SELECT Korisnici.ID as IDUser, Korisnici.Ime as nameUser, Korisnici.Prezime as surnameUser, Pozicija.ID as positionID, Pozicija.Naziv as roleUser, Korisnici.JMBG as jmbgUser, Korisnici.DatumUpisa as dateEUser, Korisnici.Adresa as addressUser, Korisnici.DatumRodjenja as dateBUser, Korisnici.Indeks as indeksUser FROM Korisnici, Pozicija WHERE Korisnici.PozicijaID = Pozicija.ID AND Korisnici.ID>0", dp::IDataSet::Execution::EX_MULT);
             //ovo treba da se popuni unutrasnjost pravougaonika imenom.
-
+            gui::DrawableString _user;
+            for (auto a : users) {
+                if(a.second==Globals::_currentUserID)
+                    _user=a.first;
+            }
 
             gui::Rect imgRect(0, 0, sz.width, 100);
-            _etf.draw(imgRect, gui::Image::AspectRatio::Keep, td::HAlignment::Left); //no
-            _etf.draw(imgRect, gui::Image::AspectRatio::Keep, td::HAlignment::Right); //no
+            _user.draw(imgRect, gui::Font::ID::SystemBold, td::ColorID::Black, td::TextAlignment::Center, td::VAlignment::Center, td::TextEllipsize::End); //no
+           /* _user.draw(imgRect, gui::Font::ID fntID, td::ColorID clrID, td::TextAlignment hAlign = td::TextAlignment::Left, td::VAlignment vAlign = td::VAlignment::Top, td::TextEllipsize ellips = td::TextEllipsize::End); *///no
             gui::Shape::drawRect(imgRect, td::ColorID::Blue, 2, td::LinePattern::Dot);
 
 
-            for (int i = 0; i < 3; i++) {
+            for (auto x:users) { 
+                if (x.second == Globals::_currentUserID)continue;
                 imgRect.translate(0, 110);
-                _etf.draw(imgRect, gui::Image::AspectRatio::Keep, td::HAlignment::Left);
+                td::String a = x.first;
+                gui::DrawableString others = a;
+                others.draw(imgRect, gui::Font::ID::SystemNormal, td::ColorID::Black, td::TextAlignment::Center, td::VAlignment::Center, td::TextEllipsize::End);
                 gui::Shape::drawRect(imgRect, td::ColorID::Red, 5, td::LinePattern::DashEq);
             }
         }
