@@ -26,7 +26,7 @@ public:
     }
 
     void onDraw(const gui::Rect& rect) override {
-        if (Globals::_currentUserID == 1 || Globals::_currentUserID == 2 || Globals::_currentUserID == 3 ||  Globals::_currentUserID == 4 ||  Globals::_currentUserID == 5 || Globals::_currentUserID == 6) {
+        if (Globals::_currentUserID == 1 || Globals::_currentUserID == 2 || Globals::_currentUserID == 3 || Globals::_currentUserID == 4 || Globals::_currentUserID == 5 || Globals::_currentUserID == 6) {
             gui::Size sz;
             getSize(sz);
 
@@ -101,10 +101,24 @@ public:
     bool getModelSize(gui::Size& modelSize) const override
     {
         modelSize.width = 1300;
-        modelSize.height = GlobalsCanvas::brObavijesti*70;
+        modelSize.height = GlobalsCanvas::brObavijesti * 70;
         //showAlert("", std::to_string(brObavijesti));
         return true;
     };
+    void measure(gui::CellInfo& ci) override
+    {
+        gui::Size sz;
+        getSize(sz);
+        ci.minHor = 230;
+        /*        ci.minVer = 1000;
+                ci.nResHor = 0;
+                ci.nResVer = 0;*/
+    }
+    void reMeasure(gui::CellInfo& ci) override
+    {
+        gui::Size sz;
+        getSize(sz);
+    }
 };
 
 
@@ -128,5 +142,6 @@ public:
     {
         return _canvas;
     }
+    
 };
 

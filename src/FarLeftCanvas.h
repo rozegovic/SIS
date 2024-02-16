@@ -40,13 +40,11 @@ public:
     FarLeftCanvas(MiddleCanvas* canvas)
         : _etf(":defaultUuser")
         , gui::Canvas({ gui::InputDevice::Event::PrimaryClicks })
-        , _brojChat(5)
+        , _brojChat(50)  // --------------------------problem sa ovim 
         , _visinaChata(100)
         {
-       
-        _middleCanvas = canvas;
+            _middleCanvas = canvas;
         }
-
 
     void onDraw(const gui::Rect& rect) override {
         const bool check = false;
@@ -239,11 +237,18 @@ public:
     };
      void measure(gui::CellInfo& ci) override
      {
-        
+         gui::Size sz;
+         getSize(sz);
+         ci.minHor = 230;
+         /*        ci.minVer = 1000;
+                 ci.nResHor = 0;
+                 ci.nResVer = 0;*/
      }
      void reMeasure(gui::CellInfo& ci) override
      {
-         
+         gui::Size sz;
+         getSize(sz);
+         ci.minHor = 100 + sz.width;
      }
 
     void onPrimaryButtonPressed(const gui::InputDevice& inputDevice) override {
@@ -302,7 +307,7 @@ public:
 
     bool getModelSize(gui::Size& modelSize) const override
     {
-        modelSize.width = 500;
+        modelSize.width = 230;
         modelSize.height = (_brojChat) * 110;
         return true;
     }

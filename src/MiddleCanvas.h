@@ -118,7 +118,7 @@ public:
             td::INT4 x = cp.x;
             td::INT4 y = cp.y;
 
-            gui::Rect imgRect(x - 15 - x / 4, y - 15 - y / 4, x + 15 + x / 4, y + 15 + y / 4);
+            gui::Rect imgRect(x - 30 - x / 4, y - 30 - y / 4, x + 30 + x / 4, y + 30 + y / 4);
             _etf.draw(imgRect, gui::Image::AspectRatio::Keep, td::HAlignment::Center, td::VAlignment::Center);
         }
 
@@ -193,11 +193,6 @@ public:
 
     };
 
-
-
-
-
-
     void reset() {
         reDraw();
     };
@@ -219,7 +214,7 @@ public:
         getSize(sz);
         
         modelSize.width = sz.width; //
-        modelSize.height = sz.height; // mozda potrebna popravka
+        modelSize.height = sz.height; // definitivno ne moze ovako - promijeniti
         return true;
     }
 };
