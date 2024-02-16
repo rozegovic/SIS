@@ -14,7 +14,6 @@ private:
 protected:
     gui::Image _etf;
     MiddleCanvas* _middleCanvas;
-    int i;
     gui::Shape _shapeCircle1;
     std::vector<std::pair<td::String, td::INT4>> users;
 
@@ -38,20 +37,21 @@ public:
         if (Globals::_currentUserID == 1 || Globals::_currentUserID == 3) {
             gui::Size sz;
             getSize(sz);
-            gui::DrawableString _user;
             dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT ID, Prezime, Ime FROM Korisnici");
             dp::Columns pCols = pSelect->allocBindColumns(3);
-            pSelect->execute();// Odavde treb uzeti _brojChat da se zna koliko treba imati pravougaonika 
 
-            while (pSelect->moveNext()) {
-                td::String username, userlastname;
-                td::INT4 id;
-                pCols << "ID" << id;
-                pCols << "Ime" << username;
-                pCols << "Prezime" << userlastname;
-                td::String fullname = userlastname;
-                fullname += username;
-                // users.push_back(std::make_pair(fullname, 0)); // mislim da treba id umjesto nule??
+            td::String username, userlastname;
+            td::INT4 id;
+            pCols << "ID" << id << "Ime" << username << "Prezime" << userlastname;
+            if (!pSelect->execute()) {
+                username = "Greska";
+                userlastname = "Greska";
+            }
+            while(pSelect->moveNext()){
+                std::string fullname = userlastname.c_str();
+                fullname += ' ';
+                fullname += username.c_str();
+
                 users.push_back(std::make_pair(fullname, id));
             }
 
@@ -60,28 +60,33 @@ public:
             while (it != users.end()) {
                 if (it->second == (-1)) {
                     it = users.erase(it);
+                    break;
                 }
                 else {
                     ++it;
                 }
             }
-            //abecedno sortiranje po prezimenu
-            std::sort(users.begin(), users.end(), [](const auto& a, const auto& b) {
-                return a.first < b.first;
-                });
-            
-            users.push_back({ "a",100000 });
-            //pravougaonici za popunjavanje 
-            _brojChat = users.size();
-            td::ColorID a(td::ColorID::Maroon);
-            gui::Rect imgRect(0, 0, sz.width, _visinaChata);
-            for (int i = 0; i < _brojChat; i++) {
-                _etf.draw(imgRect, gui::Image::AspectRatio::Keep, td::HAlignment::Left);
-                if (static_cast<td::ColorID>(static_cast<int>(a) + 1) == td::ColorID::White)
-                    a = td::ColorID::Maroon;
-                a = static_cast<td::ColorID>(static_cast<int>(a) + 1);
-                gui::Shape::drawRect(imgRect, a, 5, td::LinePattern::Solid);
+
+
+            gui::DrawableString _user;
+            for (auto a : users) {
+                if(a.second==Globals::_currentUserID)
+                    _user=a.first;
+            }
+
+            gui::Rect imgRect(0, 0, sz.width, 100);
+            _user.draw(imgRect, gui::Font::ID::SystemBold, td::ColorID::Black, td::TextAlignment::Center, td::VAlignment::Center, td::TextEllipsize::End); //no
+           /* _user.draw(imgRect, gui::Font::ID fntID, td::ColorID clrID, td::TextAlignment hAlign = td::TextAlignment::Left, td::VAlignment vAlign = td::VAlignment::Top, td::TextEllipsize ellips = td::TextEllipsize::End); *///no
+            gui::Shape::drawRect(imgRect, td::ColorID::Blue, 2, td::LinePattern::Dot);
+
+
+            for (auto x:users) {
+                if (x.second == Globals::_currentUserID)continue;
                 imgRect.translate(0, 110);
+                td::String a = x.first;
+                gui::DrawableString others = a;
+                others.draw(imgRect, gui::Font::ID::SystemNormal, td::ColorID::Black, td::TextAlignment::Center, td::VAlignment::Center, td::TextEllipsize::End);
+                gui::Shape::drawRect(imgRect, td::ColorID::Red, 5, td::LinePattern::DashEq);
             }
         }
         // pogled za SAO ------ grupa 1
@@ -152,13 +157,6 @@ public:
 
         int a = 0;
         td::INT4 IdUserChat;
-
-        //--kratki test da li radi da kad se pritisne na odredjeni pravougaonik vrati se taj id---
-        for (int i = 0; i < _brojChat + 1; i++) {
-            users.push_back(std::make_pair("xxxxxx", i + 5));
-        }
-
-        //--------------------------------------------------
 
         for (int i = 0; i < _brojChat + 1; i++) {
 
