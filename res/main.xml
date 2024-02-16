@@ -24,6 +24,7 @@
 		<Res id="vert" path = "Work/CPProjects/SiS_v_Zadnji/res/Icons/SettingsBlue48.png"/>
 		<Res id="standard" path = "Work/CPProjects/SiS_v_Zadnji/res/Icons/Sync_ON64.png"/>
 		<Res id="navigator" path = "Work/CPProjects/SiS_v_Zadnji/res/Icons/time.png"/>
+		<Res id="defaultUuser" path = "Work/CPProjects/SiS_v_Zadnji/res/Icons/default_user.png"/>
 	</Images>
 	
 </DevRes>

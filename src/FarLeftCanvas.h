@@ -5,8 +5,8 @@
 #include <gui/SplitterLayout.h>
 #include "MiddleCanvas.h"
 #include <algorithm>
+#include <gui/Label.h>
 
-//-------------------izbrisati sliku etf (tu samo da se nesto prikazuje)!!!
 
 class FarLeftCanvas : public gui::Canvas
 {
@@ -16,15 +16,15 @@ protected:
     MiddleCanvas* _middleCanvas;
     int i;
     gui::Shape _shapeCircle1;
-    std::vector<std::pair<td::String,td::INT4>> users;
+    std::vector<std::pair<td::String, td::INT4>> users;
 
     td::INT4 _brojChat; // varijabla koja definise broj pravougaonika
-    td::INT4 _visinaChata;  // varijabla d iz gui::Rect imgRect(a,b,c,d)
+    td::INT4 _visinaChata;  // varijabla d iz gui::Rect imgRect(a,b,c,d
 public:
     FarLeftCanvas(MiddleCanvas* canvas)
-        : _etf(":ETF")
+        : _etf(":defaultUuser")
         , gui::Canvas({ gui::InputDevice::Event::PrimaryClicks })
-        , _brojChat(3)
+        , _brojChat(5)
         , _visinaChata(100)
     {
         _middleCanvas = canvas;
@@ -41,7 +41,7 @@ public:
             gui::DrawableString _user;
             dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT ID, Prezime, Ime FROM Korisnici");
             dp::Columns pCols = pSelect->allocBindColumns(3);
-            pSelect->execute();
+            pSelect->execute();// Odavde treb uzeti _brojChat da se zna koliko treba imati pravougaonika 
 
             while (pSelect->moveNext()) {
                 td::String username, userlastname;
@@ -58,7 +58,7 @@ public:
             //brisanje sistema iz korisnika
             auto it = users.begin();
             while (it != users.end()) {
-                if (it->second ==  ( - 1)) {
+                if (it->second == (-1)) {
                     it = users.erase(it);
                 }
                 else {
@@ -69,30 +69,19 @@ public:
             std::sort(users.begin(), users.end(), [](const auto& a, const auto& b) {
                 return a.first < b.first;
                 });
-
-          
-            //gui::Point cp(sz.width / 2, sz.height / 2);
-            //td::INT4 x = cp.x;
-            //td::INT4 y = cp.y
-
-            //gui::Rect imgRect(x - 15 - x / 4, y - 15 - y / 4, x + 15 + x / 4, y + 15 + y / 4);
-            //_etf.draw(imgRect, gui::Image::AspectRatio::Keep, td::HAlignment::Center, td::VAlignment::Center); //no
-
-            //--------------------------------------naredna linija zakomentarisana 
-            //_pDS = dp::getMainDatabase()->createDataSet("SELECT Korisnici.ID as IDUser, Korisnici.Ime as nameUser, Korisnici.Prezime as surnameUser, Pozicija.ID as positionID, Pozicija.Naziv as roleUser, Korisnici.JMBG as jmbgUser, Korisnici.DatumUpisa as dateEUser, Korisnici.Adresa as addressUser, Korisnici.DatumRodjenja as dateBUser, Korisnici.Indeks as indeksUser FROM Korisnici, Pozicija WHERE Korisnici.PozicijaID = Pozicija.ID AND Korisnici.ID>0", dp::IDataSet::Execution::EX_MULT);
-            //ovo treba da se popuni unutrasnjost pravougaonika imenom.
-
-
+            
+            users.push_back({ "a",100000 });
+            //pravougaonici za popunjavanje 
+            _brojChat = users.size();
+            td::ColorID a(td::ColorID::Maroon);
             gui::Rect imgRect(0, 0, sz.width, _visinaChata);
-            _etf.draw(imgRect, gui::Image::AspectRatio::Keep, td::HAlignment::Left); //no
-            _etf.draw(imgRect, gui::Image::AspectRatio::Keep, td::HAlignment::Right); //no
-            gui::Shape::drawRect(imgRect, td::ColorID::Blue, 2, td::LinePattern::Dot);
-
-
             for (int i = 0; i < _brojChat; i++) {
-                imgRect.translate(0, 110);
                 _etf.draw(imgRect, gui::Image::AspectRatio::Keep, td::HAlignment::Left);
-                gui::Shape::drawRect(imgRect, td::ColorID::Red, 5, td::LinePattern::DashEq);
+                if (static_cast<td::ColorID>(static_cast<int>(a) + 1) == td::ColorID::White)
+                    a = td::ColorID::Maroon;
+                a = static_cast<td::ColorID>(static_cast<int>(a) + 1);
+                gui::Shape::drawRect(imgRect, a, 5, td::LinePattern::Solid);
+                imgRect.translate(0, 110);
             }
         }
         // pogled za SAO ------ grupa 1
@@ -128,7 +117,7 @@ public:
 
     void reset() {
 
-        reDraw();  
+        reDraw();
     };
 
 
@@ -138,24 +127,24 @@ public:
     void openMiddleCanvas() {
         _middleCanvas->reset();
     };
-   /* void measure(CellInfo& ci) 
-    {
-        gui::Size imgSize;
-        _image.getSize(imgSize);
-        ci.minHor = imgSize.width;
-        ci.minVer = imgSize.height;
-        ci.nResHor = 0;
-        ci.nResVer = 0;
-    }
-    void reMeasure(CellInfo& ci) 
-    {
-        gui::Size imgSize;
-        _image.getSize(imgSize);
-        ci.minHor = imgSize.width;
-        ci.minVer = imgSize.height;
-        ci.nResHor = 0;
-        ci.nResVer = 0;
-    }*/
+    /* void measure(CellInfo& ci)
+     {
+         gui::Size imgSize;
+         _image.getSize(imgSize);
+         ci.minHor = imgSize.width;
+         ci.minVer = imgSize.height;
+         ci.nResHor = 0;
+         ci.nResVer = 0;
+     }
+     void reMeasure(CellInfo& ci)
+     {
+         gui::Size imgSize;
+         _image.getSize(imgSize);
+         ci.minHor = imgSize.width;
+         ci.minVer = imgSize.height;
+         ci.nResHor = 0;
+         ci.nResVer = 0;
+     }*/
 
 
     void onPrimaryButtonPressed(const gui::InputDevice& inputDevice) override {
@@ -192,7 +181,7 @@ public:
     bool getModelSize(gui::Size& modelSize) const override
     {
         modelSize.width = 500;
-        modelSize.height = (_brojChat+1)*110;
+        modelSize.height = (_brojChat + 1) * 110;
         return true;
     }
 };
