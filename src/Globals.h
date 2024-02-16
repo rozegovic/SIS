@@ -16,6 +16,7 @@ struct Globals
 	static bool isAssistant;
 	static bool isStudent;
 	static bool isSAO;
+    bool isLogged = false;
 
 };
 

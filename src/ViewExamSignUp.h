@@ -49,7 +49,8 @@ protected:
     gui::Button _btnEnroll;
     gui::Button _btnDEnroll;
     gui::Button _btnReload;
-
+    td::Date d1;
+    td::Date d2;
 
 
     gui::GridLayout _gl;
@@ -67,6 +68,7 @@ public:
     ~ViewExamSignUp();
     td::Variant ID_Pre1;
     td::Variant ID_Pre2;
+    td::INT4 ID_studenta;
 
 protected:
     void initTable1();
@@ -76,4 +78,8 @@ protected:
     virtual bool onClick(gui::Button* pBtn);
     void populateDataForTable1();
     void populateDataForTable2();
+    void SetCurrentStudentName();
+    void SetCurrentStudentSurname();
+    void SetCurrentStudentIndeks();
+    //bool onAnswer(td::UINT4 questionID, gui::Alert::Answer answer);
 };

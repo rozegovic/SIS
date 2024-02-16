@@ -55,7 +55,7 @@ protected:
 
     //labels for the bottom row
     gui::HorizontalLayout _hlBtnsDB;
-    gui::Button _btnSave;
+   // gui::Button _btnSave;
     gui::Button _btnReload;
     gui::Button _btnWithdraw;
     gui::Button _btnEnroll;
@@ -80,9 +80,9 @@ protected:
     void initTableEnrolledStudents();
     void initTableStudents();
     bool onClick(gui::Button* pBtn);
-    bool onAnswer(td::UINT4 questionID, gui::Alert::Answer answer);
+  //  bool onAnswer(td::UINT4 questionID, gui::Alert::Answer answer);
     void populateDSRow(dp::IDataSet::Row& row);
-    bool saveEnrolls();
+    //bool saveEnrolls();
     void UpdateEnrollDataSet();
     void UpdateStudentDataSet();
 };

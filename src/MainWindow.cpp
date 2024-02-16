@@ -26,8 +26,9 @@
 #include "NavigatorViewActivity.h"
 #include "ViewTimeSlot.h"
 #include "ViewGradeLabHomework.h"
-
+#include "CanvasETF.h"
 #include "ViewTicketFORSAO.h"
+#include "ViewFinalGrade.h"
 
 
 MainWindow::MainWindow()
@@ -54,6 +55,8 @@ MainWindow::MainWindow()
     setTitle(tr("SIS"));
     _mainMenuBar.setAsMain(this);
     setCentralView(&_mainView);
+    //setCentralView(&_etf);
+
     setStatusBar(&_statBar);
 
     //load report resources
@@ -65,6 +68,7 @@ MainWindow::MainWindow()
         assert(false);
         return;
     }
+
 }
 
 void MainWindow::showLogin()
@@ -80,6 +84,7 @@ void MainWindow::showLogin()
             auto btnID = pDlg->getClickedButtonID();
             if (btnID == gui::Dialog::Button::ID::OK) {
                 _statBar.UpdateStatusBar();
+                _mainView.reset();
                 return true;
             }
             else
@@ -204,6 +209,12 @@ bool MainWindow::showTimeSlotView(td::INT4 SubjectID)
 
 bool MainWindow::showCurriculum()
 {
+    auto x = Globals::_currentUserRole;
+    if (x != 6)
+    {
+        showAlert(tr("AccessNotAllowed"), "");
+        return true;
+    }
     DialogCurriculum* pDlg = new DialogCurriculum(this);
     pDlg->setTitle(tr("Choose semester and department"));
     pDlg->openModal([this](gui::Dialog::Button::ID btn, gui::Dialog* pDlg)
@@ -250,7 +261,7 @@ bool MainWindow::showSubjectChooseActivty()
 bool MainWindow::showMySubjectChoose()
 {
     auto x = Globals::_currentUserRole;
-    if (x != 1 && x != 3 && x != 6)
+    if (x != 1 && x != 6)
     {
         showAlert(tr("AccessNotAllowed"), "");
         return true;
@@ -274,7 +285,7 @@ bool MainWindow::showMySubjectChoose()
 bool MainWindow::showAllSubjectChoose()
 {
     auto x = Globals::_currentUserRole;
-    if (x != 1 && x != 3 && x != 6)
+    if (x != 6)
     {
         showAlert(tr("AccessNotAllowed"), "");
         return true;
@@ -298,7 +309,7 @@ bool MainWindow::showAllSubjectChoose()
 bool MainWindow::showSomeSubjectChoose()
 {
     auto x = Globals::_currentUserRole;
-    if (x != 1)
+    if (x!=1 && x!=6)
     {
         showAlert(tr("AccessNotAllowed"), "");
         return true;
@@ -335,12 +346,14 @@ bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc)
             Globals::_currentUserRole = -1;
             Globals::_currentUserID = -1;
             //Globals::_IDSubjectSelection = -1;
-
+            // po potrebi ovjde dodati 
+            //  Globals::isLogged = false;
             Globals::isAdmin = false;
             Globals::isProfessor = false;
             Globals::isAssistant = false;
             Globals::isStudent = false;
             Globals::isSAO = false;
+            _mainView.reset();
             showLogin();
             return true;
         }
@@ -372,6 +385,8 @@ bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc)
         break; case 170: return showSubjectChooseForTimeSlot();
         break; case 180: return showSomeSubjectChoose2();
         break; case 190: return showTicketForSaoView();
+        break; case 200: return showGradeSubjectChoose();
+
 
 
 
@@ -429,6 +444,13 @@ bool MainWindow::showUsersView()
     //   // gui::Alert("nemas prava");
     //   return true;
     //}
+
+    if (!Globals::isAdmin)
+    {
+        showAlert(tr("AccessNotAllowed"), "");
+        return true;
+    }
+
 
     if (focusOnViewPositionWithID(View_USERS))
         return true;
@@ -522,6 +544,12 @@ bool MainWindow::showActivityView(td::INT4 SubjectID)
 
 bool MainWindow::showEnrollView()
 {
+    if (!Globals::isSAO && !Globals::isAdmin)
+    {
+        showAlert(tr("AccessNotAllowed"), "");
+        return true;
+    }
+
     if (focusOnViewPositionWithID(View_ENROLL))
         return true;
 
@@ -559,7 +587,12 @@ bool MainWindow::showAttendanceView(td::INT4 SubjectID)
 
 bool MainWindow::showCurriculumView(td::INT4 _departmentID, td::INT4 _semesterID)
 {
-    //showSubjectChoose();
+    auto x = Globals::_currentUserRole;
+    if (x != 6)
+    {
+        showAlert(tr("AccessNotAllowed"), "");
+        return true;
+    }
     if (focusOnViewPositionWithID(View_CURRICULUM))
         return true;
 
@@ -570,7 +603,14 @@ bool MainWindow::showCurriculumView(td::INT4 _departmentID, td::INT4 _semesterID
 
 bool MainWindow::showExamSignUpView()
 {
-    if (focusOnViewPositionWithID(View_CURRICULUM))
+    auto x = Globals::_currentUserRole;
+    if (x != 5 && x != 6)
+    {
+        showAlert(tr("AccessNotAllowed"), "");
+        return true;
+    }
+
+    if (focusOnViewPositionWithID(View_EXAM))
         return true;
 
     ViewExamSignUp* pView = new ViewExamSignUp;
@@ -580,7 +620,7 @@ bool MainWindow::showExamSignUpView()
 
 bool MainWindow::showTicketView()
 {
-    if (Globals::_currentUserRole!=5)
+    if (!Globals::isStudent)
     {
         showAlert(tr("AccessNotAllowed"), "");
         return true;
@@ -596,7 +636,7 @@ bool MainWindow::showTicketView()
 
 bool MainWindow::showCourseEnrollView() {
 
-    if (Globals::_currentUserRole!=4 && Globals::_currentUserRole!=6)
+    if (!Globals::isSAO && !Globals::isAdmin)
     {
         showAlert(tr("AccessNotAllowed"), "");
         return true;
@@ -612,11 +652,7 @@ bool MainWindow::showCourseEnrollView() {
 
 bool MainWindow::showMessagesView() {
 
-    if (!Globals::isStudent)
-    {
-        showAlert(tr("AccessNotAllowed"), "");
-        return true;
-    }
+    //obavjestenjima smije svako pristupiti
 
     if (focusOnViewPositionWithID(View_MESSAGES))
         return true;
@@ -641,7 +677,7 @@ bool MainWindow::showGradeExamView(td::INT4 SubjectID)
 bool MainWindow::showUpload()
 {
     auto x = Globals::_currentUserRole;
-    if (x != 6)
+    if (x != 6 && x != 5 )
     {
         showAlert(tr("AccessNotAllowed"), "");
         return true;
@@ -657,7 +693,7 @@ bool MainWindow::showUpload()
 bool MainWindow::showSomeSubjectChoose2()
 {
     auto x = Globals::_currentUserRole;
-    if (x != 1)
+    if (x != 3 && x !=6)
     {
         showAlert(tr("AccessNotAllowed"), "");
         return true;
@@ -694,7 +730,7 @@ bool MainWindow::showGradeLabHomeworkView(td::INT4 SubjectID)
 
 bool MainWindow::showTicketForSaoView() {
 
-    if (Globals::_currentUserRole != 4)
+    if (!Globals::isSAO && !Globals::isAdmin)
     {
         showAlert(tr("AccessNotAllowed"), "");
         return true;
@@ -709,4 +745,44 @@ bool MainWindow::showTicketForSaoView() {
   
 
 
+}
+
+bool MainWindow::showGradeSubjectChoose(){
+
+
+    DialogChooseSubject* pDlg = new DialogChooseSubject(this);
+     pDlg->setTitle(tr("SubjectChoose"));
+     pDlg->openModal([this](gui::Dialog::Button::ID btn, gui::Dialog* pDlg)
+        {
+        auto btnID = pDlg->getClickedButtonID();
+        if (btnID == gui::Dialog::Button::ID::OK) {
+            auto dlgCS = static_cast<DialogChooseSubject*> (pDlg);
+            //examGrades(&_imgExamAtt, dlgCS->getSubjectID());
+
+            showFinalGradeView(dlgCS->getSubjectID());
+        }
+            return true;
+       });
+
+    return false;
+}
+
+
+bool MainWindow::showFinalGradeView(td::INT4 SubjectID)
+{
+
+    if (!Globals::isProfessor && !Globals::isAdmin)
+    {
+        showAlert(tr("AccessNotAllowed"), "");
+        return true;
+    }
+    
+    td::INT4 ViewID = (View_FINALGRADE << 24) | SubjectID;
+    if (focusOnViewPositionWithID(ViewID))
+        return true;
+
+    ViewFinalGrade* pView = new ViewFinalGrade(SubjectID);
+    _mainView.addView(pView, tr("viewGradeExam"), &_imgExamGrades);
+
+    return true;
 }

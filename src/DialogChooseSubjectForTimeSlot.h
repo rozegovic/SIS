@@ -32,7 +32,7 @@ public:
                                 {gui::Dialog::Button::ID::Cancel, tr("Cancel")} }, gui::Size(300, 100))
     {
         setCentralView(&_viewTimeSlot);
-        loadComboBox("select b.Naziv_Predmeta AS Naziv, b.ID_Predmeta AS ID from Korisnici c, UpisPredmet a, Predmet b WHERE a.ID_Predmeta = b.ID_Predmeta AND c.Indeks = a.Indeks  AND c.ID = ? ", _viewTimeSlot.getComboBox());
+        loadComboBox("select b.Naziv_Predmeta AS Naziv, b.ID_Predmeta AS ID from Korisnici c, UpisPredmeta a, Predmet b WHERE a.ID_Predmeta = b.ID_Predmeta AND c.ID = a.ID_Studenta  AND c.ID = ? ", _viewTimeSlot.getComboBox());
     }
 
     bool loadComboBox(td::String select, gui::DBComboBox& combo) {

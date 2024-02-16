@@ -49,7 +49,7 @@ protected:
     gui::Button _btnUpdate;
     gui::Button _btnSave;
     gui::Button _btnReport;
-
+    gui::Button _btnReport1;
 
     dp::IDatabase* _db;
     gui::GridLayout _gl;
@@ -81,4 +81,6 @@ protected:
     td::INT4 getIDfromTable(int rowID);    // uradjeno + provjera
     td::INT4 findMaxID();     // uradjeno
     void insertValues(td::INT4 subjectID);
+    bool onAnswer(td::UINT4 questionID, gui::Alert::Answer answer);
+    td::INT4 GetCurrentStudent();
 };

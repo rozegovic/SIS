@@ -92,9 +92,14 @@ bool ViewTicket::onClick(gui::Button* pBtn)
 		selectFiles();
 		return true;
 	}
+
 	if (pBtn == &_btnOpen)
 	{
 		auto rowindex = _tableTickets.getFirstSelectedRow();
+
+		if (rowindex < 0)
+			return false;
+
 		auto pomDS = _tableTickets.getDataSet();
 		auto& row = pomDS->getRow(rowindex);
 
@@ -205,7 +210,7 @@ bool ViewTicket::sendTicketWithAttachment()
 	id++;
 	td::String index, request, requestTitle, ticketName;
 	td::INT4 status;
-	parDS << id << dp::toNCh(index, 30) << dp::toNCh(ticketName, 30) << dp::toNCh(requestTitle, 100) << dp::toNCh(request, 5000) << status<< dataIn << dp::toNCh(strFileName, 50);
+	parDS << id << dp::toNCh(index, 30) << dp::toNCh(ticketName, 30) << dp::toNCh(requestTitle, 100) << dp::toNCh(request, 5000) << status << dataIn << dp::toNCh(strFileName, 50);
 
 	if (!dataIn.setInFileName(filePathNow))
 	{
@@ -319,7 +324,6 @@ void ViewTicket::populateTableData()
 {
 
 	td::String setstr = "SELECT SAOStudentTicket.Ticket_Tip as type, SAOStudentTicket.Req_Title as title, (SELECT SAOTicket_Status.Status as status FROM SAOTicket_Status WHERE SAOStudentTicket.Status_ID=SAOTicket_Status.ID) as status, SAOStudentTicket.Request as request, SAOStudentTicket.ID as reqID, SAOStudentTicket.Indeks as indeks  FROM SAOStudentTicket WHERE SAOStudentTicket.Indeks=";
-
 	setstr.append(GetStudentIndeks().getConstStr());
 
 	_pDS = dp::getMainDatabase()->createDataSet(setstr, dp::IDataSet::Execution::EX_MULT);
@@ -346,7 +350,7 @@ void ViewTicket::UpdateTable() {
 
 	auto pompDS = dp::getMainDatabase()->createDataSet(setstr, dp::IDataSet::Execution::EX_MULT);
 	dp::DSColumns cols(pompDS->allocBindColumns(6));
-	cols << "type" << td::string8 << "title" << td::string8 << "status" << td::string8<< "request" << td::string8 << "reqID" << td::int4 << "indeks" << td::string8;
+	cols << "type" << td::string8 << "title" << td::string8 << "status" << td::string8 << "request" << td::string8 << "reqID" << td::int4 << "indeks" << td::string8;
 	if (!pompDS->execute())
 	{
 		pompDS = nullptr;

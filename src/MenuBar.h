@@ -47,6 +47,7 @@ public:
         items[15].initAsActionItem(tr("viewUpload"), 160);
         items[16].initAsActionItem(tr("viewExamLabHomework"), 180);
         items[17].initAsActionItem(tr("viewTicketForSAO"), 190);
+        items[17].initAsActionItem(tr("viewFinalGrade"), 200);
 
 
     }
@@ -55,7 +56,7 @@ public:
     MenuBar()
         : gui::MenuBar(2)
         , application(10, tr("App"), 2)
-        , sifarnici(20, tr("Sif"), 18)
+        , sifarnici(20, tr("Sif"), 19)
 
     {
         populateAppMenu();

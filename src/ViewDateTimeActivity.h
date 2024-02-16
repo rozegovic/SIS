@@ -71,6 +71,7 @@ protected:
     std::vector<td::INT4> _itemsToDelete, _itemsToInsert, _itemsToUpdate;
 public:
     ViewDateTimeActivity(td::INT4 SubjectID);
+   void refresh();
 protected:
     bool loadComboBox(td::String select, gui::DBComboBox& combo);
     void populateData();
@@ -86,4 +87,5 @@ protected:
     void SetActivityName(td::Variant& val, td::INT4 br);
     td::INT4 getIDfromTable(int rowID);
     td::INT4 findMaxID();
+    bool onAnswer(td::UINT4 questionID, gui::Alert::Answer answer);
 };

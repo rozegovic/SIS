@@ -86,7 +86,6 @@ bool ViewRequestUpdate::onAnswer(td::UINT4 questionID, gui::Alert::Answer answer
             SaveToDatabase();
             showAlert(tr("succes"), tr("succesEE"));
         }
-        this->getContainingWindow()->close();
         return true;
     }
     return false;

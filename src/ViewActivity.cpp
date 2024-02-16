@@ -15,6 +15,7 @@
 #include <mu/IAppSettings.h>
 #include <gui/Image.h>
 #include <gui/Frame.h>
+#include "ViewDateTimeActivity.h"
 
 
 
@@ -123,7 +124,7 @@ td::INT4 ViewActivity::findMaxID() // Eminina funkcija :-D
 //    loadComboBox("select ID as ID, Naziv as Naziv from VrstaAktivnosti", _type);
 //}
 
-ViewActivity::ViewActivity(td::INT4 SubjectID) : _db(dp::getMainDatabase()) //ovaj konstruktor se koristi jer je u switcheru
+ViewActivity::ViewActivity(td::INT4 SubjectID, ViewDateTimeActivity* DateTime, ViewTasks* Task) : _db(dp::getMainDatabase()) //ovaj konstruktor se koristi jer je u switcheru
 , _id(td::int4)
 , _lblName(tr("Activity:"))
 , _idP(SubjectID)
@@ -149,6 +150,8 @@ ViewActivity::ViewActivity(td::INT4 SubjectID) : _db(dp::getMainDatabase()) //ov
 //ne bi trebalo da jos ista fali
 {
     setVisualID(View_ACTIVITY);
+    _dateTime = DateTime;
+    _task = Task;
     _hlBtns.appendSpace(4);
     _hlBtns.append(_btnSave, td::HAlignment::Right);
     _hlBtns.appendSpacer();
@@ -349,6 +352,8 @@ void ViewActivity::SetCurrentSubject() {
             _actsToInsert.clear();
             _actsToUpdate.clear();
         }
+        _dateTime->refresh();
+        _task->refresh1();
         return true;
     }
     //----------------Vjerovatno ce trebati modifikovati---------------------
@@ -433,7 +438,6 @@ void ViewActivity::SetCurrentSubject() {
             _actsToDelete.clear(); 
             _actsToInsert.clear(); 
             _actsToUpdate.clear(); 
-
             return true;
         }
 
@@ -455,6 +459,7 @@ void ViewActivity::SetCurrentSubject() {
                     _actsToInsert.erase(std::remove(_actsToInsert.begin(), _actsToInsert.end(), itemid), _actsToInsert.end());
                     _actsToUpdate.erase(std::remove(_actsToUpdate.begin(), _actsToUpdate.end(), itemid), _actsToUpdate.end());
                 });
+      
             return true;
         }
 
@@ -476,7 +481,7 @@ void ViewActivity::SetCurrentSubject() {
 
             if (std::find(_actsToInsert.begin(), _actsToInsert.end(), itemid) == _actsToInsert.end())
                 _actsToUpdate.push_back(itemid); 
-
+           
             return true;
         }
 
@@ -489,17 +494,18 @@ void ViewActivity::SetCurrentSubject() {
             if (!canAdd()) 
                 return true; 
 
-            td::INT4 itemid = getIDfromTable(iRow); 
+           // td::INT4 itemid = getIDfromTable(iRow); 
             td::INT4 id = findMaxID(); 
 
             _table.beginUpdate(); 
             auto& row = _table.getEmptyRow(); 
-            populateDSRow(row, itemid); 
+            populateDSRow(row, id); 
             _table.insertRow(iRow); 
             _table.endUpdate(); 
 
             _actsToUpdate.erase(std::remove(_actsToUpdate.begin(), _actsToUpdate.end(), id), _actsToUpdate.end());
-            _actsToInsert.push_back(id); 
+            _actsToInsert.push_back(id);
+         
             return true; 
         }
 
@@ -525,6 +531,7 @@ void ViewActivity::SetCurrentSubject() {
 
             _actsToUpdate.erase(std::remove(_actsToUpdate.begin(), _actsToUpdate.end(), itemid), _actsToUpdate.end());
             _actsToInsert.push_back(itemid);
+        
             return true;
         }
 
@@ -533,10 +540,12 @@ void ViewActivity::SetCurrentSubject() {
         {
             showYesNoQuestionAsync(QuestionIDDDAAA::Saveee, this, tr("alert"), tr("saveSure"), tr("Yes"), tr("No"));
 
+         
             return true;
         }
         if (pBtn == &_btnReport) {
             ActivityReport(&_imgActivityRep, SubjectID);
+  
             return true;
         }
         return false;
@@ -554,22 +563,7 @@ void ViewActivity::SetCurrentSubject() {
                     saveData();
                     //unutar button save se detektuje promjena i salje se poruka od sistema za sve studente
 //sad bi trebao da bude poseban button za poruke na koji ce se otvoriti novi prozorcic koji ce prikazati tabelu Messages gdje je id korisnika jednak user id poruke
-                    std::vector<td::INT4> userIDs;
-                    //svim studentima
-                    dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT ID FROM KORISNICI WHERE PozicijaID=5");
-                    dp::Columns pCols = pSelect->allocBindColumns(1);
-                    td::INT4 id;
-                    pCols << "ID" << id;
-                    if (!pSelect->execute())
-                        return false;
-                    while (pSelect->moveNext())
-                    {
-                        userIDs.push_back(id);
-                    }
-                    td::String naslov = "Aktivnost!";
-                    td::String poruka = "Registrovana je promjena za odredjenu aktivnost! ";
-                    MsgSender msg;
-                    msg.sendSystemMsgtoUsers(naslov, poruka, userIDs);
+                   
                 }
             }
             return true;
@@ -584,6 +578,7 @@ void ViewActivity::SetCurrentSubject() {
         td::Decimal2 x = point.dec2Val();
         if (x > 10000)
         {
+            showAlert(tr("failure"), tr("alertOver100"));
             return false;
         }
 
@@ -608,9 +603,28 @@ void ViewActivity::SetCurrentSubject() {
         if (!pSelect->moveNext())
             return false;
 
-        if (sum + x > 10000)
+        if (sum + x >= 10000) {
+            showAlert(tr("failure"), tr("alertOver100"));
             return false;
+        }
 
+        td::Variant pom;
+        _name.getValue(pom);
+        if (pom.isZero()) {
+            showAlert(tr("alert"), tr("alertNp"));
+            return false;
+        }
+        _points.getValue(pom);
+        if (pom.isZero()) {
+            showAlert(tr("alert"), tr("alertNp"));
+            return false;
+        }
+        _desAct.getValue(pom);
+        if (pom.isZero()) {
+            showAlert(tr("alert"), tr("alertNp"));
+            return false;
+        }
+        
         return true;
     }
 

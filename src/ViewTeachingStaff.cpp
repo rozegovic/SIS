@@ -223,7 +223,7 @@ bool ViewTeachingStaff::canAdd()
 	//-------------------mozda provjera da li vec postoji ta osoba postoji na predmetu
 	td::Variant id = _userID.getValue().i4Val();
 	td::Variant cid = _courseID.getValue().i4Val();
-	if (id < 0 || cid < 0) {
+	if (id <= 0 || cid <= 0) {
 		showAlert(tr("alert"), tr("alertNEG"));
 		return false;
 	}
