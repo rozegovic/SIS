@@ -57,7 +57,7 @@ public:
     bool showCurriculum();
     bool showSubjectChooseForTimeSlot();
     bool showTimeSlotView(td::INT4 SubjectID);
-
+   
 
 protected:
     bool onActionItem(gui::ActionItemDescriptor& aiDesc) override;
