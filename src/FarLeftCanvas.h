@@ -17,7 +17,7 @@ protected:
     
     //Grupa 2
     gui::Shape _rect;
-    std::vector<gui::DrawableString> _subjects;
+
     
     
 public:
@@ -36,23 +36,23 @@ public:
     }
     
     //Grupa2
-    bool createStrings() {
-        dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select a.Naziv_Predmeta AS Naziv FROM Predmet a, UpisPredmeta b WHERE b.ID_Studenta = ? AND  b.ID_Predmeta = a.ID_Predmeta");
-        dp::Params pParams(pSelect->allocParams());
-        pParams << Globals::_currentUserID;
-        dp::Columns pCols = pSelect->allocBindColumns(1);
-        td::String name;
-       // gui::DrawableString drawableName;
-        pCols << "Naziv" << name;
-        if (!pSelect->execute())
-            return false;
-
-        while (pSelect->moveNext()) {
-            gui::DrawableString drawableName(name);
-            _subjects.push_back(drawableName);
-        }
-            return false;
-    }
+    //bool createStrings() {
+    //    dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select a.Naziv_Predmeta AS Naziv FROM Predmet a, UpisPredmeta b WHERE b.ID_Studenta = ? AND  b.ID_Predmeta = a.ID_Predmeta");
+    //    dp::Params pParams(pSelect->allocParams());
+    //    pParams << Globals::_currentUserID;
+    //    dp::Columns pCols = pSelect->allocBindColumns(1);
+    //    td::String name;
+    //   // gui::DrawableString drawableName;
+    //    pCols << "Naziv" << name;
+    //    if (!pSelect->execute())
+    //        return false;
+    //    _subjects.resize(0);
+    //    while (pSelect->moveNext()) {
+    //        gui::DrawableString drawableName = name;
+    //        _subjects.push_back(drawableName);
+    //    }
+    //        return false;
+    //}
     void onDraw(const gui::Rect& rect) override {
         const bool check = false;
         // pogled za profesora i asistenta ------ grupa 3
@@ -97,23 +97,32 @@ public:
         else if (Globals::_currentUserID == 5) {
             gui::Size sz;
             getSize(sz);
-          //  createStrings();
-            std::vector<gui::DrawableString> test;
-            //for (int i = 0; i < _subjects.size(); i++) {
-         //test.push_back(gui::DrawableString(_subjects.at(i))); }
-
-            test.push_back(gui::DrawableString("aaaa"));
-            test.push_back(gui::DrawableString("bbbb"));
-            test.push_back(gui::DrawableString("cccc"));
+            //createStrings();
             gui::Rect r(0, 0, sz.width, 50);
             gui::Point pt(10, 0);
             float lw = 5;
             _rect.createRect(r, lw);
            // gui::Rect imgRect(450, 50, 650, 150);
-            for(auto subj : test){
+            /*for (int i = 0; i < _subjects.size(); i++) {
                 gui::Shape::drawRect(r,td::ColorID::WhiteSmoke, td::ColorID::Navy, 4, td::LinePattern::Solid);
-                subj.draw(pt, gui::Font::ID::SystemBold, td::ColorID::Navy);
+                _subjects[i].draw(pt, gui::Font::ID::SystemLargerBold, td::ColorID::Navy);
                 pt.translate(0,50);
+                r.translate(0, 50);
+            }*/
+            dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select a.Naziv_Predmeta AS Naziv FROM Predmet a, UpisPredmeta b WHERE b.ID_Studenta = ? AND  b.ID_Predmeta = a.ID_Predmeta");
+            dp::Params pParams(pSelect->allocParams());
+            pParams << Globals::_currentUserID;
+            dp::Columns pCols = pSelect->allocBindColumns(1);
+            td::String name;
+            // gui::DrawableString drawableName;
+            pCols << "Naziv" << name;
+            if (!pSelect->execute())
+                return ;
+            while (pSelect->moveNext()) {
+                gui::DrawableString subject = name;
+                gui::Shape::drawRect(r, td::ColorID::WhiteSmoke, td::ColorID::Navy, 4, td::LinePattern::Solid);
+                subject.draw(pt, gui::Font::ID::SystemLargerBold, td::ColorID::Navy);
+                pt.translate(0, 50);
                 r.translate(0, 50);
             }
 //            gui::Size sz;
