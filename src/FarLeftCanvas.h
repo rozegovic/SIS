@@ -191,8 +191,8 @@ public:
 
     bool getModelSize(gui::Size& modelSize) const override
     {
-        modelSize.width = 1300;
-        modelSize.height = 550;
+        modelSize.width = 500;
+        modelSize.height = (_brojChat+1)*110;
         return true;
     }
 };
