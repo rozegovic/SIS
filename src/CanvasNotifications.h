@@ -7,7 +7,6 @@
 #include "GlobalsCanvas.h"
 
 
-
 //-------------------Klasa za obavjestenja (sve grupe rade zajedno)
 //-------------------dodati provjeru ko je prijavljen u onDraw i sa tim dalje prikazati obavjestenja
 //-------------------izbrisati sliku etf (tu samo da se nesto prikazuje)!!!
@@ -16,22 +15,23 @@ class Notifications1 : public gui::Canvas
 private:
 protected:
     gui::Image _etf;
+
     friend class Notifications;
 public:
     Notifications1()
         : Canvas({ gui::InputDevice::Event::CursorDrag })
         , _etf(":ETF")
     {
+
     }
 
     void onDraw(const gui::Rect& rect) override {
         gui::Size sz;
         getSize(sz);
 
+
         //problem je sto se ne mogu skrolat poruke vec treba promijeniti size prozora da se sve vidi --> RJESENO
         //dodati provjeru da se ne ispisuje obavijest za ispit ako je rok za prijavu istog istekao
-
-
         dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT a.Subject, a.Poruke "
             "  FROM Messages a "
             "  JOIN MsgReceivers mr ON mr.MsgID = a.ID "
@@ -48,6 +48,7 @@ public:
         gui::Rect imgRect(0, 0, sz.width, 60);
         gui::Point pt(10, 0);
         gui::Point pt2(10, 30);
+
         
         gui::Rect rectt(0, 0, sz.width, 60);//
 
@@ -90,9 +91,6 @@ public:
             str.draw(pt, gui::Font::ID::SystemLargerBold, td::ColorID::Black);//
 
         }
-
-
-
     };
     void reset() {
         reDraw();
@@ -129,3 +127,4 @@ public:
         return _canvas;
     }
 };
+

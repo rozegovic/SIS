@@ -131,6 +131,7 @@ void ViewCourseEnroll::populateCourseCombo(gui::DBComboBox& combo, td::String sm
     str.append(_department.getSelectedText());
     str.append("')");
 
+
     dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement(str);
     dp::Columns pCols = pSelect->allocBindColumns(2);
     td::String name;

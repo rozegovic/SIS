@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <gui/DrawableButton.h>
 
+
 class MiddleCanvas : public gui::Canvas
 {
 private:
@@ -26,15 +27,20 @@ public:
     void onDraw(const gui::Rect& rect) override {
         const bool check = false;
         // pogled za profesora i asistenta ------ grupa 3
-        if (Globals::isProfessor || Globals::isAssistant)
-            return;
+
+             if (Globals::_currentUserID == 1 || Globals::_currentUserID == 3) {
+            gui::Size sz;
+            getSize(sz);
+            gui::Point cp(sz.width / 2, sz.height / 2);
+            td::INT4 x = cp.x;
+            td::INT4 y = cp.y;
+
+            gui::Rect imgRect(x - 15 - x / 4, y - 15 - y / 4, x + 15 + x / 4, y + 15 + y / 4);
+            _etf.draw(imgRect, gui::Image::AspectRatio::Keep, td::HAlignment::Center, td::VAlignment::Center);
+        }
       
         
-        
-        
-        
-        
-        
+      
         // pogled za SAO ------ grupa 1
         else if (Globals::isSAO && brojPoruke > -1) {
             
@@ -47,9 +53,10 @@ public:
             gui::Shape::drawRect(rectt, td::ColorID::Silver, td::ColorID::MidnightBlue, 2, td::LinePattern::Solid);
         
             DrawChatInfoSAO();
+            }
+            
 
         
-        }
         // pogled za studenta ------ grupa 2 ------ ako ne koristite mozete samo ostaviti da bude nacrtan etf znak
         else if (Globals::_currentUserID == 5) {
             gui::Size sz;
@@ -78,6 +85,7 @@ public:
         }
 
     };
+
 
 
 
@@ -151,6 +159,7 @@ public:
 
 
 
+
     void reset() {
         reDraw();
     };
@@ -163,3 +172,4 @@ public:
     }
 
 };
+
