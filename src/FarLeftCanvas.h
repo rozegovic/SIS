@@ -168,13 +168,6 @@ public:
         int a = 0;
         td::INT4 IdUserChat;
 
-        //--kratki test da li radi da kad se pritisne na odredjeni pravougaonik vrati se taj id---
-        for (int i = 0; i < _brojChat + 1; i++) {
-            users.push_back(std::make_pair("xxxxxx", i + 5));
-        }
-
-        //--------------------------------------------------
-
         for (int i = 0; i < _brojChat + 1; i++) {
 
             // if (tempk < int(inputDevice.getFramePoint().y) && inputDevice.getFramePoint().y < (tempk + _visinaChata)) {
