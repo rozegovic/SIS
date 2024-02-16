@@ -161,6 +161,22 @@
                           <Res id="StatUser" tr="Korisnik:"/>
                          <Res id="StatRole" tr="Uloga:"/>
                          <Res id="Subject" tr="Predmet"/>
+						  <Res id="Monday" tr="Ponedeljak"/>
+						  <Res id="Tuesday" tr="Utorak"/>
+						  <Res id="Wednesday" tr="Srijeda"/>
+						  <Res id="Thursday" tr="Četvrtak"/>
+						  <Res id="Friday" tr="Petak"/>
+						  <Res id="Saturday" tr="Subota"/>
+						  <Res id="Sunday" tr="Nedelja"/>
+						  <Res id="AttDay" tr="Dan"/>
+						  <Res id="AttMaxNum" tr="Maksimalan broj studenata:"/>
+						  <Res id="SubjWeek" tr="Sedmica:"/>
+						  <Res id="SubjName" tr="Ime:"/>
+						  <Res id="SubjSurname" tr="Prezime:"/>
+						  <Res id="SubjDay" tr="Dan:"/>
+						  <Res id="SubjTime" tr="Vrijeme:"/>
+						  <Res id="SubjPresent" tr="Prisutan"/>
+						  <Res id="SubjNotPresent" tr="Nije Prisutan"/>
                             <Res id="alertPr" tr="Vec ste unijeli prisustvo ovog studenta za ovaj termin"/>
 							  <Res id="alertStu" tr="Vec ste prijavljeni na ovaj tip termina"/>
 							 <Res id="alertAttNegative" tr="Broj mjesta ne može biti negativan"/>
