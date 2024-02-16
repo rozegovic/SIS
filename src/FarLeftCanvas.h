@@ -16,11 +16,14 @@ protected:
     MiddleCanvas* _middleCanvas;
     gui::Shape _shapeCircle1;
     std::vector<std::pair<std::string,td::INT4>> users;
+    td::INT4 _brojChat; // varijabla koja definise broj pravougaonika
+    td::INT4 _visinaChata;  // varijabla d iz gui::Rect imgRect(a,b,c,d)
 public:
     FarLeftCanvas(MiddleCanvas* canvas)
         : _etf(":ETF")
         , gui::Canvas({ gui::InputDevice::Event::PrimaryClicks })
-
+        , _brojChat(3)
+        , _visinaChata(100)
     {
         _middleCanvas = canvas;
 
@@ -160,10 +163,40 @@ public:
 
 
     void onPrimaryButtonPressed(const gui::InputDevice& inputDevice) override {
+        double tempk = 0;
 
-        openMiddleCanvas();
-        if (inputDevice.getType() == gui::InputDevice::Type::Mouse && inputDevice.getButton() == gui::InputDevice::Button::Primary) {
-           // openMiddleCanvas();
+        int a = 0;
+        td::INT4 IdUserChat;
+
+        //--kratki test da li radi da kad se pritisne na odredjeni pravougaonik vrati se taj id---
+        for (int i = 0; i < _brojChat + 1; i++) {
+            users.push_back(std::make_pair("xxxxxx", i + 5));
         }
+
+        //--------------------------------------------------
+
+        for (int i = 0; i < _brojChat + 1; i++) {
+
+            // if (tempk < int(inputDevice.getFramePoint().y) && inputDevice.getFramePoint().y < (tempk + _visinaChata)) {
+            if (tempk < int(inputDevice.getModelPoint().y) && inputDevice.getModelPoint().y < (tempk + _visinaChata)) {
+                a = i;
+                IdUserChat = users[i].second;
+                //IdUserChat = i; // ovo se poslije brise
+                _middleCanvas->Reset(IdUserChat);
+            }
+            tempk = tempk + _visinaChata;
+        }
+
+        // openMiddleCanvas();
+        if (inputDevice.getType() == gui::InputDevice::Type::Mouse && inputDevice.getButton() == gui::InputDevice::Button::Primary) {
+            // openMiddleCanvas();
+        }
+    }
+
+    bool getModelSize(gui::Size& modelSize) const override
+    {
+        modelSize.width = 500;
+        modelSize.height = (_brojChat+1)*110;
+        return true;
     }
 };

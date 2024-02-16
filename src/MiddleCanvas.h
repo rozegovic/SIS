@@ -101,12 +101,19 @@ public:
         reDraw();
     };
 
-
+    void Reset(td::INT4 userID) {
+        reDraw();
+    };
 
     void onPrimaryButtonPressed(const gui::InputDevice& inputDevice) override {
 
         reDraw();
         
     }
-
+    bool getModelSize(gui::Size& modelSize) const override
+    {
+        modelSize.width = 1300;
+        modelSize.height = 550;
+        return true;
+    }
 };
