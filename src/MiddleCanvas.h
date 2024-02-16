@@ -117,6 +117,7 @@ public:
     };
 
     void Reset(td::INT4 userID) {
+        // id korisnika sa kojim je chat aktivan
         reDraw();
     };
 
