@@ -230,7 +230,7 @@ bool ViewUsers::saveUsers()
     parDS << id << dp::toNCh(surname, 30) << dp::toNCh(name, 30) << dateE << pID << dp::toNCh(jmbg, 30) << dp::toNCh(address, 30) << dateB << dp::toNCh(index, 20);
     dp::Transaction tr1(dp::getMainDatabase());
 
-    dp::IStatementPtr pDel(dp::getMainDatabase()->createStatement("DELETE FROM Korisnici"));
+    dp::IStatementPtr pDel(dp::getMainDatabase()->createStatement("DELETE FROM Korisnici WHERE Korisnici.ID>0"));
     if (!pDel->execute())
         return false;
     size_t nRows = _pDS->getNumberOfRows();

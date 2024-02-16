@@ -77,6 +77,7 @@ void ViewTicket::populateTypeTicketCombo(gui::ComboBox& combo)
 	combo.addItem("Molba");
 	combo.addItem("Zalba");
 	combo.addItem("Prijedlog");
+	combo.selectIndex(0);
 }
 
 bool ViewTicket::onClick(gui::Button* pBtn)

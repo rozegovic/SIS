@@ -57,7 +57,7 @@ public:
     bool showCurriculum();
     bool showSubjectChooseForTimeSlot();
     bool showTimeSlotView(td::INT4 SubjectID);
-
+   
 
 protected:
     bool onActionItem(gui::ActionItemDescriptor& aiDesc) override;
@@ -78,9 +78,9 @@ protected:
     bool showGradeExamView(td::INT4 SubjectID);
     bool showGradeLabHomeworkView(td::INT4 SubjectID);
     bool showUpload();
-
     bool showTicketForSaoView();
-
+    bool showFinalGradeView(td::INT4 SubjectID);
+    bool showGradeSubjectChoose();
 
     //bool onClick(gui::Dialog* pDlg, td::UINT4 dlgID) override;
 
