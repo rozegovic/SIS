@@ -174,7 +174,7 @@ public:
             // if (tempk < int(inputDevice.getFramePoint().y) && inputDevice.getFramePoint().y < (tempk + _visinaChata)) {
             if (tempk < int(inputDevice.getModelPoint().y) && inputDevice.getModelPoint().y < (tempk + _visinaChata)) {
                 a = i;
-                IdUserChat = users[i].second;
+                IdUserChat = users[i].second; 
                 //IdUserChat = i; // ovo se poslije brise
                 _middleCanvas->Reset(IdUserChat);
             }
