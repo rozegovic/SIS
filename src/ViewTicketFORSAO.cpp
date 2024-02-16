@@ -73,7 +73,8 @@ void ViewTicketForSAO::populateOnHoldTickets()
 
 void ViewTicketForSAO::populateAnsweredTickets()
 {
-	td::String setstr = "SELECT Korisnici.Ime as Name, Korisnici.Prezime as Surname,SAOStudentTicket.Indeks as StudentIndex, SAOStudentTicket.Ticket_Tip as TypeOfTicket, SAOStudentTicket.Req_Title as TitleofTicket, SAOStudentTicket.Status_ID as Status_ID,SAOTicket_Status.Status as Status, SAOStudentTicket.Request as Request From Korisnici, SAOStudentTicket, SAOTicket_Status where Korisnici.Indeks=SAOStudentTicket.Indeks AND Status_ID=2 AND SAOTicket_Status.ID=SAOStudentTicket.Status_ID";
+	td::String setstr = "SELECT Korisnici.Ime AS Name,Korisnici.Prezime AS Surname,SAOStudentTicket.Indeks AS StudentIndex,SAOStudentTicket.Ticket_Tip AS TypeOfTicket,SAOStudentTicket.Req_Title AS TitleOfTicket,SAOStudentTicket.Status_ID AS Status_ID,SAOTicket_Status.Status AS Status,SAOStudentTicket.Request AS Request FROM Korisnici JOIN SAOStudentTicket ON Korisnici.Indeks = SAOStudentTicket.Indeks JOIN SAOTicket_Status ON SAOTicket_Status.ID = SAOStudentTicket.Status_ID WHERE SAOStudentTicket.Status_ID = 2;";
+
 	_pDS_answered = dp::getMainDatabase()->createDataSet(setstr, dp::IDataSet::Execution::EX_MULT);
 	dp::DSColumns cols(_pDS_answered->allocBindColumns(8));
 	cols << "Name" << td::string8 << "Surname" << td::string8 << "StudentIndex" << td::string8 << "TypeOfTicket" << td::string8 << "TitleOfTicket" << td::string8 << "Status_ID" << td::int4 << "Status" << td::string8 << "Request" << td::string8;
@@ -250,7 +251,7 @@ bool ViewTicketForSAO::onChangedSelection(gui::TableEdit* pTE)
 
 bool ViewTicketForSAO::onClick(gui::Button* pBtn)
 {
-	if (pBtn = &_btnOpen)
+	if (pBtn == &_btnOpen)
 	{
 		/*td::String indeks = getIndex();
 		td::String ime = getName();
@@ -263,6 +264,26 @@ bool ViewTicketForSAO::onClick(gui::Button* pBtn)
 		auto pWnd = new WindowCertainRequest(pParentWnd,indeks,ime,prezime,tipKarte,status,request,title);
 		pWnd->keepOnTopOfParent();
 		pWnd->open();
+		
+		int selectedRow = _onHoldTickets.getFirstSelectedRow();
+		if (selectedRow >= 0) {
+
+			size_t numRows = _onHoldTickets.getDataSet()->getNumberOfRows();
+			bool isLastRow = (selectedRow == numRows - 1);
+			dp::IDataSet::Row removedRow = _onHoldTickets.getCurrentRow();
+			_onHoldTickets.removeRow(selectedRow);
+			_answeredTickets.push_back();
+			_answeredTickets.getCurrentRow() = removedRow;
+
+			if (isLastRow) {
+				int newSelectedRow = selectedRow - 1;
+				if (newSelectedRow >= 0) {
+					_onHoldTickets.selectRow(newSelectedRow, true);
+				}
+			}
+		}
+
+
 		return true;
 	}
 }

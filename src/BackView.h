@@ -6,6 +6,50 @@
 #include "MiddleCanvas.h"
 #include "FarLeftCanvas.h"
 #include "Globals.h"
+#include <gui/ViewScroller.h>
+
+
+class MiddleScroll : public gui::ViewScroller
+{
+private:
+public:
+    MiddleCanvas _middleCanvas;
+protected:
+
+public:
+    MiddleScroll()
+        : gui::ViewScroller(gui::ViewScroller::Type::ScrollAndAutoHide, gui::ViewScroller::Type::ScrollAndAutoHide)
+    {
+        setContentView(&_middleCanvas);
+    }
+
+    MiddleCanvas& getView()
+    {
+        return _middleCanvas;
+    }
+};
+
+class FarLeftScroll : public gui::ViewScroller
+{
+private:
+protected:
+    FarLeftCanvas _leftCanvas;
+
+protected:
+
+public:
+    FarLeftScroll(MiddleScroll* canvas)
+        : gui::ViewScroller(gui::ViewScroller::Type::ScrollAndAutoHide, gui::ViewScroller::Type::ScrollAndAutoHide)
+        , _leftCanvas(&canvas->_middleCanvas)
+    {
+        setContentView(&_leftCanvas);
+    }
+    FarLeftCanvas& getView()
+    {
+        return _leftCanvas;
+    }
+};
+
 
 class BackView : public gui::View
 {
@@ -17,6 +61,7 @@ protected:
 
 public:
     BackView()
+
     : _splitter(gui::SplitterLayout::Orientation::Horizontal, gui::SplitterLayout::AuxiliaryCell::First) 
     , _leftCanvas(&_middleCanvas)
     {

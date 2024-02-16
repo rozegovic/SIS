@@ -178,9 +178,11 @@
 						  <Res id="SubjPresent" tr="Prisutan"/>
 						  <Res id="SubjNotPresent" tr="Nije Prisutan"/>
                             <Res id="alertPr" tr="Vec ste unijeli prisustvo ovog studenta za ovaj termin"/>
+
 							  <Res id="alertStu" tr="Vec ste prijavljeni na ovaj tip termina"/>
 							 <Res id="alertAttNegative" tr="Broj mjesta ne može biti negativan"/>
 							<Res id="SubjTablePresent" tr="Prisutni za ovaj termin:"/>
+
 							<Res id="tablePresent" tr="Prisutni za ovaj termin:"/>
 							<Res id="alertNoTerm" tr="Niste odabrali ni jedan termin"/>
 									<Res id="Report" tr="Izvještaj"/>
@@ -358,6 +360,12 @@
 		
 		<Res id="viewGradeLabHW" tr="Ocjene dodataka"/>
 		<Res id="viewExamLabHomework" tr="Ocjena dodataka"/>
+		
+		<Res id="noNotifs" tr="Nemate obavijesti"/>
+
+    <Res id="viewFinalGrade" tr="Konacke ocjene"/>
+
+    
 
 
 
