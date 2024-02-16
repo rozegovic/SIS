@@ -19,6 +19,7 @@ public:
         , gui::Canvas({ gui::InputDevice::Event::PrimaryClicks })
     {
 
+
     }
 
     void onDraw(const gui::Rect& rect) override {

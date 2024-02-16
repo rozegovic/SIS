@@ -31,6 +31,7 @@ public:
 
     }
 
+
     void onDraw(const gui::Rect& rect) override {
         const bool check = false;
         // pogled za profesora i asistenta ------ grupa 3
