@@ -7,19 +7,20 @@
 #include <gui/ImageView.h>
 #include <gui/SplitterLayout.h>
 #include "MiddleCanvas.h"
+#include <algorithm>
+#include <gui/Label.h>
 #include <vector>
 #include <gui/DrawableString.h>
 #include <gui/Window.h>
 
 
-
-//-------------------izbrisati sliku etf (tu samo da se nesto prikazuje)!!!
 class FarLeftCanvas : public gui::Canvas
 {
 private:
 protected:
     gui::Image _etf;
     MiddleCanvas* _middleCanvas;
+    
     gui::DrawableString _str;
     gui::DrawableString _request;
     td::INT4 _status;
@@ -27,27 +28,96 @@ protected:
     int i;
     gui::Shape _shapeCircle1;
     std::vector<std::pair<td::String, td::INT4>> users;
-
     td::INT4 _brojChat; // varijabla koja definise broj pravougaonika
-    td::INT4 _visinaChata;  // varijabla d iz gui::Rect imgRect(a,b,c,d)
+    td::INT4 _visinaChata;  // varijabla d iz gui::Rect imgRect(a,b,c,d
+    
+    //Grupa 2
+    gui::Shape _rect;
+    td::INT4 _noOfSubjects;
+    std::vector<std::pair<td::String, td::INT4>> SubjFrames;//naziv predmeta + y koord
+    
 public:
-    FarLeftCanvas( MiddleCanvas* canvas)
-        : Canvas({ gui::InputDevice::Event::PrimaryClicks })
-        ,_etf(":ETF")
-        , _brojChat(3)
+    FarLeftCanvas(MiddleCanvas* canvas)
+        : _etf(":defaultUuser")
+        , gui::Canvas({ gui::InputDevice::Event::PrimaryClicks })
+        , _brojChat(5)
         , _visinaChata(100)
-    {
+        {
+       
         _middleCanvas = canvas;
-    }
+        }
+
 
     void onDraw(const gui::Rect& rect) override {
         const bool check = false;
         // pogled za profesora i asistenta ------ grupa 3
-        if (Globals::isProfessor || Globals::isAssistant)
-            return;
+        if ((Globals::_currentUserID == 1 || Globals::_currentUserID == 3)) {
+            users.resize(0);
+            gui::Size sz;
+            getSize(sz);
+            dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT ID, Prezime, Ime FROM Korisnici");
+            dp::Columns pCols = pSelect->allocBindColumns(3);
+
+            td::String username, userlastname;
+            td::INT4 id;
+            pCols << "ID" << id << "Ime" << username << "Prezime" << userlastname;
+            if (!pSelect->execute()) {
+                username = "Greska";
+                userlastname = "Greska";
+            }
+            while (pSelect->moveNext()) {
+                std::string fullname = userlastname.c_str();
+                fullname += ' ';
+                fullname += username.c_str();
+
+                users.push_back(std::make_pair(fullname, id));
+            }
+
+            //brisanje sistema iz korisnika
+            auto it = users.begin();
+            while (it != users.end()) {
+                if (it->second == (-1)) {
+                    it = users.erase(it);
+                    break;
+                }
+                else {
+                    ++it;
+                }
+            }
+            //abecedno sortiranje po prezimenu
+            std::sort(users.begin(), users.end(), [](const auto& a, const auto& b) {
+                return a.first < b.first;
+                });
+
+            _brojChat = users.size();
+            gui::DrawableString _user;
+            for (auto a : users) {
+                if (a.second == Globals::_currentUserID)
+                    _user = a.first;
+            }
 
 
+            gui::Rect imgRect(0, 0, sz.width, _visinaChata);
+            _etf.draw(imgRect, gui::Image::AspectRatio::Keep, td::HAlignment::Left);
+            _user.draw(imgRect, gui::Font::ID::SystemBold, td::ColorID::Black, td::TextAlignment::Right, td::VAlignment::Center, td::TextEllipsize::End); //no
+            gui::Shape::drawRect(imgRect, td::ColorID::Red, 5, td::LinePattern::Solid);
+            imgRect.translate(0, 110);
+            /* _user.draw(imgRect, gui::Font::ID fntID, td::ColorID clrID, td::TextAlignment hAlign = td::TextAlignment::Left, td::VAlignment vAlign = td::VAlignment::Top, td::TextEllipsize ellips = td::TextEllipsize::End); *///no
+            td::ColorID boja(td::ColorID::Maroon);
 
+            for (auto x : users) {
+                if (x.second == Globals::_currentUserID)continue;
+                _etf.draw(imgRect, gui::Image::AspectRatio::Keep, td::HAlignment::Left);
+                if (static_cast<td::ColorID>(static_cast<int>(boja) + 1) == td::ColorID::White)
+                    boja = td::ColorID::Maroon;
+                boja = static_cast<td::ColorID>(static_cast<int>(boja) + 1);
+                td::String a = x.first;
+                gui::DrawableString others = a;
+                others.draw(imgRect, gui::Font::ID::SystemNormal, td::ColorID::Black, td::TextAlignment::Right, td::VAlignment::Center, td::TextEllipsize::End);
+                gui::Shape::drawRect(imgRect, boja, 5, td::LinePattern::Solid);
+                imgRect.translate(0, 110);
+            }
+        }
 
         // pogled za SAO ------ grupa 1
         else if (Globals::isSAO) {
@@ -57,7 +127,7 @@ public:
             //CITANJE IMENA IZ BAZE
             dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT k.Ime , k.Prezime FROM Korisnici k, SAOStudentTicket p WHERE p.Indeks=k.Indeks;");
             dp::Columns pCols = pSelect->allocBindColumns(2);
-            td::String name,sname;
+            td::String name, sname;
             pCols << "Ime" << name << "Prezime" << sname;
             pSelect->execute();
 
@@ -102,13 +172,13 @@ public:
                     gui::Shape::drawRect(imgRect, td::ColorID::LightGray, td::ColorID::Green, 4, td::LinePattern::Solid);
                 }
 
-                gui::Point pt(i+5, i * 110);
+                gui::Point pt(i + 5, i * 110);
                 // gui::Rect textRect(15, 0, sz.width, 100);
                 _str.draw(pt, gui::Font::ID::SystemBold, td::ColorID::Black);
 
 
-                gui::Point pt1(i+5, 30 + i * 110);
-              //  gui::Rect textRect1(15, 0, sz.width, 100);
+                gui::Point pt1(i + 5, 30 + i * 110);
+                //  gui::Rect textRect1(15, 0, sz.width, 100);
                 _request.draw(pt1, gui::Font::ID::SystemNormal, td::ColorID::Black);
 
                 i++;
@@ -119,23 +189,89 @@ public:
 
         }
 
-
-
-            // pogled za studenta ------ grupa 2
+        // pogled za studenta ------ grupa 2
         else if (Globals::_currentUserID == 5) {
+            //  createStrings();
+            std::vector<std::pair<gui::DrawableString, td::INT4>> SubjFrames;//naziv predmeta + y koord
+            _noOfSubjects = 0;
+            gui::Size sz;
+            getSize(sz);
+            //createStrings();
+            gui::Rect r(0, 0, sz.width, 50);
+            float lw = 5;
+            // gui::Rect imgRect(450, 50, 650, 150);
+             /*for (int i = 0; i < _subjects.size(); i++) {
+                 gui::Shape::drawRect(r,td::ColorID::WhiteSmoke, td::ColorID::Navy, 4, td::LinePattern::Solid);
+                 _subjects[i].draw(pt, gui::Font::ID::SystemLargerBold, td::ColorID::Navy);
+                 pt.translate(0,50);
+                 r.translate(0, 50);
+             }*/
+            dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select a.Naziv_Predmeta AS Naziv FROM Predmet a, UpisPredmeta b WHERE b.ID_Studenta = ? AND  b.ID_Predmeta = a.ID_Predmeta");
+            dp::Params pParams(pSelect->allocParams());
+            pParams << Globals::_currentUserID;
+            dp::Columns pCols = pSelect->allocBindColumns(1);
+            td::String name;
+            // gui::DrawableString drawableName;
+            pCols << "Naziv" << name;
+            if (!pSelect->execute())
+                return;
+            while (pSelect->moveNext()) {
+                gui::DrawableString subject = name;
+                gui::Shape::drawRect(r, td::ColorID::WhiteSmoke, td::ColorID::Navy, 4, td::LinePattern::Solid);
+                subject.draw(r, gui::Font::ID::SystemLargerBold, td::ColorID::Navy);
+                //pt.translate(0, 50);
+                r.translate(0, 50);
+                //                td::INT4 tempNo = 50*_noOfSubjects;
+                //                SubjFrames.push_back(std::pair<gui::DrawableString, td::INT4>(subject, tempNo));
+                //                _noOfSubjects++;
+            }
+        }
+    };
+    void reset() {
+        reDraw();
+    };
 
-    
-    //Grupa 2
-    gui::Shape _rect;
-    td::INT4 _noOfSubjects;
-    std::vector<std::pair<td::String, td::INT4>> SubjFrames;//naziv predmeta + y koord
-   
+    // ideja za implementaciju otvaranja chata
+    // treba dodati funkciju za klik
+    // vjerovatno treba slati neki parametar i napraviti novu funkciju u middlecanvasu
+    void openMiddleCanvas() {
+        _middleCanvas->reset();
+    };
+     void measure(gui::CellInfo& ci) override
+     {
+        
+     }
+     void reMeasure(gui::CellInfo& ci) override
+     {
+         
+     }
 
-    
-    
-public:
-    void onPrimaryButtonPressed(const gui::InputDevice& inputDevice) override
-    {
+    void onPrimaryButtonPressed(const gui::InputDevice& inputDevice) override {
+        if(Globals::_currentUserID == 1 || Globals::_currentUserID == 3){
+        
+        double tempk = 0;
+
+        int a = 0;
+        td::INT4 IdUserChat;
+
+        for (int i = 0; i < users.size(); i++) {
+
+            // if (tempk < int(inputDevice.getFramePoint().y) && inputDevice.getFramePoint().y < (tempk + _visinaChata)) {
+            if (tempk < int(inputDevice.getModelPoint().y) && inputDevice.getModelPoint().y < (tempk + _visinaChata)) {
+                a = i;
+                IdUserChat = users[i].second; 
+                //IdUserChat = i; // ovo se poslije brise
+                _middleCanvas->Reset(IdUserChat);
+            }
+            tempk = tempk + _visinaChata+10;
+        }
+
+        // openMiddleCanvas();
+        if (inputDevice.getType() == gui::InputDevice::Type::Mouse && inputDevice.getButton() == gui::InputDevice::Button::Primary) {
+            // openMiddleCanvas();
+        }
+        }
+        else if (Globals::isSAO) {
         gui::Size sz;
         getSize(sz);
         const gui::Point& modelPoint = inputDevice.getModelPoint();
@@ -161,205 +297,14 @@ public:
                 
             }
         }
-    }
-    FarLeftCanvas( MiddleCanvas* canvas)
-        : _etf(":ETF")
-     //   , _middleCanvas(canvas)
-    {
-       
-        _middleCanvas = canvas;
-        
-        //Grupa 2
-//        gui::Rect r(50, 50, 200, 150);
-//        float lw = 5;
-//        _rect.createRect(r, lw);
-    }
-    
-    //Grupa2
-    //bool createStrings() {
-    //    dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select a.Naziv_Predmeta AS Naziv FROM Predmet a, UpisPredmeta b WHERE b.ID_Studenta = ? AND  b.ID_Predmeta = a.ID_Predmeta");
-    //    dp::Params pParams(pSelect->allocParams());
-    //    pParams << Globals::_currentUserID;
-    //    dp::Columns pCols = pSelect->allocBindColumns(1);
-    //    td::String name;
-    //   // gui::DrawableString drawableName;
-    //    pCols << "Naziv" << name;
-    //    if (!pSelect->execute())
-    //        return false;
-    //    _subjects.resize(0);
-    //    while (pSelect->moveNext()) {
-    //        gui::DrawableString drawableName = name;
-    //        _subjects.push_back(drawableName);
-    //    }
-    //        return false;
-    //}
-    void onDraw(const gui::Rect& rect) override {
-        const bool check = false;
-        // pogled za profesora i asistenta ------ grupa 3
-        if (Globals::_currentUserID == 1 || Globals::_currentUserID == 3) {
-            gui::Size sz;
-            getSize(sz);
-            //gui::Point cp(sz.width / 2, sz.height / 2);
-            //td::INT4 x = cp.x;
-            //td::INT4 y = cp.y
-
-            //gui::Rect imgRect(x - 15 - x / 4, y - 15 - y / 4, x + 15 + x / 4, y + 15 + y / 4);
-            //_etf.draw(imgRect, gui::Image::AspectRatio::Keep, td::HAlignment::Center, td::VAlignment::Center); //no
-
-            //--------------------------------------naredna linija zakomentarisana
-            //_pDS = dp::getMainDatabase()->createDataSet("SELECT Korisnici.ID as IDUser, Korisnici.Ime as nameUser, Korisnici.Prezime as surnameUser, Pozicija.ID as positionID, Pozicija.Naziv as roleUser, Korisnici.JMBG as jmbgUser, Korisnici.DatumUpisa as dateEUser, Korisnici.Adresa as addressUser, Korisnici.DatumRodjenja as dateBUser, Korisnici.Indeks as indeksUser FROM Korisnici, Pozicija WHERE Korisnici.PozicijaID = Pozicija.ID AND Korisnici.ID>0", dp::IDataSet::Execution::EX_MULT);
-            //ovo treba da se popuni unutrasnjost pravougaonika imenom.
-
-            
-            gui::Rect imgRect(0, 0, sz.width, 100);
-            _etf.draw(imgRect, gui::Image::AspectRatio::Keep, td::HAlignment::Left); //no
-            _etf.draw(imgRect, gui::Image::AspectRatio::Keep, td::HAlignment::Right); //no
-            gui::Shape::drawRect(imgRect, td::ColorID::Blue, 2, td::LinePattern::Dot);
-
-            for (int i = 0; i < 3; i++) {
-                imgRect.translate(0, 110);
-                _etf.draw(imgRect, gui::Image::AspectRatio::Keep, td::HAlignment::Left);
-                gui::Shape::drawRect(imgRect, td::ColorID::Red, 5, td::LinePattern::DashEq);
-            }
-        }
-        // pogled za SAO ------ grupa 1
-        else if (Globals::_currentUserID == 4) {
-
-            gui::Size sz;
-            getSize(sz);
-            gui::Point cp(sz.width / 2, sz.height / 2);
-            td::INT4 x = cp.x;
-            td::INT4 y = cp.y;
-
-            gui::Rect imgRect(x - 15 - x / 4, y - 15 - y / 4, x + 15 + x / 4, y + 15 + y / 4);
-            _etf.draw(imgRect, gui::Image::AspectRatio::Keep, td::HAlignment::Center, td::VAlignment::Center);
-        }
-        // pogled za studenta ------ grupa 2
-        else if (Globals::_currentUserID == 5) {
-         //  createStrings();
-            std::vector<std::pair<gui::DrawableString, td::INT4>> SubjFrames;//naziv predmeta + y koord
-            _noOfSubjects  = 0 ;
-            gui::Size sz;
-            getSize(sz);
-            //createStrings();
-            gui::Rect r(0, 0, sz.width, 50);
-            float lw = 5;
-           // gui::Rect imgRect(450, 50, 650, 150);
-            /*for (int i = 0; i < _subjects.size(); i++) {
-                gui::Shape::drawRect(r,td::ColorID::WhiteSmoke, td::ColorID::Navy, 4, td::LinePattern::Solid);
-                _subjects[i].draw(pt, gui::Font::ID::SystemLargerBold, td::ColorID::Navy);
-                pt.translate(0,50);
-                r.translate(0, 50);
-            }*/
-            dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select a.Naziv_Predmeta AS Naziv FROM Predmet a, UpisPredmeta b WHERE b.ID_Studenta = ? AND  b.ID_Predmeta = a.ID_Predmeta");
-            dp::Params pParams(pSelect->allocParams());
-            pParams << Globals::_currentUserID;
-            dp::Columns pCols = pSelect->allocBindColumns(1);
-            td::String name;
-            // gui::DrawableString drawableName;
-            pCols << "Naziv" << name;
-            if (!pSelect->execute())
-                return ;
-            while (pSelect->moveNext()) {
-                gui::DrawableString subject = name;
-                gui::Shape::drawRect(r, td::ColorID::WhiteSmoke, td::ColorID::Navy, 4, td::LinePattern::Solid);
-                subject.draw(r, gui::Font::ID::SystemLargerBold, td::ColorID::Navy);
-                //pt.translate(0, 50);
-                r.translate(0, 50);
-//                td::INT4 tempNo = 50*_noOfSubjects;
-//                SubjFrames.push_back(std::pair<gui::DrawableString, td::INT4>(subject, tempNo));
-//                _noOfSubjects++;
-            }
-            
-//            gui::Size sz;
-//            getSize(sz);
-//            gui::Point cp(sz.width / 2, sz.height / 2);
-//            td::INT4 x = cp.x;
-//            td::INT4 y = cp.y;
-//
-//            gui::Rect imgRect(x - 15 - x / 4, y - 15 - y / 4, x + 15 + x / 4, y + 15 + y / 4);
-//            _etf.draw(imgRect, gui::Image::AspectRatio::Keep, td::HAlignment::Center, td::VAlignment::Center);
-            
-        }
-
-        // kada nema ulogovane osobe
-       /* else if(Globals::isLogged==check){
-
-        }*/
-        else {
-
-        }
-
-    };
-
-    void reset() {
-        reDraw();
-    };
-
-    // ideja za implementaciju otvaranja chata
-    // treba dodati funkciju za klik
-    // vjerovatno treba slati neki parametar i napraviti novu funkciju u middlecanvasu
-    //void openMiddleCanvas() {
-    //    _middleCanvas->reset();
-    //};
-
-   /* void measure(CellInfo& ci) 
-
-    {
-        gui::Size imgSize;
-        _image.getSize(imgSize);
-        ci.minHor = imgSize.width;
-        ci.minVer = imgSize.height;
-        ci.nResHor = 0;
-        ci.nResVer = 0;
-    }
-    void reMeasure(CellInfo& ci) 
-
-    {
-        gui::Size imgSize;
-        _image.getSize(imgSize);
-        ci.minHor = imgSize.width;
-        ci.minVer = imgSize.height;
-        ci.nResHor = 0;
-        ci.nResVer = 0;
-    }*/
-
-
-    void onPrimaryButtonPressed(const gui::InputDevice& InputDevice) override{
-
-        if (Globals::isSAO)
-        {
-
-            gui::Size sz;
-            getSize(sz);
-  
-            const gui::Point& klik = InputDevice.getFramePoint();
-
-            if (klik.x > sz.width + 5)
-                return;
-
-            td::INT4 rbrPoruke = klik.y;
-
-            rbrPoruke = rbrPoruke / 100;
-
-            //showAlert("", std::to_string(rbrPoruke));
-
-            _middleCanvas->SetMessageNumSAO(rbrPoruke);
-
         }
     }
-
-
-    void reset() {
-        reDraw();
-    };
 
     bool getModelSize(gui::Size& modelSize) const override
     {
-        modelSize.width = 1300;
-        modelSize.height = 550;
+        modelSize.width = 500;
+        modelSize.height = (_brojChat) * 110;
         return true;
     }
-
 };
 
