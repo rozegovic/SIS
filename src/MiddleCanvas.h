@@ -127,8 +127,12 @@ public:
     }
     bool getModelSize(gui::Size& modelSize) const override
     {
-        modelSize.width = 1300;
-        modelSize.height = 550;
+        //dodati da se dinamicki pomjera
+        gui::Size sz;
+        getSize(sz);
+        
+        modelSize.width = sz.width; //
+        modelSize.height = sz.height; // mozda potrebna popravka
         return true;
     }
 };

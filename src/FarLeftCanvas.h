@@ -81,8 +81,8 @@ public:
             }
 
             gui::Rect imgRect(0, 0, sz.width, _visinaChata);
-            _user.draw(imgRect, gui::Font::ID::SystemBold, td::ColorID::Black, td::TextAlignment::Center, td::VAlignment::Center, td::TextEllipsize::End); //no
             _etf.draw(imgRect, gui::Image::AspectRatio::Keep, td::HAlignment::Left);
+            _user.draw(imgRect, gui::Font::ID::SystemBold, td::ColorID::Black, td::TextAlignment::Center, td::VAlignment::Center, td::TextEllipsize::End); //no
             gui::Shape::drawRect(imgRect, td::ColorID::Red, 5, td::LinePattern::Solid);
             imgRect.translate(0, 110);
             /* _user.draw(imgRect, gui::Font::ID fntID, td::ColorID clrID, td::TextAlignment hAlign = td::TextAlignment::Left, td::VAlignment vAlign = td::VAlignment::Top, td::TextEllipsize ellips = td::TextEllipsize::End); *///no
@@ -144,24 +144,14 @@ public:
     void openMiddleCanvas() {
         _middleCanvas->reset();
     };
-    /* void measure(CellInfo& ci)
+     void measure(gui::CellInfo& ci) override
      {
-         gui::Size imgSize;
-         _image.getSize(imgSize);
-         ci.minHor = imgSize.width;
-         ci.minVer = imgSize.height;
-         ci.nResHor = 0;
-         ci.nResVer = 0;
+        
      }
-     void reMeasure(CellInfo& ci)
+     void reMeasure(gui::CellInfo& ci) override
      {
-         gui::Size imgSize;
-         _image.getSize(imgSize);
-         ci.minHor = imgSize.width;
-         ci.minVer = imgSize.height;
-         ci.nResHor = 0;
-         ci.nResVer = 0;
-     }*/
+         
+     }
 
 
     void onPrimaryButtonPressed(const gui::InputDevice& inputDevice) override {
