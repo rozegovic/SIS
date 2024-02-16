@@ -34,7 +34,8 @@ public:
     void onDraw(const gui::Rect& rect) override {
         const bool check = false;
         // pogled za profesora i asistenta ------ grupa 3
-        if (Globals::_currentUserID == 1 || Globals::_currentUserID == 3) {
+        if ((Globals::_currentUserID == 1 || Globals::_currentUserID == 3) ) {
+            users.resize(0);
             gui::Size sz;
             getSize(sz);
             dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT ID, Prezime, Ime FROM Korisnici");
@@ -66,27 +67,37 @@ public:
                     ++it;
                 }
             }
+            //abecedno sortiranje po prezimenu
+            std::sort(users.begin(), users.end(), [](const auto& a, const auto& b) {
+                return a.first < b.first;
+            });
 
-
+            _brojChat = users.size();
             gui::DrawableString _user;
             for (auto a : users) {
                 if(a.second==Globals::_currentUserID)
                     _user=a.first;
             }
 
-            gui::Rect imgRect(0, 0, sz.width, 100);
+            gui::Rect imgRect(0, 0, sz.width, _visinaChata);
             _user.draw(imgRect, gui::Font::ID::SystemBold, td::ColorID::Black, td::TextAlignment::Center, td::VAlignment::Center, td::TextEllipsize::End); //no
-           /* _user.draw(imgRect, gui::Font::ID fntID, td::ColorID clrID, td::TextAlignment hAlign = td::TextAlignment::Left, td::VAlignment vAlign = td::VAlignment::Top, td::TextEllipsize ellips = td::TextEllipsize::End); *///no
-            gui::Shape::drawRect(imgRect, td::ColorID::Blue, 2, td::LinePattern::Dot);
-
+            _etf.draw(imgRect, gui::Image::AspectRatio::Keep, td::HAlignment::Left);
+            gui::Shape::drawRect(imgRect, td::ColorID::Red, 5, td::LinePattern::Solid);
+            imgRect.translate(0, 110);
+            /* _user.draw(imgRect, gui::Font::ID fntID, td::ColorID clrID, td::TextAlignment hAlign = td::TextAlignment::Left, td::VAlignment vAlign = td::VAlignment::Top, td::TextEllipsize ellips = td::TextEllipsize::End); *///no
+            td::ColorID boja(td::ColorID::Maroon);
 
             for (auto x:users) {
                 if (x.second == Globals::_currentUserID)continue;
-                imgRect.translate(0, 110);
+                _etf.draw(imgRect, gui::Image::AspectRatio::Keep, td::HAlignment::Left);
+                if (static_cast<td::ColorID>(static_cast<int>(boja) + 1) == td::ColorID::White)
+                    boja = td::ColorID::Maroon;
+                boja = static_cast<td::ColorID>(static_cast<int>(boja) + 1);
                 td::String a = x.first;
                 gui::DrawableString others = a;
                 others.draw(imgRect, gui::Font::ID::SystemNormal, td::ColorID::Black, td::TextAlignment::Center, td::VAlignment::Center, td::TextEllipsize::End);
-                gui::Shape::drawRect(imgRect, td::ColorID::Red, 5, td::LinePattern::DashEq);
+                gui::Shape::drawRect(imgRect, boja, 5, td::LinePattern::Solid);
+                imgRect.translate(0, 110);
             }
         }
         // pogled za SAO ------ grupa 1
@@ -158,7 +169,7 @@ public:
         int a = 0;
         td::INT4 IdUserChat;
 
-        for (int i = 0; i < _brojChat + 1; i++) {
+        for (int i = 0; i < users.size(); i++) {
 
             // if (tempk < int(inputDevice.getFramePoint().y) && inputDevice.getFramePoint().y < (tempk + _visinaChata)) {
             if (tempk < int(inputDevice.getModelPoint().y) && inputDevice.getModelPoint().y < (tempk + _visinaChata)) {
@@ -167,7 +178,7 @@ public:
                 //IdUserChat = i; // ovo se poslije brise
                 _middleCanvas->Reset(IdUserChat);
             }
-            tempk = tempk + _visinaChata;
+            tempk = tempk + _visinaChata+10;
         }
 
         // openMiddleCanvas();
@@ -179,7 +190,7 @@ public:
     bool getModelSize(gui::Size& modelSize) const override
     {
         modelSize.width = 500;
-        modelSize.height = (_brojChat + 1) * 110;
+        modelSize.height = (_brojChat) * 110;
         return true;
     }
 };
