@@ -32,21 +32,27 @@ public:
         gui::Size sz;
         getSize(sz);
         const gui::Point& modelPoint = inputDevice.getModelPoint();
-        std::vector<std::pair<td::String, gui::Rect>> SubjRects;//stvori niz rectova za sve predmete
+        std::vector<std::pair<gui::DrawableString, gui::Rect>> SubjRects;//stvori niz rectova za sve predmete
         for(int i = 0; i < SubjFrames.size(); i++){
             td::INT4 p2 = SubjFrames.at(i).second;
             gui::Rect temp(0, p2, sz.width, 50);
             SubjRects.at(i).second = temp;
             SubjRects.at(i).first = SubjFrames.at(i).first;
         }
-        if(SubjRects.at(0).second.contains(modelPoint)){
-        gui::Window* a = getParentWindow();
-            /*MainWindow* mw = a;//??
-             a->showTimeSlotView(5);//Funkcija iz MainWindow da otvori ovaj View???
-             
-             */
-            
-            
+        for(int i = 0; i < SubjRects.size(); i++){
+            if(SubjRects.at(i).second.contains(modelPoint)){
+               gui::DrawableString subject1 = SubjRects.at(i).first;
+                gui::Window* a = getParentWindow();
+                /*MainWindow* mw = a;//??
+                 a->showTimeSlotView(5);//Funkcija iz MainWindow da otvori ovaj View???
+                 
+                 */
+//                gui::Rect r1(0, 50 * _noOfSubjects, 20, 20);
+//                gui::Shape::drawRect(r1, td::ColorID::WhiteSmoke, td::ColorID::Navy, 4, td::LinePattern::Solid);
+//                subject1.draw(r1, gui::Font::ID::SystemLargerBold, td::ColorID::Navy);
+                
+                
+            }
         }
     }
     FarLeftCanvas( MiddleCanvas* canvas)
@@ -123,7 +129,7 @@ public:
         // pogled za studenta ------ grupa 2
         else if (Globals::_currentUserID == 5) {
          //  createStrings();
-            std::vector<std::pair<td::String, td::INT4>> SubjFrames;//naziv predmeta + y koord
+            std::vector<std::pair<gui::DrawableString, td::INT4>> SubjFrames;//naziv predmeta + y koord
             _noOfSubjects  = 0 ;
             gui::Size sz;
             getSize(sz);
@@ -152,9 +158,9 @@ public:
                 subject.draw(r, gui::Font::ID::SystemLargerBold, td::ColorID::Navy);
                 //pt.translate(0, 50);
                 r.translate(0, 50);
-                td::INT4 tempNo = 50*_noOfSubjects;
-                SubjFrames.push_back(std::pair<td::String, td::INT4>(name, tempNo));
-                _noOfSubjects++;
+//                td::INT4 tempNo = 50*_noOfSubjects;
+//                SubjFrames.push_back(std::pair<gui::DrawableString, td::INT4>(subject, tempNo));
+//                _noOfSubjects++;
             }
             
 //            gui::Size sz;
