@@ -21,40 +21,13 @@ protected:
     //Grupa 2
     gui::Shape _rect;
     td::INT4 _noOfSubjects;
-    std::vector<std::pair<td::String, td::INT4>> SubjFrames;//naziv predmeta + y koord
+    std::vector<td::String> subjects;
    
 
     
     
 public:
-    void onPrimaryButtonPressed(const gui::InputDevice& inputDevice) override
-    {
-        gui::Size sz;
-        getSize(sz);
-        const gui::Point& modelPoint = inputDevice.getModelPoint();
-        std::vector<std::pair<gui::DrawableString, gui::Rect>> SubjRects;//stvori niz rectova za sve predmete
-        for(int i = 0; i < SubjFrames.size(); i++){
-            td::INT4 p2 = SubjFrames.at(i).second;
-            gui::Rect temp(0, p2, sz.width, 50);
-            SubjRects.at(i).second = temp;
-            SubjRects.at(i).first = SubjFrames.at(i).first;
-        }
-        for(int i = 0; i < SubjRects.size(); i++){
-            if(SubjRects.at(i).second.contains(modelPoint)){
-               gui::DrawableString subject1 = SubjRects.at(i).first;
-                gui::Window* a = getParentWindow();
-                /*MainWindow* mw = a;//??
-                 a->showTimeSlotView(5);//Funkcija iz MainWindow da otvori ovaj View???
-                 
-                 */
-//                gui::Rect r1(0, 50 * _noOfSubjects, 20, 20);
-//                gui::Shape::drawRect(r1, td::ColorID::WhiteSmoke, td::ColorID::Navy, 4, td::LinePattern::Solid);
-//                subject1.draw(r1, gui::Font::ID::SystemLargerBold, td::ColorID::Navy);
-                
-                
-            }
-        }
-    }
+
     FarLeftCanvas( MiddleCanvas* canvas)
         : _etf(":ETF")
      //   , _middleCanvas(canvas)
@@ -129,8 +102,8 @@ public:
         // pogled za studenta ------ grupa 2
         else if (Globals::_currentUserID == 5) {
          //  createStrings();
-            std::vector<std::pair<gui::DrawableString, td::INT4>> SubjFrames;//naziv predmeta + y koord
-            _noOfSubjects  = 0 ;
+            //std::vector<td::INT4> SubjFrames;// rbr predmeta
+            //_noOfSubjects  = 0 ;
             gui::Size sz;
             getSize(sz);
             //createStrings();
@@ -158,9 +131,8 @@ public:
                 subject.draw(r, gui::Font::ID::SystemLargerBold, td::ColorID::Navy);
                 //pt.translate(0, 50);
                 r.translate(0, 50);
-//                td::INT4 tempNo = 50*_noOfSubjects;
-//                SubjFrames.push_back(std::pair<gui::DrawableString, td::INT4>(subject, tempNo));
-//                _noOfSubjects++;
+                subjects.push_back(name);
+
             }
             
 //            gui::Size sz;
@@ -181,6 +153,20 @@ public:
 
         }
     };
+    void onPrimaryButtonPressed(const gui::InputDevice& inputDevice) override//zasto se ne poziva
+    {
+        gui::Size sz;
+        getSize(sz);
+        const gui::Point& modelPoint = inputDevice.getFramePoint();
+        td::INT4 rbr = modelPoint.y/50; //visina svakog pravougaonika je 50, pa ce ovo vratiti rbr (pocevsi od 0)?
+        
+        showAlert("", subjects.at(rbr));//test citanja
+       
+                
+                
+          
+    }
+
 
     void reset() {
         reDraw();
@@ -211,4 +197,5 @@ public:
         ci.nResHor = 0;
         ci.nResVer = 0;
     }*/
+    
 };
