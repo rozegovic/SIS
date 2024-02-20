@@ -27,7 +27,7 @@
 #include "ViewTimeSlot.h"
 #include "ViewGradeLabHomework.h"
 #include "CanvasETF.h"
-#include "ViewTicketFORSAO.h"
+#include "ViewTicketForSAO.h"
 
 
 MainWindow::MainWindow()

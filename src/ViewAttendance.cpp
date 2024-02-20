@@ -439,7 +439,7 @@ bool ViewAttendance::CheckTime(){
         return false;
     return true;
 }
-/*void ViewAttendance::AttendanceReport(const gui::Image* pImage){
+void ViewAttendance::AttendanceReport(const gui::Image* pImage){
     
     dp::IDatabase* pDB = dp::getMainDatabase();
 
@@ -508,8 +508,8 @@ bool ViewAttendance::CheckTime(){
     
 
     
-}*/
-void ViewAttendance::AttendanceReport(const gui::Image* pImage){
+}
+/*void ViewAttendance::AttendanceReport(const gui::Image* pImage){
     dp::IDatabase* pDB = dp::getMainDatabase();
 
     DocumentData docData(_SubjectID);
@@ -580,4 +580,4 @@ void ViewAttendance::AttendanceReport(const gui::Image* pImage){
 
     }
 }
-
+*/
