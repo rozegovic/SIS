@@ -88,11 +88,16 @@ public:
                 });
 
             _brojChat = users.size();
-            gui::DrawableString _user;
-            for (auto a : users) {
+            std::sort(users.begin(), users.end(), [&](const auto& a, const auto& b) {
                 if (a.second == Globals::_currentUserID)
-                    _user = a.first;
-            }
+                    return true; // a is the current user
+                if (b.second == Globals::_currentUserID)
+                    return false; // b is the current user
+                return false; // Otherwise, keep the original order
+                });
+
+            gui::DrawableString _user;
+            _user = users[0].first;
 
 
             gui::Rect imgRect(0, 0, sz.width, _visinaChata);
