@@ -83,8 +83,19 @@ public:
                 }
             }
             //abecedno sortiranje po prezimenu
-            std::sort(users.begin(), users.end(), [](const auto& a, const auto& b) {
+           /* std::sort(users.begin(), users.end(), [](const auto& a, const auto& b) {
                 return a.first < b.first;
+                });*/
+            std::sort(users.begin(), users.end(), [](const auto& a, const auto& b) {
+                    std::string lowerStr1, lowerStr2;
+                    td::String str1 = a.first, str2= b.first;
+                    for (char c : str1) {
+                        lowerStr1 += std::tolower(c);
+                    }
+                    for (char c : str2) {
+                        lowerStr2 += std::tolower(c);
+                    }
+                    return lowerStr1 < lowerStr2;
                 });
 
             _brojChat = users.size();
