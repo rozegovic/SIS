@@ -90,10 +90,10 @@ public:
             _brojChat = users.size();
             std::sort(users.begin(), users.end(), [&](const auto& a, const auto& b) {
                 if (a.second == Globals::_currentUserID)
-                    return true; // a is the current user
+                    return true; 
                 if (b.second == Globals::_currentUserID)
-                    return false; // b is the current user
-                return false; // Otherwise, keep the original order
+                    return false;
+                return false; 
                 });
 
             gui::DrawableString _user;
