@@ -267,7 +267,7 @@ public:
         for (int i = 0; i < users.size(); i++) {
 
             // if (tempk < int(inputDevice.getFramePoint().y) && inputDevice.getFramePoint().y < (tempk + _visinaChata)) {
-            if (tempk < int(inputDevice.getModelPoint().y) && inputDevice.getModelPoint().y < (tempk + _visinaChata)) {
+            if (tempk < inputDevice.getModelPoint().y && inputDevice.getModelPoint().y < (tempk + _visinaChata)) {
                 a = i;
                 IdUserChat = users[i].second; 
                 //IdUserChat = i; // ovo se poslije brise
