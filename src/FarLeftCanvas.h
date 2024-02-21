@@ -182,6 +182,7 @@ public:
                 pt.translate(0,50);
                 r.translate(0, 50);
             }*/
+
             dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select a.Naziv_Predmeta AS Naziv, a.ID_Predmeta as ID FROM Predmet a, UpisPredmeta b WHERE b.ID_Studenta = ? AND  b.ID_Predmeta = a.ID_Predmeta");
             dp::Params pParams(pSelect->allocParams());
             pParams << Globals::_currentUserID;
@@ -203,7 +204,7 @@ public:
                 subjects.push_back(ID);
 
             }
-            
+            _middleCanvas->setSubjectID(0);    //
 //            gui::Size sz;
 //            getSize(sz);
 //            gui::Point cp(sz.width / 2, sz.height / 2);
@@ -228,13 +229,18 @@ public:
         getSize(sz);
         const gui::Point& modelPoint = inputDevice.getFramePoint();
         td::INT4 rbr = modelPoint.y/50; //visina svakog pravougaonika je 50, pa ce ovo vratiti rbr (pocevsi od 0)?
-        //vektor subjects cuva sve IDs predmeta koji su ispisani, i to redom kako su ispisani. Da dobijete ID kliknutog predmeta ide subjects.at(rbr), kao u aleretu ispod
+        //vektor subjects cuva sve IDs predmeta koji su ispisani, i to redom kako su ispisani. 
+        // Da dobijete ID kliknutog predmeta ide subjects.at(rbr), kao u alertu ispod
         std::cout<<subjects.size();
         if(rbr > subjects.size())
             return;
+        td::INT4 subjectID = subjects.at(rbr);
+        _middleCanvas->setSubjectID(subjectID);
+        
+        //_middleCanvas->onDraw();
         showAlert("", std::to_string(subjects.at(rbr)));
                 
-          
+           
     }
 
 
