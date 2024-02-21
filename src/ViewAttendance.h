@@ -86,6 +86,7 @@ protected:
     void saveData();
     void saveDataUpdate();
     void SetCurrentSubject();
+    void deleteRow(td::INT4 ID_Termina);
     //void SendAddMsg();
     void SendMsg(td::INT4 MsgType);
     bool CheckTime();

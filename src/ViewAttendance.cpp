@@ -215,6 +215,26 @@ bool ViewAttendance::onChangedSelection(gui::TableEdit* pTE) {
     }
     return false;
 }
+
+void ViewAttendance::deleteRow(td::INT4 ID_Termina)
+{
+    dp::IStatementPtr pDelStudent(dp::getMainDatabase()->createStatement("DELETE FROM TerminiStudenti WHERE ID_Termina = ?"));// DA NE OSTANE NIKO PRIJAVLJEN NA TERMINU KOJI NE POSTOJI
+    dp::Params par(pDelStudent->allocParams());
+    par << ID_Termina;
+    dp::Transaction tr1(dp::getMainDatabase());
+    if (!pDelStudent->execute())
+        return;
+    tr1.commit();
+    dp::IStatementPtr pDel(dp::getMainDatabase()->createStatement("DELETE FROM Termini WHERE ID = ?"));
+    dp::Params par1(pDel->allocParams());
+    dp::Transaction tr2(dp::getMainDatabase());
+    par1 << ID_Termina;
+    if (!pDel->execute())
+        return;
+    tr2.commit();
+}
+
+
 void ViewAttendance::saveData()
 {
     dp::IStatementPtr pInsStat(dp::getMainDatabase()->createStatement("INSERT INTO Termini ( Dan, TipPredavanjaID, Predmet_ID, Vrijeme,Max_br_pol,Br_prijavljenih) VALUES(?,?,?,?,?,?)"));
@@ -227,7 +247,7 @@ void ViewAttendance::saveData()
     Tr_broj = 0;
     td::Variant val;
     parDS << dp::toNCh(day, 30) << tip << predmet << t<<Max_br_pol<<Tr_broj;
-    dp::IStatementPtr pDel(dp::getMainDatabase()->createStatement("DELETE FROM Termini"));
+    dp::IStatementPtr pDel(dp::getMainDatabase()->createStatement("DELETE FROM Termini")); 
     if (!pDel->execute())
         return;
     size_t nRows = _pDS->getNumberOfRows();
@@ -285,11 +305,13 @@ bool ViewAttendance::onClick(gui::Button* pBtn)
     {
         int iRow = _table.getFirstSelectedRow();
         if (iRow < 0)
-            return true;
+            return false;
+        auto row = _pDS->getRow(iRow);
+        td::INT4 id_termina = row[3].i4Val();
         _table.beginUpdate();
         _table.removeRow(iRow);
         _table.endUpdate();
-        saveData();
+        deleteRow(id_termina);
         if(CheckTime())
             SendMsg(2);
        // _table.reload();
