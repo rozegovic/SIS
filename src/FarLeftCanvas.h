@@ -166,6 +166,7 @@ public:
         }
         // pogled za studenta ------ grupa 2
         else if (Globals::_currentUserID == 5) {
+            subjects.clear();
          //  createStrings();
             //std::vector<td::INT4> SubjFrames;// rbr predmeta
             //_noOfSubjects  = 0 ;
@@ -227,7 +228,10 @@ public:
         getSize(sz);
         const gui::Point& modelPoint = inputDevice.getFramePoint();
         td::INT4 rbr = modelPoint.y/50; //visina svakog pravougaonika je 50, pa ce ovo vratiti rbr (pocevsi od 0)?
-        
+        //vektor subjects cuva sve IDs predmeta koji su ispisani, i to redom kako su ispisani. Da dobijete ID kliknutog predmeta ide subjects.at(rbr), kao u aleretu ispod
+        std::cout<<subjects.size();
+        if(rbr > subjects.size())
+            return;
         showAlert("", std::to_string(subjects.at(rbr)));
                 
           
@@ -235,6 +239,9 @@ public:
 
 
     void reset() {
+        if(Globals::isStudent){
+            subjects.clear();
+        }
         reDraw();
     };
 
