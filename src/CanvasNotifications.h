@@ -37,6 +37,8 @@ public:
                 "  FROM Messages a "
                 "  JOIN MsgReceivers mr ON mr.MsgID = a.ID "
                 "   WHERE mr.UserID = ? ");
+            //AND Messages.Subject <> 'chat';
+            // potencijalno dodati ako ne treba ucitavati notifikaciju za svaku poruku poslanu
             dp::Params parDS(pSelect->allocParams());
             parDS << Globals::_currentUserID;
             dp::Columns pCols = pSelect->allocBindColumns(2);

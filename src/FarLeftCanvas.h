@@ -39,7 +39,7 @@ protected:
 public:
     FarLeftCanvas(MiddleCanvas* canvas)
         : _etf(":defaultUuser")
-        , gui::Canvas({ gui::InputDevice::Event::PrimaryClicks })
+        , gui::Canvas({ gui::InputDevice::Event::PrimaryClicks, gui::InputDevice::Event::Keyboard })
         , _brojChat(50)  // --------------------------problem sa ovim 
         , _visinaChata(100)
         {
@@ -49,7 +49,7 @@ public:
     void onDraw(const gui::Rect& rect) override {
         const bool check = false;
         // pogled za profesora i asistenta ------ grupa 3
-        if ((Globals::_currentUserID == 1 || Globals::_currentUserID == 3)) {
+        if ((Globals::_currentUserRole == 1 || Globals::_currentUserRole == 3)) {
             users.resize(0);
             gui::Size sz;
             getSize(sz);
@@ -204,7 +204,7 @@ public:
         }
 
         // pogled za studenta ------ grupa 2
-        else if (Globals::_currentUserID == 5) {
+        else if (Globals::_currentUserRole == 5) {
             //  createStrings();
             std::vector<std::pair<gui::DrawableString, td::INT4>> SubjFrames;//naziv predmeta + y koord
             _noOfSubjects = 0;
@@ -268,7 +268,7 @@ public:
      }
 
     void onPrimaryButtonPressed(const gui::InputDevice& inputDevice) override {
-        if(Globals::_currentUserID == 1 || Globals::_currentUserID == 3){
+        if(Globals::_currentUserRole == 1 || Globals::_currentUserRole == 3){
         
         double tempk = 0;
 
@@ -282,7 +282,7 @@ public:
                 a = i;
                 IdUserChat = users[i].second; 
                 //IdUserChat = i; // ovo se poslije brise
-                _middleCanvas->Reset(IdUserChat);
+                _middleCanvas->Reset(IdUserChat, users[i].first);
             }
             tempk = tempk + _visinaChata+10;
         }
@@ -327,5 +327,8 @@ public:
         modelSize.height = (_brojChat) * 110;
         return true;
     }
+
+
+
 };
 
