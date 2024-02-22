@@ -238,7 +238,7 @@ public:
         _middleCanvas->setSubjectID(subjectID);
         
         //_middleCanvas->onDraw();
-        showAlert("", std::to_string(subjects.at(rbr)));
+       // showAlert("", std::to_string(subjects.at(rbr)));
                 
            
     }
