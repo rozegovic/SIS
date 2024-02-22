@@ -150,7 +150,7 @@ bool ViewAttendance::onChangedSelection(gui::ComboBox* pCmb)
 void ViewAttendance::populateData()
 {
     auto pDB = dp::getMainDatabase();
-    _pDS = pDB->createDataSet("SELECT a.Dan AS dan, a.Vrijeme AS vrijeme, b.Naziv AS Tip, b.ID as ID, a.Max_br_pol as MaxBroj, a.Br_prijavljenih as brP FROM Termini a, TipPredavanja b WHERE a.TipPredavanjaID = b.ID and a.Predmet_ID = ?", dp::IDataSet::Execution::EX_MULT);
+    _pDS = pDB->createDataSet("SELECT a.Dan AS dan, a.Vrijeme AS vrijeme, b.Naziv AS Tip, b.ID as ID, a.Max_br_pol as MaxBroj, a.Br_prijavljenih as brP, a.ID as IDterm FROM Termini a, TipPredavanja b WHERE a.TipPredavanjaID = b.ID and a.Predmet_ID = ?", dp::IDataSet::Execution::EX_MULT);
     
     dp::Params parDS(_pDS->allocParams());
     //td::INT4 IDPredmeta = Globals::_IDSubjectSelection;
@@ -158,8 +158,8 @@ void ViewAttendance::populateData()
     //u parDS ce se ucitavati Globals::CurrentSubject
     parDS << _SubjectID;
     
-    dp::DSColumns cols(_pDS->allocBindColumns(6));
-    cols << "dan" << td::string8 << "vrijeme" << td::time<< "Tip" << td::string8 << "ID" << td::int4 << "MaxBroj" << td::int4<<"brP"<<td::int4;
+    dp::DSColumns cols(_pDS->allocBindColumns(7));
+    cols << "dan" << td::string8 << "vrijeme" << td::time<< "Tip" << td::string8 << "ID" << td::int4 << "MaxBroj" << td::int4<<"brP"<<td::int4<<"IDterm"<<td::int4;
 
     if (!_pDS->execute())
     {
@@ -303,15 +303,18 @@ bool ViewAttendance::onClick(gui::Button* pBtn)
 {
     if (pBtn == &_btnDelete)
     {
+       
         int iRow = _table.getFirstSelectedRow();
         if (iRow < 0)
             return false;
         auto row = _pDS->getRow(iRow);
-        td::INT4 id_termina = row[3].i4Val();
+        td::INT4 id_termina = row[6].i4Val();
         _table.beginUpdate();
         _table.removeRow(iRow);
         _table.endUpdate();
         deleteRow(id_termina);
+        _subject->getDay().clean();
+        _subject->populateDayCombo(_subject->getDay());
         if(CheckTime())
             SendMsg(2);
        // _table.reload();
@@ -374,6 +377,8 @@ bool ViewAttendance::onClick(gui::Button* pBtn)
         _table.push_back();
         _table.endUpdate();
         saveData();
+        _table.reload();
+        _table.selectRow(_pDS->getNumberOfRows()-1);
         _subject->getDay().clean();
         _subject->populateDayCombo(_subject->getDay());
         if(CheckTime())
