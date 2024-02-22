@@ -8,7 +8,8 @@
 class MiddleCanvas : public gui::Canvas
 {
 private:
-   td::INT4 predmetID = 0; // grupa 2 
+   td::INT4 predmetID = -1; // grupa 2 
+   td::String _subjectname;
 protected:
     gui::Image _etf;
 
@@ -21,6 +22,9 @@ public:
 
     void setSubjectID(td::INT4 id) { //grupa 2 - potreban subjectID
        predmetID = id;  //linije 53, 54
+    }
+    void setSubjectName(td::String ime) {
+        _subjectname = ime;
     }
 
     void onDraw(const gui::Rect& rect) override {
@@ -50,32 +54,31 @@ public:
         // pogled za studenta ------ grupa 2 ------ ako ne koristite mozete samo ostaviti da bude nacrtan etf znak
         else if (Globals::_currentUserID == 5) {
 
-            td::INT4 broj = predmetID;  //uzima random vrijednost, a u funkciji setSubjectID dobro ocita
-          //  td::INT4 broj = 1;  //  1 za provjeru select-a
-
+            //td::INT4 broj = predmetID;  //uzima random vrijednost, a u funkciji setSubjectID dobro ocita
+            //td::INT4 broj = 1;  //  1 za provjeru select-a
             gui::Size sz;
             getSize(sz);
             gui::Point cp(sz.width /2, sz.height / 2);
             cp.x = 10 ;
             cp.y = 10 ;
             td::String text, text1, text2, text3, text4;
-            text2 = "Odaberite predmet da biste vidjeli detalje ";
             text = "Detalji o odabranom predmetu "; 
             
             /* funkcije:
             static void draw(const td::String& txt, const gui::Rect& r, gui::Font::ID fntID, td::ColorID clrID, td::TextAlignment hAlign = td::TextAlignment::Left, td::VAlignment vAlign = td::VAlignment::Top,  td::TextEllipsize ellips = td::TextEllipsize::End);
             static void draw(const td::String& txt, const gui::Point& pt, gui::Font::ID fntID, td::ColorID clrID);
             */
-            if (broj == 0) { //ovaj text2 bi trebao da piše čim se student uloguje, prije nego odabere neki predmet
-                gui::DrawableString::draw(text2, cp, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::LightSeaGreen);
+            if (predmetID == -1) { //ovaj text2 bi trebao da piše čim se student uloguje, prije nego odabere neki predmet
+                gui::DrawableString text1 = "Odaberite predmet da biste vidjeli detalje ";
+                text1.draw(cp, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::LightSeaGreen);
             }
             else {
-                gui::DrawableString::draw(text, cp, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::LightSeaGreen);
+                gui::DrawableString text2 = "Predmet: ";
+                text2.draw(cp, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::LightSeaGreen);
                 int razmak = 40;
                 cp.y = cp.y + razmak; // trebalo bi jos + visina slova prethodnog
                 // + sta ako tekst zauzima npr 5 redova(teoretski )...
-                text = "Predmet: ";
-                gui::DrawableString::draw(text, cp, gui::Font::ID::SystemLargerBold, td::ColorID::Coral);
+/*                gui::DrawableString::draw(text, cp, gui::Font::ID::SystemLargerBold, td::ColorID::Coral);
                 dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("Select Naziv_Predmeta AS Naziv FROM Predmet WHERE ID_Predmeta = ?");
                 dp::Params pParams(pSelect->allocParams());
                 pParams << broj;
@@ -83,9 +86,9 @@ public:
                 pCols << "Naziv" << text1;
                 if (!pSelect->execute())
                     return;
-                while (pSelect->moveNext());                                            
+                while (pSelect->moveNext());    */                                        
                 cp.x = cp.x + text.length() + 55;
-                gui::DrawableString::draw(text1, cp, gui::Font::ID::SystemLargerBold, td::ColorID::Gold);
+                gui::DrawableString::draw(_subjectname, cp, gui::Font::ID::SystemLargerBold, td::ColorID::Gold);
             
                 razmak += 5;
                 cp.y += razmak;
@@ -94,7 +97,7 @@ public:
                 gui::DrawableString::draw(text, cp, gui::Font::ID::SystemLargerBold, td::ColorID::Coral);
                 dp::IStatementPtr pSelect1 = dp::getMainDatabase()->createStatement("Select a.Ime AS ime, a.Prezime AS prezime FROM Korisnici a, PredmetStaff b WHERE b.ID_Korisnika = a.ID AND  b.ID_Predmeta = ?");
                 dp::Params pParams1(pSelect1->allocParams());
-                pParams1 << broj;
+                pParams1 << predmetID;
                 dp::Columns pCols1 = pSelect1->allocBindColumns(2);
                 td::String a, b;
                 pCols1 << "ime" << a << "prezime" << b;
@@ -114,7 +117,7 @@ public:
                 gui::DrawableString::draw(text, cp, gui::Font::ID::SystemLargerBold, td::ColorID::Coral);
                 dp::IStatementPtr pSelect2 = dp::getMainDatabase()->createStatement("SELECT Naziv_Aktivnosti AS Naziv FROM Aktivnosti WHERE ID_Predmeta = ?");
                 dp::Params pParams2(pSelect2->allocParams());
-                pParams2 << broj;
+                pParams2 << predmetID;
                 dp::Columns pCols2 = pSelect2->allocBindColumns(1);
                 pCols2 << "Naziv" << text3;
                 if (!pSelect2->execute())
