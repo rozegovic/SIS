@@ -39,7 +39,7 @@ protected:
 public:
     FarLeftCanvas(MiddleCanvas* canvas)
         : _etf(":defaultUuser")
-        , gui::Canvas({ gui::InputDevice::Event::PrimaryClicks })
+        , gui::Canvas({ gui::InputDevice::Event::PrimaryClicks, gui::InputDevice::Event::Keyboard })
         , _brojChat(50)  // --------------------------problem sa ovim 
         , _visinaChata(100)
         {
@@ -49,7 +49,7 @@ public:
     void onDraw(const gui::Rect& rect) override {
         const bool check = false;
         // pogled za profesora i asistenta ------ grupa 3
-        if ((Globals::_currentUserID == 1 || Globals::_currentUserID == 3)) {
+        if ((Globals::_currentUserRole == 1 || Globals::_currentUserRole == 3)) {
             users.resize(0);
             gui::Size sz;
             getSize(sz);
@@ -83,16 +83,32 @@ public:
                 }
             }
             //abecedno sortiranje po prezimenu
-            std::sort(users.begin(), users.end(), [](const auto& a, const auto& b) {
+           /* std::sort(users.begin(), users.end(), [](const auto& a, const auto& b) {
                 return a.first < b.first;
+                });*/
+            std::sort(users.begin(), users.end(), [](const auto& a, const auto& b) {
+                    std::string lowerStr1, lowerStr2;
+                    td::String str1 = a.first, str2= b.first;
+                    for (char c : str1) {
+                        lowerStr1 += std::tolower(c);
+                    }
+                    for (char c : str2) {
+                        lowerStr2 += std::tolower(c);
+                    }
+                    return lowerStr1 < lowerStr2;
                 });
 
             _brojChat = users.size();
-            gui::DrawableString _user;
-            for (auto a : users) {
+            std::sort(users.begin(), users.end(), [&](const auto& a, const auto& b) {
                 if (a.second == Globals::_currentUserID)
-                    _user = a.first;
-            }
+                    return true; 
+                if (b.second == Globals::_currentUserID)
+                    return false;
+                return false; 
+                });
+
+            gui::DrawableString _user;
+            _user = users[0].first;
 
 
             gui::Rect imgRect(0, 0, sz.width, _visinaChata);
@@ -188,7 +204,7 @@ public:
         }
 
         // pogled za studenta ------ grupa 2
-        else if (Globals::_currentUserID == 5) {
+        else if (Globals::_currentUserRole == 5) {
             //  createStrings();
             std::vector<std::pair<gui::DrawableString, td::INT4>> SubjFrames;//naziv predmeta + y koord
             _noOfSubjects = 0;
@@ -252,7 +268,7 @@ public:
      }
 
     void onPrimaryButtonPressed(const gui::InputDevice& inputDevice) override {
-        if(Globals::_currentUserID == 1 || Globals::_currentUserID == 3){
+        if(Globals::_currentUserRole == 1 || Globals::_currentUserRole == 3){
         
         double tempk = 0;
 
@@ -262,11 +278,11 @@ public:
         for (int i = 0; i < users.size(); i++) {
 
             // if (tempk < int(inputDevice.getFramePoint().y) && inputDevice.getFramePoint().y < (tempk + _visinaChata)) {
-            if (tempk < int(inputDevice.getModelPoint().y) && inputDevice.getModelPoint().y < (tempk + _visinaChata)) {
+            if (tempk < inputDevice.getModelPoint().y && inputDevice.getModelPoint().y < (tempk + _visinaChata)) {
                 a = i;
                 IdUserChat = users[i].second; 
                 //IdUserChat = i; // ovo se poslije brise
-                _middleCanvas->Reset(IdUserChat);
+                _middleCanvas->Reset(IdUserChat, users[i].first);
             }
             tempk = tempk + _visinaChata+10;
         }
@@ -311,5 +327,8 @@ public:
         modelSize.height = (_brojChat) * 110;
         return true;
     }
+
+
+
 };
 
