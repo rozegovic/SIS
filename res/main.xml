@@ -25,6 +25,8 @@
 		<Res id="standard" path = "Work/CPProjects/SiS_v_Zadnji/res/Icons/Sync_ON64.png"/>
 		<Res id="navigator" path = "Work/CPProjects/SiS_v_Zadnji/res/Icons/time.png"/>
 		<Res id="defaultUuser" path = "Work/CPProjects/SiS_v_Zadnji/res/Icons/default_user.png"/>
+		<Res id="circ" path="Work/CPProjects/SiS_v_Zadnji/res/Icons/send-message.png"/>
+
 	</Images>
-	
+
 </DevRes>
