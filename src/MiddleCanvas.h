@@ -62,7 +62,7 @@ public:
             gui::Point cp(sz.width /2, sz.height / 2);
             cp.x = 10 ;
             cp.y = 10 ;
-            td::String text, text1, text2, text3, text4;
+            td::String text, text1, text2, text3;
             text = "Detalji o odabranom predmetu "; 
             
             /* funkcije:
@@ -71,11 +71,11 @@ public:
             */
             if (predmetID == -1) { //ovaj text2 bi trebao da piše čim se student uloguje, prije nego odabere neki predmet
                 gui::DrawableString text1 = "Odaberite predmet da biste vidjeli detalje ";
-                text1.draw(cp, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::LightSeaGreen);
+                text1.draw(cp, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::Gainsboro);
             }
             else {
                 gui::DrawableString text2 = "Predmet: ";
-                text2.draw(cp, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::LightSeaGreen);
+                text2.draw(cp, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::Gainsboro);
                 int razmak = 40;
                 cp.y = cp.y + razmak; // trebalo bi jos + visina slova prethodnog
                 // + sta ako tekst zauzima npr 5 redova(teoretski )...
@@ -95,7 +95,7 @@ public:
                 cp.y += razmak;
                 cp.x = 10;
                 text = "Odgovorni nastavni ansambl: ";
-                gui::DrawableString::draw(text, cp, gui::Font::ID::SystemLargerBold, td::ColorID::Coral);
+                gui::DrawableString::draw(text, cp, gui::Font::ID::SystemLargerBold, td::ColorID::Gainsboro);
                 dp::IStatementPtr pSelect1 = dp::getMainDatabase()->createStatement("Select a.Ime AS ime, a.Prezime AS prezime FROM Korisnici a, PredmetStaff b WHERE b.ID_Korisnika = a.ID AND  b.ID_Predmeta = ?");
                 dp::Params pParams1(pSelect1->allocParams());
                 pParams1 << predmetID;
@@ -105,17 +105,21 @@ public:
                // text1 += b;
                 if (!pSelect1->execute())
                     return;
-                while (pSelect1->moveNext());
-                cp.x = cp.x + 55; //+ text.length()
-                cp.y += 10;
-                gui::DrawableString Name = name;
-                Name.draw(cp, gui::Font::ID::SystemLargerBold, td::ColorID::LightCoral);
-
-                razmak += 10;
-                cp.y += razmak;
-                cp.x = 10;
+                while (pSelect1->moveNext())
+                {
+                    cp.x = cp.x + 55; //+ text.length()
+                    cp.y += 45;
+                    gui::DrawableString Surname = surname;
+                    Surname.draw(cp, gui::Font::ID::SystemLargerBold, td::ColorID::Gold);
+                    cp.x = cp.x + surname.length() + 55;
+                    gui::DrawableString Name = name;
+                    Name.draw(cp, gui::Font::ID::SystemLargerBold, td::ColorID::Gold);
+                    razmak += 10;
+                    cp.y += razmak;
+                    cp.x = 10;
+                }
                 text = "Aktivnosti na predmetu: ";
-                gui::DrawableString::draw(text, cp, gui::Font::ID::SystemLargerBold, td::ColorID::Coral);
+                gui::DrawableString::draw(text, cp, gui::Font::ID::SystemLargerBold, td::ColorID::Gainsboro);
                 dp::IStatementPtr pSelect2 = dp::getMainDatabase()->createStatement("SELECT Naziv_Aktivnosti AS Naziv FROM Aktivnosti WHERE ID_Predmeta = ?");
                 dp::Params pParams2(pSelect2->allocParams());
                 pParams2 << predmetID;
@@ -131,26 +135,29 @@ public:
                 razmak += 10;
                 cp.y += razmak;
                 cp.x = 10;
-                td::INT4 id;
+                td::INT4 id = Globals::_currentUserID;
                 text = "Ocijenjeno: ";
-                gui::DrawableString::draw(text, cp, gui::Font::ID::SystemLargerBold, td::ColorID::Coral);
-                dp::IStatementPtr pSelect3 = dp::getMainDatabase()->createStatement("Select a.Ocjena as ocjena, d.Naziv as tip FROM OcjeneIspita a, Aktivnosti c, VrstaAktivnosti d WHERE c.Tip_Aktivnosti = a.ID_Aktivnosti AND d.ID = a.ID_Aktivnosti AND a.ID_Korisnika = ? AND c.ID_Predmeta = ?");
-                //select radi (npr id korisnika = 5 i id predmeta = 1
+                gui::DrawableString::draw(text, cp, gui::Font::ID::SystemLargerBold, td::ColorID::Gainsboro);
+                dp::IStatementPtr pSelect3 = dp::getMainDatabase()->createStatement("Select a.Ocjena as ocjena, d.Naziv as tip FROM OcjeneIspita a, Aktivnosti c, VrstaAktivnosti d WHERE c.ID_Aktivnosti=a.ID_Aktivnosti and d.ID=a.ID_Aktivnosti and a.ID_Korisnika=? AND c.ID_Predmeta=?");
                 dp::Params pParams3(pSelect3->allocParams());
-//                pParams3 << id << broj; //krahira ovdje
-                id = Globals::_currentUserID;
+              pParams3 << id << predmetID; //krahira ovdje
                 dp::Columns pCols3 = pSelect3->allocBindColumns(2);
-                td::INT4 ocjena;
+               td::String ocjena ;
                 td::String tip;
-                pCols3 << "ocjena" << ocjena <<"tip" << tip;
-                text4 = std::to_string(ocjena);
-                text4 += tip;
+                pCols3 << "ocjena" << ocjena << "tip" << tip;
+               // text4=std::to_string(ocjena);
                 if (!pSelect3->execute())
                     return;
-                cp.x = cp.x + 75;
+               cp.x = cp.x + 75;
+          
                 while (pSelect3->moveNext()) {
                     cp.y += 20;
-                    gui::DrawableString::draw(text4, cp, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::Gold);
+                    gui::DrawableString text4 = tip;
+                    text4.draw( cp, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::Gold);
+                    cp.x = cp.x + tip.length() + 55;
+                    gui::DrawableString text5 = ocjena;
+                    text5.draw(cp, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::Gold);
+                    cp.x= cp.x-tip.length() - 55;
                 }
             }
         }

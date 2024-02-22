@@ -201,8 +201,8 @@ public:
             gui::Point pt(0, 25);
             for (auto &name : _subjectsName) {
                 gui::DrawableString subject = name;
-                gui::Shape::drawRect(r, td::ColorID::WhiteSmoke, td::ColorID::Navy, 4, td::LinePattern::Solid);
-                subject.draw(r, gui::Font::ID::SystemLargerBold, td::ColorID::Navy, td::TextAlignment::Center, td::VAlignment::Center);
+                gui::Shape::drawRect(r, td::ColorID::DimGray, td::ColorID::Black, 0.5, td::LinePattern::Solid);
+                subject.draw(r, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::Gainsboro, td::TextAlignment::Center, td::VAlignment::Center);
                 //pt.translate(0, 50);
                 r.translate(0, 50);
                 pt.translate(0,50);
