@@ -245,6 +245,10 @@ public:
         
         _middleCanvas->reset();
         //showAlert("", std::to_string(subjects.at(rbr)));
+
+        //_middleCanvas->onDraw();
+       // showAlert("", std::to_string(subjects.at(rbr)));
+
                 
            
     }

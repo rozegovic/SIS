@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include <gui/View.h>
 #include <gui/Image.h>
 #include <gui/ImageView.h>
@@ -22,6 +22,7 @@ public:
 
     void setSubjectID(td::INT4 id) { //grupa 2 - potreban subjectID
        predmetID = id;  //linije 53, 54
+        reset();//da bi se nakon klika refreshao middle canvas
     }
     void setSubjectName(td::String ime) {
         _subjectname = ime;
