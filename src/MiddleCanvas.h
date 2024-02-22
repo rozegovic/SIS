@@ -100,16 +100,16 @@ public:
                 dp::Params pParams1(pSelect1->allocParams());
                 pParams1 << predmetID;
                 dp::Columns pCols1 = pSelect1->allocBindColumns(2);
-                td::String a, b;
-                pCols1 << "ime" << a << "prezime" << b;
-                text1 = a;
+                td::String name, surname;
+                pCols1 << "ime" << name << "prezime" << surname;
                // text1 += b;
                 if (!pSelect1->execute())
                     return;
                 while (pSelect1->moveNext());
                 cp.x = cp.x + 55; //+ text.length()
                 cp.y += 10;
-                gui::DrawableString::draw(text1, cp, gui::Font::ID::SystemLargerBold, td::ColorID::LightCoral);
+                gui::DrawableString Name = name;
+                Name.draw(cp, gui::Font::ID::SystemLargerBold, td::ColorID::LightCoral);
 
                 razmak += 10;
                 cp.y += razmak;
