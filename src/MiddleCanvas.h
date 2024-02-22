@@ -93,12 +93,14 @@ public:
                 cp.x = 10;
                 text = "Odgovorni nastavni ansambl: ";
                 gui::DrawableString::draw(text, cp, gui::Font::ID::SystemLargerBold, td::ColorID::Coral);
-                dp::IStatementPtr pSelect1 = dp::getMainDatabase()->createStatement("Select a.Ime AS ime, a.Prezime AS prezime FROM Korisnici a, PredmetStaff b WHERE b.ID_Korisnika = a.ID AND  b.ID_Predmeta = ?");
+               // dp::IStatementPtr pSelect1 = dp::getMainDatabase()->createStatement("Select a.Ime AS ime, a.Prezime AS prezime FROM Korisnici a, PredmetStaff b WHERE b.ID_Korisnika = a.ID AND  b.ID_Predmeta = ?");
+                dp::IStatementPtr pSelect1 = dp::getMainDatabase()->createStatement("SELECT a.Prezime AS prezime , a.Ime AS ime  FROM Korisnici a, PredmetStaff b WHERE b.ID_Korisnika = a.ID AND  b.ID_Predmeta = ?");
+
                 dp::Params pParams1(pSelect1->allocParams());
                 pParams1 << broj;
                 dp::Columns pCols1 = pSelect1->allocBindColumns(2);
                 td::String a, b;
-                pCols1 << "ime" << a << "prezime" << b;
+                pCols1 << "prezime" << a << "ime" << b;
                 text1 = a;
                // text1 += b;
                 if (!pSelect1->execute())
@@ -131,7 +133,7 @@ public:
                 td::INT4 id;
                 text = "Ocijenjeno: ";
                 gui::DrawableString::draw(text, cp, gui::Font::ID::SystemLargerBold, td::ColorID::Coral);
-                dp::IStatementPtr pSelect3 = dp::getMainDatabase()->createStatement("Select a.Ocjena as ocjena, d.Naziv as tip FROM OcjeneIspita a, Aktivnosti c, VrstaAktivnosti d WHERE c.Tip_Aktivnosti = a.ID_Aktivnosti AND d.ID = a.ID_Aktivnosti AND a.ID_Korisnika = ? AND c.ID_Predmeta = ?");
+                dp::IStatementPtr pSelect3 = dp::getMainDatabase()->createStatement("Select a.Ocjena as ocjena, d.Naziv as tip FROM OcjeneIspita a, Aktivnosti c, VrstaAktivnosti d WHERE c.ID_Aktivnosti = a.ID_Aktivnosti AND d.ID = a.ID_Aktivnosti AND a.ID_Korisnika = ? AND c.ID_Predmeta = ?");
                 //select radi (npr id korisnika = 5 i id predmeta = 1
                 dp::Params pParams3(pSelect3->allocParams());
 //                pParams3 << id << broj; //krahira ovdje
