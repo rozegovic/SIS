@@ -55,26 +55,23 @@ class BackView : public gui::View
 {
 private:
 protected:
-    FarLeftCanvas _leftCanvas;
-    MiddleCanvas _middleCanvas;   //  vjerovatno ce leftCanvas morati primati pokazivac na srednji
+    FarLeftScroll _leftCanvas;
+    MiddleScroll _middleCanvas;   //  vjerovatno ce leftCanvas morati primati pokazivac na srednji
     gui::SplitterLayout _splitter;
 
 public:
     BackView()
-
-    : _splitter(gui::SplitterLayout::Orientation::Horizontal, gui::SplitterLayout::AuxiliaryCell::First) 
-    , _leftCanvas(&_middleCanvas)
+        : _splitter(gui::SplitterLayout::Orientation::Horizontal, gui::SplitterLayout::AuxiliaryCell::First)
+        , _leftCanvas(&_middleCanvas)
     {
-        
+
         _splitter.setContent(_leftCanvas, _middleCanvas);
         setLayout(&_splitter);
     }
 
     void reset() {
-        _middleCanvas.reset();
-        
-        _leftCanvas.reset();
-        
+        _middleCanvas.getView().reset();
+        _leftCanvas.getView().reset();
     }
     /*void measure(CellInfo& ci) override
     {

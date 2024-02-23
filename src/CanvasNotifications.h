@@ -32,14 +32,6 @@ public:
     }
 
     void onDraw(const gui::Rect& rect) override {
-<<<<<<< Updated upstream
-        gui::Size sz;
-        getSize(sz);
-
-
-        //problem je sto se ne mogu skrolat poruke vec treba promijeniti size prozora da se sve vidi --> RJESENO
-        //dodati provjeru da se ne ispisuje obavijest za ispit ako je rok za prijavu istog istekao
-=======
 
         //showAlert("", std::to_string(dragBoxNum));
 
@@ -53,20 +45,14 @@ public:
         //dodati provjeru da se ne ispisuje obavijest za ispit ako je rok za prijavu istog istekao
 
 
->>>>>>> Stashed changes
         dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT a.Subject, a.Poruke "
             "  FROM Messages a "
             "  JOIN MsgReceivers mr ON mr.MsgID = a.ID "
             "   WHERE mr.UserID = ? ");
-<<<<<<< Updated upstream
-        dp::Params parDS(pSelect->allocParams());
-        parDS << Globals::_currentUserID;
-=======
 
         dp::Params parDS(pSelect->allocParams());
         parDS << Globals::_currentUserID;
 
->>>>>>> Stashed changes
         dp::Columns pCols = pSelect->allocBindColumns(2);
         td::String Subject, Poruke;
         pCols << "Subject" << Subject << "Poruke" << Poruke;
@@ -78,39 +64,7 @@ public:
         gui::Point pt(10, 0);
         gui::Point pt2(10, 30);
 
-        
-        gui::Rect rectt(0, 0, sz.width, 60);//
 
-<<<<<<< Updated upstream
-        gui::Shape rrect;//
-
-         GlobalsCanvas::brObavijesti = 0;
-        
-        while (pSelect->moveNext())
-        {
-
-            //gui::Shape::drawRect(imgRect, td::ColorID::LightGray, td::ColorID::MidnightBlue, 2, td::LinePattern::Solid);
-        
-           rrect.createRoundedRect(rectt, 20);//
-           rrect.drawFill(td::ColorID::Silver);//
-            
-            gui::DrawableString tekst = Subject;
-            gui::DrawableString tekst2 = Poruke;
-          /*  tekst.draw(pt, gui::Font::ID::SystemLargerBold, td::ColorID::Navy);
-            tekst2.draw(pt2, gui::Font::ID::SystemNormal, td::ColorID::Navy);*/
-            tekst.draw(pt, gui::Font::ID::SystemLargerBold, td::ColorID::Black);//
-            tekst2.draw(pt2, gui::Font::ID::SystemNormal, td::ColorID::Black);//
-            pt.translate(0, 70);
-            pt2.translate(0, 70);
-            //imgRect.translate(0, 70);
-            rectt.translate(0, 70);//
-
-            GlobalsCanvas::brObavijesti++;
-        }
-
-        if (GlobalsCanvas::brObavijesti==0)
-        {
-=======
         gui::Rect rectt(0, 0, sz.width, 60);//
 
         gui::Shape rrect;//
@@ -230,19 +184,21 @@ public:
                 }
 
                 //gui::Shape::drawRect(imgRect, td::ColorID::LightGray, td::ColorID::MidnightBlue, 2, td::LinePattern::Solid);
->>>>>>> Stashed changes
 
-            gui::DrawableString str = tr("noNotifs");//
+                rrect.createRoundedRect(rectt, 20);//
+                rrect.drawFill(td::ColorID::Silver);//
 
-            rrect.createRoundedRect(rectt, 20);//
-            rrect.drawFill(td::ColorID::Silver);//
+                gui::DrawableString tekst = Subject;
+                gui::DrawableString tekst2 = Poruke;
+                /*  tekst.draw(pt, gui::Font::ID::SystemLargerBold, td::ColorID::Navy);
+                  tekst2.draw(pt2, gui::Font::ID::SystemNormal, td::ColorID::Navy);*/
+                tekst.draw(pt, gui::Font::ID::SystemLargerBold, td::ColorID::Black);//
+                tekst2.draw(pt2, gui::Font::ID::SystemNormal, td::ColorID::Black);//
+                pt.translate(0, 70);
+                pt2.translate(0, 70);
+                //imgRect.translate(0, 70);
+                rectt.translate(0, 70);//
 
-<<<<<<< Updated upstream
-            pt.translate(sz.width/2-75, 20);
-
-            str.draw(pt, gui::Font::ID::SystemLargerBold, td::ColorID::Black);//
-
-=======
                 if (GlobalsCanvas::brObavijesti == dragBoxNum)
                 {
                     rectt.translate(-boxTranslate, 0);
@@ -252,7 +208,6 @@ public:
             }
                 GlobalsCanvas::brObavijesti++;
             
->>>>>>> Stashed changes
         }
 
         if (GlobalsCanvas::brObavijesti == 0)
@@ -305,13 +260,6 @@ public:
 
     bool getModelSize(gui::Size& modelSize) const override
     {
-<<<<<<< Updated upstream
-        modelSize.width = 1300;
-        modelSize.height = GlobalsCanvas::brObavijesti*70;
-        //showAlert("", std::to_string(brObavijesti));
-        return true;
-    };
-=======
         modelSize.width = 230;
         modelSize.height = (GlobalsCanvas::brObavijesti * 70)+(AddToScroller);
         // showAlert("", std::to_string(BrObavijesti));
@@ -461,7 +409,6 @@ public:
 
 
 
->>>>>>> Stashed changes
 };
 
 
