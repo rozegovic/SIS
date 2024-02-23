@@ -4,6 +4,7 @@
 #include <gui/ImageView.h>
 #include <gui/SplitterLayout.h>
 #include <gui/DrawableString.h>
+#include <gui/Transformation.h>
 
 class MiddleCanvas : public gui::Canvas
 {
@@ -90,10 +91,10 @@ public:
                 pCols << "Naziv" << text1;
                 if (!pSelect->execute())
                     return;
-                while (pSelect->moveNext());    */                                        
+                while (pSelect->moveNext());    */
                 cp.x = 65;
                 gui::DrawableString::draw(_subjectname, cp, gui::Font::ID::SystemLargerBold, td::ColorID::Gold);
-            
+
                 razmak += 5;
                 cp.y += razmak;
                 cp.x = 10;
@@ -105,7 +106,7 @@ public:
                 dp::Columns pCols1 = pSelect1->allocBindColumns(3);
                 td::String name, surname, pozicija;
                 pCols1 << "ime" << name << "prezime" << surname << "Pozicija" << pozicija;
-               // text1 += b;
+                // text1 += b;
                 if (!pSelect1->execute())
                     return;
                 while (pSelect1->moveNext());
@@ -148,11 +149,11 @@ public:
                 dp::IStatementPtr pSelect3 = dp::getMainDatabase()->createStatement("Select a.Ocjena as ocjena, d.Naziv as tip FROM OcjeneIspita a, Aktivnosti c, VrstaAktivnosti d WHERE c.ID_Aktivnosti=a.ID_Aktivnosti and d.ID=a.ID_Aktivnosti and a.ID_Korisnika=? AND c.ID_Predmeta=?");
                 //select radi (npr id korisnika = 5 i id predmeta = 1
                 dp::Params pParams3(pSelect3->allocParams());
-               pParams3 << id << predmetID; 
+                pParams3 << id << predmetID;
                 dp::Columns pCols3 = pSelect3->allocBindColumns(2);
                 td::String ocjena;
                 td::String tip;
-                pCols3 << "ocjena" << ocjena <<"tip" << tip;
+                pCols3 << "ocjena" << ocjena << "tip" << tip;
                 if (!pSelect3->execute())
                     return;
                 cp.x = cp.x + 75;
@@ -165,19 +166,19 @@ public:
                     cp.x = cp.x + tip.length() + 55;
                     gui::DrawableString text5 = ocjena;
                     text5.draw(cp, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::Gold);
-                    cp.x =cp.x -tip.length()-55;
+                    cp.x = cp.x - tip.length() - 55;
                 }
                 for (int i = 0; i < Ocjene.size(); i++)
                 {
-                    prosjek += Ocjene[i]*20; //skalirano
+                    prosjek += Ocjene[i] * 20; //skalirano
                 }
-                if(Ocjene.size()!=0)
-                prosjek =prosjek / Ocjene.size();
+                if (Ocjene.size() != 0)
+                    prosjek = prosjek / Ocjene.size();
 
-                
+
                 {  //Progres bar
                     gui::Point prog;
-                    
+
                     gui::Size sz2;
                     getSize(sz2);
                     prog.x = sz.width / 2 - 100;
@@ -206,6 +207,96 @@ public:
                     //std::string pom1 = std::to_string(prosjek);
                     postotak = pom;
                     postotak.draw(prazan, gui::Font::ID::SystemBoldItalic, td::ColorID::Black, td::TextAlignment::Center, td::VAlignment::Center);
+                }
+
+                {   // TABELA PRISUSTVA
+
+                    gui::Transformation zoomTr;
+                    double zoom = 1.; //experiment with this and see impact
+                    double scrollX = 0;
+                    double scrollY = cp.y + 70;
+                    zoomTr.translate(scrollX, scrollY);
+                    zoomTr.scale(zoom);
+                    zoomTr.appendToContext(); //this is transformationfor all objects
+
+                    gui::Point privremena;
+                    privremena.x = 0;
+                    privremena.y = -25;
+                    gui::DrawableString prisustvolabovima = "Prisustvo lab. vjezbama: ";
+                    prisustvolabovima.draw(privremena, gui::Font::ID::SystemBoldItalic, td::ColorID::Gainsboro);
+
+
+                    int duzina = 100;
+                    int visina = 30;
+                    gui::Rect sedmica(0, 0, duzina, visina);
+                    gui::Rect vrijeme(0, 0, duzina, visina);
+                    gui::Rect prisutan(0, 0, duzina, visina);
+                    gui::DrawableString sedm = "Sedmica";
+                    gui::DrawableString time = "Vrijeme";
+                    gui::DrawableString prisustvo = "Prisutan";
+                    vrijeme.translate(0, visina);
+                    prisutan.translate(0, 2 * visina);
+                    gui::Shape::drawRect(sedmica, td::ColorID::DimGray, td::ColorID::Black, 0.5, td::LinePattern::Solid);
+                    gui::Shape::drawRect(vrijeme, td::ColorID::DimGray, td::ColorID::Black, 0.5, td::LinePattern::Solid);
+                    gui::Shape::drawRect(prisutan, td::ColorID::DimGray, td::ColorID::Black, 0.5, td::LinePattern::Solid);
+                    sedm.draw(sedmica, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::Gainsboro, td::TextAlignment::Center, td::VAlignment::Center);
+                    time.draw(vrijeme, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::Gainsboro, td::TextAlignment::Center, td::VAlignment::Center);
+                    prisustvo.draw(prisutan, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::Gainsboro, td::TextAlignment::Center, td::VAlignment::Center);
+
+                    dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select Br_sedmice AS brsedmice, Vrijeme as vrijeme FROM Prisustvo, TerminiStudenti, Termini WHERE TerminiStudenti.ID_Studenta = ? AND  TerminiStudenti.ID_Termina = Prisustvo.ID_termina AND TerminiStudenti.TipPredavanjaID = 3");
+                    dp::Params pParams(pSelect->allocParams());
+                    pParams << Globals::_currentUserID;
+                    dp::Columns pCols = pSelect->allocBindColumns(2);
+                    td::INT4 brsedmice;
+                    td::Time Vrijeme;
+                    pCols << "brsedmice" << brsedmice << "Vrijeme" << Vrijeme;
+                    std::vector<td::INT4> prisutnesedmice;
+                    if (pSelect->execute()) {
+                        prisutnesedmice.resize(0);
+                        while (pSelect->moveNext()) {
+                            //gui::DrawableString drawableName = name;
+                            prisutnesedmice.push_back(brsedmice);
+                        }
+                    }
+
+                    for (int i = 0; i < 15; i++) {
+                        int novaduzina = 50;
+                        gui::Rect red_sedmica(0, 0, novaduzina, visina);
+                        td::String broj = std::to_string(i + 1);
+                        gui::DrawableString rednibroj = broj;
+                        red_sedmica.translate(i * novaduzina + duzina, 0);
+                        gui::Shape::drawRect(red_sedmica, td::ColorID::White, td::ColorID::Black, 0.5, td::LinePattern::Solid);
+                        rednibroj.draw(red_sedmica, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::Black, td::TextAlignment::Center, td::VAlignment::Center);
+
+                        gui::Rect time1(0, 0, novaduzina, visina);
+                        time1.translate(i * novaduzina + duzina, visina);
+                        td::String temp = std::to_string(Vrijeme.getHour()); 
+                        temp += ":";
+                        temp+= std::to_string(Vrijeme.getMinute());
+                        gui::DrawableString vrijemezaispis = temp;
+                        gui::Shape::drawRect(time1, td::ColorID::White, td::ColorID::Black, 0.5, td::LinePattern::Solid);
+                        vrijemezaispis.draw(time1, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::Black, td::TextAlignment::Center, td::VAlignment::Center);
+
+                        gui::Rect prisutan(0, 0, novaduzina, visina);
+                        prisutan.translate(i * novaduzina + duzina, 2*visina);
+                        bool jeprisutan = false;
+                        for (auto x : prisutnesedmice) {
+                            if (x == i + 1) {
+                                jeprisutan = true;
+                                break;
+                            }
+                        }
+                        if (jeprisutan) {
+                            gui::DrawableString jestprisutan = "DA";
+                            gui::Shape::drawRect(prisutan, td::ColorID::Green, td::ColorID::Black, 0.5, td::LinePattern::Solid);
+                            jestprisutan.draw(prisutan, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::Black, td::TextAlignment::Center, td::VAlignment::Center);
+                        }
+                        else {
+                            gui::DrawableString jestprisutan = "NE";
+                            gui::Shape::drawRect(prisutan, td::ColorID::Red, td::ColorID::Black, 0.5, td::LinePattern::Solid);
+                            jestprisutan.draw(prisutan, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::Black, td::TextAlignment::Center, td::VAlignment::Center);
+                        }
+                    }
                 }
             }
         }
