@@ -47,7 +47,7 @@ public:
         items[15].initAsActionItem(tr("viewUpload"), 160);
         items[16].initAsActionItem(tr("viewExamLabHomework"), 180);
         items[17].initAsActionItem(tr("viewTicketForSAO"), 190);
-        items[17].initAsActionItem(tr("viewFinalGrade"), 200);
+        items[18].initAsActionItem(tr("viewFinalGrade"), 200);
 
 
     }

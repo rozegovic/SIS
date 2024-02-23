@@ -26,7 +26,7 @@ public:
 	void reset() {
 
 		_backgroundView.reset();
-		_notificationsView.getView().reset();
+		_notificationsView.reset();
 
 
 		//_splitter.disable();    // da li ista radi???

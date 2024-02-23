@@ -306,27 +306,26 @@ void ViewCurriculum::SetCurrentDepartment() {
 }
 
 void ViewCurriculum::SetCurrentECTS() {
-    dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT ECTS_bodovi FROM Predmet WHERE ID_Predmeta = ?");
-    dp::Params parDS(pSelect->allocParams());
-    ////d::INT4 IDPredmeta = Globals::_IDSubjectSelection;
-    td::Variant val(td::int4);
-    _course.getValue(val);
-    td::INT4 id =val.i4Val();
-    parDS << id;
-    dp::Columns pCols = pSelect->allocBindColumns(1);
-    td::INT4 ects;
-    pCols << "ECTS_bodovi" << ects;
-    if (!pSelect->execute()) {
-        ects = 0;
-    }
-    while (pSelect->moveNext())
-    {
-        td::Variant val;
-        val = ects;
-        _ECTS.setValue(val);
+        dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT ECTS_bodovi FROM Predmet WHERE ID_Predmeta = ?");
+        dp::Params parDS(pSelect->allocParams());
+        ////d::INT4 IDPredmeta = Globals::_IDSubjectSelection;
+        td::Variant val(td::int4);
+        _course.getValue(val);
+        td::INT4 id = val.i4Val();
+        parDS << id;
+        dp::Columns pCols = pSelect->allocBindColumns(1);
+        td::INT4 ects;
+        pCols << "ECTS_bodovi" << ects;
+        if (!pSelect->execute()) {
+            ects = 0;
+        }
+        while (pSelect->moveNext())
+        {
+            td::Variant val;
+            val = ects;
+            _ECTS.setValue(val);
 
-    }
-
+        }
 }
 
 void ViewCurriculum::SetCurrentSemester() {
@@ -357,7 +356,7 @@ bool ViewCurriculum::canUpdate(int iRow)
 }
 
 bool ViewCurriculum::onChangedSelection(gui::DBComboBox* pCmb) {
-    if (pCmb == &_course) {
+    if (pCmb == &_course && !_ECTS.isEmpty()) {
         SetCurrentECTS();
         _shortname.selectIndex(_course.getSelectedIndex());
         return true;

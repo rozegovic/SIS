@@ -15,8 +15,9 @@ class Notifications1 : public gui::Canvas
 private:
 protected:
     gui::Image _etf;
-    td::UINT2 priorKlikx = 0;
-    td::INT4 dragBoxNum = -1;
+    td::UINT2 priorKlikx=0;
+    td::INT4 dragBoxNum=-1;
+
     td::INT4 boxTranslate = 0;
     td::INT4 ForDeletion = -1;
     td::INT4 MessageToExpand = -1;
@@ -25,7 +26,7 @@ protected:
     friend class Notifications;
 public:
     Notifications1()
-        : Canvas({ gui::InputDevice::Event::CursorDrag, gui::InputDevice::Event::PrimaryClicks })
+        : Canvas({ gui::InputDevice::Event::CursorDrag, gui::InputDevice::Event::PrimaryClicks})
         , _etf(":ETF")
     {
 
@@ -158,11 +159,11 @@ public:
                   tekst2.draw(pt2, gui::Font::ID::SystemNormal, td::ColorID::Navy);*/
                 tekst.draw(pt, gui::Font::ID::SystemLargerBold, td::ColorID::Black);//
                 tekst2.draw(pt2, gui::Font::ID::SystemNormal, td::ColorID::Black);//
-                pt.translate(0, szpom.height + 50);
+                pt.translate(0,szpom.height + 50);
                 pt2.translate(0, szpom.height + 50);
                 //imgRect.translate(0, 70);
                 rectt.setHeight(60);
-                rectt.translate(0, szpom.height + 50);//
+                rectt.translate(0,szpom.height+50);//
 
                 if (GlobalsCanvas::brObavijesti == dragBoxNum)
                 {
@@ -206,8 +207,8 @@ public:
                     pt2.translate(-boxTranslate, 0);
                 }
             }
-            GlobalsCanvas::brObavijesti++;
-
+                GlobalsCanvas::brObavijesti++;
+            
         }
 
         if (GlobalsCanvas::brObavijesti == 0)
@@ -219,7 +220,7 @@ public:
             rrect.drawFill(td::ColorID::Silver);//
 
             pt.translate(sz.width / 2 - 75, 20);
-
+            
             str.draw(pt, gui::Font::ID::SystemLargerBold, td::ColorID::Black);//
 
         }
@@ -261,7 +262,7 @@ public:
     bool getModelSize(gui::Size& modelSize) const override
     {
         modelSize.width = 230;
-        modelSize.height = (GlobalsCanvas::brObavijesti * 70) + (AddToScroller);
+        modelSize.height = (GlobalsCanvas::brObavijesti * 70)+(AddToScroller);
         // showAlert("", std::to_string(BrObavijesti));
         return true;
     };
@@ -278,24 +279,24 @@ public:
     }
 
     void onPrimaryButtonPressed(const gui::InputDevice& inputDevice) override {
+        
+        gui::Point klik= inputDevice.getModelPoint();
 
-        gui::Point klik = inputDevice.getModelPoint();
-
-        if (klik.x < 0 || klik.y < 0)
+         if (klik.x < 0 || klik.y < 0)
             return;
 
         td::INT4 razlika = 0;
 
-        if (MessageToExpand != -1)
-            td::INT4 razlika = ((MessageToExpand - 1) * 70) + AddToScroller + 60 - klik.y;
+        if(MessageToExpand!=-1)
+        td::INT4 razlika = ((MessageToExpand - 1) * 70) + AddToScroller + 60 - klik.y;
 
-
-        if (razlika < 0)
+        
+        if (razlika<0)
         {
-            dragBoxNum = (-razlika / 70) + MessageToExpand;
-            return;
+             dragBoxNum = (- razlika / 70) + MessageToExpand;
+             return;
         }
-        else if (razlika > 0 && razlika < AddToScroller + 60)
+        else if (razlika >0 && razlika<AddToScroller+60)
         {
             dragBoxNum = MessageToExpand;
             return;
@@ -311,12 +312,14 @@ public:
 
     void onCursorDragged(const gui::InputDevice& inputDevice) override {
 
+       
 
         td::INT4 klikx = inputDevice.getModelPoint().x;
-
+        
         if (klikx > 0 && priorKlikx != 0)
         {
-            boxTranslate = (klikx - priorKlikx);
+            boxTranslate = (klikx-priorKlikx);
+
             setCursor(gui::Cursor::Type::Finger);
         }
 
@@ -335,7 +338,8 @@ public:
 
         setCursor(gui::Cursor::Type::Default);
 
-        if (priorKlikx == 0 && MessageToExpand == -1 && boxTranslate == 0) {
+        if (priorKlikx == 0 && MessageToExpand == -1 && boxTranslate==0) {
+
 
             MessageToExpand = dragBoxNum;
             reDraw();
@@ -372,7 +376,7 @@ public:
             td::INT4 id;
             pCols << "ID" << id;
             if (!pSelect->execute()) {
-                id = -1;
+                id= -1;
             }
 
             int i = 0;
@@ -431,6 +435,7 @@ public:
     Notifications1& getView()
     {
         return _canvas;
+
 
     }
 
