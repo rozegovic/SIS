@@ -49,7 +49,7 @@ public:
         dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT a.Subject, a.Poruke "
             "  FROM Messages a "
             "  JOIN MsgReceivers mr ON mr.MsgID = a.ID "
-            "   WHERE mr.UserID = ? ");
+            "   WHERE mr.UserID = ? AND a.Subject != 'chat'");
 
         dp::Params parDS(pSelect->allocParams());
         parDS << Globals::_currentUserID;

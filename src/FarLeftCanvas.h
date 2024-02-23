@@ -174,6 +174,8 @@ public:
                 gui::Shape::drawRect(imgRect, boja, 5, td::LinePattern::Solid);
                 imgRect.translate(0, 110);
             }
+            getScroller()->setContentSize(sz);
+
         }
 
          // pogled za SAO ------ grupa 1
