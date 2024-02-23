@@ -371,12 +371,14 @@ public:
   };
 
     void reset() {
+        str = "";
         _chatUserID = -2;
         reDraw();
     }
 
     void Reset(td::INT4 userID, td::String s) {
         // id korisnika sa kojim je chat aktivan
+        str = "";
         red = 1;
         _name = s;
         _chatUserID = userID;
