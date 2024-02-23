@@ -22,6 +22,7 @@ protected:
     gui::Shape _rect;
     td::INT4 _noOfSubjects;
     std::vector<td::INT4> subjects;
+    std::vector<td::String> _subjectsName;
    
   
     gui::DrawableString _str;
@@ -45,28 +46,32 @@ public:
         , _brojChat(3)
         , _visinaChata(100)
     {
+        //createStrings();
         _middleCanvas = canvas;
     }
 
     
     //Grupa2
-    //bool createStrings() {
-    //    dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select a.Naziv_Predmeta AS Naziv FROM Predmet a, UpisPredmeta b WHERE b.ID_Studenta = ? AND  b.ID_Predmeta = a.ID_Predmeta");
-    //    dp::Params pParams(pSelect->allocParams());
-    //    pParams << Globals::_currentUserID;
-    //    dp::Columns pCols = pSelect->allocBindColumns(1);
-    //    td::String name;
-    //   // gui::DrawableString drawableName;
-    //    pCols << "Naziv" << name;
-    //    if (!pSelect->execute())
-    //        return false;
-    //    _subjects.resize(0);
-    //    while (pSelect->moveNext()) {
-    //        gui::DrawableString drawableName = name;
-    //        _subjects.push_back(drawableName);
-    //    }
-    //        return false;
-    //}
+    bool createStrings() {
+        dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select a.Naziv_Predmeta AS Naziv, a.ID_Predmeta as ID FROM Predmet a, UpisPredmeta b WHERE b.ID_Studenta = ? AND  b.ID_Predmeta = a.ID_Predmeta");        
+        dp::Params pParams(pSelect->allocParams());
+        pParams << Globals::_currentUserID;
+        dp::Columns pCols = pSelect->allocBindColumns(2);        
+        td::String name;
+        td::INT4 ID;
+       // gui::DrawableString drawableName;
+        pCols << "Naziv" << name << "ID" << ID;
+        if (!pSelect->execute())
+            return false;
+        _subjectsName.resize(0);
+        subjects.resize(0);
+        while (pSelect->moveNext()) {
+            //gui::DrawableString drawableName = name;
+            _subjectsName.push_back(name);
+            subjects.push_back(ID);
+        }
+        return true;
+    }
     void onDraw(const gui::Rect& rect) override {
         const bool check = false;
         // pogled za profesora i asistenta ------ grupa 3
@@ -166,8 +171,8 @@ public:
         }
         // pogled za studenta ------ grupa 2
         else if (Globals::_currentUserID == 5) {
-            subjects.clear();
-         //  createStrings();
+           // subjects.clear();
+           createStrings();
             //std::vector<td::INT4> SubjFrames;// rbr predmeta
             //_noOfSubjects  = 0 ;
             gui::Size sz;
@@ -183,28 +188,27 @@ public:
                 r.translate(0, 50);
             }*/
 
-            dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select a.Naziv_Predmeta AS Naziv, a.ID_Predmeta as ID FROM Predmet a, UpisPredmeta b WHERE b.ID_Studenta = ? AND  b.ID_Predmeta = a.ID_Predmeta");
-            dp::Params pParams(pSelect->allocParams());
-            pParams << Globals::_currentUserID;
-            dp::Columns pCols = pSelect->allocBindColumns(2);
-            td::String name;
-            td::INT4 ID;
-            // gui::DrawableString drawableName;
-            pCols << "Naziv" << name << "ID" << ID;
-            if (!pSelect->execute())
-                return ;
+            //dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select a.Naziv_Predmeta AS Naziv, a.ID_Predmeta as ID FROM Predmet a, UpisPredmeta b WHERE b.ID_Studenta = ? AND  b.ID_Predmeta = a.ID_Predmeta");
+            //dp::Params pParams(pSelect->allocParams());
+            //pParams << Globals::_currentUserID;
+            //dp::Columns pCols = pSelect->allocBindColumns(2);
+            //td::String name;
+            //td::INT4 ID;
+            //// gui::DrawableString drawableName;
+            //pCols << "Naziv" << name << "ID" << ID;
+            //if (!pSelect->execute())
+            //    return ;
             gui::Point pt(0, 25);
-            while (pSelect->moveNext()) {
+            for (auto &name : _subjectsName) {
                 gui::DrawableString subject = name;
                 gui::Shape::drawRect(r, td::ColorID::DimGray, td::ColorID::Black, 0.5, td::LinePattern::Solid);
                 subject.draw(r, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::Gainsboro, td::TextAlignment::Center, td::VAlignment::Center);
                 //pt.translate(0, 50);
                 r.translate(0, 50);
                 pt.translate(0,50);
-                subjects.push_back(ID);
 
             }
-            _middleCanvas->setSubjectID(0);    //
+            //_middleCanvas->setSubjectID(0);    //
 //            gui::Size sz;
 //            getSize(sz);
 //            gui::Point cp(sz.width / 2, sz.height / 2);
@@ -232,22 +236,29 @@ public:
         //vektor subjects cuva sve IDs predmeta koji su ispisani, i to redom kako su ispisani. 
         // Da dobijete ID kliknutog predmeta ide subjects.at(rbr), kao u alertu ispod
         std::cout<<subjects.size();
-        if(rbr > subjects.size())
+        if(rbr >= subjects.size())
             return;
         td::INT4 subjectID = subjects.at(rbr);
+        td::String name = _subjectsName.at(rbr);
         _middleCanvas->setSubjectID(subjectID);
+        _middleCanvas->setSubjectName(name);
         
+        _middleCanvas->reset();
+        //showAlert("", std::to_string(subjects.at(rbr)));
+
         //_middleCanvas->onDraw();
        // showAlert("", std::to_string(subjects.at(rbr)));
+
                 
            
     }
 
 
     void reset() {
-        if(Globals::isStudent){
-            subjects.clear();
-        }
+        //if(Globals::isStudent){
+        //    subjects.clear();
+        //}
+        //createStrings();
         reDraw();
     };
 
