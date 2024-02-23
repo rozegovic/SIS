@@ -150,7 +150,7 @@ bool ViewAttendance::onChangedSelection(gui::ComboBox* pCmb)
 void ViewAttendance::populateData()
 {
     auto pDB = dp::getMainDatabase();
-    _pDS = pDB->createDataSet("SELECT a.Dan AS dan, a.Vrijeme AS vrijeme, b.Naziv AS Tip, b.ID as ID, a.Max_br_pol as MaxBroj, a.Br_prijavljenih as brP FROM Termini a, TipPredavanja b WHERE a.TipPredavanjaID = b.ID and a.Predmet_ID = ?", dp::IDataSet::Execution::EX_MULT);
+    _pDS = pDB->createDataSet("SELECT a.Dan AS dan, a.Vrijeme AS vrijeme, b.Naziv AS Tip, b.ID as ID, a.Max_br_pol as MaxBroj, a.Br_prijavljenih as brP, a.ID as IDterm FROM Termini a, TipPredavanja b WHERE a.TipPredavanjaID = b.ID and a.Predmet_ID = ?", dp::IDataSet::Execution::EX_MULT);
     
     dp::Params parDS(_pDS->allocParams());
     //td::INT4 IDPredmeta = Globals::_IDSubjectSelection;
@@ -158,8 +158,8 @@ void ViewAttendance::populateData()
     //u parDS ce se ucitavati Globals::CurrentSubject
     parDS << _SubjectID;
     
-    dp::DSColumns cols(_pDS->allocBindColumns(6));
-    cols << "dan" << td::string8 << "vrijeme" << td::time<< "Tip" << td::string8 << "ID" << td::int4 << "MaxBroj" << td::int4<<"brP"<<td::int4;
+    dp::DSColumns cols(_pDS->allocBindColumns(7));
+    cols << "dan" << td::string8 << "vrijeme" << td::time<< "Tip" << td::string8 << "ID" << td::int4 << "MaxBroj" << td::int4<<"brP"<<td::int4<<"IDterm"<<td::int4;
 
     if (!_pDS->execute())
     {
@@ -215,6 +215,26 @@ bool ViewAttendance::onChangedSelection(gui::TableEdit* pTE) {
     }
     return false;
 }
+
+void ViewAttendance::deleteRow(td::INT4 ID_Termina)
+{
+    dp::IStatementPtr pDelStudent(dp::getMainDatabase()->createStatement("DELETE FROM TerminiStudenti WHERE ID_Termina = ?"));// DA NE OSTANE NIKO PRIJAVLJEN NA TERMINU KOJI NE POSTOJI
+    dp::Params par(pDelStudent->allocParams());
+    par << ID_Termina;
+    dp::Transaction tr1(dp::getMainDatabase());
+    if (!pDelStudent->execute())
+        return;
+    tr1.commit();
+    dp::IStatementPtr pDel(dp::getMainDatabase()->createStatement("DELETE FROM Termini WHERE ID = ?"));
+    dp::Params par1(pDel->allocParams());
+    dp::Transaction tr2(dp::getMainDatabase());
+    par1 << ID_Termina;
+    if (!pDel->execute())
+        return;
+    tr2.commit();
+}
+
+
 void ViewAttendance::saveData()
 {
     dp::IStatementPtr pInsStat(dp::getMainDatabase()->createStatement("INSERT INTO Termini ( Dan, TipPredavanjaID, Predmet_ID, Vrijeme,Max_br_pol,Br_prijavljenih) VALUES(?,?,?,?,?,?)"));
@@ -227,7 +247,7 @@ void ViewAttendance::saveData()
     Tr_broj = 0;
     td::Variant val;
     parDS << dp::toNCh(day, 30) << tip << predmet << t<<Max_br_pol<<Tr_broj;
-    dp::IStatementPtr pDel(dp::getMainDatabase()->createStatement("DELETE FROM Termini"));
+    dp::IStatementPtr pDel(dp::getMainDatabase()->createStatement("DELETE FROM Termini")); 
     if (!pDel->execute())
         return;
     size_t nRows = _pDS->getNumberOfRows();
@@ -283,13 +303,18 @@ bool ViewAttendance::onClick(gui::Button* pBtn)
 {
     if (pBtn == &_btnDelete)
     {
+       
         int iRow = _table.getFirstSelectedRow();
         if (iRow < 0)
-            return true;
+            return false;
+        auto row = _pDS->getRow(iRow);
+        td::INT4 id_termina = row[6].i4Val();
         _table.beginUpdate();
         _table.removeRow(iRow);
         _table.endUpdate();
-        saveData();
+        deleteRow(id_termina);
+        _subject->getDay().clean();
+        _subject->populateDayCombo(_subject->getDay());
         if(CheckTime())
             SendMsg(2);
        // _table.reload();
@@ -352,6 +377,8 @@ bool ViewAttendance::onClick(gui::Button* pBtn)
         _table.push_back();
         _table.endUpdate();
         saveData();
+        _table.reload();
+        _table.selectRow(_pDS->getNumberOfRows()-1);
         _subject->getDay().clean();
         _subject->populateDayCombo(_subject->getDay());
         if(CheckTime())
@@ -439,7 +466,7 @@ bool ViewAttendance::CheckTime(){
         return false;
     return true;
 }
-/*void ViewAttendance::AttendanceReport(const gui::Image* pImage){
+void ViewAttendance::AttendanceReport(const gui::Image* pImage){
     
     dp::IDatabase* pDB = dp::getMainDatabase();
 
@@ -508,8 +535,8 @@ bool ViewAttendance::CheckTime(){
     
 
     
-}*/
-void ViewAttendance::AttendanceReport(const gui::Image* pImage){
+}
+/*void ViewAttendance::AttendanceReport(const gui::Image* pImage){
     dp::IDatabase* pDB = dp::getMainDatabase();
 
     DocumentData docData(_SubjectID);
@@ -580,4 +607,4 @@ void ViewAttendance::AttendanceReport(const gui::Image* pImage){
 
     }
 }
-
+*/

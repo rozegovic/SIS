@@ -186,7 +186,7 @@ bool ViewTimeSlot::saveData1() { //upis
     parDS << sID << tID << pID;
     sID = Globals::_currentUserID;
     
-    td::INT4 curRow = _pDS->getCurrentRowNo();
+    td::INT4 curRow = _table.getFirstSelectedRow();
     auto row = _pDS->getRow(curRow);
     tID = row[4].i4Val();
     pID = row[3].i4Val();
@@ -234,7 +234,7 @@ bool ViewTimeSlot::onClick(gui::Button* pBtn)
     {
         td::INT4 tID, pID, sID;
         sID = Globals::_currentUserID;
-        td::INT4 curRow = _pDS->getCurrentRowNo();
+        td::INT4 curRow = _table.getFirstSelectedRow();
         auto row = _pDS->getRow(curRow);
         tID = row[4].i4Val();
         pID = row[3].i4Val();
@@ -269,7 +269,7 @@ bool ViewTimeSlot::onClick(gui::Button* pBtn)
     if (pBtn == &_btnDEnroll)
     {
         td::INT4 tID;
-        td::INT4 curRow = _pDS->getCurrentRowNo();
+        td::INT4 curRow = _table.getFirstSelectedRow();
         auto row = _pDS->getRow(curRow);
         tID = row[4].i4Val();
 
