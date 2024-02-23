@@ -39,13 +39,13 @@ void examAttendance(const gui::Image* pImage, td::INT4 SubjectID)
 	//#endif
 		//Body 
 	{
-		dp::IDataSet* pDP(pDB->createDataSet("select a.ID_Korisnika, a.ID_Aktivnosti, b.Naziv_Aktivnosti, c.Indeks, c.Ime, c.Prezime from PolazniciAktivnosti a, Aktivnosti b, Korisnici c where a.ID_Aktivnosti = b.ID_Aktivnosti and a.ID_Korisnika = c.ID and b.ID_Predmeta = ? and b.Tip_Aktivnosti=1 Order by b.Naziv_Aktivnosti DESC"));
+		dp::IDataSet* pDP(pDB->createDataSet("select a.ID_Studenta, d.ID_Aktivnosti, b.Naziv_Aktivnosti, c.Indeks, c.Ime, c.Prezime  from Prijavljeni_ispiti a, Aktivnosti b, Korisnici c, Rokovi d where d.ID_Aktivnosti = b.ID_Aktivnosti and a.ID_Studenta = c.ID and b.ID_Predmeta = ? and b.Tip_Aktivnosti = 1 and a.ID_Roka = d.ID_Roka Order by b.Naziv_Aktivnosti DESC"));
 
 		//#ifdef REPTEST
 		it << rpt::ContainerType::CNT_Body << pDP; //define field and its data
 		//#endif
 		dp::DSColumns cols(pDP->allocBindColumns(6));
-		cols << "ID_Korisnika" << td::int4 << "ID_Aktivnosti" << td::int4 << "Naziv_Aktivnosti" << td::string8 << "Indeks" << td::string8 << "Ime" << td::string8 << "Prezime" << td::string8;
+		cols << "ID_Studenta" << td::int4 << "ID_Aktivnosti" << td::int4 << "Naziv_Aktivnosti" << td::string8 << "Indeks" << td::string8 << "Ime" << td::string8 << "Prezime" << td::string8;
 		dp::Params pars = pDP->allocParams();
 		pars << SubjectID;
 
@@ -149,7 +149,7 @@ void examGrades(const gui::Image* pImage, td::INT4 SubjectID)
 	//#endif
 		//Body 
 	{
-		dp::IDataSet* pDP(pDB->createDataSet("SELECT a.ID_Korisnika, a.ID_Aktivnosti, b.Naziv_Aktivnosti, c.Indeks, c.Ime, c.Prezime, d.Ocjena FROM PolazniciAktivnosti a JOIN Aktivnosti b ON a.ID_Aktivnosti = b.ID_Aktivnosti JOIN Korisnici c ON a.ID_Korisnika = c.ID JOIN OcjeneIspita d ON b.ID_Aktivnosti = d.ID_Aktivnosti AND a.ID_Korisnika = d.ID_Korisnika WHERE b.ID_Predmeta = ? AND b.Tip_Aktivnosti = 1 AND d.Ocjena IS NOT NULL"));
+		dp::IDataSet* pDP(pDB->createDataSet("SELECT a.ID_Korisnika, a.ID_Aktivnosti, b.Naziv_Aktivnosti, c.Indeks, c.Ime, c.Prezime, a.Ocjena FROM OcjeneIspita a JOIN Aktivnosti b ON a.ID_Aktivnosti = b.ID_Aktivnosti JOIN Korisnici c ON a.ID_Korisnika = c.ID WHERE b.ID_Predmeta = ? AND b.Tip_Aktivnosti = 1 AND a.Ocjena IS NOT NULL"));
 
 		//#ifdef REPTEST
 		it << rpt::ContainerType::CNT_Body << pDP; //define field and its data
