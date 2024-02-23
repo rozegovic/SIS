@@ -36,12 +36,15 @@ protected:
     td::INT4 _noOfSubjects;
     std::vector<std::pair<td::String, td::INT4>> SubjFrames;//naziv predmeta + y koord
     
+      td::INT4 numOfTickets;
+    
 public:
     FarLeftCanvas(MiddleCanvas* canvas)
         : _etf(":defaultUuser")
         , gui::Canvas({ gui::InputDevice::Event::PrimaryClicks, gui::InputDevice::Event::Keyboard })
         , _brojChat(50)  // --------------------------problem sa ovim 
         , _visinaChata(100)
+        ,numOfTickets(0)
         {
             _middleCanvas = canvas;
         }
@@ -133,75 +136,85 @@ public:
             }
         }
 
-        // pogled za SAO ------ grupa 1
-        else if (Globals::isSAO) {
-            gui::Size sz;
-            getSize(sz);
+         // pogled za SAO ------ grupa 1
+       else if (Globals::isSAO) {
+           gui::Size sz;
+           getSize(sz);
 
-            //CITANJE IMENA IZ BAZE
-            dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT k.Ime , k.Prezime FROM Korisnici k, SAOStudentTicket p WHERE p.Indeks=k.Indeks;");
-            dp::Columns pCols = pSelect->allocBindColumns(2);
-            td::String name, sname;
-            pCols << "Ime" << name << "Prezime" << sname;
-            pSelect->execute();
-
-
-            int i = 0;
-
-            //CITANJE PORUKE IZ BAZE
-
-            dp::IStatementPtr pSelect1 = dp::getMainDatabase()->createStatement("SELECT Req_Title from SAOStudentTicket;");
-            dp::Columns pCols1 = pSelect1->allocBindColumns(1);
-            td::String request;
-            pCols1 << "Req_Title" << request;
-            pSelect1->execute();
-
-            //DA LI JE OBRADJENO
-
-            dp::IStatementPtr pSelect2 = dp::getMainDatabase()->createStatement("SELECT Status_ID from SAOStudentTicket;");
-            dp::Columns pCols2 = pSelect2->allocBindColumns(1);
-            td::INT4 status;
-            pCols2 << "Status_ID" << status;
-            pSelect2->execute();
+           //CITANJE IMENA IZ BAZE
+           dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT k.Ime , k.Prezime FROM Korisnici k, SAOStudentTicket p WHERE p.Indeks=k.Indeks;");
+           dp::Columns pCols = pSelect->allocBindColumns(2);
+           td::String name, sname;
+           pCols << "Ime" << name << "Prezime" << sname;
+           pSelect->execute();
 
 
-            gui::Rect imgRect(0, 0, sz.width, 100);
+           int i = 0;
 
-            while (pSelect->moveNext() && pSelect1->moveNext() && pSelect2->moveNext())
-            {
-                name.append(" ");
-                name.append(sname);
-                _str = name;
-                _request = request;
-                _status = status;
+           //CITANJE PORUKE IZ BAZE
 
+           dp::IStatementPtr pSelect1 = dp::getMainDatabase()->createStatement("SELECT Req_Title from SAOStudentTicket;");
+           dp::Columns pCols1 = pSelect1->allocBindColumns(1);
+           td::String request;
+           pCols1 << "Req_Title" << request;
+           pSelect1->execute();
 
-                if (_status == 1)
-                {
-                    gui::Shape::drawRect(imgRect, td::ColorID::LightGray, td::ColorID::Red, 4, td::LinePattern::Solid);
+           //DA LI JE OBRADJENO
 
-                }
-                else
-                {
-                    gui::Shape::drawRect(imgRect, td::ColorID::LightGray, td::ColorID::Green, 4, td::LinePattern::Solid);
-                }
-
-                gui::Point pt(i + 5, i * 110);
-                // gui::Rect textRect(15, 0, sz.width, 100);
-                _str.draw(pt, gui::Font::ID::SystemBold, td::ColorID::Black);
+           dp::IStatementPtr pSelect2 = dp::getMainDatabase()->createStatement("SELECT Status_ID from SAOStudentTicket;");
+           dp::Columns pCols2 = pSelect2->allocBindColumns(1);
+           td::INT4 status;
+           pCols2 << "Status_ID" << status;
+           pSelect2->execute();
 
 
-                gui::Point pt1(i + 5, 30 + i * 110);
-                //  gui::Rect textRect1(15, 0, sz.width, 100);
-                _request.draw(pt1, gui::Font::ID::SystemNormal, td::ColorID::Black);
+           gui::Rect imgRect(0, 0, sz.width, 100);
 
-                i++;
+           numOfTickets = 0;
 
-                imgRect.translate(0, 110);
+           while (pSelect->moveNext() && pSelect1->moveNext() && pSelect2->moveNext())
+           {
+               name.append(" ");
+               name.append(sname);
+               _str = name;
+               _request = request;
+               _status = status;
 
-            }
 
-        }
+               if (_status == 1)
+               {
+                   gui::Shape::drawRect(imgRect, td::ColorID::LightGray, td::ColorID::Red, 4, td::LinePattern::Solid);
+
+               }
+               else
+               {
+                   gui::Shape::drawRect(imgRect, td::ColorID::LightGray, td::ColorID::Green, 4, td::LinePattern::Solid);
+               }
+
+               gui::Point pt(i + 5, i * 110);
+               // gui::Rect textRect(15, 0, sz.width, 100);
+               _str.draw(pt, gui::Font::ID::SystemBold, td::ColorID::Black);
+
+
+               gui::Point pt1(i + 5, 30 + i * 110);
+               //  gui::Rect textRect1(15, 0, sz.width, 100);
+               _request.draw(pt1, gui::Font::ID::SystemNormal, td::ColorID::Black);
+
+               i++;
+
+               imgRect.translate(0, 110);
+
+               numOfTickets++;
+
+           }
+           
+           GlobalsCanvas::visinaLeftSAO = i*100;
+
+           sz.height = GlobalsCanvas::visinaLeftSAO;
+
+           getScroller()->setContentSize(sz);
+
+       }
 
         // pogled za studenta ------ grupa 2
         else if (Globals::_currentUserRole == 5) {
@@ -292,43 +305,46 @@ public:
             // openMiddleCanvas();
         }
         }
-        else if (Globals::isSAO) {
+    else if (Globals::isSAO) {
+
+
         gui::Size sz;
         getSize(sz);
-        const gui::Point& modelPoint = inputDevice.getModelPoint();
-        std::vector<std::pair<gui::DrawableString, gui::Rect>> SubjRects;//stvori niz rectova za sve predmete
-        for(int i = 0; i < SubjFrames.size(); i++){
-            td::INT4 p2 = SubjFrames.at(i).second;
-            gui::Rect temp(0, p2, sz.width, 50);
-            SubjRects.at(i).second = temp;
-            SubjRects.at(i).first = SubjFrames.at(i).first;
-        }
-        for(int i = 0; i < SubjRects.size(); i++){
-            if(SubjRects.at(i).second.contains(modelPoint)){
-               gui::DrawableString subject1 = SubjRects.at(i).first;
-                gui::Window* a = getParentWindow();
-                /*MainWindow* mw = a;//??
-                 a->showTimeSlotView(5);//Funkcija iz MainWindow da otvori ovaj View???
-                 
-                 */
-//                gui::Rect r1(0, 50 * _noOfSubjects, 20, 20);
-//                gui::Shape::drawRect(r1, td::ColorID::WhiteSmoke, td::ColorID::Navy, 4, td::LinePattern::Solid);
-//                subject1.draw(r1, gui::Font::ID::SystemLargerBold, td::ColorID::Navy);
-                
-                
-            }
-        }
-        }
+
+        const gui::Point& klik = inputDevice.getModelPoint();
+
+        td::INT4 rbrPoruke = klik.y;
+
+        rbrPoruke = rbrPoruke / 110;
+
+
+        if (klik.x > sz.width + 5 || rbrPoruke>numOfTickets-1)
+            return;
+
+        //showAlert("", std::to_string(rbrPoruke));
+
+        _middleCanvas->SetMessageNumSAO(rbrPoruke);
+
+    
+}
     }
 
     bool getModelSize(gui::Size& modelSize) const override
     {
+    
+        if (Globals::isSAO)
+        {
+            modelSize.width = 230;
+            modelSize.height = GlobalsCanvas::visinaLeftSAO;
+            return true;
+        }
+        
         modelSize.width = 230;
         modelSize.height = (_brojChat) * 110;
         return true;
     }
+    
 
 
 
 };
-

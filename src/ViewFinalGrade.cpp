@@ -9,12 +9,12 @@
 ViewFinalGrade::ViewFinalGrade(td::INT4 SubjectID) : _db(dp::getMainDatabase())
 , _lblname(tr("userName:"))
 , _lblsname(tr("userLName:"))
-, _lblindex(tr("lblindex"))
+, _lblindex(tr("indexUserL"))
 , _lblGrade(tr("grade:")) 
 , _lblCName(tr("courseName:"))
 , _btnDelete(tr("Delete"))
-, _lblpoints(tr("points"))
-, _btnAdd(tr("Add"))
+, _lblpoints(tr("ActivityPoints"))
+, _btnAdd(tr("Enroll"))
 , _hlBtns(6)
 , _gl(6, 4) 
 , _SubjectID(SubjectID)
@@ -61,19 +61,26 @@ ViewFinalGrade::ViewFinalGrade(td::INT4 SubjectID) : _db(dp::getMainDatabase())
 	//onChangedSelection(&_table);
 }
 
+
+
+
+
+
 void ViewFinalGrade::populateData()
 {
 
-	_pDS = _db->createDataSet("SELECT DISTINCT Korisnici.ID AS ID, Korisnici.Ime AS Name, Korisnici.Prezime As Surname, Korisnici.Indeks AS Indeks "
+	td::String strSet("SELECT DISTINCT Korisnici.ID AS ID, Korisnici.Ime AS Name, Korisnici.Prezime As Surname, Korisnici.Indeks AS Indeks,Korisnici.Adresa as Ocjena "
 		" FROM Korisnici, PolazniciAktivnosti WHERE PolazniciAktivnosti.ID_Korisnika = Korisnici.ID AND "
-		" PolazniciAktivnosti.ID_Aktivnosti IN(SELECT Aktivnosti.ID_Aktivnosti FROM Aktivnosti WHERE Aktivnosti.ID_Predmeta = ?)");
+		" PolazniciAktivnosti.ID_Aktivnosti IN(SELECT Aktivnosti.ID_Aktivnosti FROM Aktivnosti WHERE Aktivnosti.ID_Predmeta = ");
+	strSet.append(std::to_string(_SubjectID));
+	strSet.append(");");
 
 
-	dp::Params parDS(_pDS->allocParams());
+	_pDS = _db->createDataSet(strSet);
 
-	parDS << _SubjectID;
-	dp::DSColumns cols(_pDS->allocBindColumns(4));
-	cols << "ID" << td::int4 << "Name" << td::string8 << "Surname" << td::string8 << "Indeks" << td::string8;
+
+	dp::DSColumns cols(_pDS->allocBindColumns(5));
+	cols << "ID" << td::int4 << "Name" << td::string8 << "Surname" << td::string8 << "Indeks" << td::string8<< "Ocjena" << td::string8;
 
 
 	if (!_pDS->execute())
@@ -98,6 +105,56 @@ void ViewFinalGrade::populateData()
 		moguciBodovi += bodoviAktivnost;
 	}
 
+
+
+	td::INT4 vel=_pDS->getNumberOfRows();
+
+	for (int i = 0;i < vel;i++)
+	{
+		auto& row = _pDS->getRow(i);
+
+		row[4] = "";
+
+		_pDS->updateRow(i);
+	}
+
+
+
+
+	auto pompDS = _db->createDataSet("SELECT OcjeneFinal.ID_Korisnika AS UserID,OcjeneFinal.Ocjena AS ocjena FROM OcjeneFinal WHERE OcjeneFinal.ID_Predmeta=?");
+
+
+	dp::Params parDS2(pompDS->allocParams());
+
+	parDS2<< _SubjectID;
+	dp::DSColumns cols2(pompDS->allocBindColumns(2));
+	cols2 << "UserID"<< td::int4 << "ocjena" << td::string8;
+
+
+	if (!pompDS->execute())
+	{
+		showAlert("", "populateData greska");
+		pompDS = nullptr;
+	}
+
+
+
+	size_t vel1 = pompDS->getNumberOfRows();
+
+
+	for (int i = 0;i < vel1;i++)
+	{
+		auto& row1 = pompDS->getRow(i);
+		for (int j = 0;j < vel;j++)
+		{
+		  auto& row = _pDS->getRow(j);
+			if (row[0] == row1[0])
+
+				row[4] = row1[1];
+
+			_pDS->updateRow(j);
+		}
+	}
 
 	initTable();
 
@@ -170,6 +227,10 @@ bool ViewFinalGrade::onChangedSelection(gui::TableEdit* pTE)
 
 		_points.setValue(var);
 
+
+
+
+
 		//_points.setText(std::to_string(bodovi));
 
 
@@ -193,11 +254,20 @@ bool ViewFinalGrade::onChangedSelection(gui::TableEdit* pTE)
 
 		if (pompDS->getNumberOfRows() != 0)
 		{
+			_lblGrade.setTitle(tr("grade:"));
+
 			auto& pomrow=pompDS->getRow(0);
 
-			_grade.setValue(9);
+			td::String var;
+
+			var=pomrow[0].strVal();
+
+			_grade.setValue(var.toInt());
+			
 		}
 		else {
+
+			_lblGrade.setTitle(tr("Preporucena ocjena*:"));
 
 			float br1=bodovi;
 			float br2 = moguciBodovi;
@@ -218,9 +288,6 @@ bool ViewFinalGrade::onChangedSelection(gui::TableEdit* pTE)
 			else if (postotak >= 95)
 				_grade.setValue(10);
 		}
-
-		  
-
 
 
 		return true;
@@ -257,8 +324,8 @@ void ViewFinalGrade::SetCurrentSubject()
 
 void ViewFinalGrade::initTable()
 {
-	gui::Columns visCols(_table.allocBindColumns(4));
-	visCols << gui::ThSep::DoNotShowThSep << gui::Header(0, tr("IDUser"), "", 305) << gui::Header(3, tr("nameUser"), "", 305) << gui::Header(1, tr("surnameUser"), "", 305) << gui::Header(2, tr("indexUser"), "", 305);
+	gui::Columns visCols(_table.allocBindColumns(5));
+	visCols << gui::ThSep::DoNotShowThSep << gui::Header(0, tr("IDUser"), "", 150) << gui::Header(1, tr("nameUser"), "", 150) << gui::Header(2, tr("surnameUser"), "", 150) << gui::Header(3, tr("indexUser"), "", 150)<<gui::Header(4, tr("grade"), "", 150);
 	_table.init(_pDS);
 	if (_pDS->getNumberOfRows()) {
 		_table.selectRow(0, true);
@@ -270,6 +337,15 @@ bool ViewFinalGrade::onClick(gui::Button* pBtn) {
 
 	if (pBtn == &_btnAdd)
 	{
+		td::Variant v;
+		_grade.getValue(v);
+		
+		if (v.i4Val() < 0 || v.i4Val() > 10)
+		{
+			showAlert(tr("Greška"), tr("Neispravna ocjena"));
+			return true;
+		}
+
 		auto& row = _table.getCurrentRow();
 
 		dp::Transaction tr(_db);
@@ -301,18 +377,176 @@ bool ViewFinalGrade::onClick(gui::Button* pBtn) {
 
 		tr.commit();
 
+		td::Variant var;
 
-		td::String naslov= _grade.getValue().getConstStr();
+		_cName.getValue(var);
+
+		td::String naslov= var.getConstStr();
 		td::String poruka = "Dobili ste ";
-		poruka.append(std::to_string(_grade.getValue().i4Val()));
+		_grade.getValue(var);
+		poruka.append(std::to_string(var.i4Val()));
 		MsgSender msg;
 		msg.sendSystemMsgtoUser(naslov, poruka, row[0].i4Val());
 
+	       
+		reloadTable();
 
+		
 
 		return true;
 	}
 
+	if (pBtn == &_btnDelete)
+	{
+
+
+		auto& row = _table.getCurrentRow();
+
+		dp::Transaction tr(_db);
+
+		dp::IStatementPtr pDelStat(_db->createStatement("DELETE FROM OcjeneFinal WHERE OcjeneFinal.ID_Predmeta=? AND OcjeneFinal.ID_Korisnika=?"));
+		dp::Params parDSdel(pDelStat->allocParams());
+		td::INT4 predmet, id;
+		parDSdel << predmet << id;
+
+		predmet = _SubjectID;
+		id = row[0].i4Val();
+
+		if (!pDelStat->execute())
+			return false;
+
+
+		tr.commit();
+
+
+
+		reloadTable();
+	}
 
 	return true;
+}
+
+
+
+
+
+
+
+
+void ViewFinalGrade::reloadTable() {
+
+	
+	td::String strSet("SELECT DISTINCT Korisnici.ID AS ID, Korisnici.Ime AS Name, Korisnici.Prezime As Surname, Korisnici.Indeks AS Indeks,Korisnici.Adresa as Ocjena "
+		" FROM Korisnici, PolazniciAktivnosti WHERE PolazniciAktivnosti.ID_Korisnika = Korisnici.ID AND "
+		" PolazniciAktivnosti.ID_Aktivnosti IN(SELECT Aktivnosti.ID_Aktivnosti FROM Aktivnosti WHERE Aktivnosti.ID_Predmeta = ");
+	strSet.append(std::to_string(_SubjectID));
+	strSet.append(");");
+
+
+	auto pDStemp = _db->createDataSet(strSet);
+
+
+	dp::DSColumns cols(pDStemp->allocBindColumns(5));
+	cols << "ID" << td::int4 << "Name" << td::string8 << "Surname" << td::string8 << "Indeks" << td::string8 << "Ocjena" << td::string8;
+
+
+	if (!pDStemp->execute())
+	{
+		showAlert("", "populateData greska");
+		pDStemp = nullptr;
+		return;
+	}
+
+	moguciBodovi = 0;
+
+	dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT Aktivnosti.Procenat AS p FROM Aktivnosti WHERE Aktivnosti.ID_Predmeta=?");
+	dp::Params parDS1(pSelect->allocParams());
+	parDS1 << _SubjectID;
+	dp::Columns pCols = pSelect->allocBindColumns(1);
+	td::INT4 bodoviAktivnost;
+	pCols << "p" << bodoviAktivnost;
+	if (!pSelect->execute()) {
+		showAlert("Aktivnosti.Procenat pravigresku", "u populateData()");
+	}
+
+	while (pSelect->moveNext())
+	{
+		moguciBodovi += bodoviAktivnost;
+	}
+
+
+
+	td::INT4 vel = pDStemp->getNumberOfRows();
+
+	for (int i = 0;i < vel;i++)
+	{
+		auto& row = pDStemp->getRow(i);
+
+		row[4] = "";
+
+		pDStemp->updateRow(i);
+	}
+
+
+
+
+	auto pompDS = _db->createDataSet("SELECT OcjeneFinal.ID_Korisnika AS UserID,OcjeneFinal.Ocjena AS ocjena FROM OcjeneFinal WHERE OcjeneFinal.ID_Predmeta=?");
+
+
+	dp::Params parDS2(pompDS->allocParams());
+
+	parDS2 << _SubjectID;
+	dp::DSColumns cols2(pompDS->allocBindColumns(2));
+	cols2 << "UserID" << td::int4 << "ocjena" << td::string8;
+
+
+	if (!pompDS->execute())
+	{
+		showAlert("", "populateData greska");
+		pompDS = nullptr;
+	}
+
+
+	size_t vel1 = pompDS->getNumberOfRows();
+
+
+	for (int i = 0;i < vel1;i++)
+	{
+		auto& row1 = pompDS->getRow(i);
+		for (int j = 0;j < vel;j++)
+		{
+			auto& row = pDStemp->getRow(j);
+			if (row[0] == row1[0])
+
+				row[4] = row1[1];
+
+			pDStemp->updateRow(j);
+		}
+	}
+
+
+
+
+	_table.clean();
+
+	for (int i = 0;i < vel;i++)
+	{
+		_table.beginUpdate();
+		auto& row = _table.getEmptyRow();
+		auto& rowpushB=pDStemp->getRow(i);
+
+		row = rowpushB;
+
+		_table.push_back();
+
+		_table.endUpdate();
+
+	}
+
+	if (vel > 0)
+		_table.selectRow(0);
+
+	onChangedSelection(&_table);
+
+
 }

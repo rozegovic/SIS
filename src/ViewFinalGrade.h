@@ -70,5 +70,6 @@ protected:
     bool onClick(gui::Button* pBtn); 
     void SetCurrentSubject();     
     void initTable();
+    void reloadTable();
 
 };

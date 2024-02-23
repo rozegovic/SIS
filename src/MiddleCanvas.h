@@ -10,6 +10,11 @@
 #include <gui/ViewScroller.h>
 #include <td/Types.h>
 #include "SendMessage.h"
+#include "GlobalsCanvas.h"
+#include "ViewCertainRequest.h"
+#include "WindowCertainRequest.h"
+#include "ViewTicketForSAO.h"
+#include "ViewIDs.h"
 
 
 
@@ -45,16 +50,26 @@ protected:
     MsgSender msg;
     gui::Image img;
     td::INT4 red=1;
+    td::INT4 skrolV = 0;
+    td::String indeks;
+    td::String Ime;
+    td::String prezime;
+    td::String tipKarte;
+    td::String request;
+    td::String title;
+    td::String status;
+    gui::Rect rectBottomRight;
+    gui::Point mousePosition;
 
 public:
     MiddleCanvas()
         : _etf(":ETF")
-        , gui::Canvas({ gui::InputDevice::Event::PrimaryClicks,  gui::InputDevice::Event::Keyboard })
+        , gui::Canvas({ gui::InputDevice::Event::PrimaryClicks,  gui::InputDevice::Event::Keyboard ,gui::InputDevice::Event::CursorMove})
         , _chatUserID(-2)
         , _h(800)
         , _db(dp::getMainDatabase())
         , img(":circ")
-
+        , mousePosition(0, 0)
     {
 
 
@@ -129,16 +144,7 @@ public:
         }
 
         // pogled za SAO ------ grupa 1
-        else if (Globals::isSAO && brojPoruke > -1) {   //Globals::isSAO
-
-            gui::Size sz;
-            getSize(sz);
-            gui::Rect rectt(0, 0, sz.width - 100, sz.height - 50);//
-
-            rectt.translate(50, 25);
-
-            gui::Shape::drawRect(rectt, td::ColorID::Silver, td::ColorID::MidnightBlue, 2, td::LinePattern::Solid);
-
+        else if (Globals::isSAO && brojPoruke > -1) {
             DrawChatInfoSAO();
         }
 
@@ -183,64 +189,186 @@ public:
 
     void DrawChatInfoSAO() {
 
-        gui::Size sz;
-        getSize(sz);
+      enableResizeEvent(true);
 
-        dp::IDataSet* pDS = dp::getMainDatabase()->createDataSet("SELECT Korisnici.Ime as Name, Korisnici.Prezime as Surname,SAOStudentTicket.Indeks as StudentIndex,"
-            " SAOStudentTicket.Ticket_Tip as TypeOfTicket, SAOStudentTicket.Req_Title as TitleofTicket, SAOStudentTicket.Status_ID as Status_ID,SAOTicket_Status.Status as Status,"
-            " SAOStudentTicket.Request as Request From Korisnici, SAOStudentTicket, SAOTicket_Status where Korisnici.Indeks=SAOStudentTicket.Indeks AND SAOTicket_Status.ID=SAOStudentTicket.Status_ID");
+      gui::Size sz;
+      getSize(sz);
 
-        dp::DSColumns cols(pDS->allocBindColumns(8));
-        cols << "Name" << td::string8 << "Surname" << td::string8 << "StudentIndex" << td::string8 << "TypeOfTicket" << td::string8 << "TitleOfTicket" << td::string8 << "Status_ID" << td::int4 << "Status" << td::string8 << "Request" << td::string8;
-        if (!pDS->execute())
-        {
-            pDS = nullptr;
-            showAlert("errorReadingTable", "");
-            return;
-        }
+      dp::IDataSet* pDS = dp::getMainDatabase()->createDataSet("SELECT Korisnici.Ime as Name, Korisnici.Prezime as Surname,SAOStudentTicket.Indeks as StudentIndex,"
+          " SAOStudentTicket.Ticket_Tip as TypeOfTicket, SAOStudentTicket.Req_Title as TitleofTicket, SAOStudentTicket.Status_ID as Status_ID,SAOTicket_Status.Status as Status,"
+          " SAOStudentTicket.Request as Request From Korisnici, SAOStudentTicket, SAOTicket_Status where Korisnici.Indeks=SAOStudentTicket.Indeks AND SAOTicket_Status.ID=SAOStudentTicket.Status_ID");
 
-        //showAlert("", std::to_string(brojPoruke));
+      dp::DSColumns cols(pDS->allocBindColumns(8));
+      cols << "Name" << td::string8 << "Surname" << td::string8 << "StudentIndex" << td::string8 << "TypeOfTicket" << td::string8 << "TitleOfTicket" << td::string8 << "Status_ID" << td::int4 << "Status" << td::string8 << "Request" << td::string8;
+      if (!pDS->execute())
+      {
+          pDS = nullptr;
+          showAlert("errorReadingTable", "");
+          return;
+      }
 
-
-        auto row = pDS->getRow(brojPoruke);
-
-        td::String ime = row[0].getConstStr();
-        ime.append(" ");
-        ime.append(row[1].getConstStr());
-
-        td::String req = row[7].getConstStr();
-
-        if (req.length() > 100) {
-
-            int brred = req.length() / 100;
-            auto it = req.begin();
-            td::String pom = "";
-
-            for (int i = 0; i < brred; i++)
-            {
-                pom.append(req.subStr(i * 100, (i * 100) + 100));
-                pom.append("\n");
-            }
-
-            req = pom;
-
-        }
-
-        gui::DrawableString Ime = ime;
-        gui::DrawableString Tip = row[3].getConstStr();
-        gui::DrawableString Title = row[4].getConstStr();
-        gui::DrawableString Status = row[6].getConstStr();
-        gui::DrawableString Request = req;
+      //showAlert("", std::to_string(brojPoruke));
 
 
-        Ime.draw({ 75,50 }, gui::Font::ID::SystemBold, td::ColorID::Black);//
-        Tip.draw({ sz.width - 150,50 }, gui::Font::ID::SystemBold, td::ColorID::Black);//
-        Title.draw({ 75,75 }, gui::Font::ID::SystemBold, td::ColorID::Black);//
-        Status.draw({ sz.width - 150,75 }, gui::Font::ID::SystemBold, td::ColorID::Black);//
-        Request.draw({ 100,125 }, gui::Font::ID::SystemLarger, td::ColorID::Black);//
+      auto row = pDS->getRow(brojPoruke);
+
+      td::String ime = row[0].getConstStr();
+      ime.append(" ");
+      ime.append(row[1].getConstStr());
+
+      td::String req = row[7].getConstStr();
 
 
-    };
+
+      td::INT4 maxLength = (int(sz.width - 200) / 8);
+
+
+      if (req.length() > maxLength) {
+
+          td::String pom = "";
+          auto itA = req.begin();
+          auto itB(itA);
+          bool SpaceExists = false;
+          auto pomit = itA;
+
+          if (req.length() > 0)
+              pom.append(req.subStr(0, 0));
+
+
+          while (itA != req.end())
+          {
+              pomit = itA;
+              //GET MAX RANGE FOR CHARS IN A ROW
+              while (itB != req.end() && itB <= itA + maxLength)
+                  itB++;
+              //DOES SPACE EXIST IN CURRENT ROW?    
+              while (pomit != itB)
+              {
+                  if (*pomit == ' ')
+                  {
+                      SpaceExists = true;  break;
+                  }
+                  pomit++;
+              }
+              //FIND SUITABLE PLACE TO BREAK REQUEST APART
+              while (itB != req.end() && SpaceExists && *(itB) != ' ')
+                  itB--;
+
+              if (itB > ++itA)
+                  pom.append(req.subStr(itA - req.begin(), itB - req.begin()));
+
+              pom.append("\n");
+
+              //showAlert(std::to_string(itA-req.begin()), std::to_string(itB-req.begin()));
+
+              while (itA < itB)
+                  itA++;
+
+
+          }
+
+          req = pom;
+
+      }
+
+      //TREBA MI ZA GLOBALNE VARIJABLE RADI PROSLIJEDJIVANJA
+
+      //**************//
+      Ime = row[0].getConstStr();
+      prezime = row[1].getConstStr();
+      indeks = row[2].getConstStr();
+      tipKarte = row[3].getConstStr();
+      request = row[7].getConstStr();
+      title = row[4].getConstStr();
+      status = row[6].getConstStr();
+      //****************//
+
+
+
+
+     // showAlert("",std::to_string(sz.width));
+
+
+      gui::DrawableString Ime = ime;
+      gui::DrawableString Tip = row[3].getConstStr();
+      gui::DrawableString Title = row[4].getConstStr();
+      gui::DrawableString Status = row[6].getConstStr();
+      gui::DrawableString Request = req;
+
+      gui::Size szpom;
+      Request.measure(gui::Font::ID::SystemLarger, szpom);
+
+      skrolV = szpom.height + 200;
+
+      gui::Rect rectt(0, 0, sz.width - 100, skrolV);//
+
+      if (skrolV < sz.height)
+          rectt.setHeight(sz.height - 50);
+
+
+      rectt.translate(50, 25);
+
+      // gui::Shape::drawRect(rectt, td::ColorID::Silver, td::ColorID::MidnightBlue, 2, td::LinePattern::Solid);
+
+      gui::Shape visibleRect;
+
+      visibleRect.createRoundedRect(rectt, 10);
+      visibleRect.drawFillAndWire(td::ColorID::Silver, td::ColorID::MidnightBlue);
+
+
+      Ime.draw({ 75,50 }, gui::Font::ID::SystemBold, td::ColorID::Black);//
+      Tip.draw({ sz.width - 150,50 }, gui::Font::ID::SystemBold, td::ColorID::Black);//
+      Title.draw({ 75,75 }, gui::Font::ID::SystemBold, td::ColorID::Black);//
+      Status.draw({ sz.width - 150,75 }, gui::Font::ID::SystemBold, td::ColorID::Black);//
+      if (!req.isNull())
+          Request.draw({ 100,125 }, gui::Font::ID::SystemLarger, td::ColorID::Black);//
+
+      szpom.height = skrolV;
+
+      this->getScroller()->setContentSize(szpom);
+
+      int bottomRightX = sz.width - 100; // X koordinata
+      int bottomRightY = sz.height - 70; // Y koordinata
+      int rectWidth = 80;
+      int rectHeight = 30;
+
+      szpom.width = rectWidth;
+      szpom.height = rectHeight;
+
+
+      if (skrolV > sz.height)
+          bottomRightY = skrolV - 20;
+
+      gui::Point origin(bottomRightX - rectWidth, bottomRightY - rectHeight);
+
+
+      // Nacrtaj pravokutnik
+      gui::DrawableString answer = tr("Odgovori");
+      rectBottomRight.setOriginAndSize(origin, szpom);
+
+      // gui::Shape::drawRect(rectBottomRight, td::ColorID::MidnightBlue, td::ColorID::MidnightBlue, 2, td::LinePattern::Solid);
+
+      gui::Shape buttonSAO;
+      buttonSAO.createRoundedRect(rectBottomRight, 10);
+
+      gui::Point  p(bottomRightX - 73, bottomRightY - 27);
+
+      int x = mousePosition.x;
+      int y = mousePosition.y;
+
+      if (x > rectBottomRight.left && x < rectBottomRight.right && y < rectBottomRight.bottom && y > rectBottomRight.top)
+      {
+          buttonSAO.drawFillAndWire(td::ColorID::AquaMarine, td::ColorID::MidnightBlue);
+            answer.draw(p, gui::Font::ID::SystemBold, td::ColorID::Blue);
+      }
+      else
+      {      
+          buttonSAO.drawFillAndWire(td::ColorID::Blue, td::ColorID::MidnightBlue);
+           answer.draw(p, gui::Font::ID::SystemBold, td::ColorID::White);
+       }
+
+
+  };
 
     void reset() {
         _chatUserID = -2;
@@ -304,6 +432,15 @@ public:
             reDraw();
 
         }
+        
+      if (Globals::isSAO && inputDevice.getModelPoint().x>rectBottomRight.left && inputDevice.getModelPoint().x < rectBottomRight.right && 
+      inputDevice.getModelPoint().y<rectBottomRight.bottom && inputDevice.getModelPoint().y > rectBottomRight.top) {
+      gui::Window* pParentWnd = getParentWindow();
+      auto pWnd = new WindowCertainRequest(pParentWnd, indeks, Ime, prezime, tipKarte, status, request, title);
+      pWnd->keepOnTopOfParent();
+      pWnd->open();
+      reDraw();
+  }
     }
 
     bool getModelSize(gui::Size& modelSize) const override
@@ -473,6 +610,30 @@ public:
 
 
         return false;
+
+    }
+    
+        void onCursorMoved(const gui::InputDevice& inputDevice)override {
+        
+        
+        if (Globals::isSAO) {
+            gui::Size sz;
+            getSize(sz);
+
+            int x = inputDevice.getModelPoint().x;
+            int y = inputDevice.getModelPoint().y;
+
+            mousePosition.x = x;
+            mousePosition.y = y;
+
+            if (x > rectBottomRight.left && x < rectBottomRight.right && y < rectBottomRight.bottom && y > rectBottomRight.top)
+                setCursor(gui::Cursor::Type::Finger);
+            else
+                setCursor(gui::Cursor::Type::Default);
+
+            reDraw();
+        }
+
 
     }
 
