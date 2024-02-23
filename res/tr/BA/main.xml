@@ -330,6 +330,7 @@
 		<Res id="StuDEnroll" tr="Odjavi"/>
         <Res id="StuEnroll" tr="Prijavi"/>
 
+		<Res id="DEnroll" tr="Odjavi"/>
 
 		
 		<Res id="viewExamSignUp" tr="Prijava ispita"/>
