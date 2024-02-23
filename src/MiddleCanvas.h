@@ -352,7 +352,7 @@ public:
                     time.draw(vrijeme, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::Gainsboro, td::TextAlignment::Center, td::VAlignment::Center);
                     prisustvo.draw(prisutan, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::Gainsboro, td::TextAlignment::Center, td::VAlignment::Center);
 
-                    dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select Br_sedmice AS brsedmice, Vrijeme as vrijeme FROM Prisustvo, TerminiStudenti, Termini WHERE TerminiStudenti.ID_Studenta = ? AND  TerminiStudenti.ID_Termina = Prisustvo.ID_termina AND TerminiStudenti.TipPredavanjaID = 3 AND Termini.Predmet_ID=?");
+                    dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select Br_sedmice AS brsedmice, Vrijeme as vrijeme, Termini.TipPredavanjaID as tip, Termini.Predmet_ID as predmet FROM Prisustvo, TerminiStudenti, Termini WHERE TerminiStudenti.ID_Studenta = ? AND  TerminiStudenti.ID_Termina = Prisustvo.ID_termina AND Termini.TipPredavanjaID = 3 AND Termini.Predmet_ID=?");
                     dp::Params pParams(pSelect->allocParams());
                     pParams << Globals::_currentUserID<<predmetID;
                     dp::Columns pCols = pSelect->allocBindColumns(2);
