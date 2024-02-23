@@ -85,7 +85,7 @@ void ViewMessages::populateData() {
         << "Prezime" << td::string8
         << "Ime" << td::string8
         << "Datum" << td::date
-        << "Vrijeme" << td::date;
+        << "Vrijeme" << td::time;
 
     if (!_pDS->execute())
     {
