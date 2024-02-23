@@ -14,7 +14,8 @@ ViewTicket::ViewTicket()
 	, _hlBtnsDB(4)
 	, _btnSend(tr("send"), tr("sendRequestTT"))
 	, _btnOpen(tr("open"), tr("openTT"))
-	, _gl(6, 6)
+	, _gl(8, 6)
+	, _answeredticketslbl(tr("Answered tickets: "))
 	, _db(dp::create(dp::IDatabase::ConnType::CT_SQLITE, dp::IDatabase::ServerType::SER_SQLITE3))
 {
 
@@ -35,12 +36,17 @@ ViewTicket::ViewTicket()
 
 	gc.appendRow(_body, 0);
 
+	
+
 	gc.appendRow(_attachedFile);
 	gc.appendCol(_titleFile, 3);
 	gc.appendEmptyCols(1);
 	gc.appendCol(_btnAttach, td::HAlignment::Right);
 
 	gc.appendRow(_tableTickets, 0);
+
+	gc.appendRow(_answeredticketslbl);
+	gc.appendRow(_answeredtickets,0);
 
 	gc.appendRow(_hlBtnsDB, 0);
 	gui::View::setLayout(&_gl);
@@ -50,6 +56,8 @@ ViewTicket::ViewTicket()
 	populateTypeTicketCombo(_typeCombo);
 	populateTableData();
 	_titleFile.setAsReadOnly();
+	//_answeredtickets.setAsReadOnly();
+	populateAnsweredtickets();
 }
 
 bool ViewTicket::onChangedSelection(gui::ComboBox* pCmb)
@@ -77,18 +85,12 @@ void ViewTicket::populateTypeTicketCombo(gui::ComboBox& combo)
 	combo.addItem("Molba");
 	combo.addItem("Zalba");
 	combo.addItem("Prijedlog");
-	combo.selectIndex(0);
 }
 
 bool ViewTicket::onClick(gui::Button* pBtn)
 {
 	if (pBtn == &_btnSend)
 	{
-		if (_subject.isEmpty())
-		{
-			showAlert("", "");return true;
-		}
-
 		showYesNoQuestionAsync(QuestionID::Save, this, tr("alert"), tr("saveSureTicket"), tr("Yes"), tr("No"));
 		return true;
 	}
@@ -177,6 +179,25 @@ bool ViewTicket::sendTicket()
 	_tableTickets.reload();
 
 	return true;
+}
+
+void ViewTicket::populateAnsweredtickets() {
+
+	
+	td::String setstr = "SELECT SAOStudentTicket.Ticket_Tip as type, SAOStudentTicket.Req_Title as title, (SELECT SAOTicket_Status.Status as status FROM SAOTicket_Status WHERE SAOStudentTicket.Status_ID=SAOTicket_Status.ID) as status, SAOStudentTicket.Request as request, SAOStudentTicket.Answer as odgovor, SAOStudentTicket.ID as reqID, SAOStudentTicket.Indeks as indeks  FROM SAOStudentTicket WHERE SAOStudentTicket.Indeks=";
+	setstr.append(GetStudentIndeks().getConstStr());
+	dp::IDataSetPtr _pDs;
+	_pDs = dp::getMainDatabase()->createDataSet(setstr, dp::IDataSet::Execution::EX_MULT);
+	dp::DSColumns cols(_pDs->allocBindColumns(9));
+	
+
+	gui::Columns visCols(_answeredtickets.allocBindColumns(4));
+	visCols << gui::ThSep::DoNotShowThSep << gui::Header(0, tr("typeOfMessage"), "", 610) << gui::Header(1, tr("subject"), "", 610) << gui::Header(2, tr("Status:"), "", 610) << gui::Header(3, tr("Odgovor"), "", 610);
+	_answeredtickets.init(_pDs);
+	
+
+	
+
 }
 
 bool ViewTicket::sendTicketWithAttachment()
