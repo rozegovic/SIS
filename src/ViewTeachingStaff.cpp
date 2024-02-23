@@ -256,7 +256,10 @@ bool ViewTeachingStaff::canAdd()
 	if (!pSelect->moveNext())
 		return false;
 	if (a != 1 && a != 2 && a != 3)
+	{
+		showAlert(tr("alert"), tr("Korisnik nije profesor, asistent ili demonstrator!"));
 		return false;
+	}
 
 
 	return true;
