@@ -5,4 +5,5 @@
 struct GlobalsCanvas
 {
 	static td::INT4 brObavijesti;
+	static td::INT4 visinaLeftSAO;
 };

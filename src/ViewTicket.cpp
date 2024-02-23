@@ -84,6 +84,11 @@ bool ViewTicket::onClick(gui::Button* pBtn)
 {
 	if (pBtn == &_btnSend)
 	{
+		if (_subject.isEmpty())
+		{
+			showAlert("", "");return true;
+		}
+
 		showYesNoQuestionAsync(QuestionID::Save, this, tr("alert"), tr("saveSureTicket"), tr("Yes"), tr("No"));
 		return true;
 	}

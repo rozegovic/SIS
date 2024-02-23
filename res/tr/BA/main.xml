@@ -53,11 +53,12 @@
 		<Res id="viewAttendance" tr="Prisustvo"/>
 		<Res id="viewCurriculum" tr="Kurikulum"/>
 		<Res id="viewExamAtt" tr="Prijave na ispit"/>
-		<Res id="viewTicket" tr="Karta"></Res>
+		<Res id="viewTicket" tr="Zahtjev"></Res>
 		<Res id="viewCourseEnroll" tr="Predmeti upis"/>
 		<Res id="viewMessages" tr="Obavještenja"/>
 		<Res id="viewUpload" tr="Predaja zadace/laba"/>
 		<Res id="Withdraw" tr="Ispiši"/>
+        <Res id="viewTicketForSAO" tr="Zahtjevi studenata"/>
 
 		<Res id="ExamAttendanceRep" tr="Prijave na ispit"/>
 
@@ -345,7 +346,7 @@
 		<Res id="Index:" tr="Indeks:"/>
 		<Res id="Messages:" tr="Poruke:"/>
 		<Res id="Messages" tr="Poruke"/>
-
+   
 		<Res id="grade:" tr="Ocjena:"/>
 		<Res id="activityName:" tr="Aktivnost:"/>
 		<Res id="Report" tr="Izvještaj"/>
@@ -362,8 +363,9 @@
 		<Res id="viewExamLabHomework" tr="Ocjena dodataka"/>
 		
 		<Res id="noNotifs" tr="Nemate obavijesti"/>
+        <Res id="grade" tr="Ocjena"/>
 
-    <Res id="viewFinalGrade" tr="Konacke ocjene"/>
+    <Res id="viewFinalGrade" tr="Konacne ocjene"/>
 
     
 

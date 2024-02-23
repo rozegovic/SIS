@@ -13,7 +13,10 @@
 
 
 
+<<<<<<< Updated upstream
 //-------------------izbrisati sliku etf (tu samo da se nesto prikazuje)!!!
+=======
+>>>>>>> Stashed changes
 class FarLeftCanvas : public gui::Canvas
 {
 private:
@@ -29,16 +32,35 @@ protected:
     std::vector<std::pair<td::String, td::INT4>> users;
 
     td::INT4 _brojChat; // varijabla koja definise broj pravougaonika
+<<<<<<< Updated upstream
     td::INT4 _visinaChata;  // varijabla d iz gui::Rect imgRect(a,b,c,d)
+=======
+    td::INT4 _visinaChata;  // varijabla d iz gui::Rect imgRect(a,b,c,d
+    
+    //Grupa 2
+    gui::Shape _rect;
+    td::INT4 _noOfSubjects;
+    std::vector<std::pair<td::String, td::INT4>> SubjFrames;//naziv predmeta + y koord
+
+    td::INT4 numOfTickets;
+    
+>>>>>>> Stashed changes
 public:
     FarLeftCanvas( MiddleCanvas* canvas)
         : Canvas({ gui::InputDevice::Event::PrimaryClicks })
         ,_etf(":ETF")
         , _brojChat(3)
         , _visinaChata(100)
+<<<<<<< Updated upstream
     {
         _middleCanvas = canvas;
     }
+=======
+        ,numOfTickets(0)
+        {
+            _middleCanvas = canvas;
+        }
+>>>>>>> Stashed changes
 
     void onDraw(const gui::Rect& rect) override {
         const bool check = false;
@@ -83,6 +105,8 @@ public:
 
             gui::Rect imgRect(0, 0, sz.width, 100);
 
+            numOfTickets = 0;
+
             while (pSelect->moveNext() && pSelect1->moveNext() && pSelect2->moveNext())
             {
                 name.append(" ");
@@ -115,7 +139,15 @@ public:
 
                 imgRect.translate(0, 110);
 
+                numOfTickets++;
+
             }
+            
+            GlobalsCanvas::visinaLeftSAO = i*100;
+
+            sz.height = GlobalsCanvas::visinaLeftSAO;
+
+            getScroller()->setContentSize(sz);
 
         }
 
@@ -131,6 +163,7 @@ public:
     std::vector<std::pair<td::String, td::INT4>> SubjFrames;//naziv predmeta + y koord
    
 
+<<<<<<< Updated upstream
     
     
 public:
@@ -346,6 +379,54 @@ public:
 
             _middleCanvas->SetMessageNumSAO(rbrPoruke);
 
+=======
+    void onPrimaryButtonPressed(const gui::InputDevice& inputDevice) override {
+        if(Globals::_currentUserID == 1 || Globals::_currentUserID == 3){
+        
+        double tempk = 0;
+
+        int a = 0;
+        td::INT4 IdUserChat;
+
+        for (int i = 0; i < users.size(); i++) {
+
+            // if (tempk < int(inputDevice.getFramePoint().y) && inputDevice.getFramePoint().y < (tempk + _visinaChata)) {
+            if (tempk < int(inputDevice.getModelPoint().y) && inputDevice.getModelPoint().y < (tempk + _visinaChata)) {
+                a = i;
+                IdUserChat = users[i].second; 
+                //IdUserChat = i; // ovo se poslije brise
+                _middleCanvas->Reset(IdUserChat);
+            }
+            tempk = tempk + _visinaChata+10;
+        }
+
+        // openMiddleCanvas();
+        if (inputDevice.getType() == gui::InputDevice::Type::Mouse && inputDevice.getButton() == gui::InputDevice::Button::Primary) {
+            // openMiddleCanvas();
+        }
+        }
+        else if (Globals::isSAO) {
+
+
+                gui::Size sz;
+                getSize(sz);
+
+                const gui::Point& klik = inputDevice.getModelPoint();
+
+                td::INT4 rbrPoruke = klik.y;
+
+                rbrPoruke = rbrPoruke / 110;
+
+
+                if (klik.x > sz.width + 5 || rbrPoruke>numOfTickets-1)
+                    return;
+
+                //showAlert("", std::to_string(rbrPoruke));
+
+                _middleCanvas->SetMessageNumSAO(rbrPoruke);
+
+            
+>>>>>>> Stashed changes
         }
     }
 
@@ -356,8 +437,21 @@ public:
 
     bool getModelSize(gui::Size& modelSize) const override
     {
+<<<<<<< Updated upstream
         modelSize.width = 1300;
         modelSize.height = 550;
+=======
+
+        if (Globals::isSAO)
+        {
+            modelSize.width = 230;
+            modelSize.height = GlobalsCanvas::visinaLeftSAO;
+            return true;
+        }
+
+        modelSize.width = 230;
+        modelSize.height = (_brojChat) * 110;
+>>>>>>> Stashed changes
         return true;
     }
 
