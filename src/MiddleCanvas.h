@@ -92,8 +92,8 @@ public:
                 if (!pSelect->execute())
                     return;
                 while (pSelect->moveNext());    */
-                cp.x = 65;
-                gui::DrawableString::draw(_subjectname, cp, gui::Font::ID::SystemLargerBold, td::ColorID::Gold);
+                cp.x = 10;
+                gui::DrawableString::draw(_subjectname, cp, gui::Font::ID::SystemLargerBold, td::ColorID::DimGray);
 
                 razmak += 5;
                 cp.y += razmak;
@@ -117,7 +117,7 @@ public:
                 pozicija += " ";
                 pozicija += name;
                 gui::DrawableString Pozicija = pozicija;
-                Pozicija.draw(cp, gui::Font::ID::SystemLargerBold, td::ColorID::Gold);
+                Pozicija.draw(cp, gui::Font::ID::SystemLargerBold, td::ColorID::DimGray);
                 }
                 razmak += 10;
                 cp.y += razmak;
@@ -138,7 +138,7 @@ public:
                 while (pSelect2->moveNext()) {
                     cp.y += 20;
                     gui::DrawableString text3 = naziv;
-                    text3.draw(cp, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::Gold);
+                    text3.draw(cp, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::DimGray);
                 }
                 razmak += 10;
                 cp.y += razmak;
@@ -162,10 +162,10 @@ public:
                     cp.y += 20;
                     Ocjene.push_back(ocjena.toINT4());
                     gui::DrawableString text4 = tip;
-                    text4.draw(cp, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::Gold);
+                    text4.draw(cp, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::DimGray);
                     cp.x = cp.x + tip.length() + 55;
                     gui::DrawableString text5 = ocjena;
-                    text5.draw(cp, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::Gold);
+                    text5.draw(cp, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::DimGray);
                     cp.x = cp.x - tip.length() - 55;
                 }
                 for (int i = 0; i < Ocjene.size(); i++)
@@ -270,9 +270,17 @@ public:
 
                         gui::Rect time1(0, 0, novaduzina, visina);
                         time1.translate(i * novaduzina + duzina, visina);
-                        td::String temp = std::to_string(Vrijeme.getHour()); 
+                        td::INT4 hour = Vrijeme.getHour();
+                        td::String temp;
+                        if (hour / 10 == 0)
+                            temp += "0";
+                        
+                        temp += std::to_string(Vrijeme.getHour()); 
                         temp += ":";
                         temp+= std::to_string(Vrijeme.getMinute());
+                        td::INT4 min = Vrijeme.getMinute();
+                        if (min/ 10 == 0)
+                            temp += "0";
                         gui::DrawableString vrijemezaispis = temp;
                         gui::Shape::drawRect(time1, td::ColorID::White, td::ColorID::Black, 0.5, td::LinePattern::Solid);
                         vrijemezaispis.draw(time1, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::Black, td::TextAlignment::Center, td::VAlignment::Center);
