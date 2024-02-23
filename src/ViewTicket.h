@@ -51,6 +51,8 @@ protected:
 	gui::Button _btnAttach;
 
 	gui::TableEdit _tableTickets;
+	gui::TableEdit _answeredtickets;
+	gui::Label _answeredticketslbl;
 	gui::GridLayout _gl;
 	dp::IDatabase* _db;
 	dp::IDataSetPtr _pDS;
@@ -75,5 +77,6 @@ protected:
 	void initTable();
 	void populateTypeTicketCombo(gui::ComboBox& combo);
 	bool onChangedSelection(gui::ComboBox* pCmb);
+	void populateAnsweredtickets();
 	void UpdateTable();
 };
