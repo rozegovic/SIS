@@ -322,7 +322,7 @@ public:
 
                     gui::Transformation zoomTr;
                     double zoom = 1.; //experiment with this and see impact
-                    double scrollX = 0;
+                    double scrollX = 10;
                     double scrollY = cp.y + 70;
                     zoomTr.translate(scrollX, scrollY);
                     zoomTr.scale(zoom);
