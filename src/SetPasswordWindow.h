@@ -16,7 +16,7 @@ protected:
     SetPasswordView _viewPwrd;
 public:
     SetPasswordWindow(gui::Window* parentWnd, td::UINT4 wndID = 0)
-        : gui::Window(gui::Size(800, 600), parentWnd, wndID)
+        : gui::Window(gui::Size(800, 200), parentWnd, wndID)
     {
         setTitle(tr("SetPassword"));
         setCentralView(&_viewPwrd);
