@@ -186,7 +186,7 @@
 							  <Res id="alertStu" tr="Vec ste prijavljeni na ovaj tip termina"/>
 							 <Res id="alertAttNegative" tr="Broj mjesta ne može biti negativan"/>
 							<Res id="SubjTablePresent" tr="Prisutni za ovaj termin:"/>
-
+								<Res id="ChangePass" tr="Promjena lozinke"/>
 							<Res id="tablePresent" tr="Prisutni za ovaj termin:"/>
 							<Res id="alertNoTerm" tr="Niste odabrali ni jedan termin"/>
 									<Res id="Report" tr="Izvještaj"/>
