@@ -58,10 +58,10 @@ void ViewTicketForSAO::initAnsweredTable()
 
 void ViewTicketForSAO::populateOnHoldTickets()
 {
-	td::String setstr = "SELECT Korisnici.Ime as Name, Korisnici.Prezime as Surname,SAOStudentTicket.Indeks as StudentIndex, SAOStudentTicket.Ticket_Tip as TypeOfTicket, SAOStudentTicket.Req_Title as TitleofTicket, SAOStudentTicket.Status_ID as Status_ID, SAOTicket_Status.Status as Status, SAOStudentTicket.Request as Request From Korisnici, SAOStudentTicket, SAOTicket_Status where Korisnici.Indeks=SAOStudentTicket.Indeks AND Status_ID=1 AND SAOTicket_Status.ID=SAOStudentTicket.Status_ID";
+	td::String setstr = "SELECT Korisnici.Ime as Name, Korisnici.Prezime as Surname,SAOStudentTicket.Indeks as StudentIndex, SAOStudentTicket.Ticket_Tip as TypeOfTicket, SAOStudentTicket.Req_Title as TitleofTicket, SAOStudentTicket.Status_ID as Status_ID, SAOTicket_Status.Status as Status, SAOStudentTicket.Request as Request,SAOStudentTicket.ID AS TicketID From Korisnici, SAOStudentTicket, SAOTicket_Status where Korisnici.Indeks=SAOStudentTicket.Indeks AND Status_ID=1 AND SAOTicket_Status.ID=SAOStudentTicket.Status_ID";
 	_pDS_hold = dp::getMainDatabase()->createDataSet(setstr, dp::IDataSet::Execution::EX_MULT);
-	dp::DSColumns cols(_pDS_hold->allocBindColumns(8));
-	cols << "Name" << td::string8 << "Surname" << td::string8 << "StudentIndex" << td::string8 << "TypeOfTicket" << td::string8 << "TitleOfTicket" << td::string8 <<"Status_ID"<<td::int4<< "Status" << td::string8 << "Request" << td::string8;
+	dp::DSColumns cols(_pDS_hold->allocBindColumns(9));
+	cols << "Name" << td::string8 << "Surname" << td::string8 << "StudentIndex" << td::string8 << "TypeOfTicket" << td::string8 << "TitleOfTicket" << td::string8 <<"Status_ID"<<td::int4<< "Status" << td::string8 << "Request" << td::string8<<"TicketID"<<td::int4;
 	if (!_pDS_hold->execute())
 	{
 		_pDS_hold = nullptr;
@@ -73,11 +73,11 @@ void ViewTicketForSAO::populateOnHoldTickets()
 
 void ViewTicketForSAO::populateAnsweredTickets()
 {
-	td::String setstr = "SELECT Korisnici.Ime AS Name,Korisnici.Prezime AS Surname,SAOStudentTicket.Indeks AS StudentIndex,SAOStudentTicket.Ticket_Tip AS TypeOfTicket,SAOStudentTicket.Req_Title AS TitleOfTicket,SAOStudentTicket.Status_ID AS Status_ID,SAOTicket_Status.Status AS Status,SAOStudentTicket.Request AS Request FROM Korisnici JOIN SAOStudentTicket ON Korisnici.Indeks = SAOStudentTicket.Indeks JOIN SAOTicket_Status ON SAOTicket_Status.ID = SAOStudentTicket.Status_ID WHERE SAOStudentTicket.Status_ID = 2;";
+	td::String setstr = "SELECT Korisnici.Ime AS Name,Korisnici.Prezime AS Surname,SAOStudentTicket.Indeks AS StudentIndex,SAOStudentTicket.Ticket_Tip AS TypeOfTicket,SAOStudentTicket.Req_Title AS TitleOfTicket,SAOStudentTicket.Status_ID AS Status_ID,SAOTicket_Status.Status AS Status,SAOStudentTicket.Request AS Request,SAOStudentTicket.ID AS TicketID FROM Korisnici JOIN SAOStudentTicket ON Korisnici.Indeks = SAOStudentTicket.Indeks JOIN SAOTicket_Status ON SAOTicket_Status.ID = SAOStudentTicket.Status_ID WHERE SAOStudentTicket.Status_ID = 2;";
 
 	_pDS_answered = dp::getMainDatabase()->createDataSet(setstr, dp::IDataSet::Execution::EX_MULT);
-	dp::DSColumns cols(_pDS_answered->allocBindColumns(8));
-	cols << "Name" << td::string8 << "Surname" << td::string8 << "StudentIndex" << td::string8 << "TypeOfTicket" << td::string8 << "TitleOfTicket" << td::string8 << "Status_ID" << td::int4 << "Status" << td::string8 << "Request" << td::string8;
+	dp::DSColumns cols(_pDS_answered->allocBindColumns(9));
+	cols << "Name" << td::string8 << "Surname" << td::string8 << "StudentIndex" << td::string8 << "TypeOfTicket" << td::string8 << "TitleOfTicket" << td::string8 << "Status_ID" << td::int4 << "Status" << td::string8 << "Request" << td::string8 << "TicketID" << td::int4 << "TicketID" << td::int4;
 	if (!_pDS_answered->execute())
 	{
 		_pDS_answered = nullptr;
@@ -253,6 +253,10 @@ bool ViewTicketForSAO::onClick(gui::Button* pBtn)
 {
 	if (pBtn == &_btnOpen)
 	{
+	
+		int iRow = _onHoldTickets.getFirstSelectedRow();
+		auto& row = _onHoldTickets.getDataSet()->getRow(iRow);
+
 		/*td::String indeks = getIndex();
 		td::String ime = getName();
 		td::String prezime = getSurname();
@@ -260,8 +264,11 @@ bool ViewTicketForSAO::onClick(gui::Button* pBtn)
 		td::String status = getStatus();
 		td::String request = getRequest();
 		td::String title = getTitle();*/
+
+		showAlert("",std::to_string(row[8].i4Val()));
+
 		gui::Window* pParentWnd = getParentWindow();
-		auto pWnd = new WindowCertainRequest(pParentWnd,indeks,ime,prezime,tipKarte,status,request,title);
+		auto pWnd = new WindowCertainRequest(pParentWnd,row[8].i4Val(), indeks, ime, prezime, tipKarte, status, request, title);
 		pWnd->keepOnTopOfParent();
 		pWnd->open();
 		
