@@ -9,7 +9,7 @@
 #include "ViewTeachingStaff.h"
 #include "ViewActivity.h"
 #include "ViewEnroll.h"
-#include "SetPasswordView.h"
+#include "SetPasswordWindow.h"
 #include "DialogChooseSubject.h"
 #include "ViewCurriculum.h"
 #include "DialogChooseAllSubjects.h"
@@ -360,7 +360,11 @@ bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc)
         }
         case 20:
         {
-            
+            gui::Window* pParentWnd = getParentWindow();
+            auto pWnd = new SetPasswordWindow(pParentWnd, 2);
+            pWnd->keepOnTopOfParent();
+            pWnd->open();
+            return true;
         }
         }
     }

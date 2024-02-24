@@ -193,8 +193,9 @@
 									<Res id="Report1" tr="Izvještaj ispita"/>
 		<Res id="ActivityRep" tr="Izvještaj aktivnosti"/>
 		<Res id="viewTimeSlot" tr="Prijava termina"/>
-		
-		
+		<Res id="PwrdOK" tr="Uspješno promijenjena lozinka"/>
+		<Res id="CloseWnd" tr="Zatvori prozor"/>
+		<Res id="PwrdErr" tr="Lozinke nisu iste!"/>
 		
 		
 		<Res id="courseCode:" tr="Šifra predmeta:"/>
