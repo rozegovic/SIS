@@ -367,7 +367,14 @@
         <Res id="grade" tr="Ocjena"/>
 
     <Res id="viewFinalGrade" tr="Konacne ocjene"/>
-
+	<Res id="open" tr="Otvori"/>
+	<Res id="On hold tickets" tr="Na cekanju"/>
+	<Res id="Answered tickets" tr="Odgovoreni"/>
+		<Res id="SaveAttachment" tr="Spremi dodatak"/>
+           <Res id="Answer:" tr="Odgovor"/>
+		<Res id="typeOfTicket" tr="Tip"/>
+		<Res id="Answered tickets" tr="Odgovoreni"/>
+		<Res id="titleOfTicket" tr="Naslov"/>
     
 
 

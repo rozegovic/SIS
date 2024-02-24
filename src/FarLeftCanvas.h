@@ -12,6 +12,7 @@
 #include <vector>
 #include <gui/DrawableString.h>
 #include <gui/Window.h>
+#include "GlobalsCanvas.h"
 
 
 class FarLeftCanvas : public gui::Canvas
@@ -47,6 +48,7 @@ public:
         ,numOfTickets(0)
         {
             _middleCanvas = canvas;
+
         }
 
     void onDraw(const gui::Rect& rect) override {
@@ -213,7 +215,6 @@ public:
            sz.height = GlobalsCanvas::visinaLeftSAO;
 
            getScroller()->setContentSize(sz);
-
        }
 
         // pogled za studenta ------ grupa 2
@@ -307,6 +308,7 @@ public:
         }
     else if (Globals::isSAO) {
 
+            reDraw();
 
         gui::Size sz;
         getSize(sz);
@@ -321,13 +323,12 @@ public:
         if (klik.x > sz.width + 5 || rbrPoruke>numOfTickets-1)
             return;
 
-        //showAlert("", std::to_string(rbrPoruke));
+       _middleCanvas->SetMessageNumSAO(rbrPoruke,this);
 
-        _middleCanvas->SetMessageNumSAO(rbrPoruke);
+     }
 
-    
+
 }
-    }
 
     bool getModelSize(gui::Size& modelSize) const override
     {
