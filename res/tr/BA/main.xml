@@ -179,7 +179,10 @@
 						  <Res id="SubjPresent" tr="Prisutan"/>
 						  <Res id="SubjNotPresent" tr="Nije Prisutan"/>
                             <Res id="alertPr" tr="Vec ste unijeli prisustvo ovog studenta za ovaj termin"/>
-
+                               <Res id="SetPassword" tr="Postavite novu lozinku"/>
+							    <Res id="NewPwrd" tr="Unesite lozinku:"/>
+								  <Res id="RepeatPwrd" tr="Ponovo unesite lozinku:"/>
+								  <Res id="HNewPwrd" tr="Nova lozinka:"/>
 							  <Res id="alertStu" tr="Vec ste prijavljeni na ovaj tip termina"/>
 							 <Res id="alertAttNegative" tr="Broj mjesta ne može biti negativan"/>
 							<Res id="SubjTablePresent" tr="Prisutni za ovaj termin:"/>
@@ -371,11 +374,12 @@
 	<Res id="On hold tickets" tr="Na cekanju"/>
 	<Res id="Answered tickets" tr="Odgovoreni"/>
 		<Res id="SaveAttachment" tr="Spremi dodatak"/>
+
            <Res id="Answer:" tr="Odgovor"/>
 		<Res id="typeOfTicket" tr="Tip"/>
 		<Res id="Answered tickets" tr="Odgovoreni"/>
 		<Res id="titleOfTicket" tr="Naslov"/>
-    
+
 
 
 

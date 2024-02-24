@@ -17,6 +17,7 @@ protected:
     gui::Image _etf;
     td::UINT2 priorKlikx=0;
     td::INT4 dragBoxNum=-1;
+
     td::INT4 boxTranslate = 0;
     td::INT4 ForDeletion = -1;
     td::INT4 MessageToExpand = -1;
@@ -48,7 +49,7 @@ public:
         dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT a.Subject, a.Poruke "
             "  FROM Messages a "
             "  JOIN MsgReceivers mr ON mr.MsgID = a.ID "
-            "   WHERE mr.UserID = ? ");
+            "   WHERE mr.UserID = ? AND a.Subject != 'chat'");
 
         dp::Params parDS(pSelect->allocParams());
         parDS << Globals::_currentUserID;
@@ -219,7 +220,7 @@ public:
             rrect.drawFill(td::ColorID::Silver);//
 
             pt.translate(sz.width / 2 - 75, 20);
-
+            
             str.draw(pt, gui::Font::ID::SystemLargerBold, td::ColorID::Black);//
 
         }
@@ -227,7 +228,7 @@ public:
         gui::Size szpom;
         getSize(szpom);
         szpom.height = (GlobalsCanvas::brObavijesti * 70) + (AddToScroller + 50);
-        
+
         getScroller()->setContentSize(szpom);
 
     };
@@ -310,6 +311,7 @@ public:
 
 
     void onCursorDragged(const gui::InputDevice& inputDevice) override {
+
        
 
         td::INT4 klikx = inputDevice.getModelPoint().x;
@@ -317,6 +319,7 @@ public:
         if (klikx > 0 && priorKlikx != 0)
         {
             boxTranslate = (klikx-priorKlikx);
+
             setCursor(gui::Cursor::Type::Finger);
         }
 
@@ -336,6 +339,7 @@ public:
         setCursor(gui::Cursor::Type::Default);
 
         if (priorKlikx == 0 && MessageToExpand == -1 && boxTranslate==0) {
+
 
             MessageToExpand = dragBoxNum;
             reDraw();
@@ -432,6 +436,7 @@ public:
     {
         return _canvas;
 
+
     }
 
     void reset() {
@@ -442,4 +447,3 @@ public:
         this->setContentSize(sz);
     }
 };
-

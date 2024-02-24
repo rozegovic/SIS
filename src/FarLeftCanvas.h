@@ -36,7 +36,9 @@ protected:
     gui::Shape _rect;
     td::INT4 _noOfSubjects;
     std::vector<std::pair<td::String, td::INT4>> SubjFrames;//naziv predmeta + y koord
-    
+    std::vector<td::INT4> subjects;
+    std::vector<td::String> _subjectsName;
+  
       td::INT4 numOfTickets;
     
 public:
@@ -51,6 +53,31 @@ public:
 
         }
 
+
+    
+
+    
+    //Grupa2
+    bool createStrings() {
+        dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select a.Naziv_Predmeta AS Naziv, a.ID_Predmeta as ID FROM Predmet a, UpisPredmeta b WHERE b.ID_Studenta = ? AND  b.ID_Predmeta = a.ID_Predmeta");        
+        dp::Params pParams(pSelect->allocParams());
+        pParams << Globals::_currentUserID;
+        dp::Columns pCols = pSelect->allocBindColumns(2);        
+        td::String name;
+        td::INT4 ID;
+       // gui::DrawableString drawableName;
+        pCols << "Naziv" << name << "ID" << ID;
+        if (!pSelect->execute())
+            return false;
+        _subjectsName.resize(0);
+        subjects.resize(0);
+        while (pSelect->moveNext()) {
+            //gui::DrawableString drawableName = name;
+            _subjectsName.push_back(name);
+            subjects.push_back(ID);
+        }
+        return true;
+    }
     void onDraw(const gui::Rect& rect) override {
         const bool check = false;
         // pogled za profesora i asistenta ------ grupa 3
@@ -136,6 +163,8 @@ public:
                 gui::Shape::drawRect(imgRect, boja, 5, td::LinePattern::Solid);
                 imgRect.translate(0, 110);
             }
+            getScroller()->setContentSize(sz);
+
         }
 
          // pogled za SAO ------ grupa 1
@@ -217,45 +246,75 @@ public:
            getScroller()->setContentSize(sz);
        }
 
+       
         // pogled za studenta ------ grupa 2
-        else if (Globals::_currentUserRole == 5) {
-            //  createStrings();
-            std::vector<std::pair<gui::DrawableString, td::INT4>> SubjFrames;//naziv predmeta + y koord
-            _noOfSubjects = 0;
-            gui::Size sz;
-            getSize(sz);
-            //createStrings();
-            gui::Rect r(0, 0, sz.width, 50);
-            float lw = 5;
-            // gui::Rect imgRect(450, 50, 650, 150);
-             /*for (int i = 0; i < _subjects.size(); i++) {
-                 gui::Shape::drawRect(r,td::ColorID::WhiteSmoke, td::ColorID::Navy, 4, td::LinePattern::Solid);
-                 _subjects[i].draw(pt, gui::Font::ID::SystemLargerBold, td::ColorID::Navy);
-                 pt.translate(0,50);
-                 r.translate(0, 50);
-             }*/
-            dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select a.Naziv_Predmeta AS Naziv FROM Predmet a, UpisPredmeta b WHERE b.ID_Studenta = ? AND  b.ID_Predmeta = a.ID_Predmeta");
-            dp::Params pParams(pSelect->allocParams());
-            pParams << Globals::_currentUserID;
-            dp::Columns pCols = pSelect->allocBindColumns(1);
-            td::String name;
-            // gui::DrawableString drawableName;
-            pCols << "Naziv" << name;
-            if (!pSelect->execute())
-                return;
-            while (pSelect->moveNext()) {
-                gui::DrawableString subject = name;
-                gui::Shape::drawRect(r, td::ColorID::WhiteSmoke, td::ColorID::Navy, 4, td::LinePattern::Solid);
-                subject.draw(r, gui::Font::ID::SystemLargerBold, td::ColorID::Navy);
-                //pt.translate(0, 50);
+       else if (Globals::_currentUserID == 5) {
+           // subjects.clear();
+           createStrings();
+           //std::vector<td::INT4> SubjFrames;// rbr predmeta
+           //_noOfSubjects  = 0 ;
+           gui::Size sz;
+           getSize(sz);
+           //createStrings();
+           gui::Rect r(0, 0, sz.width, 50);
+           float lw = 5;
+           // gui::Rect imgRect(450, 50, 650, 150);
+            /*for (int i = 0; i < _subjects.size(); i++) {
+                gui::Shape::drawRect(r,td::ColorID::WhiteSmoke, td::ColorID::Navy, 4, td::LinePattern::Solid);
+                _subjects[i].draw(pt, gui::Font::ID::SystemLargerBold, td::ColorID::Navy);
+                pt.translate(0,50);
                 r.translate(0, 50);
-                //                td::INT4 tempNo = 50*_noOfSubjects;
-                //                SubjFrames.push_back(std::pair<gui::DrawableString, td::INT4>(subject, tempNo));
-                //                _noOfSubjects++;
-            }
+            }*/
+
+            //dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select a.Naziv_Predmeta AS Naziv, a.ID_Predmeta as ID FROM Predmet a, UpisPredmeta b WHERE b.ID_Studenta = ? AND  b.ID_Predmeta = a.ID_Predmeta");
+            //dp::Params pParams(pSelect->allocParams());
+            //pParams << Globals::_currentUserID;
+            //dp::Columns pCols = pSelect->allocBindColumns(2);
+            //td::String name;
+            //td::INT4 ID;
+            //// gui::DrawableString drawableName;
+            //pCols << "Naziv" << name << "ID" << ID;
+            //if (!pSelect->execute())
+            //    return ;
+           gui::Point pt(0, 25);
+           for (auto& name : _subjectsName) {
+               gui::DrawableString subject = name;
+               gui::Shape::drawRect(r, td::ColorID::DimGray, td::ColorID::Black, 0.5, td::LinePattern::Solid);
+               subject.draw(r, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::Gainsboro, td::TextAlignment::Center, td::VAlignment::Center);
+               //pt.translate(0, 50);
+               r.translate(0, 50);
+               pt.translate(0, 50);
+
+           }
+           //_middleCanvas->setSubjectID(0);    //
+//            gui::Size sz;
+//            getSize(sz);
+//            gui::Point cp(sz.width / 2, sz.height / 2);
+//            td::INT4 x = cp.x;
+//            td::INT4 y = cp.y;
+//
+//            gui::Rect imgRect(x - 15 - x / 4, y - 15 - y / 4, x + 15 + x / 4, y + 15 + y / 4);
+//            _etf.draw(imgRect, gui::Image::AspectRatio::Keep, td::HAlignment::Center, td::VAlignment::Center);
+
+}
+
+        // kada nema ulogovane osobe
+       /* else if(Globals::isLogged==check){
+
+        }*/
+        else {
+
         }
     };
+    
+    
+
+
     void reset() {
+        //if(Globals::isStudent){
+        //    subjects.clear();
+        //}
+        //createStrings();
         reDraw();
     };
 
@@ -328,10 +387,37 @@ public:
      }
 
 
-}
+       
+    
+} 
+    else if (Globals::isStudent)
+        {
+            gui::Size sz;
+            getSize(sz);
+            const gui::Point& modelPoint = inputDevice.getFramePoint();
+            td::INT4 rbr = modelPoint.y / 50; //visina svakog pravougaonika je 50, pa ce ovo vratiti rbr (pocevsi od 0)?
+            //vektor subjects cuva sve IDs predmeta koji su ispisani, i to redom kako su ispisani. 
+            // Da dobijete ID kliknutog predmeta ide subjects.at(rbr), kao u alertu ispod
+            std::cout << subjects.size();
+            if (rbr >= subjects.size())
+                return;
+            td::INT4 subjectID = subjects.at(rbr);
+            td::String name = _subjectsName.at(rbr);
+            _middleCanvas->setSubjectID(subjectID);
+            _middleCanvas->setSubjectName(name);
+
+            _middleCanvas->reset();
+            //showAlert("", std::to_string(subjects.at(rbr)));
+
+            //_middleCanvas->onDraw();
+           // showAlert("", std::to_string(subjects.at(rbr)));
+
+        }
+    }
 
     bool getModelSize(gui::Size& modelSize) const override
     {
+
     
         if (Globals::isSAO)
         {
