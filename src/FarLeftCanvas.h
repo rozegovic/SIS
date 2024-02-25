@@ -58,7 +58,7 @@ public:
         , _visinaChata(100)
         , numOfTickets(0)
         , _db(dp::getMainDatabase())
-        , img2(":Add48")
+        , img2(":add")
     {
         _middleCanvas = canvas;
      
