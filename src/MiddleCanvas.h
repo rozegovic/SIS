@@ -65,6 +65,11 @@ protected:
     td::String status;
     gui::Rect rectBottomRight;
     gui::Point mousePosition;
+    
+    td::INT4 IDTicket=-1;
+
+    gui::Canvas* farleft;
+
 
 public:
     MiddleCanvas()
@@ -322,7 +327,7 @@ public:
 
                     gui::Transformation zoomTr;
                     double zoom = 1.; //experiment with this and see impact
-                    double scrollX = 0;
+                    double scrollX = 10;
                     double scrollY = cp.y + 70;
                     zoomTr.translate(scrollX, scrollY);
                     zoomTr.scale(zoom);
@@ -352,13 +357,13 @@ public:
                     time.draw(vrijeme, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::Gainsboro, td::TextAlignment::Center, td::VAlignment::Center);
                     prisustvo.draw(prisutan, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::Gainsboro, td::TextAlignment::Center, td::VAlignment::Center);
 
-                    dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select Br_sedmice AS brsedmice, Vrijeme as vrijeme, Termini.TipPredavanjaID as tip, Termini.Predmet_ID as predmet FROM Prisustvo, TerminiStudenti, Termini WHERE TerminiStudenti.ID_Studenta = ? AND  TerminiStudenti.ID_Termina = Prisustvo.ID_termina AND Termini.TipPredavanjaID = 3 AND Termini.Predmet_ID=?");
+                    dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select Br_sedmice AS brsedmice, Vrijeme as vrijeme FROM Prisustvo, TerminiStudenti, Termini WHERE TerminiStudenti.ID_Studenta = ? AND  TerminiStudenti.ID_Termina = Prisustvo.ID_termina AND Termini.ID = TerminiStudenti.ID_Termina AND Termini.TipPredavanjaID = 3 AND Termini.Predmet_ID=?");
                     dp::Params pParams(pSelect->allocParams());
                     pParams << Globals::_currentUserID<<predmetID;
                     dp::Columns pCols = pSelect->allocBindColumns(2);
                     td::INT4 brsedmice;
                     td::Time Vrijeme;
-                    pCols << "brsedmice" << brsedmice << "Vrijeme" << Vrijeme;
+                    pCols << "brsedmice" << brsedmice << "vrijeme" << Vrijeme;
                     std::vector<td::INT4> prisutnesedmice;
                     if (pSelect->execute()) {
                         prisutnesedmice.resize(0);
@@ -438,8 +443,9 @@ public:
 
 
 
-    void SetMessageNumSAO(td::INT4 br) {
+    void SetMessageNumSAO(td::INT4 br,gui::Canvas* pok) {
         brojPoruke = br;
+        farleft = pok;
         reset();
     };
 
@@ -452,10 +458,10 @@ public:
 
       dp::IDataSet* pDS = dp::getMainDatabase()->createDataSet("SELECT Korisnici.Ime as Name, Korisnici.Prezime as Surname,SAOStudentTicket.Indeks as StudentIndex,"
           " SAOStudentTicket.Ticket_Tip as TypeOfTicket, SAOStudentTicket.Req_Title as TitleofTicket, SAOStudentTicket.Status_ID as Status_ID,SAOTicket_Status.Status as Status,"
-          " SAOStudentTicket.Request as Request From Korisnici, SAOStudentTicket, SAOTicket_Status where Korisnici.Indeks=SAOStudentTicket.Indeks AND SAOTicket_Status.ID=SAOStudentTicket.Status_ID");
+          " SAOStudentTicket.Request as Request,SAOStudentTicket.ID AS IDTicket From Korisnici, SAOStudentTicket, SAOTicket_Status where Korisnici.Indeks=SAOStudentTicket.Indeks AND SAOTicket_Status.ID=SAOStudentTicket.Status_ID");
 
-      dp::DSColumns cols(pDS->allocBindColumns(8));
-      cols << "Name" << td::string8 << "Surname" << td::string8 << "StudentIndex" << td::string8 << "TypeOfTicket" << td::string8 << "TitleOfTicket" << td::string8 << "Status_ID" << td::int4 << "Status" << td::string8 << "Request" << td::string8;
+      dp::DSColumns cols(pDS->allocBindColumns(9));
+      cols << "Name" << td::string8 << "Surname" << td::string8 << "StudentIndex" << td::string8 << "TypeOfTicket" << td::string8 << "TitleOfTicket" << td::string8 << "Status_ID" << td::int4 << "Status" << td::string8 << "Request" << td::string8<<"IDTicket"<<td::int4;
       if (!pDS->execute())
       {
           pDS = nullptr;
@@ -463,10 +469,14 @@ public:
           return;
       }
 
+      td::String str;
+
       //showAlert("", std::to_string(brojPoruke));
 
 
       auto row = pDS->getRow(brojPoruke);
+
+      IDTicket = row[8].i4Val();
 
       td::String ime = row[0].getConstStr();
       ime.append(" ");
@@ -581,8 +591,6 @@ public:
 
       szpom.height = skrolV;
 
-      this->getScroller()->setContentSize(szpom);
-
       int bottomRightX = sz.width - 100; // X koordinata
       int bottomRightY = sz.height - 70; // Y koordinata
       int rectWidth = 80;
@@ -623,6 +631,7 @@ public:
            answer.draw(p, gui::Font::ID::SystemBold, td::ColorID::White);
        }
 
+      this->getScroller()->setContentSize(szpom);
 
   };
 
@@ -690,20 +699,30 @@ public:
         }
         
       if (Globals::isSAO && inputDevice.getModelPoint().x>rectBottomRight.left && inputDevice.getModelPoint().x < rectBottomRight.right && 
-      inputDevice.getModelPoint().y<rectBottomRight.bottom && inputDevice.getModelPoint().y > rectBottomRight.top) {
-      gui::Window* pParentWnd = getParentWindow();
-      auto pWnd = new WindowCertainRequest(pParentWnd, indeks, Ime, prezime, tipKarte, status, request, title);
-      pWnd->keepOnTopOfParent();
-      pWnd->open();
-      reDraw();
-  }
+                  inputDevice.getModelPoint().y<rectBottomRight.bottom && inputDevice.getModelPoint().y > rectBottomRight.top)
+      {   
+          gui::Window* pParentWnd = getParentWindow();
+          auto pWnd = new WindowCertainRequest(pParentWnd,IDTicket,indeks, Ime, prezime, tipKarte, status, request, title);
+          pWnd->keepOnTopOfParent();
+          pWnd->open();
+          reDraw();
+      }
     }
 
     bool getModelSize(gui::Size& modelSize) const override
     {
-        //dodati da se dinamicki pomjera
         gui::Size sz;
         getSize(sz);
+
+        if (Globals::isSAO)
+        {
+
+            modelSize.width = sz.width; //
+            modelSize.height = skrolV+50;
+
+            return true;
+        }
+        //dodati da se dinamicki pomjera
 
         modelSize.width = sz.width; //
         modelSize.height = _h;

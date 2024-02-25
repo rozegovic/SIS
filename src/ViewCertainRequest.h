@@ -58,10 +58,11 @@ protected:
 	dp::IDatabase* _db;
 	dp::IDataSetPtr _pDS;
 	td::String indeks;
+	td::INT4 IDTicket;
 public:
 
 
-	ViewCertainRequest(td::String ime, td::String prezime, td::String indeks, td::String tipKarte, td::String statusKarte, td::String sadrzajKarte, td::String naslovKarte);
+	ViewCertainRequest(td::INT4 IDTicket,td::String ime, td::String prezime, td::String indeks, td::String tipKarte, td::String statusKarte, td::String sadrzajKarte, td::String naslovKarte);
 
 
 protected:

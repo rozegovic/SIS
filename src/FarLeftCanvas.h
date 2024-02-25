@@ -12,6 +12,7 @@
 #include <vector>
 #include <gui/DrawableString.h>
 #include <gui/Window.h>
+#include "GlobalsCanvas.h"
 
 
 class FarLeftCanvas : public gui::Canvas
@@ -49,6 +50,7 @@ public:
         ,numOfTickets(0)
         {
             _middleCanvas = canvas;
+
         }
 
 
@@ -242,7 +244,6 @@ public:
            sz.height = GlobalsCanvas::visinaLeftSAO;
 
            getScroller()->setContentSize(sz);
-
        }
 
        
@@ -339,79 +340,81 @@ public:
          ci.minHor = 100 + sz.width;
      }
 
-    void onPrimaryButtonPressed(const gui::InputDevice& inputDevice) override {
-        if(Globals::_currentUserRole == 1 || Globals::_currentUserRole == 3){
-        
-        double tempk = 0;
+     void onPrimaryButtonPressed(const gui::InputDevice& inputDevice) override {
+         if (Globals::_currentUserRole == 1 || Globals::_currentUserRole == 3) {
 
-        int a = 0;
-        td::INT4 IdUserChat;
+             double tempk = 0;
 
-        for (int i = 0; i < users.size(); i++) {
+             int a = 0;
+             td::INT4 IdUserChat;
 
-            // if (tempk < int(inputDevice.getFramePoint().y) && inputDevice.getFramePoint().y < (tempk + _visinaChata)) {
-            if (tempk < inputDevice.getModelPoint().y && inputDevice.getModelPoint().y < (tempk + _visinaChata)) {
-                a = i;
-                IdUserChat = users[i].second; 
-                //IdUserChat = i; // ovo se poslije brise
-                _middleCanvas->Reset(IdUserChat, users[i].first);
-            }
-            tempk = tempk + _visinaChata+10;
-        }
+             for (int i = 0; i < users.size(); i++) {
 
-        // openMiddleCanvas();
-        if (inputDevice.getType() == gui::InputDevice::Type::Mouse && inputDevice.getButton() == gui::InputDevice::Button::Primary) {
-            // openMiddleCanvas();
-        }
-        }
-    else if (Globals::isSAO) {
+                 // if (tempk < int(inputDevice.getFramePoint().y) && inputDevice.getFramePoint().y < (tempk + _visinaChata)) {
+                 if (tempk < inputDevice.getModelPoint().y && inputDevice.getModelPoint().y < (tempk + _visinaChata)) {
+                     a = i;
+                     IdUserChat = users[i].second;
+                     //IdUserChat = i; // ovo se poslije brise
+                     _middleCanvas->Reset(IdUserChat, users[i].first);
+                 }
+                 tempk = tempk + _visinaChata + 10;
+             }
+
+             // openMiddleCanvas();
+             if (inputDevice.getType() == gui::InputDevice::Type::Mouse && inputDevice.getButton() == gui::InputDevice::Button::Primary) {
+                 // openMiddleCanvas();
+             }
+         }
+         else if (Globals::isSAO) {
+
+             reDraw();
+
+             gui::Size sz;
+             getSize(sz);
+
+             const gui::Point& klik = inputDevice.getModelPoint();
+
+             td::INT4 rbrPoruke = klik.y;
+
+             rbrPoruke = rbrPoruke / 110;
 
 
-        gui::Size sz;
-        getSize(sz);
+             if (klik.x > sz.width + 5 || rbrPoruke > numOfTickets - 1)
+                 return;
 
-        const gui::Point& klik = inputDevice.getModelPoint();
+             _middleCanvas->SetMessageNumSAO(rbrPoruke, this);
 
-        td::INT4 rbrPoruke = klik.y;
-
-        rbrPoruke = rbrPoruke / 110;
+         }
 
 
-        if (klik.x > sz.width + 5 || rbrPoruke>numOfTickets-1)
-            return;
 
-        //showAlert("", std::to_string(rbrPoruke));
 
-        _middleCanvas->SetMessageNumSAO(rbrPoruke);
 
-       
-    
-} 
-    else if (Globals::isStudent)
-        {
-            gui::Size sz;
-            getSize(sz);
-            const gui::Point& modelPoint = inputDevice.getFramePoint();
-            td::INT4 rbr = modelPoint.y / 50; //visina svakog pravougaonika je 50, pa ce ovo vratiti rbr (pocevsi od 0)?
-            //vektor subjects cuva sve IDs predmeta koji su ispisani, i to redom kako su ispisani. 
-            // Da dobijete ID kliknutog predmeta ide subjects.at(rbr), kao u alertu ispod
-            std::cout << subjects.size();
-            if (rbr >= subjects.size())
-                return;
-            td::INT4 subjectID = subjects.at(rbr);
-            td::String name = _subjectsName.at(rbr);
-            _middleCanvas->setSubjectID(subjectID);
-            _middleCanvas->setSubjectName(name);
+         else if (Globals::isStudent)
+         {
+             gui::Size sz;
+             getSize(sz);
+             const gui::Point& modelPoint = inputDevice.getFramePoint();
+             td::INT4 rbr = modelPoint.y / 50; //visina svakog pravougaonika je 50, pa ce ovo vratiti rbr (pocevsi od 0)?
+             //vektor subjects cuva sve IDs predmeta koji su ispisani, i to redom kako su ispisani. 
+             // Da dobijete ID kliknutog predmeta ide subjects.at(rbr), kao u alertu ispod
+             std::cout << subjects.size();
+             if (rbr >= subjects.size())
+                 return;
+             td::INT4 subjectID = subjects.at(rbr);
+             td::String name = _subjectsName.at(rbr);
+             _middleCanvas->setSubjectID(subjectID);
+             _middleCanvas->setSubjectName(name);
 
-            _middleCanvas->reset();
-            //showAlert("", std::to_string(subjects.at(rbr)));
+             _middleCanvas->reset();
+             //showAlert("", std::to_string(subjects.at(rbr)));
 
-            //_middleCanvas->onDraw();
-           // showAlert("", std::to_string(subjects.at(rbr)));
+             //_middleCanvas->onDraw();
+            // showAlert("", std::to_string(subjects.at(rbr)));
 
-        }
-    }
 
+         }
+     }
     bool getModelSize(gui::Size& modelSize) const override
     {
 
