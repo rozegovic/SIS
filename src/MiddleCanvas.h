@@ -745,7 +745,7 @@ public:
 
                 td::INT4 a = _chatUserID;
    
-                unreadmess.push_back(std::make_pair(_chatUserID, Globals::_currentUserID));
+              
                 str = "";
                 //  showChat();
                 red = 1;
