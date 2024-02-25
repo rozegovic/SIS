@@ -3,34 +3,34 @@
 #include "ViewIDs.h"
 #include "Globals.h"
 
-bool MsgSender::sendMsgtoUser(td::String subject, td::String poruka, td::INT4 userID)
+bool MsgSender::sendMsgtoUser(td::String subject, td::String poruka, td::INT4 userID, td::INT4 procitano)
 {
     td::INT4 aid = Globals::_currentUserID;
-    bool a = ponovljeno(aid, subject, poruka, userID);
+    bool a = ponovljeno(aid, subject, poruka, userID, procitano);
     return a;
 }
 
-bool MsgSender::sendMsgtoUsers(td::String subject, td::String poruka, std::vector<td::INT4> userIDs)
+bool MsgSender::sendMsgtoUsers(td::String subject, td::String poruka, std::vector<td::INT4> userIDs, td::INT4 procitano)
 {
     td::INT4 aid = Globals::_currentUserID;
-    bool a = ponovljeno2(aid, subject, poruka, userIDs);
+    bool a = ponovljeno2(aid, subject, poruka, userIDs, procitano);
     return a;
 }
 
-bool MsgSender::sendSystemMsgtoUser(td::String subject, td::String poruka, td::INT4 userID)
+bool MsgSender::sendSystemMsgtoUser(td::String subject, td::String poruka, td::INT4 userID, td::INT4 procitano)
 {
     td::INT4 aid = -1; //privatna funkcija prima aid;
-    bool a = ponovljeno(aid, subject, poruka, userID);
+    bool a = ponovljeno(aid, subject, poruka, userID, procitano);
     return a;
 }
 
-bool MsgSender::sendSystemMsgtoUsers(td::String subject, td::String poruka, std::vector<td::INT4> userIDs)
+bool MsgSender::sendSystemMsgtoUsers(td::String subject, td::String poruka, std::vector<td::INT4> userIDs, td::INT4 procitano)
 {
     td::INT4 aid = -1;
-    bool a = ponovljeno2(aid, subject, poruka, userIDs);
+    bool a = ponovljeno2(aid, subject, poruka, userIDs, procitano);
     return a;
 }
-bool MsgSender::ponovljeno(td::INT4 a, td::String subject, td::String poruka, td::INT4 userID) {
+bool MsgSender::ponovljeno(td::INT4 a, td::String subject, td::String poruka, td::INT4 userID, td::INT4 procitano) {
 
     td::INT4 maxID;
     td::Date date(true);
@@ -47,9 +47,9 @@ bool MsgSender::ponovljeno(td::INT4 a, td::String subject, td::String poruka, td
         return false;
 
     ++maxID;
-    dp::IStatementPtr pInsert(dp::getMainDatabase()->createStatement("insert into Messages(ID, AuthorID, Subject, Poruke, Datum, Vrijeme ) values(?,?,?,?,?,?)"));
+    dp::IStatementPtr pInsert(dp::getMainDatabase()->createStatement("insert into Messages(ID, AuthorID, Subject, Poruke, Datum, Vrijeme, Procitano) values(?,?,?,?,?,?,?)"));
     dp::Params pParams(pInsert->allocParams());
-    pParams << maxID << a << dp::toNCh(subject, MESSAGE_HEADER_LEN) << dp::toNCh(poruka, MESSAGE_BODY_LEN) << date << time;
+    pParams << maxID << a << dp::toNCh(subject, MESSAGE_HEADER_LEN) << dp::toNCh(poruka, MESSAGE_BODY_LEN) << date << time << procitano;
 
     dp::IStatementPtr pInsert2(dp::getMainDatabase()->createStatement("insert into MsgReceivers(MsgID, UserID) values(?,?)"));
     dp::Params pParams2(pInsert2->allocParams());
@@ -66,7 +66,7 @@ bool MsgSender::ponovljeno(td::INT4 a, td::String subject, td::String poruka, td
     return tr.commit();
 }
 
-bool MsgSender::ponovljeno2(td::INT4 a, td::String subject, td::String poruka, std::vector<td::INT4> userIDs) {
+bool MsgSender::ponovljeno2(td::INT4 a, td::String subject, td::String poruka, std::vector<td::INT4> userIDs, td::INT4 procitano) {
     /*std::vector<td::INT4> test;
     for(int i = 0; i < 3; i++){
         test.push_back(userIDs[i]);
@@ -84,9 +84,9 @@ bool MsgSender::ponovljeno2(td::INT4 a, td::String subject, td::String poruka, s
     ++maxID;
     td::Date date(true);
     td::Time time(true);
-    dp::IStatementPtr pInsert(dp::getMainDatabase()->createStatement("insert into Messages(ID, AuthorID, Subject, Poruke, Datum, Vrijeme) values(?,?,?,?,?,?)"));
+    dp::IStatementPtr pInsert(dp::getMainDatabase()->createStatement("insert into Messages(ID, AuthorID, Subject, Poruke, Datum, Vrijeme,Procitano) values(?,?,?,?,?,?,?)"));
     dp::Params pParams(pInsert->allocParams());
-    pParams << maxID << aid << dp::toNCh(subject, MESSAGE_HEADER_LEN) << dp::toNCh(poruka, MESSAGE_BODY_LEN) << date << time;
+    pParams << maxID << aid << dp::toNCh(subject, MESSAGE_HEADER_LEN) << dp::toNCh(poruka, MESSAGE_BODY_LEN) << date << time << procitano;
 
 
     dp::IStatementPtr pInsert2(dp::getMainDatabase()->createStatement("insert into MsgReceivers(MsgID, UserID) values(?,?)"));

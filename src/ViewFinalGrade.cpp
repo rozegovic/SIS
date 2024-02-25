@@ -386,7 +386,7 @@ bool ViewFinalGrade::onClick(gui::Button* pBtn) {
 		_grade.getValue(var);
 		poruka.append(std::to_string(var.i4Val()));
 		MsgSender msg;
-		msg.sendSystemMsgtoUser(naslov, poruka, row[0].i4Val());
+		msg.sendSystemMsgtoUser(naslov, poruka, row[0].i4Val(),1);
 
 	       
 		reloadTable();

@@ -447,7 +447,7 @@ void ViewAttendance::SendMsg(td::INT4 MsgType){
     poruka += predmet;
 
     MsgSender za_poruke;
-    za_poruke.sendSystemMsgtoUsers(naslov, poruka, userIDs);
+    za_poruke.sendSystemMsgtoUsers(naslov, poruka, userIDs,1);
     td::Time t(true);
     td::Date d(true);
     LastMsgTime = t;
