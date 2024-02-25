@@ -1,0 +1,13 @@
+<?xml version='1.0'?>
+<DevRes>
+	<Images>
+		<Res id="@defImg" path="Work/Common/Icons/defaultImg.png"/>
+	</Images>
+	<Symbols>
+		<Res id="pointer" path="Work/Common/Symbols/PSA/pointer.xml"/>
+		<Res id="@defSymb" path="Work/Common/Symbols/Shapes/defaultSymbol.xml"/>
+	</Symbols>
+	<Sounds>
+		<Res id="click" path="Work/Common/Sounds/Click.wav"/>
+	</Sounds>
+</DevRes>

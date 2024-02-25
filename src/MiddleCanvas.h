@@ -25,8 +25,12 @@
 class MiddleCanvas : public gui::Canvas
 {
 private:
-    td::INT4 predmetID = -1; // grupa 2 
-    td::String _subjectname;
+
+   
+
+   td::INT4 predmetID = -1; // grupa 2 
+   td::String _subjectname;
+
 
 protected:
     gui::Image _etf;
@@ -67,7 +71,13 @@ protected:
     td::String status;
     gui::Rect rectBottomRight;
     gui::Point mousePosition;
-    std::vector<std::pair<td::INT4, td::INT4>> unreadmess;
+
+    
+    td::INT4 IDTicket=-1;
+
+    gui::Canvas* farleft;
+
+
 
 public:
     MiddleCanvas()
@@ -84,7 +94,9 @@ public:
     }
 
     void setSubjectID(td::INT4 id) { //grupa 2 - potreban subjectID
+
         predmetID = id;  //linije 53, 54
+
         reset();//da bi se nakon klika refreshao middle canvas
     }
     void setSubjectName(td::String ime) {
@@ -173,6 +185,7 @@ public:
             //td::INT4 broj = 1;  //  1 za provjeru select-a
             gui::Size sz;
             getSize(sz);
+
             gui::Point cp(sz.width / 2, sz.height / 2);
             cp.x = 10;
             cp.y = 10;
@@ -181,11 +194,14 @@ public:
             td::String text, text1, text2, text3, text4;
             text = "Detalji o odabranom predmetu ";
 
+
             /* funkcije:
             static void draw(const td::String& txt, const gui::Rect& r, gui::Font::ID fntID, td::ColorID clrID, td::TextAlignment hAlign = td::TextAlignment::Left, td::VAlignment vAlign = td::VAlignment::Top,  td::TextEllipsize ellips = td::TextEllipsize::End);
             static void draw(const td::String& txt, const gui::Point& pt, gui::Font::ID fntID, td::ColorID clrID);
             */
-            if (predmetID == -1) { //ovaj text2 bi trebao da pi�e ?im se student uloguje, prije nego odabere neki predmet
+
+            if (predmetID == -1) { //ovaj text2 bi trebao da piše čim se student uloguje, prije nego odabere neki predmet
+
                 gui::DrawableString text1 = "Odaberite predmet da biste vidjeli detalje ";
                 text1.draw(cp, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::Gainsboro);
             }
@@ -298,7 +314,9 @@ public:
                     gui::DrawableString osvojeno = "Osvojili ste...";
                     osvojeno.draw(prog, gui::Font::ID::SystemBoldItalic, td::ColorID::Gainsboro);
                     prog.y = Ypos + 25;
-                    gui::DrawableString moguce = "Od ukupno mogu?ih 100 bodova.";
+
+                    gui::DrawableString moguce = "Od ukupno mogućih 100 bodova.";
+
                     moguce.draw(prog, gui::Font::ID::SystemBoldItalic, td::ColorID::Gainsboro);
                     gui::Rect prazan(0, 0, 200, 20);
                     gui::Rect fill(0, 0, prosjek, 20);
@@ -355,13 +373,23 @@ public:
                     time.draw(vrijeme, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::Gainsboro, td::TextAlignment::Center, td::VAlignment::Center);
                     prisustvo.draw(prisutan, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::Gainsboro, td::TextAlignment::Center, td::VAlignment::Center);
 
-                    dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select Br_sedmice AS brsedmice, Vrijeme as vrijeme, Termini.TipPredavanjaID as tip, Termini.Predmet_ID as predmet FROM Prisustvo, TerminiStudenti, Termini WHERE TerminiStudenti.ID_Studenta = ? AND  TerminiStudenti.ID_Termina = Prisustvo.ID_termina AND Termini.TipPredavanjaID = 3 AND Termini.Predmet_ID=?");
+
+                   // dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select Br_sedmice AS brsedmice, Vrijeme as vrijeme, Termini.TipPredavanjaID as tip, Termini.Predmet_ID as predmet FROM Prisustvo, TerminiStudenti, Termini WHERE TerminiStudenti.ID_Studenta = ? AND  TerminiStudenti.ID_Termina = Prisustvo.ID_termina AND Termini.TipPredavanjaID = 3 AND Termini.Predmet_ID=?");
+                    //dp::Params pParams(pSelect->allocParams());
+                    //pParams << Globals::_currentUserID << predmetID;
+                    //dp::Columns pCols = pSelect->allocBindColumns(2);
+                    //td::INT4 brsedmice;
+                    //td::Time Vrijeme;
+                    //pCols << "brsedmice" << brsedmice << "Vrijeme" << Vrijeme;
+
+                    dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select Br_sedmice AS brsedmice, Vrijeme as vrijeme FROM Prisustvo, TerminiStudenti, Termini WHERE TerminiStudenti.ID_Studenta = ? AND  TerminiStudenti.ID_Termina = Prisustvo.ID_termina AND Termini.ID = TerminiStudenti.ID_Termina AND Termini.TipPredavanjaID = 3 AND Termini.Predmet_ID=?");
                     dp::Params pParams(pSelect->allocParams());
-                    pParams << Globals::_currentUserID << predmetID;
+                    pParams << Globals::_currentUserID<<predmetID;
                     dp::Columns pCols = pSelect->allocBindColumns(2);
                     td::INT4 brsedmice;
                     td::Time Vrijeme;
-                    pCols << "brsedmice" << brsedmice << "Vrijeme" << Vrijeme;
+                    pCols << "brsedmice" << brsedmice << "vrijeme" << Vrijeme;
+
                     std::vector<td::INT4> prisutnesedmice;
                     if (pSelect->execute()) {
                         prisutnesedmice.resize(0);
@@ -387,18 +415,22 @@ public:
                         if (hour / 10 == 0)
                             temp += "0";
 
+
                         temp += std::to_string(Vrijeme.getHour());
                         temp += ":";
                         temp += std::to_string(Vrijeme.getMinute());
                         td::INT4 min = Vrijeme.getMinute();
                         if (min / 10 == 0)
+
                             temp += "0";
                         gui::DrawableString vrijemezaispis = temp;
                         gui::Shape::drawRect(time1, td::ColorID::White, td::ColorID::Black, 0.5, td::LinePattern::Solid);
                         vrijemezaispis.draw(time1, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::Black, td::TextAlignment::Center, td::VAlignment::Center);
 
                         gui::Rect prisutan(0, 0, novaduzina, visina);
+
                         prisutan.translate(i * novaduzina + duzina, 2 * visina);
+
                         bool jeprisutan = false;
                         for (auto x : prisutnesedmice) {
                             if (x == i + 1) {
@@ -441,8 +473,9 @@ public:
 
 
 
-    void SetMessageNumSAO(td::INT4 br) {
+    void SetMessageNumSAO(td::INT4 br,gui::Canvas* pok) {
         brojPoruke = br;
+        farleft = pok;
         reset();
     };
 
@@ -453,27 +486,50 @@ public:
         gui::Size sz;
         getSize(sz);
 
-        dp::IDataSet* pDS = dp::getMainDatabase()->createDataSet("SELECT Korisnici.Ime as Name, Korisnici.Prezime as Surname,SAOStudentTicket.Indeks as StudentIndex,"
-            " SAOStudentTicket.Ticket_Tip as TypeOfTicket, SAOStudentTicket.Req_Title as TitleofTicket, SAOStudentTicket.Status_ID as Status_ID,SAOTicket_Status.Status as Status,"
-            " SAOStudentTicket.Request as Request From Korisnici, SAOStudentTicket, SAOTicket_Status where Korisnici.Indeks=SAOStudentTicket.Indeks AND SAOTicket_Status.ID=SAOStudentTicket.Status_ID");
 
-        dp::DSColumns cols(pDS->allocBindColumns(8));
-        cols << "Name" << td::string8 << "Surname" << td::string8 << "StudentIndex" << td::string8 << "TypeOfTicket" << td::string8 << "TitleOfTicket" << td::string8 << "Status_ID" << td::int4 << "Status" << td::string8 << "Request" << td::string8;
-        if (!pDS->execute())
-        {
-            pDS = nullptr;
-            showAlert("errorReadingTable", "");
-            return;
-        }
+      //  dp::IDataSet* pDS = dp::getMainDatabase()->createDataSet("SELECT Korisnici.Ime as Name, Korisnici.Prezime as Surname,SAOStudentTicket.Indeks as StudentIndex,"
+    //        " SAOStudentTicket.Ticket_Tip as TypeOfTicket, SAOStudentTicket.Req_Title as TitleofTicket, SAOStudentTicket.Status_ID as Status_ID,SAOTicket_Status.Status as Status,"
+  //          " SAOStudentTicket.Request as Request From Korisnici, SAOStudentTicket, SAOTicket_Status where Korisnici.Indeks=SAOStudentTicket.Indeks AND SAOTicket_Status.ID=SAOStudentTicket.Status_ID");
+//
+        //dp::DSColumns cols(pDS->allocBindColumns(8));
+        //cols << "Name" << td::string8 << "Surname" << td::string8 << "StudentIndex" << td::string8 << "TypeOfTicket" << td::string8 << "TitleOfTicket" << td::string8 << "Status_ID" << td::int4 << "Status" << td::string8 << "Request" << td::string8;
+        //if (!pDS->execute())
+        //{
+           // pDS = nullptr;
+          //  showAlert("errorReadingTable", "");
+        //    return;
+      //  }
 
         //showAlert("", std::to_string(brojPoruke));
+
+      dp::IDataSet* pDS = dp::getMainDatabase()->createDataSet("SELECT Korisnici.Ime as Name, Korisnici.Prezime as Surname,SAOStudentTicket.Indeks as StudentIndex,"
+          " SAOStudentTicket.Ticket_Tip as TypeOfTicket, SAOStudentTicket.Req_Title as TitleofTicket, SAOStudentTicket.Status_ID as Status_ID,SAOTicket_Status.Status as Status,"
+          " SAOStudentTicket.Request as Request,SAOStudentTicket.ID AS IDTicket From Korisnici, SAOStudentTicket, SAOTicket_Status where Korisnici.Indeks=SAOStudentTicket.Indeks AND SAOTicket_Status.ID=SAOStudentTicket.Status_ID");
+
+      dp::DSColumns cols(pDS->allocBindColumns(9));
+      cols << "Name" << td::string8 << "Surname" << td::string8 << "StudentIndex" << td::string8 << "TypeOfTicket" << td::string8 << "TitleOfTicket" << td::string8 << "Status_ID" << td::int4 << "Status" << td::string8 << "Request" << td::string8<<"IDTicket"<<td::int4;
+      if (!pDS->execute())
+      {
+          pDS = nullptr;
+          showAlert("errorReadingTable", "");
+          return;
+      }
+
+      td::String str;
+
+      //showAlert("", std::to_string(brojPoruke));
+
 
 
         auto row = pDS->getRow(brojPoruke);
 
-        td::String ime = row[0].getConstStr();
-        ime.append(" ");
-        ime.append(row[1].getConstStr());
+
+      IDTicket = row[8].i4Val();
+
+      td::String ime = row[0].getConstStr();
+      ime.append(" ");
+      ime.append(row[1].getConstStr());
+
 
         td::String req = row[7].getConstStr();
 
@@ -584,12 +640,15 @@ public:
 
         szpom.height = skrolV;
 
+
         this->getScroller()->setContentSize(szpom);
 
         int bottomRightX = sz.width - 100; // X koordinata
         int bottomRightY = sz.height - 70; // Y koordinata
         int rectWidth = 80;
         int rectHeight = 30;
+
+
 
         szpom.width = rectWidth;
         szpom.height = rectHeight;
@@ -626,6 +685,7 @@ public:
             answer.draw(p, gui::Font::ID::SystemBold, td::ColorID::White);
         }
 
+      this->getScroller()->setContentSize(szpom);
 
     };
 
@@ -699,21 +759,33 @@ public:
 
         }
 
-        if (Globals::isSAO && inputDevice.getModelPoint().x > rectBottomRight.left && inputDevice.getModelPoint().x < rectBottomRight.right &&
-            inputDevice.getModelPoint().y<rectBottomRight.bottom && inputDevice.getModelPoint().y > rectBottomRight.top) {
-            gui::Window* pParentWnd = getParentWindow();
-            auto pWnd = new WindowCertainRequest(pParentWnd, indeks, Ime, prezime, tipKarte, status, request, title);
-            pWnd->keepOnTopOfParent();
-            pWnd->open();
-            reDraw();
-        }
+        
+      if (Globals::isSAO && inputDevice.getModelPoint().x>rectBottomRight.left && inputDevice.getModelPoint().x < rectBottomRight.right && 
+                  inputDevice.getModelPoint().y<rectBottomRight.bottom && inputDevice.getModelPoint().y > rectBottomRight.top)
+      {   
+          gui::Window* pParentWnd = getParentWindow();
+          auto pWnd = new WindowCertainRequest(pParentWnd,IDTicket,indeks, Ime, prezime, tipKarte, status, request, title);
+          pWnd->keepOnTopOfParent();
+          pWnd->open();
+          reDraw();
+      }
+
     }
 
     bool getModelSize(gui::Size& modelSize) const override
     {
-        //dodati da se dinamicki pomjera
         gui::Size sz;
         getSize(sz);
+
+        if (Globals::isSAO)
+        {
+
+            modelSize.width = sz.width; //
+            modelSize.height = skrolV+50;
+
+            return true;
+        }
+        //dodati da se dinamicki pomjera
 
         modelSize.width = sz.width; //
         modelSize.height = _h;
@@ -903,12 +975,5 @@ public:
 
     }
 
-
-    std::vector<std::pair<td::INT4, td::INT4>> getUnreadmess() const {
-
-        int broj = unreadmess.size();
-
-        return unreadmess;
-    }
 
 };

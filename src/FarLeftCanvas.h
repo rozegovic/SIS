@@ -12,8 +12,9 @@
 #include <vector>
 #include <gui/DrawableString.h>
 #include <gui/Window.h>
-#include <utility>
 
+#include "GlobalsCanvas.h"
+#include <utility>
 
 
 class FarLeftCanvas : public gui::Canvas
@@ -40,6 +41,7 @@ protected:
     std::vector<td::INT4> subjects;
     std::vector<td::String> _subjectsName;
 
+
     td::INT4 numOfTickets;
 
     //---------------------------------
@@ -49,6 +51,11 @@ protected:
     dp::IDatabase* _db=nullptr;
     dp::IDataSetPtr _pDS;
     gui::Image img2;
+
+
+  
+      td::INT4 numOfTickets;
+    
 
 public:
     FarLeftCanvas(MiddleCanvas* canvas)
@@ -82,10 +89,37 @@ public:
             //gui::DrawableString drawableName = name;
             _subjectsName.push_back(name);
             subjects.push_back(ID);
+
+      
         }
         return true;
     }
 
+
+    
+
+    
+    //Grupa2
+    bool createStrings() {
+        dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select a.Naziv_Predmeta AS Naziv, a.ID_Predmeta as ID FROM Predmet a, UpisPredmeta b WHERE b.ID_Studenta = ? AND  b.ID_Predmeta = a.ID_Predmeta");        
+        dp::Params pParams(pSelect->allocParams());
+        pParams << Globals::_currentUserID;
+        dp::Columns pCols = pSelect->allocBindColumns(2);        
+        td::String name;
+        td::INT4 ID;
+       // gui::DrawableString drawableName;
+        pCols << "Naziv" << name << "ID" << ID;
+        if (!pSelect->execute())
+            return false;
+        _subjectsName.resize(0);
+        subjects.resize(0);
+        while (pSelect->moveNext()) {
+            //gui::DrawableString drawableName = name;
+            _subjectsName.push_back(name);
+            subjects.push_back(ID);
+        }
+        return true;
+    }
     void onDraw(const gui::Rect& rect) override {
         const bool check = false;
         // pogled za profesora i asistenta ------ grupa 3
@@ -311,6 +345,7 @@ public:
 
             GlobalsCanvas::visinaLeftSAO = i * 100;
 
+
             sz.height = GlobalsCanvas::visinaLeftSAO;
 
             getScroller()->setContentSize(sz);
@@ -318,6 +353,8 @@ public:
         }
 
 
+
+       
         // pogled za studenta ------ grupa 2
         else if (Globals::_currentUserID == 5) {
             // subjects.clear();
@@ -383,6 +420,7 @@ public:
         //    subjects.clear();
         //}
         //createStrings();
+
         kontrola = 1;
         reDraw();
     };
@@ -413,6 +451,7 @@ public:
         //sta ako je prazan?
         return canvas->getUnreadmess();
     }
+
 
     void onPrimaryButtonPressed(const gui::InputDevice& inputDevice) override {
         if (Globals::_currentUserRole == 1 || Globals::_currentUserRole == 3) {
@@ -453,59 +492,67 @@ public:
                 tempk = tempk + _visinaChata + 10;
             }
 
-            // openMiddleCanvas();
-            if (inputDevice.getType() == gui::InputDevice::Type::Mouse && inputDevice.getButton() == gui::InputDevice::Button::Primary) {
-                // openMiddleCanvas();
-            }
-        }
-        else if (Globals::isSAO) {
+            
 
 
-            gui::Size sz;
-            getSize(sz);
-
-            const gui::Point& klik = inputDevice.getModelPoint();
-
-            td::INT4 rbrPoruke = klik.y;
-
-            rbrPoruke = rbrPoruke / 110;
+             // openMiddleCanvas();
+             if (inputDevice.getType() == gui::InputDevice::Type::Mouse && inputDevice.getButton() == gui::InputDevice::Button::Primary) {
+                 // openMiddleCanvas();
+             }
+         }
+         else if (Globals::isSAO) {
 
 
-            if (klik.x > sz.width + 5 || rbrPoruke > numOfTickets - 1)
-                return;
+             reDraw();
 
-            //showAlert("", std::to_string(rbrPoruke));
+             gui::Size sz;
+             getSize(sz);
 
-            _middleCanvas->SetMessageNumSAO(rbrPoruke);
+             const gui::Point& klik = inputDevice.getModelPoint();
+
+             td::INT4 rbrPoruke = klik.y;
+
+             rbrPoruke = rbrPoruke / 110;
 
 
 
-        }
-        else if (Globals::isStudent)
-        {
-            gui::Size sz;
-            getSize(sz);
-            const gui::Point& modelPoint = inputDevice.getFramePoint();
-            td::INT4 rbr = modelPoint.y / 50; //visina svakog pravougaonika je 50, pa ce ovo vratiti rbr (pocevsi od 0)?
-            //vektor subjects cuva sve IDs predmeta koji su ispisani, i to redom kako su ispisani. 
-            // Da dobijete ID kliknutog predmeta ide subjects.at(rbr), kao u alertu ispod
-            std::cout << subjects.size();
-            if (rbr >= subjects.size())
-                return;
-            td::INT4 subjectID = subjects.at(rbr);
-            td::String name = _subjectsName.at(rbr);
-            _middleCanvas->setSubjectID(subjectID);
-            _middleCanvas->setSubjectName(name);
+             if (klik.x > sz.width + 5 || rbrPoruke > numOfTickets - 1)
+                 return;
 
-            _middleCanvas->reset();
-            //showAlert("", std::to_string(subjects.at(rbr)));
+             _middleCanvas->SetMessageNumSAO(rbrPoruke, this);
 
-            //_middleCanvas->onDraw();
-           // showAlert("", std::to_string(subjects.at(rbr)));
+         }
 
-        }
-    }
 
+
+
+
+         else if (Globals::isStudent)
+         {
+             gui::Size sz;
+             getSize(sz);
+             const gui::Point& modelPoint = inputDevice.getFramePoint();
+             td::INT4 rbr = modelPoint.y / 50; //visina svakog pravougaonika je 50, pa ce ovo vratiti rbr (pocevsi od 0)?
+             //vektor subjects cuva sve IDs predmeta koji su ispisani, i to redom kako su ispisani. 
+             // Da dobijete ID kliknutog predmeta ide subjects.at(rbr), kao u alertu ispod
+             std::cout << subjects.size();
+             if (rbr >= subjects.size())
+                 return;
+             td::INT4 subjectID = subjects.at(rbr);
+             td::String name = _subjectsName.at(rbr);
+             _middleCanvas->setSubjectID(subjectID);
+             _middleCanvas->setSubjectName(name);
+
+
+             _middleCanvas->reset();
+             //showAlert("", std::to_string(subjects.at(rbr)));
+
+             //_middleCanvas->onDraw();
+            // showAlert("", std::to_string(subjects.at(rbr)));
+
+
+         }
+     }
     bool getModelSize(gui::Size& modelSize) const override
     {
 
