@@ -54,7 +54,6 @@ protected:
 
 
   
-      td::INT4 numOfTickets;
     
 
 public:
@@ -72,28 +71,28 @@ public:
     }
 
     //Grupa2
-    bool createStrings() {
-        dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select a.Naziv_Predmeta AS Naziv, a.ID_Predmeta as ID FROM Predmet a, UpisPredmeta b WHERE b.ID_Studenta = ? AND  b.ID_Predmeta = a.ID_Predmeta");
-        dp::Params pParams(pSelect->allocParams());
-        pParams << Globals::_currentUserID;
-        dp::Columns pCols = pSelect->allocBindColumns(2);
-        td::String name;
-        td::INT4 ID;
-        // gui::DrawableString drawableName;
-        pCols << "Naziv" << name << "ID" << ID;
-        if (!pSelect->execute())
-            return false;
-        _subjectsName.resize(0);
-        subjects.resize(0);
-        while (pSelect->moveNext()) {
-            //gui::DrawableString drawableName = name;
-            _subjectsName.push_back(name);
-            subjects.push_back(ID);
+    //bool createStrings() {
+    //    dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select a.Naziv_Predmeta AS Naziv, a.ID_Predmeta as ID FROM Predmet a, UpisPredmeta b WHERE b.ID_Studenta = ? AND  b.ID_Predmeta = a.ID_Predmeta");
+    //    dp::Params pParams(pSelect->allocParams());
+    //    pParams << Globals::_currentUserID;
+    //    dp::Columns pCols = pSelect->allocBindColumns(2);
+    //    td::String name;
+    //    td::INT4 ID;
+    //    // gui::DrawableString drawableName;
+    //    pCols << "Naziv" << name << "ID" << ID;
+    //    if (!pSelect->execute())
+    //        return false;
+    //    _subjectsName.resize(0);
+    //    subjects.resize(0);
+    //    while (pSelect->moveNext()) {
+    //        //gui::DrawableString drawableName = name;
+    //        _subjectsName.push_back(name);
+    //        subjects.push_back(ID);
 
-      
-        }
-        return true;
-    }
+    //  
+    //    }
+    //    return true;
+    //}
 
 
     
@@ -449,7 +448,7 @@ public:
 
     std::vector<std::pair<td::INT4, td::INT4>> accessMiddleCanvas(MiddleCanvas* canvas) {
         //sta ako je prazan?
-        return canvas->getUnreadmess();
+       
     }
 
 
