@@ -357,13 +357,12 @@ public:
                     time.draw(vrijeme, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::Gainsboro, td::TextAlignment::Center, td::VAlignment::Center);
                     prisustvo.draw(prisutan, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::Gainsboro, td::TextAlignment::Center, td::VAlignment::Center);
 
-                    dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select Br_sedmice AS brsedmice, Vrijeme as vrijeme FROM Prisustvo, TerminiStudenti, Termini WHERE TerminiStudenti.ID_Studenta = ? AND  TerminiStudenti.ID_Termina = Prisustvo.ID_termina AND Termini.ID = TerminiStudenti.ID_Termina AND Termini.TipPredavanjaID = 3 AND Termini.Predmet_ID=?");
+                    dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select Br_sedmice AS brsedmice FROM Prisustvo, TerminiStudenti, Termini WHERE TerminiStudenti.ID_Studenta = ? AND  TerminiStudenti.ID_Termina = Prisustvo.ID_termina AND Termini.ID = TerminiStudenti.ID_Termina AND Termini.TipPredavanjaID = 3 AND Termini.Predmet_ID=?");
                     dp::Params pParams(pSelect->allocParams());
                     pParams << Globals::_currentUserID<<predmetID;
-                    dp::Columns pCols = pSelect->allocBindColumns(2);
+                    dp::Columns pCols = pSelect->allocBindColumns(1);
                     td::INT4 brsedmice;
-                    td::Time Vrijeme;
-                    pCols << "brsedmice" << brsedmice << "vrijeme" << Vrijeme;
+                    pCols << "brsedmice" << brsedmice;
                     std::vector<td::INT4> prisutnesedmice;
                     if (pSelect->execute()) {
                         prisutnesedmice.resize(0);
@@ -371,6 +370,17 @@ public:
                             //gui::DrawableString drawableName = name;
                             prisutnesedmice.push_back(brsedmice);
                         }
+                    }
+
+                    // UZIMANJE SAMO VREMENA LAB.VJEZBE
+                    dp::IStatementPtr pSelect1 = dp::getMainDatabase()->createStatement("select Vrijeme as vrijeme FROM TerminiStudenti, Termini WHERE TerminiStudenti.ID_Studenta = ? AND Termini.ID = TerminiStudenti.ID_Termina AND Termini.TipPredavanjaID = 3 AND Termini.Predmet_ID=?");
+                    dp::Params pParams1(pSelect1->allocParams());
+                    pParams1 << Globals::_currentUserID << predmetID;
+                    dp::Columns pCols1 = pSelect1->allocBindColumns(1);
+                    td::Time Vrijeme;
+                    pCols1 << "vrijeme" << Vrijeme;
+                    if (pSelect1->execute()) {
+                        while (pSelect1->moveNext());
                     }
 
                     for (int i = 0; i < 15; i++) {
