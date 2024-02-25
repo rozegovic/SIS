@@ -261,7 +261,7 @@ bool ViewGradeExams::saveData()
 		td::String naslov = "Ocjena!";
 		td::String poruka = "Unesena je ocjena za odredenu aktivnost!";
 		MsgSender msg;
-		msg.sendSystemMsgtoUser(naslov, poruka, i);
+		msg.sendSystemMsgtoUser(naslov, poruka, i,1);
 	}
 	_userids.clear();
 

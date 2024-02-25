@@ -585,7 +585,7 @@ bool ViewTasks::onAnswer(td::UINT4 questionID, gui::Alert::Answer answer)//??
                 poruka += _cName.getText();
                 poruka += ".";
                 MsgSender msg;
-                msg.sendSystemMsgtoUsers(naslov, poruka, userIDs);
+                msg.sendSystemMsgtoUsers(naslov, poruka, userIDs,1);
             }
         }
         return true;
