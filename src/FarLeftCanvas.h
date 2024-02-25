@@ -48,6 +48,7 @@ protected:
     int kontrola = 0;
     dp::IDatabase* _db=nullptr;
     dp::IDataSetPtr _pDS;
+    gui::Image img2;
 
 public:
     FarLeftCanvas(MiddleCanvas* canvas)
@@ -57,6 +58,7 @@ public:
         , _visinaChata(100)
         , numOfTickets(0)
         , _db(dp::getMainDatabase())
+        , img2(":Add48")
     {
         _middleCanvas = canvas;
      
@@ -167,12 +169,14 @@ public:
             }
             //-------------------------------------------------
             gui::Rect imgRect(0, 0, sz.width, _visinaChata);
+            gui::Shape::drawRect(imgRect, td::ColorID::LightGray , td::ColorID::LightBlue, 5, td::LinePattern::Solid);
+            _user.draw(imgRect, gui::Font::ID::SystemLargerBold, td::ColorID::Black, td::TextAlignment::Right, td::VAlignment::Center, td::TextEllipsize::End);//no
             _etf.draw(imgRect, gui::Image::AspectRatio::Keep, td::HAlignment::Left);
-            _user.draw(imgRect, gui::Font::ID::SystemBold, td::ColorID::Black, td::TextAlignment::Right, td::VAlignment::Center, td::TextEllipsize::End); //no
-            gui::Shape::drawRect(imgRect, td::ColorID::Red, 5, td::LinePattern::Solid);
             imgRect.translate(0, 110);
             /* _user.draw(imgRect, gui::Font::ID fntID, td::ColorID clrID, td::TextAlignment hAlign = td::TextAlignment::Left, td::VAlignment vAlign = td::VAlignment::Top, td::TextEllipsize ellips = td::TextEllipsize::End); *///no
-            td::ColorID boja(td::ColorID::Maroon);
+            td::ColorID boja(td::ColorID::LightBlue);
+            gui::Rect imgRect2(45, 45, 3, 3);
+            imgRect2.translate(0, 110);
             //--------------------------------------------
             //************************************************************************************
                 auto poruke = _Poruke;
@@ -183,16 +187,16 @@ public:
                 for (auto x : users) {
                     if (x.second == Globals::_currentUserID)continue;
 
-                    _etf.draw(imgRect, gui::Image::AspectRatio::Keep, td::HAlignment::Left);
                     if (static_cast<td::ColorID>(static_cast<int>(boja) + 1) == td::ColorID::White)
-                        boja = td::ColorID::Maroon;
+                        boja = td::ColorID::LightBlue;
                     boja = static_cast<td::ColorID>(static_cast<int>(boja) + 1);
 
                     td::String a = x.first;
                     gui::DrawableString others = a;
-                    others.draw(imgRect, gui::Font::ID::SystemNormal, td::ColorID::Black, td::TextAlignment::Right, td::VAlignment::Center, td::TextEllipsize::End);
-                    gui::Shape::drawRect(imgRect, boja, 5, td::LinePattern::Solid);
-
+                    gui::Shape::drawRect(imgRect, td::ColorID::LightGray, boja, 5, td::LinePattern::Solid);
+                    others.draw(imgRect, gui::Font::ID::SystemLarger, td::ColorID::Black, td::TextAlignment::Right, td::VAlignment::Center, td::TextEllipsize::End);
+                    _etf.draw(imgRect, gui::Image::AspectRatio::Keep, td::HAlignment::Left);
+               
                     //-----------------------------------------------------
                     int w = poruke.size();
 
@@ -203,21 +207,31 @@ public:
                             gui::Circle c(150, 100 + _visinaChata * (pozicijaK), 10);
                             float lw = 10;
                             if (poruke[i].second == x.second) {
-                                _shapeCircle1.createCircle(c, lw, td::LinePattern::Solid);
-                                _shapeCircle1.drawFill(td::ColorID::RoyalBlue);
+                              /*  _shapeCircle1.createCircle(c, lw, td::LinePattern::Solid);
+                                _shapeCircle1.drawFill(td::ColorID::RoyalBlue);*/
+                                gui::Shape::drawRect(imgRect2,td::ColorID::Transparent, 1, td::LinePattern::Solid);
+                   
+                               
+                                img2.draw(imgRect2, gui::Image::AspectRatio::Keep, td::HAlignment::Center, td::VAlignment::Center);
+                                
                             }
                         }
-                        else {
-                            gui::Circle c(0, 0, 0);
-                            float lw = 10;
-                            _shapeCircle1.createCircle(c, lw, td::LinePattern::Solid);
-                            _shapeCircle1.drawFill(td::ColorID::RoyalBlue);
-                        }
+                        //else {
+                        //    gui::Circle c(0, 0, 0);
+                        //    float lw = 10;
+                        //  /*  _shapeCircle1.createCircle(c, lw, td::LinePattern::Solid);
+                        //    _shapeCircle1.drawFill(td::ColorID::RoyalBlue);*/
+                        //  
+                        // 
+                        //    img2.draw(imgRect2, gui::Image::AspectRatio::Keep, td::HAlignment::Center, td::VAlignment::Center);
+                        // 
+                        //}
                     }
 
                     pozicijaK++;
                     //--------------------------------------------------------------
                     imgRect.translate(0, 110);
+                    imgRect2.translate(0, 110);
                 }
             getScroller()->setContentSize(sz);
 
