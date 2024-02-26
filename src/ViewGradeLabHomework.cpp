@@ -8,6 +8,8 @@
 #include <fo/FileOperations.h>
 #include <td/BLOB.h>
 #include "Globals.h"
+#include <utility>
+#include <set>
 
 
 ViewGradeLabHomework::ViewGradeLabHomework(td::INT4 SubjectID) : _db(dp::getMainDatabase())
@@ -294,14 +296,40 @@ bool ViewGradeLabHomework::saveData()
 		_itemsToUpdate.clear();
 	}
 
-	for (auto i : _userids) {
+	for (auto i : _useractivityids) {
 
 		td::String naslov = "Ocjena!";
-		td::String poruka = "Unesena je ocjena za odredenu aktivnost! ";
+		td::String poruka = "Unesena je ocjena ";
+		dp::IStatementPtr pSelect2 = dp::getMainDatabase()->createStatement("SELECT Ocjena FROM OcjeneLabZadace WHERE ID_Korisnika = ? AND ID_Aktivnosti = ?");
+		dp::Params parDS1(pSelect2->allocParams());
+		parDS1 << i.first << i.second;
+		dp::Columns pCols1 = pSelect2->allocBindColumns(1);
+		td::String ocjena;
+		pCols1 << "Ocjena" << ocjena;
+		if (!pSelect2->execute())
+			return false;
+		if (!pSelect2->moveNext())
+			return false;
+		td::String poruka3 = " iz predmeta ";
+
+		dp::IStatementPtr pSelect1 = dp::getMainDatabase()->createStatement("SELECT Naziv_Predmeta FROM Predmet WHERE ID_Predmeta = ?");
+		dp::Params parDS(pSelect1->allocParams());
+		parDS << _SubjectID;
+		dp::Columns pCols = pSelect1->allocBindColumns(1);
+		td::String naziv_predmeta;
+		pCols << "Naziv_Predmeta" << naziv_predmeta;
+		if (!pSelect1->execute())
+			return false;
+		if (!pSelect1->moveNext())
+			return false;
+
+		poruka += ocjena;
+		poruka += poruka3;
+		poruka += naziv_predmeta;
 		MsgSender msg;
-		msg.sendSystemMsgtoUser(naslov, poruka, i,1);
+		msg.sendSystemMsgtoUser(naslov, poruka, i.first,1);
 	}
-	_userids.clear();
+	_useractivityids.clear();
 
 	return true;
 }
@@ -321,7 +349,8 @@ bool ViewGradeLabHomework::onClick(gui::Button* pBtn)
 		auto& row = _table.getCurrentRow();
 		row[6].toZero();
 		td::INT4 a = row[0].i4Val();
-		_userids.insert(a);
+		//ovo je brisanje ako je uklonjena ocjena
+		_useractivityids.erase({ a, _ActivityID });
 		//	_table.updateRow(iRow);
 		_table.endUpdate();
 		onChangedSelection(&_table);
@@ -345,7 +374,7 @@ bool ViewGradeLabHomework::onClick(gui::Button* pBtn)
 		auto& row = _table.getCurrentRow();
 		populateDSRow(row, itemid);
 		td::INT4 a = row[0].i4Val();
-		_userids.insert(a);
+		_useractivityids.insert({ a, _ActivityID });
 		_table.updateRow(iRow);
 		_table.endUpdate();
 		onChangedSelection(&_table);
@@ -363,7 +392,7 @@ bool ViewGradeLabHomework::onClick(gui::Button* pBtn)
 		auto& row = _table.getCurrentRow();
 		populateDSRow(row, itemid);
 		td::INT4 a = row[0].i4Val();
-		_userids.insert(a);
+		_useractivityids.insert({ a, _ActivityID });
 		_table.updateRow(iRow);
 		_table.endUpdate();
 		onChangedSelection(&_table);
