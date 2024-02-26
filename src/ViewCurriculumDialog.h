@@ -74,7 +74,7 @@ public:
         return semestar.i4Val();
     }
 
-    td::INT4& getDepartmentID()
+    td::INT4 getDepartmentID()
     {
         td::Variant val;
         _department.getValue(val);
