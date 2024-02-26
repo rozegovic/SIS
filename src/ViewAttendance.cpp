@@ -246,39 +246,35 @@ void ViewAttendance::saveData()
     td::INT4 tip, predmet,Max_br_pol,Tr_broj;
     Tr_broj = 0;
     td::Variant val;
+    
+     _day.getValue(val);
+     day = val;
+     _type.getValue(val);
+     tip = val.i4Val();
+    predmet = _SubjectID;
+    _time.getValue(val);
+    t = val;
+    _maxNum.getValue(val);
+    Max_br_pol = val.i4Val();
+    Tr_broj = 0;
     parDS << dp::toNCh(day, 30) << tip << predmet << t<<Max_br_pol<<Tr_broj;
-    dp::IStatementPtr pDel(dp::getMainDatabase()->createStatement("DELETE FROM Termini")); 
-    if (!pDel->execute())
+    if (!pInsStat->execute())
         return;
-    size_t nRows = _pDS->getNumberOfRows();
-    for (size_t i = 0; i < nRows; ++i)
-    {
-        auto row = _pDS->getRow(i);
-        //row[0].getValue (val);
-        day = row[0];
-        tip = row[3].i4Val();
-        predmet = _SubjectID;
-        t = row[1];
-        Max_br_pol = row[4].i4Val();
-         Tr_broj = row[5].i4Val();
-        if (!pInsStat->execute())
-            return;
-    }
     tr.commit();
     return;
 }
 void ViewAttendance::saveDataUpdate()
 {
-    dp::IStatementPtr pInsStat(dp::getMainDatabase()->createStatement("INSERT INTO Termini ( Dan, TipPredavanjaID, Predmet_ID, Vrijeme,Max_br_pol) VALUES(?,?,?,?,?)"));
+    dp::IStatementPtr pInsStat(dp::getMainDatabase()->createStatement("INSERT INTO Termini ( Dan, TipPredavanjaID, Predmet_ID, Vrijeme,Max_br_pol,Br_prijavljenih) VALUES(?,?,?,?,?,?)"));
     dp::Params parDS(pInsStat->allocParams());
     dp::Transaction tr(dp::getMainDatabase());
 
     td::String day;
     td::Time t;
-    td::INT4 tip, predmet, Max_br_pol;
-  
+    td::INT4 tip, predmet, Max_br_pol, Tr_broj;
+    Tr_broj = 0;
     td::Variant val;
-    parDS << dp::toNCh(day, 30) << tip << predmet << t << Max_br_pol;
+    parDS << dp::toNCh(day, 30) << tip << predmet << t << Max_br_pol << Tr_broj;
     dp::IStatementPtr pDel(dp::getMainDatabase()->createStatement("DELETE FROM Termini"));
     if (!pDel->execute())
         return;
@@ -292,7 +288,7 @@ void ViewAttendance::saveDataUpdate()
         predmet = _SubjectID;
         t = row[1];
         Max_br_pol = row[4].i4Val();
-
+        Tr_broj = row[5].i4Val();
         if (!pInsStat->execute())
             return;
     }
@@ -346,7 +342,7 @@ bool ViewAttendance::onClick(gui::Button* pBtn)
         populateDSRow(row);
         _table.updateRow(iRow);
         _table.endUpdate();
-        saveData();
+        saveDataUpdate();
         _table.reload();
         if(CheckTime())
             SendMsg(3);
@@ -451,7 +447,7 @@ void ViewAttendance::SendMsg(td::INT4 MsgType){
     poruka += predmet;
 
     MsgSender za_poruke;
-    za_poruke.sendSystemMsgtoUsers(naslov, poruka, userIDs);
+    za_poruke.sendSystemMsgtoUsers(naslov, poruka, userIDs,1);
     td::Time t(true);
     td::Date d(true);
     LastMsgTime = t;

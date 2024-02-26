@@ -7,6 +7,7 @@
 ViewSubject::ViewSubject(td::INT4 SubjectID) :
 	_lblName(tr("SubjName"))
 	, _lblSurname(tr("SubjSurname"))
+	, _lblType(tr("AttType"))
 	, _lblDay(tr("SubjDay"))
 	, _lblWeek(tr("SubjWeek"))
 	, _hlBtnsDB(4)
@@ -20,7 +21,9 @@ ViewSubject::ViewSubject(td::INT4 SubjectID) :
 {
 	_name.setAsReadOnly();
 	_surname.setAsReadOnly();
-
+	_type.setAsReadOnly();
+	Brpon = 0;
+	typeID = 0;
 	_hlBtnsDB.appendSpacer();
 	_hlBtnsDB.append(_btnNotPresent);
 	_hlBtnsDB.append(_btnPresent);
@@ -32,7 +35,9 @@ ViewSubject::ViewSubject(td::INT4 SubjectID) :
 	gui::GridComposer gc(_gl);
 	gc.appendRow(_lblWeek);
 	gc.appendCol(_weekCombo);
-	
+	gc.appendCol(_lblType);
+	gc.appendCol(_type);
+
 	gc.appendRow(_lblDay);
 	gc.appendCol(_dayCombo);
 	gc.appendCol(_lblTime);
@@ -52,15 +57,16 @@ ViewSubject::ViewSubject(td::INT4 SubjectID) :
 	
 		
 	_TerminID = getCurrentTerminID();
-     populateData();
-	_table.init(_pDS, { 0,1});
+	populateTablePresent();
+	populateDayCombo(_dayCombo);
+	populateWeekCombo(_weekCombo);
+    populateData();
+_table.init(_pDS, { 0,1});
 	if (_pDS->getNumberOfRows())
 	{
 		_table.selectRow(0, true);
 	}
-populateTablePresent();
-	populateDayCombo(_dayCombo);
-	populateWeekCombo(_weekCombo);
+
 }
 void ViewSubject::populateWeekCombo(gui::ComboBox& combo)
 {
@@ -172,15 +178,37 @@ void ViewSubject::populateTimeCombo(gui::DBComboBox& combo, td::String day)
 		combo.addItem(pom, id);
 	}
 	combo.selectIndex(0);
+	_weekCombo.selectIndex(getMaxWeek());
+	/*td::INT4 terminID = getCurrentTerminID();
+	dp::IStatementPtr pSelect1 = dp::getMainDatabase()->createStatement("select TipPredavanja.Naziv as Naziv from Termini, TipPredavanja where Termini.Predmet_ID=? and Termini.ID=? and Termini.TipPredavanjaID=TipPredavanja.ID");
+	dp::Params pParams1(pSelect1->allocParams());
 
+	pParams1 << _SubjectID<<terminID;
+	dp::Columns pCols1 = pSelect1->allocBindColumns(1);
+	td::String type;
+	pCols1 << "Naziv" << type;
+	if (!pSelect1->execute())
+		return;
+	while(pSelect1->moveNext()){}
+	_type.setValue(type);*/
 }
 
 void ViewSubject::populateData()
 {
 	auto pDB = dp::getMainDatabase();
-	_pDS = pDB->createDataSet("select Ime as Name, Prezime as Surname, Korisnici.ID as sID from Korisnici, UpisPredmeta where Korisnici.PozicijaID==5 and Korisnici.ID=UpisPredmeta.Id_Studenta and UpisPredmeta.ID_Predmeta=?", dp::IDataSet::Execution::EX_MULT);
-	dp::Params pParams(_pDS->allocParams());
-	pParams << _SubjectID;
+	
+	if(typeID==3)
+	{ 
+		td::INT4 terminID = getCurrentTerminID();
+		_pDS = pDB->createDataSet("select Ime as Name, Prezime as Surname, Korisnici.ID as sID from Korisnici, UpisPredmeta, TerminiStudenti where Korisnici.PozicijaID==5 and Korisnici.ID=UpisPredmeta.Id_Studenta and Korisnici.ID=TerminiStudenti.ID_Studenta and UpisPredmeta.ID_Predmeta=? and TerminiStudenti.ID_Termina=?", dp::IDataSet::Execution::EX_MULT);
+		dp::Params pParams(_pDS->allocParams());
+		pParams << _SubjectID << terminID;
+	}
+	else {
+		_pDS = pDB->createDataSet("select Ime as Name, Prezime as Surname, Korisnici.ID as sID from Korisnici, UpisPredmeta where Korisnici.PozicijaID==5 and Korisnici.ID=UpisPredmeta.Id_Studenta and UpisPredmeta.ID_Predmeta=?", dp::IDataSet::Execution::EX_MULT);
+		dp::Params pParams(_pDS->allocParams());
+		pParams << _SubjectID;
+	}
 	dp::DSColumns cols(_pDS->allocBindColumns(3));
 	cols << "Name" << td::string8 << "Surname" << td::string8<<"sID" << td::int4;
 
@@ -189,6 +217,7 @@ void ViewSubject::populateData()
 		_pDS = nullptr;
 		return;
 	}
+	Brpon++;
 }
 
 
@@ -361,6 +390,8 @@ bool ViewSubject::onChangedSelection(gui::ComboBox* pCB) {
 		_time.clean();
 		td::String str =_dayCombo.getSelectedText();
 		populateTimeCombo(_time,str);
+		
+		if(Brpon!=0)
 		if (_pDS->getNumberOfRows() > 0)
 			_table.selectRow(0, true);
 		return true;
@@ -368,6 +399,7 @@ bool ViewSubject::onChangedSelection(gui::ComboBox* pCB) {
 	if (pCB == &_weekCombo)
 	{
 		UpdatePresentDataSet();
+		if (Brpon != 0)
 		if (_pDS->getNumberOfRows() > 0)
 			_table.selectRow(0, true);
 		return true;
@@ -381,8 +413,29 @@ bool ViewSubject::onChangedSelection(gui::DBComboBox* pCB) {
 	{
 		UpdatePresentDataSet();
 		//_tablePresent.clean();
+		
+		
+		_weekCombo.selectIndex(getMaxWeek());
+if (Brpon != 0)
 		if ( _pDS->getNumberOfRows()>0)
 		_table.selectRow(0, true);
+		td::INT4 terminID = getCurrentTerminID();
+		dp::IStatementPtr pSelect1 = dp::getMainDatabase()->createStatement("select TipPredavanja.Naziv as Naziv, TipPredavanja.ID as ID from Termini, TipPredavanja where Termini.Predmet_ID=? and Termini.ID=? and Termini.TipPredavanjaID=TipPredavanja.ID");
+		dp::Params pParams1(pSelect1->allocParams());
+
+		pParams1 << _SubjectID << terminID;
+		dp::Columns pCols1 = pSelect1->allocBindColumns(2);
+		td::String type;
+		td::INT4 id;
+		pCols1 << "Naziv" << type<<"ID"<<id;
+		if (!pSelect1->execute())
+			return false;
+		while (pSelect1->moveNext()) {}
+		_type.setValue(type);
+		typeID = id;
+		td::INT4 a= typeID;
+		UpdateDataSet();
+		
 	return true;
 	}
 	return false;
@@ -463,5 +516,51 @@ void ViewSubject::UpdatePresentDataSet() {
 		_tablePresent.endUpdate();
 	}
 
+}
+void ViewSubject::UpdateDataSet() {
+
+	if (Brpon > 0)
+	{
+		auto pDB = dp::getMainDatabase();
+		dp::IDataSetPtr _pomDS;
+		if (typeID == 3)
+		{
+			td::INT4 terminID = getCurrentTerminID();
+			_pomDS = pDB->createDataSet("select Ime as Name, Prezime as Surname, Korisnici.ID as sID from Korisnici, UpisPredmeta, TerminiStudenti where Korisnici.PozicijaID==5 and Korisnici.ID=UpisPredmeta.Id_Studenta and Korisnici.ID=TerminiStudenti.ID_Studenta and UpisPredmeta.ID_Predmeta=? and TerminiStudenti.ID_Termina=?", dp::IDataSet::Execution::EX_MULT);
+			dp::Params pParams(_pomDS->allocParams());
+			pParams << _SubjectID << terminID;
+		}
+		else {
+			_pomDS = pDB->createDataSet("select Ime as Name, Prezime as Surname, Korisnici.ID as sID from Korisnici, UpisPredmeta where Korisnici.PozicijaID==5 and Korisnici.ID=UpisPredmeta.Id_Studenta and UpisPredmeta.ID_Predmeta=?", dp::IDataSet::Execution::EX_MULT);
+			dp::Params pParams(_pomDS->allocParams());
+			pParams << _SubjectID;
+		}
+		dp::DSColumns cols(_pomDS->allocBindColumns(3));
+		cols << "Name" << td::string8 << "Surname" << td::string8 << "sID" << td::int4;
+
+		if (!_pomDS->execute())
+		{
+			_pomDS = nullptr;
+			return;
+		}
+		Brpon++;
+
+
+		_table.clean();
+
+
+		size_t nRows = _pomDS->getNumberOfRows();
+		for (size_t i = 0; i < nRows; i++) {
+			_table.beginUpdate();
+			auto& rowpom = _pomDS->getRow(i);
+			auto& row = _table.getEmptyRow();
+			row = rowpom;
+
+			_table.push_back();
+
+			_table.endUpdate();
+			_table.selectRow(0,true);
+		}
+	}
 }
 

@@ -8,7 +8,7 @@
 
 
 
-ViewCertainRequest::ViewCertainRequest(td::String ime, td::String prezime, td::String indeks, td::String tipKarte, td::String statusKarte, td::String sadrzajKarte, td::String naslovKarte)
+ViewCertainRequest::ViewCertainRequest(td::INT4 IDTicket,td::String ime, td::String prezime, td::String indeks, td::String tipKarte, td::String statusKarte, td::String sadrzajKarte, td::String naslovKarte)
 
     : _lblstudentsTicket(tr("Student's ticket"))
     , _namelbl(tr("nameUser"))
@@ -25,6 +25,7 @@ ViewCertainRequest::ViewCertainRequest(td::String ime, td::String prezime, td::S
     , _gl(7, 6)
     , _db(dp::create(dp::IDatabase::ConnType::CT_SQLITE, dp::IDatabase::ServerType::SER_SQLITE3))
     , indeks(indeks)
+    ,IDTicket(IDTicket)
 {
 
     _hlBtnsDB.append(_btnSend);
@@ -143,10 +144,10 @@ void ViewCertainRequest::showSaveFileDialog() {
                 td::String strFolderName = pFD->getFileName();
                 fo::fs::path filePath(strFolderName.c_str());
 
-                td::String setstr1 = "select Name_attachment from SAOStudentTicket where Indeks =";
-                setstr1.append(indeks);
-                td::String setstr2 = "select Attachment from SAOStudentTicket where Indeks =";
-                setstr2.append(indeks);
+                td::String setstr1 = "select Name_attachment from SAOStudentTicket where ID =";
+                setstr1.append(std::to_string(IDTicket));
+                td::String setstr2 = "select Attachment from SAOStudentTicket where ID =";
+                setstr2.append(std::to_string(IDTicket));
 
                 dp::IStatementPtr pSelFileName = dp::getMainDatabase()->createStatement(setstr1);
                 dp::IStatementPtr pSelBlob = dp::getMainDatabase()->createStatement(setstr2);
@@ -222,8 +223,8 @@ bool ViewCertainRequest::onClick(gui::Button* pBtn)
             return false;
         }
 
-        td::String setstr = "Update SAOStudentTicket set Status_ID=2 where Indeks=";
-        setstr.append(indeks);
+        td::String setstr = "Update SAOStudentTicket set Status_ID=2 where ID=";
+        setstr.append(std::to_string(IDTicket));
         dp::IStatementPtr pUpdate(dp::getMainDatabase()->createStatement(setstr));
         if (!pUpdate->execute()) {
             showAlert("Error updating", "");
