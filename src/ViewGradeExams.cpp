@@ -122,6 +122,8 @@ bool ViewGradeExams::onChangedSelection(gui::TableEdit* pTE)
 		val = row[2];
 		_activityName.setValue(val);
 
+
+
 		return true;
 	}
 	return false;
@@ -256,14 +258,40 @@ bool ViewGradeExams::saveData()
 		_itemsToInsert.clear();
 		_itemsToUpdate.clear();
 	}
-	for (auto i : _userids) {
+	for (auto i : _useractivityids) {
 
 		td::String naslov = "Ocjena!";
-		td::String poruka = "Unesena je ocjena za odredenu aktivnost!";
+		td::String poruka = "Unesena je ocjena ";
+		dp::IStatementPtr pSelect2 = dp::getMainDatabase()->createStatement("SELECT Ocjena FROM OcjeneIspita WHERE ID_Korisnika = ? AND ID_Aktivnosti = ?");
+		dp::Params parDS1(pSelect2->allocParams());
+		parDS1 << i.first << i.second;
+		dp::Columns pCols1 = pSelect2->allocBindColumns(1);
+		td::String ocjena;
+		pCols1 << "Ocjena" << ocjena;
+		if (!pSelect2->execute())
+			return false;
+		if (!pSelect2->moveNext())
+			return false;
+		td::String poruka3 = " iz predmeta ";
+
+		dp::IStatementPtr pSelect1 = dp::getMainDatabase()->createStatement("SELECT Naziv_Predmeta FROM Predmet WHERE ID_Predmeta = ?");
+		dp::Params parDS(pSelect1->allocParams());
+		parDS << _SubjectID;
+		dp::Columns pCols = pSelect1->allocBindColumns(1);
+		td::String naziv_predmeta;
+		pCols << "Naziv_Predmeta" << naziv_predmeta;
+		if (!pSelect1->execute())
+			return false;
+		if (!pSelect1->moveNext())
+			return false;
+
+		poruka += ocjena;
+		poruka += poruka3;
+		poruka += naziv_predmeta;
 		MsgSender msg;
-		msg.sendSystemMsgtoUser(naslov, poruka, i,1);
+		msg.sendSystemMsgtoUser(naslov, poruka, i.first, 1);
 	}
-	_userids.clear();
+	_useractivityids.clear();
 
 
 	return true;
@@ -287,7 +315,8 @@ bool ViewGradeExams::onClick(gui::Button* pBtn)
 
 		row[6].toZero();
 		td::INT4 a = row[0].i4Val();
-		_userids.insert(a);
+		td::INT4 id_akt = row[1].i4Val();
+		_useractivityids.erase({ a, id_akt });
 		//	_table.updateRow(iRow);
 		_table.endUpdate();
 
@@ -311,7 +340,8 @@ bool ViewGradeExams::onClick(gui::Button* pBtn)
 
 		populateDSRow(row, itemid);
 		td::INT4 a = row[0].i4Val();
-		_userids.insert(a);
+		td::INT4 id_akt = row[1].i4Val();
+		_useractivityids.insert({ a, id_akt });
 		_table.updateRow(iRow);
 		_table.endUpdate();
 
@@ -327,7 +357,8 @@ bool ViewGradeExams::onClick(gui::Button* pBtn)
 		_table.beginUpdate();
 		auto& row = _table.getCurrentRow();
 		td::INT4 a = row[0].i4Val();
-		_userids.insert(a);
+		td::INT4 id_akt = row[1].i4Val();
+		_useractivityids.insert({ a, id_akt });
 		populateDSRow(row, itemid);
 		_table.updateRow(iRow);
 		_table.endUpdate();
