@@ -170,7 +170,9 @@
 						  <Res id="Saturday" tr="Subota"/>
 						  <Res id="Sunday" tr="Nedelja"/>
 						  <Res id="AttDay" tr="Dan"/>
-						  <Res id="AttMaxNum" tr="Maksimalan broj studenata:"/>
+						  <Res id="AttMaxNum:" tr="Maksimalan broj studenata:"/>
+						  <Res id="AttMaxNum" tr="Maksimalan broj studenata"/>
+						  <Res id="AttDay" tr="Dan"/>
 						  <Res id="SubjWeek" tr="Sedmica:"/>
 						  <Res id="SubjName" tr="Ime:"/>
 						  <Res id="SubjSurname" tr="Prezime:"/>

@@ -58,34 +58,35 @@ void ViewTimeSlot::initTable()
 {
     gui::Columns visCols(_table.allocBindColumns(3));
    // visCols << gui::ThSep::DoNotShowThSep << gui::Header(0, tr("Type")) << gui::Header(1, tr("Time")) << gui::Header(2, tr("Date"));
-    visCols << gui::Header(0, tr("Type")) << gui::Header(1, tr("Time")) << gui::Header(2, tr("Day"));
+    visCols << gui::Header(0, tr("Type")) << gui::Header(1, tr("Time")) << gui::Header(2, tr("AttDay"));
     _table.init(_pDS); 
 }
 
 void ViewTimeSlot::initTable2()
 {
     gui::Columns visCols(_table2.allocBindColumns(3));
-    visCols  << gui::Header(0, tr("Type")) << gui::Header(1, tr("Time")) << gui::Header(2, tr("Day"));
+    visCols  << gui::Header(0, tr("Type")) << gui::Header(1, tr("Time")) << gui::Header(2, tr("AttDay"));
     _table2.init(_pDS2);             
 }
 
 bool ViewTimeSlot::IsEnrolled(td::INT4 ID_stud, td::INT4 ID_Pred) {
     auto pDB = dp::getMainDatabase();
     
-    _pDSpos = pDB->createDataSet("SELECT ID_Studenta as IDs ,TipPredavanjaID as IDp FROM TerminiStudenti", dp::IDataSet::Execution::EX_MULT);
-    dp::DSColumns cols(_pDSpos->allocBindColumns(2));
-    cols << "IDs" << td::int4 << "IDp" << td::int4;
+    _pDSpos = pDB->createDataSet("SELECT TerminiStudenti.ID_Studenta as ID_stud ,TerminiStudenti.TipPredavanjaID as Tip_pred, Termini.Predmet_ID as ID_pred FROM TerminiStudenti,Termini where TerminiStudenti.ID_Termina=Termini.ID", dp::IDataSet::Execution::EX_MULT);
+    dp::DSColumns cols(_pDSpos->allocBindColumns(3));
+    cols << "ID_stud" << td::int4 << "Tip_pred" << td::int4<<"ID_pred"<<td::int4;
 
     if (!_pDSpos->execute())
     {
         _pDSpos = nullptr;
         return false;
     }
+    td::INT4 subj = _SubjectID;
     size_t nRows = _pDSpos->getNumberOfRows();
     for (size_t i = 0; i < nRows; ++i)
     {
         auto row = _pDSpos->getRow(i);
-        if (row[0].i4Val() == ID_stud && row[1].i4Val() == ID_Pred)
+        if (row[0].i4Val() == ID_stud && row[1].i4Val() == ID_Pred && row[2].i4Val()==_SubjectID)
         {
             td::INT4 pom = row[1].i4Val();
             return true;
@@ -209,10 +210,10 @@ bool ViewTimeSlot::saveData2() { //ispis
     tID = row[4].i4Val();
     pID = row[3].i4Val();
     if (IsEnrolled(sID, pID))
-    {
-        dp::IStatementPtr pInsStat(dp::getMainDatabase()->createStatement("Delete from TerminiStudenti where ID_Studenta=? and TipPredavanjaID=?"));
+    { 
+        dp::IStatementPtr pInsStat(dp::getMainDatabase()->createStatement("Delete from TerminiStudenti where ID_Studenta=? and TipPredavanjaID=? and ID_Termina=?"));
         dp::Params parDS(pInsStat->allocParams());
-        parDS << sID << pID;
+        parDS << sID << pID<<tID;
         if (!pInsStat->execute())
             return false;
 
@@ -301,10 +302,10 @@ bool ViewTimeSlot::onClick(gui::Button* pBtn)
 void ViewTimeSlot::UpdatePresentDataSet() {
    
     auto sID = Globals::_currentUserID;
-    dp::IDataSetPtr pomDS = dp::getMainDatabase()->createDataSet("SELECT b.Naziv AS tip, a.Vrijeme AS time, a.Dan AS date from Termini a,  TipPredavanja b, TerminiStudenti c WHERE c.ID_Termina = a.ID and c.TipPredavanjaID = b.ID and c.ID_Studenta = ?", dp::IDataSet::Execution::EX_MULT);
+    dp::IDataSetPtr pomDS = dp::getMainDatabase()->createDataSet("SELECT b.Naziv AS tip, a.Vrijeme AS time, a.Dan AS date from Termini a,  TipPredavanja b, TerminiStudenti c WHERE c.ID_Termina = a.ID and c.TipPredavanjaID = b.ID and c.ID_Studenta = ? and a.Predmet_ID=?", dp::IDataSet::Execution::EX_MULT);
     
     dp::Params pParams(pomDS->allocParams());
-    pParams << Globals::_currentUserID;           
+    pParams << Globals::_currentUserID<<_SubjectID;           
 
     dp::DSColumns cols(pomDS->allocBindColumns(3));
     cols << "tip" << td::string8 << "time" << td::time << "date" << td::string8;

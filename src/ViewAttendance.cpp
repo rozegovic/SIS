@@ -18,7 +18,7 @@ ViewAttendance::ViewAttendance(td::INT4 SubjectID, ViewSubject* subject) :
     _LblDay(tr("AttDay")),
     _LblTime(tr("AttTime"))
     , _LblType(tr("AttType"))
-    , _LblMaxNum(tr("AttMaxNum"))
+    , _LblMaxNum(tr("AttMaxNum:"))
     , _btnAdd(tr("add"), tr("AttAddBtnTT"))
     , _btnUpdate(tr("Update"), tr("AttUpdateTT"))
     , _btnDelete(tr("Delete"), tr("AttDelBtnTT"))
@@ -150,7 +150,7 @@ bool ViewAttendance::onChangedSelection(gui::ComboBox* pCmb)
 void ViewAttendance::populateData()
 {
     auto pDB = dp::getMainDatabase();
-    _pDS = pDB->createDataSet("SELECT a.Dan AS dan, a.Vrijeme AS vrijeme, b.Naziv AS Tip, b.ID as ID, a.Max_br_pol as MaxBroj, a.Br_prijavljenih as brP, a.ID as IDterm FROM Termini a, TipPredavanja b WHERE a.TipPredavanjaID = b.ID and a.Predmet_ID = ?", dp::IDataSet::Execution::EX_MULT);
+    _pDS = pDB->createDataSet("SELECT a.Dan AS AttDay, a.Vrijeme AS Time, b.Naziv AS Type, b.ID as ID, a.Max_br_pol as AttMaxNum, a.Br_prijavljenih as brP, a.ID as IDterm FROM Termini a, TipPredavanja b WHERE a.TipPredavanjaID = b.ID and a.Predmet_ID = ?", dp::IDataSet::Execution::EX_MULT);
     
     dp::Params parDS(_pDS->allocParams());
     //td::INT4 IDPredmeta = Globals::_IDSubjectSelection;
@@ -159,7 +159,7 @@ void ViewAttendance::populateData()
     parDS << _SubjectID;
     
     dp::DSColumns cols(_pDS->allocBindColumns(7));
-    cols << "dan" << td::string8 << "vrijeme" << td::time<< "Tip" << td::string8 << "ID" << td::int4 << "MaxBroj" << td::int4<<"brP"<<td::int4<<"IDterm"<<td::int4;
+    cols << "AttDay" << td::string8 << "Time" << td::time<< "Type" << td::string8 << "ID" << td::int4 << "AttMaxNum" << td::int4<<"brP"<<td::int4<<"IDterm"<<td::int4;
 
     if (!_pDS->execute())
     {
