@@ -269,7 +269,7 @@ bool ViewGradeExams::saveData()
 		poruka.append(std::to_string(grade));
 		MsgSender msg;
 
-		msg.sendSystemMsgtoUser(_cName.getText(), poruka, a);//-------- Updated Messages
+		msg.sendSystemMsgtoUser(_cName.getText(), poruka, a, 1);//-------- Updated Messages
 
 	}
 	_userids.clear();
