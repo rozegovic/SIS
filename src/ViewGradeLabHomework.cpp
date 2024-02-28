@@ -307,7 +307,7 @@ bool ViewGradeLabHomework::saveData()
 		poruka.append(std::to_string(grade));
 		MsgSender msg;
 
-		msg.sendSystemMsgtoUser(_cName.getText(), poruka, a);
+		msg.sendSystemMsgtoUser(_cName.getText(), poruka, a,1);
 
 	}
 	_userids.clear();
