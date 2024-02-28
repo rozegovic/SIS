@@ -169,7 +169,7 @@ public:
 
 
         // pogled za studenta ------ grupa 2 ------ ako ne koristite mozete samo ostaviti da bude nacrtan etf znak
-        else if (Globals::_currentUserID == 5) {
+        else if (Globals::isStudent) {
 
             //td::INT4 broj = predmetID;  //uzima random vrijednost, a u funkciji setSubjectID dobro ocita
             //td::INT4 broj = 1;  //  1 za provjeru select-a

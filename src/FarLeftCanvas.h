@@ -248,7 +248,7 @@ public:
 
        
         // pogled za studenta ------ grupa 2
-       else if (Globals::_currentUserID == 5) {
+       else if (Globals::isStudent) {
            // subjects.clear();
            createStrings();
            //std::vector<td::INT4> SubjFrames;// rbr predmeta
@@ -398,7 +398,6 @@ public:
              td::INT4 rbr = modelPoint.y / 50; //visina svakog pravougaonika je 50, pa ce ovo vratiti rbr (pocevsi od 0)?
              //vektor subjects cuva sve IDs predmeta koji su ispisani, i to redom kako su ispisani. 
              // Da dobijete ID kliknutog predmeta ide subjects.at(rbr), kao u alertu ispod
-             std::cout << subjects.size();
              if (rbr >= subjects.size())
                  return;
              td::INT4 subjectID = subjects.at(rbr);

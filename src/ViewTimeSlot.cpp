@@ -233,6 +233,9 @@ bool ViewTimeSlot::onClick(gui::Button* pBtn)
     }*/
     if (pBtn == &_btnEnroll)
     {
+        int iRow = _table.getFirstSelectedRow();
+        if (iRow < 0)
+            return false;
         td::INT4 tID, pID, sID;
         sID = Globals::_currentUserID;
         td::INT4 curRow = _table.getFirstSelectedRow();
@@ -269,6 +272,9 @@ bool ViewTimeSlot::onClick(gui::Button* pBtn)
 
     if (pBtn == &_btnDEnroll)
     {
+        int iRow = _table.getFirstSelectedRow();
+        if (iRow < 0)
+            return false;
         td::INT4 tID;
         td::INT4 curRow = _table.getFirstSelectedRow();
         auto row = _pDS->getRow(curRow);

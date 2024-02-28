@@ -126,6 +126,14 @@
 		<Res id="alertMB" tr="Neispravan JMBG korisnika."/>
 		<Res id="alertDR" tr="Neispravan datum rođenja korisnika."/>
 		<Res id="alertU" tr="Nije moguće ažurirati korisnika koji nije unesen."/>
+		
+		<Res id="alertClassroom" tr="Nije moguće ažurirati učionicu koja nije unesena."/>
+		<Res id="alertPBClassroom" tr="Već postoji učionica sa tim nazivom."/>
+		<Res id="alertClassroomSeats" tr="Broj mjesta ne može biti negativan."/>
+		<Res id="NoPwrd" tr="Niste unijeli šifru."/>
+		<Res id="DefaultPwrd" tr="Ne možete koristiti default šifru."/>
+		
+		
 		<Res id="alertNEG" tr="Nije moguće unijeti negativan ID."/>
 		<Res id="alertDEPE" tr="ID smjera već postoji."/>
 		<Res id="alertDEPN" tr="Ime smjera već postoji."/>
