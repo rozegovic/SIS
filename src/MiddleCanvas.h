@@ -698,6 +698,7 @@ public:
         // id korisnika sa kojim je chat aktivan
         red = 1;
         _name = s;
+        str = "";
         _chatUserID = userID;
         reDraw();
     }
