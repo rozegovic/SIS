@@ -613,7 +613,8 @@ public:
                     {
                         return;
                     }
-                    reset();
+                    kontrola = 1;  //    <------ reset(); zamjenjeno sa ove dvije linije(ista funkcija)
+                    reDraw();       //   <-----------------'
 
                    //brisemo iz paira sve poruke gdje je prvi field = currentuserid i gdje je drugi field = chatuserid
 
