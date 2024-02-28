@@ -245,11 +245,9 @@ public:
                         gui::Circle c(150, 100 + _visinaChata * (pozicijaK), 10);
                         float lw = 10;
                         if (poruke[i].second == x.second) {
-                            /*  _shapeCircle1.createCircle(c, lw, td::LinePattern::Solid);
+                              /*_shapeCircle1.createCircle(c, lw, td::LinePattern::Solid);
                               _shapeCircle1.drawFill(td::ColorID::RoyalBlue);*/
                             gui::Shape::drawRect(imgRect2, td::ColorID::Transparent, 1, td::LinePattern::Solid);
-
-
                             img2.draw(imgRect2, gui::Image::AspectRatio::Keep, td::HAlignment::Center, td::VAlignment::Center);
 
                         }
@@ -257,11 +255,11 @@ public:
                     //else {
                     //    gui::Circle c(0, 0, 0);
                     //    float lw = 10;
-                    //  /*  _shapeCircle1.createCircle(c, lw, td::LinePattern::Solid);
-                    //    _shapeCircle1.drawFill(td::ColorID::RoyalBlue);*/
+                    //    _shapeCircle1.createCircle(c, lw, td::LinePattern::Solid);
+                    //    _shapeCircle1.drawFill(td::ColorID::RoyalBlue);
                     //  
                     // 
-                    //    img2.draw(imgRect2, gui::Image::AspectRatio::Keep, td::HAlignment::Center, td::VAlignment::Center);
+                    //    //img2.draw(imgRect2, gui::Image::AspectRatio::Keep, td::HAlignment::Center, td::VAlignment::Center);
                     // 
                     //}
                 }
@@ -521,9 +519,6 @@ public:
 
             //-----------------------------------------------------------------------------------------------------------------
 
-
-
-
         }
 
 
@@ -582,7 +577,6 @@ public:
             if (OpenChatPressed != -1)//-------------------------------Dodano za chat
                 _middleCanvas->setChatButtonPressed(OpenChatPressed);
 
-
             double tempk = 0;
 
             int a = 0;
@@ -602,34 +596,44 @@ public:
                     td::INT4 secondfield = IdUserChat;
                     td::INT4 idA = 0;
                     //if (firstfield != secondfield) {
-
-                        //dp::IStatementPtr pSelect3 ( _db->createStatement("select ID from Messages where AuthorID = ?"));
-                    dp::IStatementPtr pSelect3(_db->createStatement("select MsgID from MsgReceivers where UserID = ?"));
-                    dp::Columns pCols3 = pSelect3->allocBindColumns(1);
-                    dp::Params parDS3(pSelect3->allocParams());
-                    //parDS3 << IdUserChat;
-                    parDS3 << firstfield;
-
-                    td::INT4 idPoruke;
-                    pCols3 << "MsgID" << idPoruke;
-
-                    if (!pSelect3->execute()) {
-                        pSelect3 = nullptr;
-                    }
-
-                   //int vv = 0;
-                    while (pSelect3->moveNext()) {
-                       // vv++;
-                        dp::IStatementPtr pUpdateGrade(_db->createStatement("UPDATE Messages SET Procitano=0 WHERE ID=?"));
-                        dp::Params pParams2(pUpdateGrade->allocParams());
-                        pParams2 << idPoruke;
-
-                        if (!pUpdateGrade->execute())
-                        {
-                            return;
+                    //----Provjera ima li neprocitanih poruka----
+                    td::INT4 Kontrola = 0;
+                    for(int j=0; j<_Poruke.size();j++) {
+                        if(_Poruke[j].second== IdUserChat) {
+                            Kontrola++;
                         }
-                        reset();
                     }
+                    //---Ako ima radi slijedece-----
+                    if(Kontrola>0) {
+                        //dp::IStatementPtr pSelect3 ( _db->createStatement("select ID from Messages where AuthorID = ?"));
+                        dp::IStatementPtr pSelect3(_db->createStatement("select MsgID from MsgReceivers where UserID = ?"));
+                        dp::Columns pCols3 = pSelect3->allocBindColumns(1);
+                        dp::Params parDS3(pSelect3->allocParams());
+                        //parDS3 << IdUserChat;
+                        parDS3 << firstfield;
+
+                        td::INT4 idPoruke;
+                        pCols3 << "MsgID" << idPoruke;
+
+                        if (!pSelect3->execute()) {
+                            pSelect3 = nullptr;
+                        }
+
+                        //int vv = 0;
+                        while (pSelect3->moveNext()) {
+                            // vv++;
+                            dp::IStatementPtr pUpdateGrade(_db->createStatement("UPDATE Messages SET Procitano=0 WHERE ID=?"));
+                            dp::Params pParams2(pUpdateGrade->allocParams());
+                            pParams2 << idPoruke;
+
+                            if (!pUpdateGrade->execute())
+                            {
+                                return;
+                            }
+                            reset();
+                        }
+                    }
+                   
                     //brisemo iz paira sve poruke gdje je prvi field = currentuserid i gdje je drugi field = chatuserid
 
                       //OVDJE SE TREBA DODATI DA JE PORUKA PROCITANA, TJ NEKA NESTANE CRVENI KRUZIC UKOLIKO GA JE BILO I UKLONI SE PORUKA/E IZ RECIMO ONOG MULTIPAIRA STA VEC
@@ -637,9 +641,6 @@ public:
                 }
                 tempk = tempk + _visinaChata + 10;
             }
-
-
-
 
              // openMiddleCanvas();
              if (inputDevice.getType() == gui::InputDevice::Type::Mouse && inputDevice.getButton() == gui::InputDevice::Button::Primary) {
