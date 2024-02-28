@@ -2,6 +2,7 @@
 #include "ViewTicket.h"
 #include "ViewIDs.h"
 #include "RequestUpdateWindow.h"
+#include "WindowCertainRequest.h"
 
 ViewTicket::ViewTicket()
 	: _typelbl(tr("typeOfMessage"))
@@ -11,17 +12,19 @@ ViewTicket::ViewTicket()
 	, _btnAttach("Dodaj")
 	, _attachedFile("Dokument:")
 	, _titleFile("")
-	, _hlBtnsDB(4)
+	, _hlBtnsDB(6)
 	, _btnSend(tr("send"), tr("sendRequestTT"))
-	, _btnOpen(tr("open"), tr("openTT"))
-	, _gl(8, 6)
-	, _answeredticketslbl(tr("Answered tickets: "))
+	, _btnOpenOnHold(tr("open"), tr("openTT"))
+	, _btnOpenAnswered(tr("open"), tr("openTT"))
+	, _gl(9, 6)
+	, _answeredticketslbl(tr("Answered tickets:"))
+	, _OnholdticketsLbl(tr("Onhold tickets:"))
 	, _db(dp::create(dp::IDatabase::ConnType::CT_SQLITE, dp::IDatabase::ServerType::SER_SQLITE3))
 {
 
 	_hlBtnsDB.appendSpacer();
-	_hlBtnsDB.append(_btnOpen);
-	_hlBtnsDB.append(_btnSend);
+	_hlBtnsDB.append(_btnOpenAnswered);
+	//_hlBtnsDB.append(_btnSend);
 
 	_btnSend.setType(gui::Button::Type::Default);
 
@@ -40,15 +43,19 @@ ViewTicket::ViewTicket()
 
 	gc.appendRow(_attachedFile);
 	gc.appendCol(_titleFile, 3);
-	gc.appendEmptyCols(1);
+	//gc.appendEmptyCols(1);
 	gc.appendCol(_btnAttach, td::HAlignment::Right);
+	gc.appendCol(_btnSend);
 
+	gc.appendRow(_OnholdticketsLbl);
 	gc.appendRow(_tableTickets, 0);
 
 	gc.appendRow(_answeredticketslbl);
+	gc.appendEmptyCols(4);
+	gc.appendCol(_btnOpenOnHold);
 	gc.appendRow(_answeredtickets,0);
 
-	gc.appendRow(_hlBtnsDB, 0);
+	gc.appendRow(_hlBtnsDB,0);
 	gui::View::setLayout(&_gl);
 
 	_db = dp::getMainDatabase();
@@ -58,6 +65,8 @@ ViewTicket::ViewTicket()
 	_titleFile.setAsReadOnly();
 	//_answeredtickets.setAsReadOnly();
 	populateAnsweredtickets();
+
+	_typeCombo.selectIndex(0);
 }
 
 bool ViewTicket::onChangedSelection(gui::ComboBox* pCmb)
@@ -101,7 +110,7 @@ bool ViewTicket::onClick(gui::Button* pBtn)
 		return true;
 	}
 
-	if (pBtn == &_btnOpen)
+	if (pBtn == &_btnOpenOnHold)
 	{
 		auto rowindex = _tableTickets.getFirstSelectedRow();
 
@@ -126,6 +135,46 @@ bool ViewTicket::onClick(gui::Button* pBtn)
 		UpdateTable();
 
 		_tableTickets.reload();
+
+		return true;
+	}
+
+	if (pBtn == &_btnOpenAnswered)
+	{
+		auto rowindex = _answeredtickets.getFirstSelectedRow();
+
+		if (rowindex < 0)
+			return false;
+
+		auto pomDS = _answeredtickets.getDataSet();
+		auto& row = pomDS->getRow(rowindex);
+
+		td::String tipKarte = row[0].getConstStr();
+		td::String naslov = row[1].getConstStr();
+		gui::TextEdit body;
+		body.setValue(row[3].getConstStr());
+		td::INT4 ticketID = row[4].i4Val();
+		td::String indeks = row[5].getConstStr();
+
+		dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT Korisnici.Ime AS name,Korisnici.Prezime AS sname FROM Korisnici WHERE Korisnici.ID=?");
+
+		dp::Params parDS(pSelect->allocParams());
+		parDS << Globals::_currentUserID;
+
+		dp::Columns pCols = pSelect->allocBindColumns(2);
+		td::String name,sname;
+		pCols << "name" << name << "sname" << sname;
+		if (!pSelect->execute()) {
+			name = "Greska";
+			sname = "Greska";
+		}
+
+		pSelect->moveNext();
+
+		gui::Window* pParentWnd = getParentWindow();
+		auto pWnd = new WindowCertainRequest(pParentWnd,ticketID, indeks, name, sname, tipKarte, row[2].getConstStr(),row[3].getConstStr(), naslov);
+		pWnd->keepOnTopOfParent();
+		pWnd->open();
 
 		return true;
 	}
@@ -184,21 +233,35 @@ bool ViewTicket::sendTicket()
 void ViewTicket::populateAnsweredtickets() {
 
 	
-	td::String setstr = "SELECT SAOStudentTicket.Ticket_Tip as type, SAOStudentTicket.Req_Title as title, (SELECT SAOTicket_Status.Status as status FROM SAOTicket_Status WHERE SAOStudentTicket.Status_ID=SAOTicket_Status.ID) as status, SAOStudentTicket.Request as request, SAOStudentTicket.Answer as odgovor, SAOStudentTicket.ID as reqID, SAOStudentTicket.Indeks as indeks  FROM SAOStudentTicket WHERE SAOStudentTicket.Indeks=";
+	td::String setstr = "SELECT SAOStudentTicket.Ticket_Tip as type, SAOStudentTicket.Req_Title as title, (SELECT SAOTicket_Status.Status as status FROM SAOTicket_Status WHERE SAOStudentTicket.Status_ID=SAOTicket_Status.ID) as status, SAOStudentTicket.Request as request, SAOStudentTicket.ID as reqID, SAOStudentTicket.Indeks as indeks  FROM SAOStudentTicket WHERE SAOStudentTicket.Status_ID=2 AND SAOStudentTicket.Indeks=";
 	setstr.append(GetStudentIndeks().getConstStr());
-	dp::IDataSetPtr _pDs;
-	_pDs = dp::getMainDatabase()->createDataSet(setstr, dp::IDataSet::Execution::EX_MULT);
-	dp::DSColumns cols(_pDs->allocBindColumns(9));
-	
 
-	gui::Columns visCols(_answeredtickets.allocBindColumns(4));
-	visCols << gui::ThSep::DoNotShowThSep << gui::Header(0, tr("typeOfMessage"), "", 610) << gui::Header(1, tr("subject"), "", 610) << gui::Header(2, tr("Status:"), "", 610) << gui::Header(3, tr("Odgovor"), "", 610);
-	_answeredtickets.init(_pDs);
-	
+	_pDSAnswered = dp::getMainDatabase()->createDataSet(setstr, dp::IDataSet::Execution::EX_MULT);
+	dp::DSColumns cols(_pDSAnswered->allocBindColumns(6));
+	cols << "type" << td::string8 << "title" << td::string8 << "status" << td::string8 << "request" << td::string8 << "reqID" << td::int4 << "indeks" << td::string8;
 
-	
-
+	if (!_pDSAnswered->execute())
+	{
+		td::String errstr;
+		_pDSAnswered->getErrorStr(errstr);
+		showAlert(errstr, "U populateAnsweredTableDAta");
+		_pDSAnswered = nullptr;
+		return;
+	}
+	initTableAnswered();
 }
+
+void ViewTicket::initTableAnswered()
+{
+	gui::Columns visCols(_answeredtickets.allocBindColumns(3));
+	visCols << gui::ThSep::DoNotShowThSep << gui::Header(0, tr("typeOfMessage"), "", 200) << gui::Header(1, tr("subject"), "", 200) << gui::Header(2, tr("Status:"), "", 200);
+	_answeredtickets.init(_pDSAnswered);
+	if (_pDSAnswered->getNumberOfRows()) {
+		_tableTickets.selectRow(0, true);
+	}
+}
+
+
 
 bool ViewTicket::sendTicketWithAttachment()
 {
@@ -290,7 +353,7 @@ bool ViewTicket::onAnswer(td::UINT4 questionID, gui::Alert::Answer answer) {
 
 void ViewTicket::selectFiles()
 {
-	auto pFD = new gui::OpenFileDialog(this, tr("OpenF"), { {tr("TxtDocs"),"*.txt"}, {tr("PDFDocs"),"*.pdf"}, {tr("JPGSlike"),"*.jpg"}, {tr("PNGSlike"),"*.png"} });
+	auto pFD = new gui::OpenFileDialog(this, tr("OpenF"), { {tr("Tekst dokument"),"*.txt"}, {tr("PDF Dokument"),"*.pdf"}, {tr("JPG Slika"),"*.jpg"}, {tr("PNG Slika"),"*.png"} });
 
 #ifdef USE_CALLBACKS
 	pFD->openModal(&_callBackOpenFileDlg);
@@ -340,7 +403,7 @@ td::Variant ViewTicket::GetStudentIndeks() {
 void ViewTicket::initTable()
 {
 	gui::Columns visCols(_tableTickets.allocBindColumns(3));
-	visCols << gui::ThSep::DoNotShowThSep << gui::Header(0, tr("typeOfMessage"), "", 610) << gui::Header(1, tr("subject"), "", 610) << gui::Header(2, tr("Status:"), "", 610);
+	visCols << gui::ThSep::DoNotShowThSep << gui::Header(0, tr("typeOfMessage"), "", 200) << gui::Header(1, tr("subject"), "", 200) << gui::Header(2, tr("Status:"), "", 200);
 	_tableTickets.init(_pDS);
 	if (_pDS->getNumberOfRows()) {
 		_tableTickets.selectRow(0, true);
@@ -350,7 +413,7 @@ void ViewTicket::initTable()
 void ViewTicket::populateTableData()
 {
 
-	td::String setstr = "SELECT SAOStudentTicket.Ticket_Tip as type, SAOStudentTicket.Req_Title as title, (SELECT SAOTicket_Status.Status as status FROM SAOTicket_Status WHERE SAOStudentTicket.Status_ID=SAOTicket_Status.ID) as status, SAOStudentTicket.Request as request, SAOStudentTicket.ID as reqID, SAOStudentTicket.Indeks as indeks  FROM SAOStudentTicket WHERE SAOStudentTicket.Indeks=";
+	td::String setstr = "SELECT SAOStudentTicket.Ticket_Tip as type, SAOStudentTicket.Req_Title as title, (SELECT SAOTicket_Status.Status as status FROM SAOTicket_Status WHERE SAOStudentTicket.Status_ID=SAOTicket_Status.ID) as status, SAOStudentTicket.Request as request, SAOStudentTicket.ID as reqID, SAOStudentTicket.Indeks as indeks  FROM SAOStudentTicket WHERE SAOStudentTicket.Status_ID=1 AND SAOStudentTicket.Indeks=";
 	setstr.append(GetStudentIndeks().getConstStr());
 
 	_pDS = dp::getMainDatabase()->createDataSet(setstr, dp::IDataSet::Execution::EX_MULT);

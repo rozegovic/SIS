@@ -99,7 +99,7 @@ bool ViewRequestUpdate::onAnswer(td::UINT4 questionID, gui::Alert::Answer answer
 void ViewRequestUpdate::showOpenFileDialog()
 {
     //create OpenFile dialog and open it
-    auto pFD = new gui::OpenFileDialog(this, tr("OpenF"), { {tr("TxtDocs"),"*.txt"}, {tr("PDFDocs"),"*.pdf"}, {tr("JPGSlike"),"*.jpg"}, {tr("PNGSlike"),"*.png"} });
+    auto pFD = new gui::OpenFileDialog(this, tr("OpenF"), { {tr("Tekst dokument"),"*.txt"}, {tr("PDF Dokument"),"*.pdf"}, {tr("JPG Slika"),"*.jpg"}, {tr("PNG Slika"),"*.png"} });
 #ifdef USE_CALLBACKS
     pFD->openModal(&_callBackOpenFileDlg);
 #else

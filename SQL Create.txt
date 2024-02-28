@@ -264,6 +264,7 @@ CREATE TABLE IF NOT EXISTS SAOStudentTicket (
     Status_ID INTEGER NOT NULL,
     Attachment BLOB,
     Name_attachment TEXT,
+	Answer TEXT,
 	FOREIGN KEY (Status_ID) REFERENCES SAOTicket_Status(ID)
 );
 
@@ -272,7 +273,7 @@ CREATE TABLE IF NOT EXISTS "SAOTicket_Status" (
 	"Status"	TEXT NOT NULL
 );
 
-CREATE TABLE "OcjeneFinal" (
+CREATE TABLE IF NOT EXISTS "OcjeneFinal" (
 	"ID"	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 	"ID_Korisnika"	INTEGER NOT NULL,
 	"ID_Predmeta"	INTEGER NOT NULL,

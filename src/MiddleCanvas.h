@@ -15,6 +15,8 @@
 #include "WindowCertainRequest.h"
 #include "ViewTicketForSAO.h"
 #include "ViewIDs.h"
+#include <xml/Writer.h>
+#include <xml/DOMParser.h>
 
 
 #include <gui/DrawableString.h>
@@ -23,8 +25,8 @@
 class MiddleCanvas : public gui::Canvas
 {
 private:
-   td::INT4 predmetID = -1; // grupa 2 
-   td::String _subjectname;
+    td::INT4 predmetID = -1; // grupa 2 
+    td::String _subjectname;
 
 protected:
     gui::Image _etf;
@@ -54,7 +56,7 @@ protected:
     dp::IDatabase* _db;
     MsgSender msg;
     gui::Image img;
-    td::INT4 red=1;
+    td::INT4 red = 1;
     td::INT4 skrolV = 0;
     td::String indeks;
     td::String Ime;
@@ -65,16 +67,15 @@ protected:
     td::String status;
     gui::Rect rectBottomRight;
     gui::Point mousePosition;
-    
-    td::INT4 IDTicket=-1;
 
-    gui::Canvas* farleft;
+    td::INT4 IDTicket = -1;
 
+    td::INT4 openChatButtonPressed = -1;
 
 public:
     MiddleCanvas()
         : _etf(":ETF")
-        , gui::Canvas({ gui::InputDevice::Event::PrimaryClicks,  gui::InputDevice::Event::Keyboard ,gui::InputDevice::Event::CursorMove})
+        , gui::Canvas({ gui::InputDevice::Event::PrimaryClicks,  gui::InputDevice::Event::Keyboard ,gui::InputDevice::Event::CursorMove })
         , _chatUserID(-2)
         , _h(800)
         , _db(dp::getMainDatabase())
@@ -86,7 +87,7 @@ public:
     }
 
     void setSubjectID(td::INT4 id) { //grupa 2 - potreban subjectID
-       predmetID = id;  //linije 53, 54
+        predmetID = id;  //linije 53, 54
         reset();//da bi se nakon klika refreshao middle canvas
     }
     void setSubjectName(td::String ime) {
@@ -97,7 +98,10 @@ public:
         const bool check = false;
         // pogled za profesora i asistenta ------ grupa 3
 
-        if ((Globals::_currentUserRole == 1 || Globals::_currentUserRole == 3) && _chatUserID!=-2) {
+        gui::Size sz1;
+        getSize(sz1);
+
+        if ((Globals::_currentUserRole == 1 || Globals::_currentUserRole == 3 || openChatButtonPressed!=-1) && _chatUserID != -2) {             //---> Dodano za chat
 
             gui::Size sz;
             getSize(sz);
@@ -130,18 +134,18 @@ public:
                 nesto.draw(r3, gui::Font::ID::SystemLargestBold, td::ColorID::Black, td::TextAlignment::Center, td::VAlignment::Center);
             }
 
-            
+
             gui::Rect r1(0, 7 * y, 8 * x, 8 * y);
-            
-           /* if (str.size() == 52 * red && red < 6) { 
-                str = str + '\n'; 
-                red++; 
-                gui::Rect r1(x, (7 - red) * y, 8 * x, 8 * y); 
-            }*/
+
+            /* if (str.size() == 52 * red && red < 6) {
+                 str = str + '\n';
+                 red++;
+                 gui::Rect r1(x, (7 - red) * y, 8 * x, 8 * y);
+             }*/
             _roundedRect2.createRoundedRect(r1, 20, 1, td::LinePattern::Solid);
             _roundedRect2.drawFill(td::ColorID::SkyBlue); //prostor u kojem se kucaju poruke
 
-            gui::Rect r2(10, 7 * y, 8 * x - (16 + x / 6)*2, 8 * y);
+            gui::Rect r2(10, 7 * y, 8 * x - (16 + x / 6) * 2, 8 * y);
             _roundedRect1.createRoundedRect(r2, 20, 1, td::LinePattern::Solid);
             _roundedRect1.drawFill(td::ColorID::Transparent); //prostor u kojem se nalaze poruke  
             dr = str;
@@ -152,9 +156,9 @@ public:
                 mes.draw(r2, gui::Font::ID::SystemItalic, td::ColorID::Black, td::TextAlignment::Left, td::VAlignment::Center, td::TextEllipsize::End);
             }
 
-            gui::Circle cc(8 * x - x / 4-7, 7 * y + y / 2, 9+x/6);
-           // _shapeCircle.createCircle(cc, 15, td::LinePattern::Solid);
-           // _shapeCircle.drawFill(td::ColorID::MediumBlue); //dugme za slanje poruke 
+            gui::Circle cc(8 * x - x / 4 - 7, 7 * y + y / 2, 9 + x / 6);
+            // _shapeCircle.createCircle(cc, 15, td::LinePattern::Solid);
+            // _shapeCircle.drawFill(td::ColorID::MediumBlue); //dugme za slanje poruke 
             img.draw(cc);
 
             //slobodno mijenjati boje po zelji, ja sam odabrao random boje 
@@ -162,7 +166,7 @@ public:
         }
 
         // pogled za SAO ------ grupa 1
-        else if (Globals::isSAO && brojPoruke > -1) {
+        else if (Globals::isSAO && brojPoruke > -1 && sz1.width > 300) {
             DrawChatInfoSAO();
         }
 
@@ -175,14 +179,14 @@ public:
             //td::INT4 broj = 1;  //  1 za provjeru select-a
             gui::Size sz;
             getSize(sz);
-            gui::Point cp(sz.width /2, sz.height / 2);
-            cp.x = 10 ;
-            cp.y = 10 ;
+            gui::Point cp(sz.width / 2, sz.height / 2);
+            cp.x = 10;
+            cp.y = 10;
             gui::Point cp2;
             cp2.x = 65;
             td::String text, text1, text2, text3, text4;
-            text = "Detalji o odabranom predmetu "; 
-            
+            text = "Detalji o odabranom predmetu ";
+
             /* funkcije:
             static void draw(const td::String& txt, const gui::Rect& r, gui::Font::ID fntID, td::ColorID clrID, td::TextAlignment hAlign = td::TextAlignment::Left, td::VAlignment vAlign = td::VAlignment::Top,  td::TextEllipsize ellips = td::TextEllipsize::End);
             static void draw(const td::String& txt, const gui::Point& pt, gui::Font::ID fntID, td::ColorID clrID);
@@ -359,7 +363,7 @@ public:
 
                     dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select Br_sedmice AS brsedmice, Vrijeme as vrijeme, Termini.TipPredavanjaID as tip, Termini.Predmet_ID as predmet FROM Prisustvo, TerminiStudenti, Termini WHERE TerminiStudenti.ID_Studenta = ? AND  TerminiStudenti.ID_Termina = Prisustvo.ID_termina AND Termini.TipPredavanjaID = 3 AND Termini.Predmet_ID=?");
                     dp::Params pParams(pSelect->allocParams());
-                    pParams << Globals::_currentUserID<<predmetID;
+                    pParams << Globals::_currentUserID << predmetID;
                     dp::Columns pCols = pSelect->allocBindColumns(2);
                     td::INT4 brsedmice;
                     td::Time Vrijeme;
@@ -388,19 +392,19 @@ public:
                         td::String temp;
                         if (hour / 10 == 0)
                             temp += "0";
-                        
-                        temp += std::to_string(Vrijeme.getHour()); 
+
+                        temp += std::to_string(Vrijeme.getHour());
                         temp += ":";
-                        temp+= std::to_string(Vrijeme.getMinute());
+                        temp += std::to_string(Vrijeme.getMinute());
                         td::INT4 min = Vrijeme.getMinute();
-                        if (min/ 10 == 0)
+                        if (min / 10 == 0)
                             temp += "0";
                         gui::DrawableString vrijemezaispis = temp;
                         gui::Shape::drawRect(time1, td::ColorID::White, td::ColorID::Black, 0.5, td::LinePattern::Solid);
                         vrijemezaispis.draw(time1, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::Black, td::TextAlignment::Center, td::VAlignment::Center);
 
                         gui::Rect prisutan(0, 0, novaduzina, visina);
-                        prisutan.translate(i * novaduzina + duzina, 2*visina);
+                        prisutan.translate(i * novaduzina + duzina, 2 * visina);
                         bool jeprisutan = false;
                         for (auto x : prisutnesedmice) {
                             if (x == i + 1) {
@@ -443,200 +447,202 @@ public:
 
 
 
-    void SetMessageNumSAO(td::INT4 br,gui::Canvas* pok) {
+    void SetMessageNumSAO(td::INT4 br) {
         brojPoruke = br;
-        farleft = pok;
-        reset();
+        reDraw();
     };
+
+
+
 
     void DrawChatInfoSAO() {
 
-      enableResizeEvent(true);
+        enableResizeEvent(true);;
 
-      gui::Size sz;
-      getSize(sz);
+        gui::Size sz;
+        getSize(sz);
 
-      dp::IDataSet* pDS = dp::getMainDatabase()->createDataSet("SELECT Korisnici.Ime as Name, Korisnici.Prezime as Surname,SAOStudentTicket.Indeks as StudentIndex,"
-          " SAOStudentTicket.Ticket_Tip as TypeOfTicket, SAOStudentTicket.Req_Title as TitleofTicket, SAOStudentTicket.Status_ID as Status_ID,SAOTicket_Status.Status as Status,"
-          " SAOStudentTicket.Request as Request,SAOStudentTicket.ID AS IDTicket From Korisnici, SAOStudentTicket, SAOTicket_Status where Korisnici.Indeks=SAOStudentTicket.Indeks AND SAOTicket_Status.ID=SAOStudentTicket.Status_ID");
+        dp::IDataSet* pDS = dp::getMainDatabase()->createDataSet("SELECT Korisnici.Ime as Name, Korisnici.Prezime as Surname,SAOStudentTicket.Indeks as StudentIndex,"
+            " SAOStudentTicket.Ticket_Tip as TypeOfTicket, SAOStudentTicket.Req_Title as TitleofTicket, SAOStudentTicket.Status_ID as Status_ID,SAOTicket_Status.Status as Status,"
+            " SAOStudentTicket.Request as Request,SAOStudentTicket.ID as IDTicket From Korisnici, SAOStudentTicket, SAOTicket_Status where Korisnici.Indeks=SAOStudentTicket.Indeks AND SAOTicket_Status.ID=SAOStudentTicket.Status_ID");
 
-      dp::DSColumns cols(pDS->allocBindColumns(9));
-      cols << "Name" << td::string8 << "Surname" << td::string8 << "StudentIndex" << td::string8 << "TypeOfTicket" << td::string8 << "TitleOfTicket" << td::string8 << "Status_ID" << td::int4 << "Status" << td::string8 << "Request" << td::string8<<"IDTicket"<<td::int4;
-      if (!pDS->execute())
-      {
-          pDS = nullptr;
-          showAlert("errorReadingTable", "");
-          return;
-      }
+        dp::DSColumns cols(pDS->allocBindColumns(9));
+        cols << "Name" << td::string8 << "Surname" << td::string8 << "StudentIndex" << td::string8 << "TypeOfTicket" << td::string8 << "TitleOfTicket" << td::string8 << "Status_ID" << td::int4 << "Status" << td::string8 << "Request" << td::string8 << "IDTicket" << td::int4;
+        if (!pDS->execute())
+        {
+            pDS = nullptr;
+            showAlert("errorReadingTable", "");
+            return;
+        }
 
-      td::String str;
-
-      //showAlert("", std::to_string(brojPoruke));
+        //showAlert("", std::to_string(brojPoruke));
 
 
-      auto row = pDS->getRow(brojPoruke);
+        auto row = pDS->getRow(brojPoruke);
 
-      IDTicket = row[8].i4Val();
-
-      td::String ime = row[0].getConstStr();
-      ime.append(" ");
-      ime.append(row[1].getConstStr());
-
-      td::String req = row[7].getConstStr();
+        IDTicket = row[8].i4Val();
 
 
+        td::String ime = row[0].getConstStr();
+        ime.append(" ");
+        ime.append(row[1].getConstStr());
 
-      td::INT4 maxLength = (int(sz.width - 200) / 8);
-
-
-      if (req.length() > maxLength) {
-
-          td::String pom = "";
-          auto itA = req.begin();
-          auto itB(itA);
-          bool SpaceExists = false;
-          auto pomit = itA;
-
-          if (req.length() > 0)
-              pom.append(req.subStr(0, 0));
-
-
-          while (itA != req.end())
-          {
-              pomit = itA;
-              //GET MAX RANGE FOR CHARS IN A ROW
-              while (itB != req.end() && itB <= itA + maxLength)
-                  itB++;
-              //DOES SPACE EXIST IN CURRENT ROW?    
-              while (pomit != itB)
-              {
-                  if (*pomit == ' ')
-                  {
-                      SpaceExists = true;  break;
-                  }
-                  pomit++;
-              }
-              //FIND SUITABLE PLACE TO BREAK REQUEST APART
-              while (itB != req.end() && SpaceExists && *(itB) != ' ')
-                  itB--;
-
-              if (itB > ++itA)
-                  pom.append(req.subStr(itA - req.begin(), itB - req.begin()));
-
-              pom.append("\n");
-
-              //showAlert(std::to_string(itA-req.begin()), std::to_string(itB-req.begin()));
-
-              while (itA < itB)
-                  itA++;
-
-
-          }
-
-          req = pom;
-
-      }
-
-      //TREBA MI ZA GLOBALNE VARIJABLE RADI PROSLIJEDJIVANJA
-
-      //**************//
-      Ime = row[0].getConstStr();
-      prezime = row[1].getConstStr();
-      indeks = row[2].getConstStr();
-      tipKarte = row[3].getConstStr();
-      request = row[7].getConstStr();
-      title = row[4].getConstStr();
-      status = row[6].getConstStr();
-      //****************//
+        td::String req = row[7].getConstStr();
 
 
 
-
-     // showAlert("",std::to_string(sz.width));
-
-
-      gui::DrawableString Ime = ime;
-      gui::DrawableString Tip = row[3].getConstStr();
-      gui::DrawableString Title = row[4].getConstStr();
-      gui::DrawableString Status = row[6].getConstStr();
-      gui::DrawableString Request = req;
-
-      gui::Size szpom;
-      Request.measure(gui::Font::ID::SystemLarger, szpom);
-
-      skrolV = szpom.height + 200;
-
-      gui::Rect rectt(0, 0, sz.width - 100, skrolV);//
-
-      if (skrolV < sz.height)
-          rectt.setHeight(sz.height - 50);
+        td::INT4 maxLength = (int(sz.width - 200) / 8);
 
 
-      rectt.translate(50, 25);
+        if (req.length() > maxLength) {
 
-      // gui::Shape::drawRect(rectt, td::ColorID::Silver, td::ColorID::MidnightBlue, 2, td::LinePattern::Solid);
+            td::String pom = "";
+            auto itA = req.begin();
+            auto itB(itA);
+            bool SpaceExists = false;
+            auto pomit = itA;
 
-      gui::Shape visibleRect;
-
-      visibleRect.createRoundedRect(rectt, 10);
-      visibleRect.drawFillAndWire(td::ColorID::Silver, td::ColorID::MidnightBlue);
-
-
-      Ime.draw({ 75,50 }, gui::Font::ID::SystemBold, td::ColorID::Black);//
-      Tip.draw({ sz.width - 150,50 }, gui::Font::ID::SystemBold, td::ColorID::Black);//
-      Title.draw({ 75,75 }, gui::Font::ID::SystemBold, td::ColorID::Black);//
-      Status.draw({ sz.width - 150,75 }, gui::Font::ID::SystemBold, td::ColorID::Black);//
-      if (!req.isNull())
-          Request.draw({ 100,125 }, gui::Font::ID::SystemLarger, td::ColorID::Black);//
-
-      szpom.height = skrolV;
-
-      int bottomRightX = sz.width - 100; // X koordinata
-      int bottomRightY = sz.height - 70; // Y koordinata
-      int rectWidth = 80;
-      int rectHeight = 30;
-
-      szpom.width = rectWidth;
-      szpom.height = rectHeight;
+            if (req.length() > 0)
+                pom.append(req.subStr(0, 0));
 
 
-      if (skrolV > sz.height)
-          bottomRightY = skrolV - 20;
+            while (itA != req.end())
+            {
+                pomit = itA;
+                //GET MAX RANGE FOR CHARS IN A ROW
+                while (itB != req.end() && itB <= itA + maxLength)
+                    itB++;
+                //DOES SPACE EXIST IN CURRENT ROW?    
+                while (pomit != itB)
+                {
+                    if (*pomit == ' ')
+                    {
+                        SpaceExists = true;  break;
+                    }
+                    pomit++;
+                }
+                //FIND SUITABLE PLACE TO BREAK REQUEST APART
+                while (itB != req.end() && SpaceExists && *(itB) != ' ')
+                    itB--;
 
-      gui::Point origin(bottomRightX - rectWidth, bottomRightY - rectHeight);
+                if (itB > ++itA)
+                    pom.append(req.subStr(itA - req.begin(), itB - req.begin()));
+
+                pom.append("\n");
+
+                //showAlert(std::to_string(itA-req.begin()), std::to_string(itB-req.begin()));
+
+                while (itA < itB)
+                    itA++;
 
 
-      // Nacrtaj pravokutnik
-      gui::DrawableString answer = tr("Odgovori");
-      rectBottomRight.setOriginAndSize(origin, szpom);
+            }
 
-      // gui::Shape::drawRect(rectBottomRight, td::ColorID::MidnightBlue, td::ColorID::MidnightBlue, 2, td::LinePattern::Solid);
+            req = pom;
 
-      gui::Shape buttonSAO;
-      buttonSAO.createRoundedRect(rectBottomRight, 10);
+        }
 
-      gui::Point  p(bottomRightX - 73, bottomRightY - 27);
+        //TREBA MI ZA GLOBALNE VARIJABLE RADI PROSLIJEDJIVANJA
 
-      int x = mousePosition.x;
-      int y = mousePosition.y;
+        //**************//
+        Ime = row[0].getConstStr();
+        prezime = row[1].getConstStr();
+        indeks = row[2].getConstStr();
+        tipKarte = row[3].getConstStr();
+        request = row[7].getConstStr();
+        title = row[4].getConstStr();
+        status = row[6].getConstStr();
+        //****************//
 
-      if (x > rectBottomRight.left && x < rectBottomRight.right && y < rectBottomRight.bottom && y > rectBottomRight.top)
-      {
-          buttonSAO.drawFillAndWire(td::ColorID::AquaMarine, td::ColorID::MidnightBlue);
+
+
+       // showAlert("",std::to_string(sz.width));
+
+
+        gui::DrawableString Ime = ime;
+        gui::DrawableString Tip = row[3].getConstStr();
+        gui::DrawableString Title = row[4].getConstStr();
+        gui::DrawableString Status = row[6].getConstStr();
+        gui::DrawableString Request = req;
+
+        gui::Size szpom;
+        Request.measure(gui::Font::ID::SystemLarger, szpom);
+
+        skrolV = szpom.height + 200;
+
+        gui::Rect rectt(0, 0, sz.width - 100, skrolV);//
+
+        if (skrolV < sz.height)
+            rectt.setHeight(sz.height - 50);
+
+
+        rectt.translate(50, 25);
+
+        // gui::Shape::drawRect(rectt, td::ColorID::Silver, td::ColorID::MidnightBlue, 2, td::LinePattern::Solid);
+
+        gui::Shape visibleRect;
+
+        visibleRect.createRoundedRect(rectt, 10);
+        visibleRect.drawFillAndWire(td::ColorID::Silver, td::ColorID::MidnightBlue);
+
+
+        Ime.draw({ 75,50 }, gui::Font::ID::SystemBold, td::ColorID::Black);//
+        Tip.draw({ sz.width - 150,50 }, gui::Font::ID::SystemBold, td::ColorID::Black);//
+        Title.draw({ 75,75 }, gui::Font::ID::SystemBold, td::ColorID::Black);//
+        Status.draw({ sz.width - 150,75 }, gui::Font::ID::SystemBold, td::ColorID::Black);//
+        if (!req.isNull())
+            Request.draw({ 100,125 }, gui::Font::ID::SystemLarger, td::ColorID::Black);//
+
+        szpom.height = skrolV;
+
+        this->getScroller()->setContentSize(szpom);
+
+        int bottomRightX = sz.width - 100; // X koordinata
+        int bottomRightY = sz.height - 70; // Y koordinata
+        int rectWidth = 80;
+        int rectHeight = 30;
+
+        szpom.width = rectWidth;
+        szpom.height = rectHeight;
+
+
+        if (skrolV > sz.height)
+            bottomRightY = skrolV - 20;
+
+        gui::Point origin(bottomRightX - rectWidth, bottomRightY - rectHeight);
+
+
+        // Nacrtaj pravokutnik
+        gui::DrawableString answer = tr("Odgovori");
+        rectBottomRight.setOriginAndSize(origin, szpom);
+
+        // gui::Shape::drawRect(rectBottomRight, td::ColorID::MidnightBlue, td::ColorID::MidnightBlue, 2, td::LinePattern::Solid);
+
+        gui::Shape buttonSAO;
+        buttonSAO.createRoundedRect(rectBottomRight, 10);
+
+        gui::Point  p(bottomRightX - 73, bottomRightY - 27);
+
+        int x = mousePosition.x;
+        int y = mousePosition.y;
+
+        if (x > rectBottomRight.left && x < rectBottomRight.right && y < rectBottomRight.bottom && y > rectBottomRight.top)
+        {
+            buttonSAO.drawFillAndWire(td::ColorID::AquaMarine, td::ColorID::MidnightBlue);
             answer.draw(p, gui::Font::ID::SystemBold, td::ColorID::Blue);
-      }
-      else
-      {      
-          buttonSAO.drawFillAndWire(td::ColorID::Blue, td::ColorID::MidnightBlue);
-           answer.draw(p, gui::Font::ID::SystemBold, td::ColorID::White);
-       }
+        }
+        else
+        {
+            buttonSAO.drawFillAndWire(td::ColorID::Blue, td::ColorID::MidnightBlue);
+            answer.draw(p, gui::Font::ID::SystemBold, td::ColorID::White);
+        }
 
-      this->getScroller()->setContentSize(szpom);
 
-  };
+    };
 
     void reset() {
         _chatUserID = -2;
+        brojPoruke = -1;         //-----Dodano za chat
         reDraw();
     }
 
@@ -646,6 +652,10 @@ public:
         _name = s;
         _chatUserID = userID;
         reDraw();
+    }
+
+    void setChatButtonPressed(td::INT4 openChatPressed) {
+        openChatButtonPressed = openChatPressed;
     }
 
     //bool insertMessage() {
@@ -667,7 +677,7 @@ public:
 
 
     void onPrimaryButtonPressed(const gui::InputDevice& inputDevice) override {
-        if (Globals::_currentUserRole == 1 || Globals::_currentUserRole == 3) {
+        if (Globals::_currentUserRole == 1 || Globals::_currentUserRole == 3 || openChatButtonPressed!=-1) {      //--->Dodano za chat
 
             double tempk = 0;
             double x1 = 8 * x - x / 4;
@@ -695,34 +705,31 @@ public:
 
 
             reDraw();
-
         }
         
       if (Globals::isSAO && inputDevice.getModelPoint().x>rectBottomRight.left && inputDevice.getModelPoint().x < rectBottomRight.right && 
-                  inputDevice.getModelPoint().y<rectBottomRight.bottom && inputDevice.getModelPoint().y > rectBottomRight.top)
-      {   
-          gui::Window* pParentWnd = getParentWindow();
-          auto pWnd = new WindowCertainRequest(pParentWnd,IDTicket,indeks, Ime, prezime, tipKarte, status, request, title);
-          pWnd->keepOnTopOfParent();
-          pWnd->open();
-          reDraw();
-      }
+      inputDevice.getModelPoint().y<rectBottomRight.bottom && inputDevice.getModelPoint().y > rectBottomRight.top) {
+      gui::Window* pParentWnd = getParentWindow();
+      auto pWnd = new WindowCertainRequest(pParentWnd,IDTicket, indeks, Ime, prezime, tipKarte, status, request, title);
+      pWnd->keepOnTopOfParent();
+      pWnd->open();
+      reDraw();
+  }
     }
 
     bool getModelSize(gui::Size& modelSize) const override
     {
+
         gui::Size sz;
         getSize(sz);
 
-        if (Globals::isSAO)
-        {
+
+        if (Globals::isSAO) {
 
             modelSize.width = sz.width; //
             modelSize.height = skrolV+50;
-
             return true;
         }
-        //dodati da se dinamicki pomjera
 
         modelSize.width = sz.width; //
         modelSize.height = _h;
@@ -889,7 +896,7 @@ public:
     }
     
         void onCursorMoved(const gui::InputDevice& inputDevice)override {
-        
+      
         
         if (Globals::isSAO) {
             gui::Size sz;
@@ -908,8 +915,7 @@ public:
 
             reDraw();
         }
-
-
     }
+        
 
 };

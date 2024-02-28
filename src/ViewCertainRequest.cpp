@@ -1,10 +1,11 @@
-#pragma once
+﻿#pragma once
 #include "ViewCertainRequest.h"
 #include "ViewIDs.h"
 #include <gui/FileDialog.h>
 #include <gui/Alert.h>
 #include <fo/FileOperations.h>
 #include <td/BLOB.h>
+#include "Globals.h"
 
 
 
@@ -25,7 +26,7 @@ ViewCertainRequest::ViewCertainRequest(td::INT4 IDTicket,td::String ime, td::Str
     , _gl(7, 6)
     , _db(dp::create(dp::IDatabase::ConnType::CT_SQLITE, dp::IDatabase::ServerType::SER_SQLITE3))
     , indeks(indeks)
-    ,IDTicket(IDTicket)
+    , IDTicket(IDTicket)
 {
 
     _hlBtnsDB.append(_btnSend);
@@ -76,18 +77,66 @@ ViewCertainRequest::ViewCertainRequest(td::INT4 IDTicket,td::String ime, td::Str
     _typeOfTicket.setAsReadOnly();
     _bodyOfTicket.setAsReadOnly();
 
-    //populateData();
-    td::String status = "Obradjen";
+    ////populateData();
+    //td::String status = "Obradjen";
     _answerlbl.setBold();
-    if (statusKarte == status)
+    //if (statusKarte == status)
+    //{
+    //    _answerlbl.hide(true, true);
+    //    _answer.hide(true, true);
+    //    _btnSend.hide(true, true);
+    //    _btnSaveAttachment.hide(true, true);
+    //}
+
+    if (Globals::isStudent)
     {
-        _answerlbl.hide(true, true);
-        _answer.hide(true, true);
+        _answer.setAsReadOnly();
         _btnSend.hide(true, true);
-        _btnSaveAttachment.hide(true, true);
     }
 
+
+    SetAnswer();
+
+
 }
+
+
+
+
+bool ViewCertainRequest::SetAnswer() {
+
+    td::String setstr = "select Answer from SAOStudentTicket where ID =";
+    setstr.append(std::to_string(IDTicket));
+    dp::IStatementPtr pSelAnswer = dp::getMainDatabase()->createStatement(setstr);
+    td::String answer;
+    dp::Columns Cols(pSelAnswer->allocBindColumns(1));
+    Cols << "Answer" << answer;
+
+
+    if (!pSelAnswer->execute())
+    {
+        showAlert("Error selecting name of file", "");
+        return false;
+    }
+
+    if (!pSelAnswer->moveNext())
+    {
+        showAlert("Error selecting name of file", "");
+        return false;
+    }
+
+    _answer.setValue(answer);
+
+    return true;
+}
+
+
+
+
+
+
+
+
 //void ViewCertainRequest::populateData(){
 //    td::String data;
 //    td::String setstr = "Select Request from SAOStudentTicket where Indeks=";
@@ -194,7 +243,7 @@ void ViewCertainRequest::showSaveFileDialog() {
 
                 if (!BLOBout.setOutFileName(fullFilePath))
                 {
-                    showAlert("Folder is not selected or file already exists with this filepath", "");
+                    showAlert(tr("Folder is not selected or file already exists with this filepath"), "");
                     //nije odabran folder?
                     //ili vec postoji fajl sa ovim fullFilePath?        
                     return;
@@ -210,7 +259,7 @@ void ViewCertainRequest::showSaveFileDialog() {
                     return;
                 }
             }
-            showAlert("Successfully saved", "");
+            showAlert(tr("Successfully saved"), "");
         });
 }
 
@@ -219,29 +268,43 @@ bool ViewCertainRequest::onClick(gui::Button* pBtn)
     if (pBtn == &_btnSend)
     {
         if (_answer.isEmpty()) {
-            showAlert("Empty body!", "Do you want to enter your answer first?");
+            showAlert(tr("Empty body!"),tr("Do you want to enter your answer first?"));
             return false;
         }
 
-        td::String setstr = "Update SAOStudentTicket set Status_ID=2 where ID=";
+        td::String setstr = "Update SAOStudentTicket set Status_ID=2 where ID= ";
         setstr.append(std::to_string(IDTicket));
+
         dp::IStatementPtr pUpdate(dp::getMainDatabase()->createStatement(setstr));
         if (!pUpdate->execute()) {
             showAlert("Error updating", "");
             return false;
         }
-        _status.setValue("Obradjen");
 
-        showAlert("Successfully sent", "");
+        td::String  insertAnswer= "Update SAOStudentTicket set Answer= '";
+        insertAnswer.append(_answer.getText());
+        insertAnswer.append("' where ID= ");
+        insertAnswer.append(std::to_string(IDTicket));
+
+        dp::IStatementPtr pInsert(dp::getMainDatabase()->createStatement(insertAnswer));
+        if (!pInsert->execute()) {
+            showAlert("Error updating", "");
+            return false;
+        }
+
+        _status.setValue("Obrađen");
+
+        showAlert(tr("Successfully sent"), "");
+
         return true;
 
     }
 
-    if (pBtn == &_btnSaveAttachment)
+     if (pBtn == &_btnSaveAttachment)
     {
-        td::String setstr1 = "select Name_attachment from SAOStudentTicket where Indeks =";
-        setstr1.append(indeks);
-        dp::IStatementPtr pSelFileName = dp::getMainDatabase()->createStatement(setstr1);
+        td::String setstr = "select Name_attachment from SAOStudentTicket where ID =";
+        setstr.append(std::to_string(IDTicket));
+        dp::IStatementPtr pSelFileName = dp::getMainDatabase()->createStatement(setstr);
         td::String fileName;
         dp::Columns Cols(pSelFileName->allocBindColumns(1));
         Cols << "Name_attachment" << fileName;
@@ -260,7 +323,9 @@ bool ViewCertainRequest::onClick(gui::Button* pBtn)
         }
 
         if (fileName != td::String("")) showSaveFileDialog();
-        else showAlert("Student has no attachment", "");
+        else showAlert(tr("NoAttachmentErr"), "");
+
+
         return true;
     }
 

@@ -60,7 +60,7 @@ protected:
     gui::Image _imgExamGrades;
     gui::TableEdit _table;
 
-    std::set<td::INT4> _userids;
+    std::set<std::tuple<td::INT4,td::INT4,td::String>> _userids;
 
 
     std::vector<td::INT4> _itemsToDelete, _itemsToInsert, _itemsToUpdate;

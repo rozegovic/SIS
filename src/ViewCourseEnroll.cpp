@@ -15,13 +15,13 @@ ViewCourseEnroll::ViewCourseEnroll() :
     _enrolled(tr("enrolledtocourse")),
     _toBeEnrolled(tr("tobeenrolledtocourse")),
     _hlBtnsDB(8)
-  //  , _btnSave(tr("Save"), tr("SaveTT"))
+    //  , _btnSave(tr("Save"), tr("SaveTT"))
     , _btnReload(tr("Reload"), tr("ReloadTT"))
     , _btnEnroll(tr("Enroll"), tr("EnrollTT"))
     , _btnWithdraw(tr("Withdraw"), tr("WithdrawCourseTT"))
     , _gl(7, 6)
-    ,_courselbl(tr("courselbl"))
-    ,_course(td::int4)
+    , _courselbl(tr("courselbl"))
+    , _course(td::int4)
     , _db(dp::create(dp::IDatabase::ConnType::CT_SQLITE, dp::IDatabase::ServerType::SER_SQLITE3))
 {
 
@@ -31,7 +31,7 @@ ViewCourseEnroll::ViewCourseEnroll() :
     _hlBtnsDB.appendSpace(20);
     _hlBtnsDB.append(_btnWithdraw);
     _hlBtnsDB.append(_btnEnroll);
-//    _btnSave.setType(gui::Button::Type::Default);
+    //    _btnSave.setType(gui::Button::Type::Default);
     _btnEnroll.setType(gui::Button::Type::Constructive);
     _btnWithdraw.setType(gui::Button::Type::Destructive);
 
@@ -67,7 +67,7 @@ ViewCourseEnroll::ViewCourseEnroll() :
     populateDataForStudents();
     populateDataForEnrolledStudents();
 
-   
+
     //initTableEnrolledStudents();
 
     populateDepartmentCombo(_department);
@@ -125,11 +125,11 @@ void ViewCourseEnroll::populateDepartmentCombo(gui::DBComboBox& combo)
 void ViewCourseEnroll::populateCourseCombo(gui::DBComboBox& combo, td::String smjer, td::String semestar)
 {
     td::String str;
-    str.append("SELECT p.ID_Predmeta, p.Naziv_Predmeta FROM Predmet p JOIN Curriculum c ON p.ID_Predmeta = c.ID_Predmeta WHERE p.Semestar =");
+    str.append("SELECT p.ID_Predmeta, p.Naziv_Predmeta FROM Predmet p WHERE p.Semestar =");
     str.append(semestar);
-    str.append(" AND c.ID_Smjera = ");
-    str.append(smjer);
-
+    str.append(" AND p.ID_Smjera=(SELECT ID_Smjera FROM Smjer WHERE Naziv_Smjera='");
+    str.append(_department.getSelectedText());
+    str.append("')");
 
     dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement(str);
     dp::Columns pCols = pSelect->allocBindColumns(2);
@@ -208,7 +208,7 @@ bool ViewCourseEnroll::onChangedSelection(gui::TableEdit* pTE) {
         dp::IDataSet* pDS = _tableStudents.getDataSet();
         auto& row = pDS->getRow(iRow);
         val = row[0];
-        
+
         val = row[1];
         _name.setValue(val);
 
@@ -250,7 +250,7 @@ bool ViewCourseEnroll::onChangedSelection(gui::TableEdit* pTE) {
 
 bool ViewCourseEnroll::onChangedSelection(gui::ComboBox* pCmb)
 {
-   // showAlert("","Changeovan selection semestra/odsjeka");
+    // showAlert("","Changeovan selection semestra/odsjeka");
     _course.clean();
     td::INT4 depindex = _department.getSelectedIndex() + 1;
     td::INT4 semindex = _semesterCombo.getSelectedIndex() + 1;
@@ -288,6 +288,7 @@ bool ViewCourseEnroll::onChangedSelection(gui::DBComboBox* pCmb)
 {
     if (pCmb != &_course) {
         _course.clean();
+
         td::INT4 depindex = _department.getSelectedIndex() + 1;
         td::INT4 semindex = _semesterCombo.getSelectedIndex() + 1;
 
@@ -296,7 +297,7 @@ bool ViewCourseEnroll::onChangedSelection(gui::DBComboBox* pCmb)
         smjer = std::to_string(depindex);
         semestar = std::to_string(semindex);
 
-        populateCourseCombo(_course, smjer, semestar);       
+        populateCourseCombo(_course, smjer, semestar);
     }
     else {
         UpdateEnrollDataSet();
@@ -321,7 +322,7 @@ void ViewCourseEnroll::populateDSRow(dp::IDataSet::Row& row)
     row[4] = val.i4Val();
 
 
-    val = _semesterCombo.getSelectedIndex()+1;
+    val = _semesterCombo.getSelectedIndex() + 1;
     row[5] = val.i4Val();
 
 }
@@ -349,7 +350,7 @@ bool ViewCourseEnroll::onClick(gui::Button* pBtn)
 
         dp::IStatementPtr pDel(_db->createStatement(str));
         dp::Params parDS(pDel->allocParams());
-        parDS << dp::toNCh(_tableEnrolled.getCurrentRow()[3],30);
+        parDS << dp::toNCh(_tableEnrolled.getCurrentRow()[3], 30);
 
         if (!pDel->execute())
         {
@@ -372,7 +373,7 @@ bool ViewCourseEnroll::onClick(gui::Button* pBtn)
     if (pBtn == &_btnEnroll)
     {
         int iRow = _tableStudents.getFirstSelectedRow();
-      
+
         if (iRow < 0)
             return true;
 
@@ -389,34 +390,34 @@ bool ViewCourseEnroll::onClick(gui::Button* pBtn)
 
         dp::Transaction tr(_db);
 
-            idStudenta = rowToBeDel[0].i4Val();
-              
-            if (!pInsStat->execute()) {
+        idStudenta = rowToBeDel[0].i4Val();
 
-                td::String str1;
-                pInsStat->getErrorStr(str1);
-                showAlert(str1, "");
-                return false;
+        if (!pInsStat->execute()) {
 
-            }
+            td::String str1;
+            pInsStat->getErrorStr(str1);
+            showAlert(str1, "");
+            return false;
+
+        }
 
         tr.commit();
         //-----------------------------------------------------------------
 
-            _tableEnrolled.beginUpdate();
-            auto& row = _tableEnrolled.getEmptyRow();
-            populateDSRow(row);
-            row[3] = rowToBeDel[3];
-            row[0] = rowToBeDel[0];
-            _tableEnrolled.push_back();
+        _tableEnrolled.beginUpdate();
+        auto& row = _tableEnrolled.getEmptyRow();
+        populateDSRow(row);
+        row[3] = rowToBeDel[3];
+        row[0] = rowToBeDel[0];
+        _tableEnrolled.push_back();
 
-            _tableEnrolled.endUpdate();
-            _tableStudents.removeRow(iRow);
-   
-            UpdateStudentDataSet();
-            UpdateEnrollDataSet();
+        _tableEnrolled.endUpdate();
+        _tableStudents.removeRow(iRow);
 
-            return true;
+        UpdateStudentDataSet();
+        UpdateEnrollDataSet();
+
+        return true;
 
     }
 
@@ -484,8 +485,8 @@ void ViewCourseEnroll::UpdateEnrollDataSet() {
     td::String str;
 
     str.append("SELECT Korisnici.ID AS IDUser,  Korisnici.Ime AS nameUser, Korisnici.Prezime AS surnameUser,  Korisnici.Indeks AS indexUser,  Upis.ID_Smjera AS departID, "
-  " Upis.Semestar AS semesterUser  FROM  Korisnici JOIN Upis ON Korisnici.Indeks = Upis.Indeks JOIN UpisPredmeta ON UpisPredmeta.ID_Predmeta="
-     "(SELECT Predmet.ID_Predmeta FROM Predmet WHERE Predmet.Naziv_Predmeta='");
+        " Upis.Semestar AS semesterUser  FROM  Korisnici JOIN Upis ON Korisnici.Indeks = Upis.Indeks JOIN UpisPredmeta ON UpisPredmeta.ID_Predmeta="
+        "(SELECT Predmet.ID_Predmeta FROM Predmet WHERE Predmet.Naziv_Predmeta='");
     str.append(_course.getSelectedText());
     str.append("')JOIN Predmet ON UpisPredmeta.ID_Predmeta = Predmet.ID_Predmeta WHERE UpisPredmeta.ID_Studenta=Korisnici.ID AND Korisnici.ID != 0 AND Korisnici.ID != -1");
 
@@ -496,7 +497,7 @@ void ViewCourseEnroll::UpdateEnrollDataSet() {
     if (!pompDS->execute())
     {
         showAlert("Citanje EnrollDataSet", "");
-        pompDS=nullptr;
+        pompDS = nullptr;
         return;
     }
 
@@ -533,55 +534,55 @@ void ViewCourseEnroll::UpdateEnrollDataSet() {
 
     val = row[3];
     _index.setValue(val);
-     
-
-   /* if (_pDS2.getPtr() != nullptr) {
-        size_t nRows = _pDS2->getNumberOfRows();
-        for (size_t i = 0; i < nRows; i++) {
-            _pDS2->removeRow(i);
-        }
-
-    }
-
-    auto& row = _pDS2->getEmptyRow();
-  
-    nRows = pompDS->getNumberOfRows();
-    for (size_t i = 0; i < nRows; i++) {
-        auto& rowpom = pompDS->getRow(i);
-           row =_pDS2->getEmptyRow();
-        row = rowpom;
-
-        _pDS2->push_back();
-    }
-    
-    td::Variant var;
-
-    var = row[2];
-
-    td::String str1 = var.getConstStr();
-
-    showAlert(str1, "");*/
-
-  /*  _pDS2 = pompDS;
-
-    auto& row = _pDS2->getCurrentRow();
-
-    td::Variant var;
-
-    var = row[2];
-
-    td::String str1 = var.getConstStr();
-
-    showAlert(str1, ""); */
 
 
+    /* if (_pDS2.getPtr() != nullptr) {
+         size_t nRows = _pDS2->getNumberOfRows();
+         for (size_t i = 0; i < nRows; i++) {
+             _pDS2->removeRow(i);
+         }
+
+     }
+
+     auto& row = _pDS2->getEmptyRow();
+
+     nRows = pompDS->getNumberOfRows();
+     for (size_t i = 0; i < nRows; i++) {
+         auto& rowpom = pompDS->getRow(i);
+            row =_pDS2->getEmptyRow();
+         row = rowpom;
+
+         _pDS2->push_back();
+     }
+
+     td::Variant var;
+
+     var = row[2];
+
+     td::String str1 = var.getConstStr();
+
+     showAlert(str1, "");*/
+
+     /*  _pDS2 = pompDS;
+
+       auto& row = _pDS2->getCurrentRow();
+
+       td::Variant var;
+
+       var = row[2];
+
+       td::String str1 = var.getConstStr();
+
+       showAlert(str1, ""); */
 
 
-    
+
+
+
 }
 
 
-void ViewCourseEnroll::UpdateStudentDataSet(){
+void ViewCourseEnroll::UpdateStudentDataSet() {
 
     if (_course.getSelectedIndex() == -1)
     {
@@ -612,9 +613,9 @@ void ViewCourseEnroll::UpdateStudentDataSet(){
     td::String str1;
 
     str1.append("SELECT Korisnici.ID AS IDUser,  Korisnici.Ime AS nameUser,  Korisnici.Prezime AS surnameUser,  Korisnici.Indeks AS indexUser,  Upis.ID_Smjera AS departID,Upis.Semestar AS semesterUser FROM Korisnici JOIN Upis ON Korisnici.Indeks = Upis.Indeks WHERE Korisnici.ID>0 AND Upis.ID_Smjera = (SELECT ID_Smjera FROM Smjer WHERE Naziv_Smjera='");
-        str1.append(_department.getSelectedText());
-        str1.append("') AND Upis.Semestar =");
-    str1.append(std::to_string(_semesterCombo.getSelectedIndex()+1));
+    str1.append(_department.getSelectedText());
+    str1.append("') AND Upis.Semestar =");
+    str1.append(std::to_string(_semesterCombo.getSelectedIndex() + 1));
 
     dp::IDataSetPtr pompDS1 = dp::getMainDatabase()->createDataSet(str1, dp::IDataSet::Execution::EX_MULT);
     dp::DSColumns cols1(pompDS1->allocBindColumns(6));
@@ -641,13 +642,13 @@ void ViewCourseEnroll::UpdateStudentDataSet(){
     if (!pompDS2->execute())
     {
         //showAlert("Citanje StudentDataSet2", "");
-        
+
         td::String err;
 
         pompDS2->getErrorStr(err);
 
         showAlert("", err);
-        
+
         pompDS2 = nullptr;
         return;
     }
@@ -683,7 +684,7 @@ void ViewCourseEnroll::UpdateStudentDataSet(){
 
 
     size_t velupis = pompDS1->getNumberOfRows();
-   // showAlert("", std::to_string(velupis));
+    // showAlert("", std::to_string(velupis));
 
 
     size_t velpredmet = pompDS2->getNumberOfRows();
@@ -704,7 +705,7 @@ void ViewCourseEnroll::UpdateStudentDataSet(){
                 break;
             }
         }
-        
+
         if (isFound)
         {
             isFound = false;
