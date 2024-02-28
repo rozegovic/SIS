@@ -30,6 +30,8 @@ class ViewSubject : public gui::View
 {
     gui::Label _lblName;
     gui::LineEdit _name;
+    gui::Label _lblType;
+    gui::LineEdit _type;
     gui::Label _lblSurname;
     gui::LineEdit _surname;
     gui::TableEdit _table;
@@ -51,6 +53,8 @@ class ViewSubject : public gui::View
     td::INT4 _SubjectID;
 
     td::INT4 _TerminID;
+    td::INT4 Brpon;
+    td::INT4 typeID;
 
 
 public:
@@ -78,5 +82,6 @@ protected:
     bool onClick(gui::Button* pBtn);
     bool doesIDexist(td::INT4 ID);
     void UpdatePresentDataSet();
+    void UpdateDataSet();
 };
 

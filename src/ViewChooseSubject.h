@@ -29,12 +29,12 @@ public:
 
         gui::View::setLayout(&_gl);
     }
-    gui::DBComboBox& getComboBox()
+    gui::DBComboBox &getComboBox()
     {
         return _subject;
       
     }
-    td::INT4& getSubjectID()
+    td::INT4 getSubjectID()
     {
         td::Variant val;
         _subject.getValue(val);

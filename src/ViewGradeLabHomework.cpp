@@ -306,6 +306,7 @@ bool ViewGradeLabHomework::saveData()
 		poruka.append(" - Uneseni su bodovi ");
 		poruka.append(std::to_string(grade));
 		MsgSender msg;
+
 		msg.sendSystemMsgtoUser(_cName.getText(), poruka, a);
 
 	}

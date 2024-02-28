@@ -268,7 +268,9 @@ bool ViewGradeExams::saveData()
 		poruka.append(" - Uneseni su bodovi ");
 		poruka.append(std::to_string(grade));
 		MsgSender msg;
-		msg.sendSystemMsgtoUser(_cName.getText(), poruka, a);
+
+		msg.sendSystemMsgtoUser(_cName.getText(), poruka, a);//-------- Updated Messages
+
 	}
 	_userids.clear();
 
