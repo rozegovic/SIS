@@ -12,9 +12,9 @@
 #include <vector>
 #include <gui/DrawableString.h>
 #include <gui/Window.h>
-
 #include "GlobalsCanvas.h"
 #include <utility>
+
 
 
 class FarLeftCanvas : public gui::Canvas
@@ -52,17 +52,22 @@ protected:
     dp::IDataSetPtr _pDS;
     gui::Image img2;
 
+      td::INT4 OpenChatPressed; //Dodano za chat
+      gui::Rect buttonChat; //Dodano za chat
+      gui::Point mousePos;  //Dodano za chat
 
-  
     
 
 public:
     FarLeftCanvas(MiddleCanvas* canvas)
         : _etf(":defaultUuser")
-        , gui::Canvas({ gui::InputDevice::Event::PrimaryClicks, gui::InputDevice::Event::Keyboard })
+        , gui::Canvas({ gui::InputDevice::Event::PrimaryClicks, gui::InputDevice::Event::Keyboard ,gui::InputDevice::Event::CursorMove})
         , _brojChat(50)  // --------------------------problem sa ovim 
         , _visinaChata(100)
-        , numOfTickets(0)
+        ,numOfTickets(0)
+        ,OpenChatPressed(-1)//Dodano za chat
+        ,buttonChat(0,0,0,0) //Dodano za chat
+        ,mousePos(0,0)       //Dodano za chat
         , _db(dp::getMainDatabase())
         , img2(":add")
     {
@@ -95,6 +100,7 @@ public:
     //}
 
 
+
     
 
     
@@ -121,8 +127,8 @@ public:
     }
     void onDraw(const gui::Rect& rect) override {
         const bool check = false;
-        // pogled za profesora i asistenta ------ grupa 3
-        if ((Globals::_currentUserRole == 1 || Globals::_currentUserRole == 3)) {
+        // pogled za profesora i asistenta ------ grupa 3                         |----------------Dodano za chat-----------------------|              <-----
+        if ((Globals::_currentUserRole == 1 || Globals::_currentUserRole == 3) || (OpenChatPressed!=-1 && Globals::_currentUserRole!=-1)) { 
             users.resize(0);
             gui::Size sz;
             getSize(sz);
@@ -207,6 +213,7 @@ public:
             _etf.draw(imgRect, gui::Image::AspectRatio::Keep, td::HAlignment::Left);
             imgRect.translate(0, 110);
             /* _user.draw(imgRect, gui::Font::ID fntID, td::ColorID clrID, td::TextAlignment hAlign = td::TextAlignment::Left, td::VAlignment vAlign = td::VAlignment::Top, td::TextEllipsize ellips = td::TextEllipsize::End); *///no
+
             td::ColorID boja(td::ColorID::LightBlue);
             gui::Rect imgRect2(45, 45, 3, 3);
             imgRect2.translate(0, 110);
@@ -214,6 +221,8 @@ public:
             //************************************************************************************
                 auto poruke = _Poruke;
                 int pozicijaK = 1;
+                
+                td::INT4 buttonHeight = 0;// Dodano za chat
            
             //************************************************************************************
                 //-------------------------------------------
@@ -265,8 +274,49 @@ public:
                     //--------------------------------------------------------------
                     imgRect.translate(0, 110);
                     imgRect2.translate(0, 110);
+                   
+                   buttonHeight++;  //Dodano za chat
                 }
+                
+                
+                
+           //----------------------------------------------------------------------Dodano za chat
+            
+            
+            if (OpenChatPressed != -1 && !Globals::isProfessor && !Globals::isAssistant) {
+                gui::Size szbtn(85, 30);
+                gui::Point ptBtn(sz.width - 95, (buttonHeight * 110) + 120);
+                buttonChat.setOriginAndSize(ptBtn, szbtn);
+                gui::Shape btn;
+                btn.createRoundedRect(buttonChat, 10);
+                gui::Point ptBtnText(sz.width - 85, (buttonHeight*110) + 125);
+                gui::DrawableString btnStr="";
+
+                if(Globals::isStudent)
+                    btnStr = tr("Predmeti");
+                else if(Globals::isSAO)
+                    btnStr = tr("Zahtjevi");
+
+                if (mousePos.x > buttonChat.left && mousePos.x<buttonChat.right && mousePos.y>buttonChat.top && mousePos.y < buttonChat.bottom)
+                {
+                    btn.drawFillAndWire(td::ColorID::AquaMarine, td::ColorID::MidnightBlue);
+                    btnStr.draw(ptBtnText, gui::Font::ID::SystemBold, td::ColorID::Blue);
+                }
+                else {
+                    btn.drawFillAndWire(td::ColorID::Blue, td::ColorID::MidnightBlue);
+                    btnStr.draw(ptBtnText, gui::Font::ID::SystemBold, td::ColorID::White);
+                }
+            }
+
+//-----------------------------------------------------------------------------------------------------------------------
+                
+                
+                
+                
+              
             getScroller()->setContentSize(sz);
+
+
 
         }
 
@@ -340,22 +390,60 @@ public:
 
                 numOfTickets++;
 
-            }
 
-            GlobalsCanvas::visinaLeftSAO = i * 100;
+           }
+           
+           GlobalsCanvas::visinaLeftSAO = i*110+50;
 
 
             sz.height = GlobalsCanvas::visinaLeftSAO;
 
-            getScroller()->setContentSize(sz);
-
-        }
 
 
+     //----------------------------------------------------------------------------------------Dodano za chat
+
+
+           gui::Size szbtn(65, 30);
+           gui::Point ptBtn(sz.width - 75, i*110+ 10);
+           buttonChat.setOriginAndSize(ptBtn, szbtn);
+           gui::Shape btn;
+           btn.createRoundedRect(buttonChat, 10);
+           gui::Point ptBtnText(sz.width - 67, i*110+ 15);
+
+
+           if (mousePos.x > buttonChat.left && mousePos.x<buttonChat.right && mousePos.y>buttonChat.top && mousePos.y < buttonChat.bottom)
+           {
+               gui::DrawableString btnStr = tr("Poruke");
+               btn.drawFillAndWire(td::ColorID::AquaMarine, td::ColorID::MidnightBlue);
+               btnStr.draw(ptBtnText, gui::Font::ID::SystemBold, td::ColorID::Blue);
+           }
+           else {
+               gui::DrawableString btnStr = tr("Poruke");
+               btn.drawFillAndWire(td::ColorID::Blue, td::ColorID::MidnightBlue);
+               btnStr.draw(ptBtnText, gui::Font::ID::SystemBold, td::ColorID::White);
+           }
+
+   //-----------------------------------------------------------------------------------------------------------------------
+
+
+
+           getScroller()->setContentSize(sz);
+
+       }
 
        
         // pogled za studenta ------ grupa 2
-        else if (Globals::_currentUserID == 5) {
+       else if (Globals::isStudent) {                 // Dodano za chat ----> Promjenjeno na Globals::isStudent jer Globals::_currentUserID nije radilo za svakog studenta
+
+
+            //Dodano za chat-------------------------------
+            OpenChatPressed = -1;
+            _middleCanvas->setChatButtonPressed(OpenChatPressed);
+
+            //---------------------------------------------------
+
+
+
             // subjects.clear();
             createStrings();
             //std::vector<td::INT4> SubjFrames;// rbr predmeta
@@ -383,6 +471,9 @@ public:
              //pCols << "Naziv" << name << "ID" << ID;
              //if (!pSelect->execute())
              //    return ;
+
+            td::INT4 subjnum = 0;  // Dodano za chat
+
             gui::Point pt(0, 25);
             for (auto& name : _subjectsName) {
                 gui::DrawableString subject = name;
@@ -391,6 +482,8 @@ public:
                 //pt.translate(0, 50);
                 r.translate(0, 50);
                 pt.translate(0, 50);
+                
+                subjnum++;  //Dodano za chat
 
             }
             //_middleCanvas->setSubjectID(0);    //
@@ -403,7 +496,40 @@ public:
  //            gui::Rect imgRect(x - 15 - x / 4, y - 15 - y / 4, x + 15 + x / 4, y + 15 + y / 4);
  //            _etf.draw(imgRect, gui::Image::AspectRatio::Keep, td::HAlignment::Center, td::VAlignment::Center);
 
-        }
+
+            //---------------------------------------------------------------Dodano za chat
+
+
+            gui::Size szbtn(65, 30);
+            gui::Point ptBtn(sz.width - 75, (subjnum * 50) + 10);
+            buttonChat.setOriginAndSize(ptBtn, szbtn);
+            gui::Shape btn;
+            btn.createRoundedRect(buttonChat, 10);
+            gui::Point ptBtnText(sz.width - 67, (subjnum * 50) + 15);
+
+
+            if (mousePos.x > buttonChat.left && mousePos.x<buttonChat.right && mousePos.y>buttonChat.top && mousePos.y < buttonChat.bottom)
+            {
+                gui::DrawableString btnStr = tr("Poruke");
+                btn.drawFillAndWire(td::ColorID::AquaMarine, td::ColorID::MidnightBlue);
+                btnStr.draw(ptBtnText, gui::Font::ID::SystemBold, td::ColorID::Blue);
+            } 
+            else {
+                gui::DrawableString btnStr = tr("Poruke");
+                btn.drawFillAndWire(td::ColorID::Blue, td::ColorID::MidnightBlue);
+                btnStr.draw(ptBtnText, gui::Font::ID::SystemBold, td::ColorID::White);
+            }
+
+            sz.height = (subjnum * 50) + 50;
+            getScroller()->setContentSize(sz);
+
+//-----------------------------------------------------------------------------------------------------------------
+
+
+  
+
+}
+
 
         // kada nema ulogovane osobe
        /* else if(Globals::isLogged==check){
@@ -419,8 +545,9 @@ public:
         //    subjects.clear();
         //}
         //createStrings();
-
+        OpenChatPressed = -1; //---Dodano za chat
         kontrola = 1;
+
         reDraw();
     };
 
@@ -453,7 +580,12 @@ public:
 
 
     void onPrimaryButtonPressed(const gui::InputDevice& inputDevice) override {
-        if (Globals::_currentUserRole == 1 || Globals::_currentUserRole == 3) {
+
+        if (Globals::_currentUserRole == 1 || Globals::_currentUserRole == 3 ||  (OpenChatPressed != -1 && Globals::_currentUserRole != -1)) {   //Dodano  za chat
+
+           if (OpenChatPressed != -1)//-------------------------------Dodano za chat
+                _middleCanvas->setChatButtonPressed(OpenChatPressed);
+
 
             double tempk = 0;
 
@@ -491,15 +623,45 @@ public:
                 tempk = tempk + _visinaChata + 10;
             }
 
-            
+
 
 
              // openMiddleCanvas();
              if (inputDevice.getType() == gui::InputDevice::Type::Mouse && inputDevice.getButton() == gui::InputDevice::Button::Primary) {
                  // openMiddleCanvas();
              }
+             
+             
+       //--------------------------------------------------------------------------------------------------------------------------------Dodano za chat
+
+            const gui::Point& modelPoint = inputDevice.getModelPoint();
+
+
+            if (modelPoint.x > buttonChat.left && modelPoint.x<buttonChat.right && modelPoint.y>buttonChat.top && modelPoint.y < buttonChat.bottom)
+            {
+                OpenChatPressed = -1;
+                _middleCanvas->setChatButtonPressed(OpenChatPressed);
+                _middleCanvas->reset();
+                reDraw();
+            }
+
+     //-----------------------------------------------------------------------------------------------------------------------------------
+             
+             
+             
+             
+             
          }
-         else if (Globals::isSAO) {
+         else if (Globals::isSAO && OpenChatPressed==-1) {
+
+
+      //-------------------------------------------------------Dodano za chat-------------------------------------------------------------
+
+            if (mousePos.x > buttonChat.left && mousePos.x<buttonChat.right && mousePos.y>buttonChat.top && mousePos.y < buttonChat.bottom)
+            {
+                OpenChatPressed = 1;reDraw();
+            }
+//--------------------------------------------------------------------------------------------------------------------------------------------
 
 
              reDraw();
@@ -512,25 +674,31 @@ public:
              td::INT4 rbrPoruke = klik.y;
 
              rbrPoruke = rbrPoruke / 110;
+             
+            if (klik.x > sz.width + 5 || rbrPoruke > numOfTickets - 1)
+                return;
 
 
+            _middleCanvas->SetMessageNumSAO(rbrPoruke);
+            
+            reDraw();
+        }
+ 
 
-             if (klik.x > sz.width + 5 || rbrPoruke > numOfTickets - 1)
-                 return;
-
-             _middleCanvas->SetMessageNumSAO(rbrPoruke, this);
-
-         }
-
-
-
-
-
-         else if (Globals::isStudent)
+         else if (Globals::isStudent && OpenChatPressed==-1) //Dodano za chat
          {
              gui::Size sz;
              getSize(sz);
              const gui::Point& modelPoint = inputDevice.getFramePoint();
+ //--------------------------------------------------------------------------------------------------------------------------------Dodano za chat
+
+            if (modelPoint.x > buttonChat.left && modelPoint.x<buttonChat.right && modelPoint.y>buttonChat.top && modelPoint.y < buttonChat.bottom)
+            {
+                OpenChatPressed = 1;reDraw();
+            }
+
+//-----------------------------------------------------------------------------------------------------------------------------------
+             
              td::INT4 rbr = modelPoint.y / 50; //visina svakog pravougaonika je 50, pa ce ovo vratiti rbr (pocevsi od 0)?
              //vektor subjects cuva sve IDs predmeta koji su ispisani, i to redom kako su ispisani. 
              // Da dobijete ID kliknutog predmeta ide subjects.at(rbr), kao u alertu ispod
@@ -552,11 +720,22 @@ public:
 
          }
      }
+  
+
+
     bool getModelSize(gui::Size& modelSize) const override
     {
+        //-----------Dodano za chat--------------------
+       
+        if (OpenChatPressed != -1 || Globals::isStudent)
+        {
+            modelSize.height = buttonChat.top + 50;
+            modelSize.width = 230;
+            return true;
+        }
+  //---------------------------------------------
+       else if (Globals::isSAO)
 
-
-        if (Globals::isSAO)
         {
             modelSize.width = 230;
             modelSize.height = GlobalsCanvas::visinaLeftSAO;
@@ -565,10 +744,34 @@ public:
 
         modelSize.width = 230;
         modelSize.height = (_brojChat) * 110;
+
         return true;
     }
 
 
 
+ void onCursorMoved(const gui::InputDevice& inputDevice) override{
+    
+            const gui::Point& modelPoint = inputDevice.getModelPoint();
+        mousePos = modelPoint;
+    
+    
+            if (modelPoint.x > buttonChat.left && modelPoint.x<buttonChat.right && modelPoint.y>buttonChat.top && modelPoint.y < buttonChat.bottom)
+        {
+            setCursor(gui::Cursor::Type::Finger);
+        }
+        else {
+            setCursor(gui::Cursor::Type::Default);
+        }
 
+        reDraw();
+
+    }
+    
+    
+ void setButtonChatNotPressed() {
+        OpenChatPressed = -1;
+    }
+    
+    
 };

@@ -18,7 +18,6 @@
 #include <utility>
 #include <vector>
 
-
 #include <gui/DrawableString.h>
 #include <gui/Transformation.h>
 
@@ -26,10 +25,9 @@ class MiddleCanvas : public gui::Canvas
 {
 private:
 
-   
-
    td::INT4 predmetID = -1; // grupa 2 
    td::String _subjectname;
+
 
 
 protected:
@@ -72,11 +70,9 @@ protected:
     gui::Rect rectBottomRight;
     gui::Point mousePosition;
 
-    
-    td::INT4 IDTicket=-1;
+    td::INT4 IDTicket = -1;
 
-    gui::Canvas* farleft;
-
+    td::INT4 openChatButtonPressed = -1;
 
 
 public:
@@ -107,7 +103,12 @@ public:
         const bool check = false;
         // pogled za profesora i asistenta ------ grupa 3
 
-        if ((Globals::_currentUserRole == 1 || Globals::_currentUserRole == 3) && _chatUserID != -2) {
+
+        gui::Size sz1;
+        getSize(sz1);
+
+        if ((Globals::_currentUserRole == 1 || Globals::_currentUserRole == 3 || openChatButtonPressed!=-1) && _chatUserID != -2) {             //---> Dodano za chat
+
 
             gui::Size sz;
             getSize(sz);
@@ -172,7 +173,7 @@ public:
         }
 
         // pogled za SAO ------ grupa 1
-        else if (Globals::isSAO && brojPoruke > -1) {
+        else if (Globals::isSAO && brojPoruke > -1 && sz1.width > 300) {
             DrawChatInfoSAO();
         }
 
@@ -193,7 +194,6 @@ public:
             cp2.x = 65;
             td::String text, text1, text2, text3, text4;
             text = "Detalji o odabranom predmetu ";
-
 
             /* funkcije:
             static void draw(const td::String& txt, const gui::Rect& r, gui::Font::ID fntID, td::ColorID clrID, td::TextAlignment hAlign = td::TextAlignment::Left, td::VAlignment vAlign = td::VAlignment::Top,  td::TextEllipsize ellips = td::TextEllipsize::End);
@@ -384,7 +384,7 @@ public:
 
                     dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select Br_sedmice AS brsedmice, Vrijeme as vrijeme FROM Prisustvo, TerminiStudenti, Termini WHERE TerminiStudenti.ID_Studenta = ? AND  TerminiStudenti.ID_Termina = Prisustvo.ID_termina AND Termini.ID = TerminiStudenti.ID_Termina AND Termini.TipPredavanjaID = 3 AND Termini.Predmet_ID=?");
                     dp::Params pParams(pSelect->allocParams());
-                    pParams << Globals::_currentUserID<<predmetID;
+                    pParams << Globals::_currentUserID << predmetID;
                     dp::Columns pCols = pSelect->allocBindColumns(2);
                     td::INT4 brsedmice;
                     td::Time Vrijeme;
@@ -473,62 +473,46 @@ public:
 
 
 
-    void SetMessageNumSAO(td::INT4 br,gui::Canvas* pok) {
+    void SetMessageNumSAO(td::INT4 br) {
         brojPoruke = br;
-        farleft = pok;
-        reset();
+        reDraw();
     };
+
+
+
 
     void DrawChatInfoSAO() {
 
-        enableResizeEvent(true);
+        enableResizeEvent(true);;
 
         gui::Size sz;
         getSize(sz);
 
 
-      //  dp::IDataSet* pDS = dp::getMainDatabase()->createDataSet("SELECT Korisnici.Ime as Name, Korisnici.Prezime as Surname,SAOStudentTicket.Indeks as StudentIndex,"
-    //        " SAOStudentTicket.Ticket_Tip as TypeOfTicket, SAOStudentTicket.Req_Title as TitleofTicket, SAOStudentTicket.Status_ID as Status_ID,SAOTicket_Status.Status as Status,"
-  //          " SAOStudentTicket.Request as Request From Korisnici, SAOStudentTicket, SAOTicket_Status where Korisnici.Indeks=SAOStudentTicket.Indeks AND SAOTicket_Status.ID=SAOStudentTicket.Status_ID");
-//
-        //dp::DSColumns cols(pDS->allocBindColumns(8));
-        //cols << "Name" << td::string8 << "Surname" << td::string8 << "StudentIndex" << td::string8 << "TypeOfTicket" << td::string8 << "TitleOfTicket" << td::string8 << "Status_ID" << td::int4 << "Status" << td::string8 << "Request" << td::string8;
-        //if (!pDS->execute())
-        //{
-           // pDS = nullptr;
-          //  showAlert("errorReadingTable", "");
-        //    return;
-      //  }
+        dp::IDataSet* pDS = dp::getMainDatabase()->createDataSet("SELECT Korisnici.Ime as Name, Korisnici.Prezime as Surname,SAOStudentTicket.Indeks as StudentIndex,"
+            " SAOStudentTicket.Ticket_Tip as TypeOfTicket, SAOStudentTicket.Req_Title as TitleofTicket, SAOStudentTicket.Status_ID as Status_ID,SAOTicket_Status.Status as Status,"
+            " SAOStudentTicket.Request as Request,SAOStudentTicket.ID as IDTicket From Korisnici, SAOStudentTicket, SAOTicket_Status where Korisnici.Indeks=SAOStudentTicket.Indeks AND SAOTicket_Status.ID=SAOStudentTicket.Status_ID");
+
+        dp::DSColumns cols(pDS->allocBindColumns(9));
+        cols << "Name" << td::string8 << "Surname" << td::string8 << "StudentIndex" << td::string8 << "TypeOfTicket" << td::string8 << "TitleOfTicket" << td::string8 << "Status_ID" << td::int4 << "Status" << td::string8 << "Request" << td::string8 << "IDTicket" << td::int4;
+        if (!pDS->execute())
+        {
+            pDS = nullptr;
+            showAlert("errorReadingTable", "");
+            return;
+        }
 
         //showAlert("", std::to_string(brojPoruke));
-
-      dp::IDataSet* pDS = dp::getMainDatabase()->createDataSet("SELECT Korisnici.Ime as Name, Korisnici.Prezime as Surname,SAOStudentTicket.Indeks as StudentIndex,"
-          " SAOStudentTicket.Ticket_Tip as TypeOfTicket, SAOStudentTicket.Req_Title as TitleofTicket, SAOStudentTicket.Status_ID as Status_ID,SAOTicket_Status.Status as Status,"
-          " SAOStudentTicket.Request as Request,SAOStudentTicket.ID AS IDTicket From Korisnici, SAOStudentTicket, SAOTicket_Status where Korisnici.Indeks=SAOStudentTicket.Indeks AND SAOTicket_Status.ID=SAOStudentTicket.Status_ID");
-
-      dp::DSColumns cols(pDS->allocBindColumns(9));
-      cols << "Name" << td::string8 << "Surname" << td::string8 << "StudentIndex" << td::string8 << "TypeOfTicket" << td::string8 << "TitleOfTicket" << td::string8 << "Status_ID" << td::int4 << "Status" << td::string8 << "Request" << td::string8<<"IDTicket"<<td::int4;
-      if (!pDS->execute())
-      {
-          pDS = nullptr;
-          showAlert("errorReadingTable", "");
-          return;
-      }
-
-      td::String str;
-
-      //showAlert("", std::to_string(brojPoruke));
-
 
 
         auto row = pDS->getRow(brojPoruke);
 
+          IDTicket = row[8].i4Val();
 
-      IDTicket = row[8].i4Val();
 
-      td::String ime = row[0].getConstStr();
-      ime.append(" ");
-      ime.append(row[1].getConstStr());
+        td::String ime = row[0].getConstStr();
+        ime.append(" ");
+        ime.append(row[1].getConstStr());
 
 
         td::String req = row[7].getConstStr();
@@ -536,7 +520,6 @@ public:
 
 
         td::INT4 maxLength = (int(sz.width - 200) / 8);
-
 
         if (req.length() > maxLength) {
 
@@ -600,7 +583,6 @@ public:
 
 
 
-
        // showAlert("",std::to_string(sz.width));
 
 
@@ -621,6 +603,7 @@ public:
             rectt.setHeight(sz.height - 50);
 
 
+
         rectt.translate(50, 25);
 
         // gui::Shape::drawRect(rectt, td::ColorID::Silver, td::ColorID::MidnightBlue, 2, td::LinePattern::Solid);
@@ -629,6 +612,7 @@ public:
 
         visibleRect.createRoundedRect(rectt, 10);
         visibleRect.drawFillAndWire(td::ColorID::Silver, td::ColorID::MidnightBlue);
+
 
 
         Ime.draw({ 75,50 }, gui::Font::ID::SystemBold, td::ColorID::Black);//
@@ -647,11 +631,6 @@ public:
         int bottomRightY = sz.height - 70; // Y koordinata
         int rectWidth = 80;
         int rectHeight = 30;
-
-
-
-        szpom.width = rectWidth;
-        szpom.height = rectHeight;
 
 
         if (skrolV > sz.height)
@@ -674,6 +653,7 @@ public:
         int x = mousePosition.x;
         int y = mousePosition.y;
 
+
         if (x > rectBottomRight.left && x < rectBottomRight.right && y < rectBottomRight.bottom && y > rectBottomRight.top)
         {
             buttonSAO.drawFillAndWire(td::ColorID::AquaMarine, td::ColorID::MidnightBlue);
@@ -685,12 +665,12 @@ public:
             answer.draw(p, gui::Font::ID::SystemBold, td::ColorID::White);
         }
 
-      this->getScroller()->setContentSize(szpom);
 
     };
 
     void reset() {
         _chatUserID = -2;
+        brojPoruke = -1;         //-----Dodano za chat
         reDraw();
     }
 
@@ -700,6 +680,10 @@ public:
         _name = s;
         _chatUserID = userID;
         reDraw();
+    }
+
+    void setChatButtonPressed(td::INT4 openChatPressed) {
+        openChatButtonPressed = openChatPressed;
     }
 
     //bool insertMessage() {
@@ -724,7 +708,7 @@ public:
 
 
     void onPrimaryButtonPressed(const gui::InputDevice& inputDevice) override {
-        if (Globals::_currentUserRole == 1 || Globals::_currentUserRole == 3) {
+        if (Globals::_currentUserRole == 1 || Globals::_currentUserRole == 3 || openChatButtonPressed!=-1) {      //--->Dodano za chat
 
             double tempk = 0;
             double x1 = 8 * x - x / 4;
@@ -756,36 +740,32 @@ public:
 
 
             reDraw();
-
         }
 
         
       if (Globals::isSAO && inputDevice.getModelPoint().x>rectBottomRight.left && inputDevice.getModelPoint().x < rectBottomRight.right && 
-                  inputDevice.getModelPoint().y<rectBottomRight.bottom && inputDevice.getModelPoint().y > rectBottomRight.top)
-      {   
-          gui::Window* pParentWnd = getParentWindow();
-          auto pWnd = new WindowCertainRequest(pParentWnd,IDTicket,indeks, Ime, prezime, tipKarte, status, request, title);
-          pWnd->keepOnTopOfParent();
-          pWnd->open();
-          reDraw();
-      }
-
+      inputDevice.getModelPoint().y<rectBottomRight.bottom && inputDevice.getModelPoint().y > rectBottomRight.top) {
+      gui::Window* pParentWnd = getParentWindow();
+      auto pWnd = new WindowCertainRequest(pParentWnd,IDTicket, indeks, Ime, prezime, tipKarte, status, request, title);
+      pWnd->keepOnTopOfParent();
+      pWnd->open();
+      reDraw();
+  }
     }
 
     bool getModelSize(gui::Size& modelSize) const override
     {
+
         gui::Size sz;
         getSize(sz);
 
-        if (Globals::isSAO)
-        {
+
+        if (Globals::isSAO) {
 
             modelSize.width = sz.width; //
             modelSize.height = skrolV+50;
-
             return true;
         }
-        //dodati da se dinamicki pomjera
 
         modelSize.width = sz.width; //
         modelSize.height = _h;
@@ -951,9 +931,10 @@ public:
 
     }
 
-    void onCursorMoved(const gui::InputDevice& inputDevice)override {
-
-
+    
+        void onCursorMoved(const gui::InputDevice& inputDevice)override {
+      
+        
         if (Globals::isSAO) {
             gui::Size sz;
             getSize(sz);
@@ -971,9 +952,8 @@ public:
 
             reDraw();
         }
-
-
     }
+        
 
 
 };

@@ -44,6 +44,8 @@ protected:
 
 	gui::HorizontalLayout _hlBtnsDB;
 	gui::Button _btnOpen;
+	gui::Button _btnOpenAnsw;
+	gui::Button _btnReload;
 
 	gui::GridLayout _gl;
 	dp::IDatabase* _db;
@@ -69,6 +71,8 @@ protected:
 	void initAnsweredTable();
 	bool onClick(gui::Button* pBtn);
 	bool onChangedSelection(gui::TableEdit* pTE);
+	void UpdateOnHoldTable();
+	void UpdateAnsweredTable();
 	/*td::String getIndex();
 	td::String getName();
 	td::String getSurname();

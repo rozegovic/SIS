@@ -370,19 +370,37 @@
         <Res id="grade" tr="Ocjena"/>
 
     <Res id="viewFinalGrade" tr="Konacne ocjene"/>
-	<Res id="open" tr="Otvori"/>
-	<Res id="On hold tickets" tr="Na cekanju"/>
-	<Res id="Answered tickets" tr="Odgovoreni"/>
-		<Res id="SaveAttachment" tr="Spremi dodatak"/>
 
+    	<Res id="open" tr="Otvori"/>
+		<Res id="openTT" tr="Otvori odabrani zahtjev"/>
+	<Res id="On hold tickets" tr="Na cekanju"/>
+		<Res id="SaveAttachment" tr="Spremi"/>
+		<Res id="SaveAttachmentTT" tr="Spremi dodatak"/>
+		<Res id="attachmentAddLbl" tr="Dodatak"/>
+		<Res id="attachmentlbl" tr="Dodatak"/>
+		<Res id="attachmentTT" tr="Dodaj privitak"/>
+		
            <Res id="Answer:" tr="Odgovor"/>
 		<Res id="typeOfTicket" tr="Tip"/>
 		<Res id="Answered tickets" tr="Odgovoreni"/>
 		<Res id="titleOfTicket" tr="Naslov"/>
-
-
-
-
+		<Res id="sendTT" tr="Pošalji odgovor"/>
+          <Res id="Ticket" tr="Zahtjev"/>
+		  <Res id="Student's ticket" tr="Zahtjev studenta"/>
+          <Res id="status" tr="Status"/>
+		  <Res id="NoAttachmentErr" tr="Zahtjev nema dodatak"/>
+		  <Res id="Successfully sent" tr="Odgovor poslan"/>
+		  <Res id="Empty body!" tr="Prazno tijelo poruke"/>
+		  <Res id="Do you want to enter your answer first?" tr="Da li želite unijeti odgovor prije slanja?"/>
+		  <Res id="Successfully saved" tr="Dodatak spašen"/>
+		  <Res id="Folder is not selected or file already exists with this filepath" tr="Nije izabran niti jedan folder ili dodatak već postoji na lokaciji"/>
+		  
+		  <Res id="Answered tickets:" tr="Obrađeni zahtjevi"/>
+		  <Res id="On hold tickets:" tr="Zahtjevi na čekanju"/>
+		 <Res id="reload" tr="Osvježi"/>
+		 <Res id="reloadTT" tr="Ponovo učitaj poadatke"/>
+		  
+   
 	</Translations>
 </DevRes>
 

@@ -257,11 +257,20 @@ bool ViewGradeExams::saveData()
 		_itemsToUpdate.clear();
 	}
 	for (auto i : _userids) {
+		
+		td::INT4 a = std::get<0>(i);
 
-		td::String naslov = "Ocjena!";
-		td::String poruka = "Unesena je ocjena za odredenu aktivnost!";
+		td::INT4 grade = std::get<1>(i);
+
+		td::String  activity = std::get<2>(i);
+
+		td::String poruka =activity;
+		poruka.append(" - Uneseni su bodovi ");
+		poruka.append(std::to_string(grade));
 		MsgSender msg;
-		msg.sendSystemMsgtoUser(naslov, poruka, i,1);
+
+		msg.sendSystemMsgtoUser(_cName.getText(), poruka, a);//-------- Updated Messages
+
 	}
 	_userids.clear();
 
@@ -287,7 +296,12 @@ bool ViewGradeExams::onClick(gui::Button* pBtn)
 
 		row[6].toZero();
 		td::INT4 a = row[0].i4Val();
-		_userids.insert(a);
+
+		td::INT4 grade = _grade.getText().toINT4();
+
+		td::String activity = _activityName.getText();
+
+		_userids.insert(std::make_tuple(a, grade, activity));
 		//	_table.updateRow(iRow);
 		_table.endUpdate();
 
@@ -311,7 +325,13 @@ bool ViewGradeExams::onClick(gui::Button* pBtn)
 
 		populateDSRow(row, itemid);
 		td::INT4 a = row[0].i4Val();
-		_userids.insert(a);
+
+		td::INT4 grade = _grade.getText().toINT4();
+
+		td::String activity = _activityName.getText();
+
+		_userids.insert(std::make_tuple(a, grade, activity));
+		
 		_table.updateRow(iRow);
 		_table.endUpdate();
 
@@ -327,7 +347,13 @@ bool ViewGradeExams::onClick(gui::Button* pBtn)
 		_table.beginUpdate();
 		auto& row = _table.getCurrentRow();
 		td::INT4 a = row[0].i4Val();
-		_userids.insert(a);
+
+		td::INT4 grade = _grade.getText().toINT4();
+
+		td::String activity = _activityName.getText();
+
+		_userids.insert(std::make_tuple(a, grade, activity));
+		
 		populateDSRow(row, itemid);
 		_table.updateRow(iRow);
 		_table.endUpdate();

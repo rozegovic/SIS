@@ -301,6 +301,7 @@ bool  ViewDateTimeActivity::saveData()
         }
         td::String naslov = "Ispit!";
         td::String poruka = "Registrovana je promjena u terminima ispita! ";
+
         MsgSender msg;
         msg.sendSystemMsgtoUsers(naslov, poruka, userIDs,1);
 

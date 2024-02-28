@@ -58,6 +58,7 @@ protected:
 	dp::IDatabase* _db;
 	dp::IDataSetPtr _pDS;
 	td::String indeks;
+
 	td::INT4 IDTicket;
 public:
 
@@ -72,6 +73,7 @@ protected:
 	void populateDataForRequest();
 	void initTableRequest();*/
 	void showSaveFileDialog();
+	bool SetAnswer();
 	//void saveFile(gui::FileDialog* pFD);
 	bool onClick(gui::Button* pBtn);
 };

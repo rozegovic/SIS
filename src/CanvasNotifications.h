@@ -386,13 +386,6 @@ public:
 
                 if (ForDeletion == i)
                 {
-                    td::String setstr = "DELETE FROM Messages WHERE ID=";
-                    setstr.append(std::to_string(id));
-
-                    dp::IStatementPtr pDelStat = dp::getMainDatabase()->createStatement(setstr);
-
-                    pDelStat->execute();
-
                     td::String setstr1 = "DELETE FROM MsgReceivers WHERE MsgID=";
                     setstr1.append(std::to_string(id));
                     setstr1.append(" AND UserID = ");
@@ -401,9 +394,50 @@ public:
                     dp::IStatementPtr pDelStat1 = dp::getMainDatabase()->createStatement(setstr1);
 
                     pDelStat1->execute();
+                    break;
                 }
                 i++;
             }
+
+            dp::IStatementPtr Select = dp::getMainDatabase()->createStatement("SELECT MsgReceivers.MsgID AS ID FROM MsgReceivers");
+
+            dp::Columns Cols= Select->allocBindColumns(1);
+            td::INT4 delid;
+            Cols << "ID" << delid;
+            
+            if (!Select->execute())
+            {
+                td::String str;
+                Select->getErrorStr(str);
+                showAlert(str,"aa");
+             }
+
+               i = 0;
+
+               while (Select->moveNext())
+               {
+                   if (delid == id)
+                   {
+                       i++;
+                       break;
+                   }
+               }
+
+                if (i == 0)
+                {
+                    td::String setstr1 = "DELETE FROM Messages WHERE ID=";
+                    setstr1.append(std::to_string(id));
+
+                    dp::IStatementPtr pDelStat1 = dp::getMainDatabase()->createStatement(setstr1);
+
+                    if(!pDelStat1->execute())
+                    {
+                        td::String str;
+                        pDelStat1->getErrorStr(str);
+                        showAlert(str, "aa");
+                    }
+                }
+
         }
         MessageToExpand = -1;
         ForDeletion = -1;
