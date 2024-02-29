@@ -438,37 +438,14 @@ public:
 
 
 
-            // subjects.clear();
             createStrings();
-            //std::vector<td::INT4> SubjFrames;// rbr predmeta
-            //_noOfSubjects  = 0 ;
             gui::Size sz;
             getSize(sz);
-            //createStrings();
             gui::Rect r(0, 0, sz.width, 50);
             float lw = 5;
-            // gui::Rect imgRect(450, 50, 650, 150);
-             /*for (int i = 0; i < _subjects.size(); i++) {
-                 gui::Shape::drawRect(r,td::ColorID::WhiteSmoke, td::ColorID::Navy, 4, td::LinePattern::Solid);
-                 _subjects[i].draw(pt, gui::Font::ID::SystemLargerBold, td::ColorID::Navy);
-                 pt.translate(0,50);
-                 r.translate(0, 50);
-             }*/
-
-             //dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select a.Naziv_Predmeta AS Naziv, a.ID_Predmeta as ID FROM Predmet a, UpisPredmeta b WHERE b.ID_Studenta = ? AND  b.ID_Predmeta = a.ID_Predmeta");
-             //dp::Params pParams(pSelect->allocParams());
-             //pParams << Globals::_currentUserID;
-             //dp::Columns pCols = pSelect->allocBindColumns(2);
-             //td::String name;
-             //td::INT4 ID;
-             //// gui::DrawableString drawableName;
-             //pCols << "Naziv" << name << "ID" << ID;
-             //if (!pSelect->execute())
-             //    return ;
-
-            td::INT4 subjnum = 0;  // Dodano za chat
 
             gui::Point pt(0, 25);
+            td::INT4 subjnum = 0;
             for (auto& name : _subjectsName) {
                 gui::DrawableString subject = name;
                 gui::Shape::drawRect(r, td::ColorID::DimGray, td::ColorID::Black, 0.5, td::LinePattern::Solid);
@@ -476,9 +453,7 @@ public:
                 //pt.translate(0, 50);
                 r.translate(0, 50);
                 pt.translate(0, 50);
-
-                subjnum++;  //Dodano za chat
-
+                subjnum++;
             }
             //_middleCanvas->setSubjectID(0);    //
  //            gui::Size sz;

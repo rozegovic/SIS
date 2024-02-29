@@ -180,13 +180,12 @@ public:
 
 
         // pogled za studenta ------ grupa 2 ------ ako ne koristite mozete samo ostaviti da bude nacrtan etf znak
-        else if (Globals::_currentUserID == 5) {
+        else if (Globals::isStudent) {
 
             //td::INT4 broj = predmetID;  //uzima random vrijednost, a u funkciji setSubjectID dobro ocita
             //td::INT4 broj = 1;  //  1 za provjeru select-a
             gui::Size sz;
             getSize(sz);
-
             gui::Point cp(sz.width / 2, sz.height / 2);
             cp.x = 10;
             cp.y = 10;
@@ -199,9 +198,7 @@ public:
             static void draw(const td::String& txt, const gui::Rect& r, gui::Font::ID fntID, td::ColorID clrID, td::TextAlignment hAlign = td::TextAlignment::Left, td::VAlignment vAlign = td::VAlignment::Top,  td::TextEllipsize ellips = td::TextEllipsize::End);
             static void draw(const td::String& txt, const gui::Point& pt, gui::Font::ID fntID, td::ColorID clrID);
             */
-
             if (predmetID == -1) { //ovaj text2 bi trebao da piše čim se student uloguje, prije nego odabere neki predmet
-
                 gui::DrawableString text1 = "Odaberite predmet da biste vidjeli detalje ";
                 text1.draw(cp, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::Gainsboro);
             }
@@ -314,9 +311,7 @@ public:
                     gui::DrawableString osvojeno = "Osvojili ste...";
                     osvojeno.draw(prog, gui::Font::ID::SystemBoldItalic, td::ColorID::Gainsboro);
                     prog.y = Ypos + 25;
-
                     gui::DrawableString moguce = "Od ukupno mogućih 100 bodova.";
-
                     moguce.draw(prog, gui::Font::ID::SystemBoldItalic, td::ColorID::Gainsboro);
                     gui::Rect prazan(0, 0, 200, 20);
                     gui::Rect fill(0, 0, prosjek, 20);
@@ -373,23 +368,12 @@ public:
                     time.draw(vrijeme, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::Gainsboro, td::TextAlignment::Center, td::VAlignment::Center);
                     prisustvo.draw(prisutan, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::Gainsboro, td::TextAlignment::Center, td::VAlignment::Center);
 
-
-                   // dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select Br_sedmice AS brsedmice, Vrijeme as vrijeme, Termini.TipPredavanjaID as tip, Termini.Predmet_ID as predmet FROM Prisustvo, TerminiStudenti, Termini WHERE TerminiStudenti.ID_Studenta = ? AND  TerminiStudenti.ID_Termina = Prisustvo.ID_termina AND Termini.TipPredavanjaID = 3 AND Termini.Predmet_ID=?");
-                    //dp::Params pParams(pSelect->allocParams());
-                    //pParams << Globals::_currentUserID << predmetID;
-                    //dp::Columns pCols = pSelect->allocBindColumns(2);
-                    //td::INT4 brsedmice;
-                    //td::Time Vrijeme;
-                    //pCols << "brsedmice" << brsedmice << "Vrijeme" << Vrijeme;
-
-                    dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select Br_sedmice AS brsedmice, Vrijeme as vrijeme FROM Prisustvo, TerminiStudenti, Termini WHERE TerminiStudenti.ID_Studenta = ? AND  TerminiStudenti.ID_Termina = Prisustvo.ID_termina AND Termini.ID = TerminiStudenti.ID_Termina AND Termini.TipPredavanjaID = 3 AND Termini.Predmet_ID=?");
+                    dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select Br_sedmice AS brsedmice FROM Prisustvo, TerminiStudenti, Termini WHERE TerminiStudenti.ID_Studenta = ? AND  TerminiStudenti.ID_Termina = Prisustvo.ID_termina AND Termini.ID = TerminiStudenti.ID_Termina AND Termini.TipPredavanjaID = 3 AND Termini.Predmet_ID=?");
                     dp::Params pParams(pSelect->allocParams());
                     pParams << Globals::_currentUserID << predmetID;
-                    dp::Columns pCols = pSelect->allocBindColumns(2);
+                    dp::Columns pCols = pSelect->allocBindColumns(1);
                     td::INT4 brsedmice;
-                    td::Time Vrijeme;
-                    pCols << "brsedmice" << brsedmice << "vrijeme" << Vrijeme;
-
+                    pCols << "brsedmice" << brsedmice;
                     std::vector<td::INT4> prisutnesedmice;
                     if (pSelect->execute()) {
                         prisutnesedmice.resize(0);
@@ -397,6 +381,17 @@ public:
                             //gui::DrawableString drawableName = name;
                             prisutnesedmice.push_back(brsedmice);
                         }
+                    }
+
+                    // UZIMANJE SAMO VREMENA LAB.VJEZBE
+                    dp::IStatementPtr pSelect1 = dp::getMainDatabase()->createStatement("select Vrijeme as vrijeme FROM TerminiStudenti, Termini WHERE TerminiStudenti.ID_Studenta = ? AND Termini.ID = TerminiStudenti.ID_Termina AND Termini.TipPredavanjaID = 3 AND Termini.Predmet_ID=?");
+                    dp::Params pParams1(pSelect1->allocParams());
+                    pParams1 << Globals::_currentUserID << predmetID;
+                    dp::Columns pCols1 = pSelect1->allocBindColumns(1);
+                    td::Time Vrijeme;
+                    pCols1 << "vrijeme" << Vrijeme;
+                    if (pSelect1->execute()) {
+                        while (pSelect1->moveNext());
                     }
 
                     for (int i = 0; i < 15; i++) {
@@ -415,22 +410,18 @@ public:
                         if (hour / 10 == 0)
                             temp += "0";
 
-
                         temp += std::to_string(Vrijeme.getHour());
                         temp += ":";
                         temp += std::to_string(Vrijeme.getMinute());
                         td::INT4 min = Vrijeme.getMinute();
                         if (min / 10 == 0)
-
                             temp += "0";
                         gui::DrawableString vrijemezaispis = temp;
                         gui::Shape::drawRect(time1, td::ColorID::White, td::ColorID::Black, 0.5, td::LinePattern::Solid);
                         vrijemezaispis.draw(time1, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::Black, td::TextAlignment::Center, td::VAlignment::Center);
 
                         gui::Rect prisutan(0, 0, novaduzina, visina);
-
                         prisutan.translate(i * novaduzina + duzina, 2 * visina);
-
                         bool jeprisutan = false;
                         for (auto x : prisutnesedmice) {
                             if (x == i + 1) {
