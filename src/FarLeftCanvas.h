@@ -73,7 +73,6 @@ public:
         _middleCanvas = canvas;
     }
 
-    //Grupa2
     //bool createStrings() {
     //    dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("select a.Naziv_Predmeta AS Naziv, a.ID_Predmeta as ID FROM Predmet a, UpisPredmeta b WHERE b.ID_Studenta = ? AND  b.ID_Predmeta = a.ID_Predmeta");
     //    dp::Params pParams(pSelect->allocParams());
@@ -96,7 +95,6 @@ public:
     //    }
     //    return true;
     //}
-
 
 
 

@@ -2,6 +2,8 @@
 #include "SendMessage.h"
 #include <td/Types.h>
 #include "Globals.h"
+#include <utility>
+#include <set>
 
 
 ViewDateTimeActivity::ViewDateTimeActivity(td::INT4 SubjectID) :
@@ -299,8 +301,25 @@ bool  ViewDateTimeActivity::saveData()
         {
             userIDs.push_back(id);
         }
+        //svi su studenti u userIDs svakom studentu se salje poruka da je doslo do promjene bilo kojeg ispita
+        //koja poruka se salje
+        dp::IStatementPtr pSelect1 = dp::getMainDatabase()->createStatement("SELECT Naziv_Predmeta FROM Predmet WHERE ID_Predmeta = ?");
+        dp::Params parDS(pSelect1->allocParams());
+        parDS << _SubjectID;
+        dp::Columns pCols2 = pSelect1->allocBindColumns(1);
+        td::String naziv_predmeta;
+        pCols2 << "Naziv_Predmeta" << naziv_predmeta;
+        if (!pSelect1->execute())
+            return false;
+        if (!pSelect1->moveNext())
+            return false;
+
+
         td::String naslov = "Ispit!";
-        td::String poruka = "Registrovana je promjena u terminima ispita! ";
+        td::String poruka = "Registrovana je promjena termina ispita iz predmeta ";
+       // poruka += ispit;
+        poruka += naziv_predmeta;
+        poruka += "!";
 
         MsgSender msg;
         msg.sendSystemMsgtoUsers(naslov, poruka, userIDs,1);

@@ -26,7 +26,17 @@
 		<Res id="navigator" path = "Work/CPProjects/SiS_v_Zadnji/res/Icons/time.png"/>
 		<Res id="defaultUuser" path = "Work/CPProjects/SiS_v_Zadnji/res/Icons/default_user.png"/>
 		<Res id="circ" path="Work/CPProjects/SiS_v_Zadnji/res/Icons/send-message.png"/>
-
+<Res id="emoji1" path="Work/CPProjects/SiS_v_Zadnji/res/Icons/emoji1.png"/>
+		<Res id="emoji2" path="Work/CPProjects/SiS_v_Zadnji/res/Icons/emoji2.png"/>
+		<Res id="emoji3" path="Work/CPProjects/SiS_v_Zadnji/res/Icons/emoji3.png"/>
+		<Res id="emoji4" path="Work/CPProjects/SiS_v_Zadnji/res/Icons/emoji4.png"/>
+		<Res id="emoji5" path="Work/CPProjects/SiS_v_Zadnji/res/Icons/emoji5.png"/>
+		<Res id="emoji6" path="Work/CPProjects/SiS_v_Zadnji/res/Icons/emoji6.png"/>
+		<Res id="emoji7" path="Work/CPProjects/SiS_v_Zadnji/res/Icons/emoji7.png"/>
+		<Res id="emoji8" path="Work/CPProjects/SiS_v_Zadnji/res/Icons/emoji8.png"/>
+		<Res id="emoji9" path="Work/CPProjects/SiS_v_Zadnji/res/Icons/emoji9.png"/>
+		<Res id="emoji10" path="Work/CPProjects/SiS_v_Zadnji/res/Icons/emoji10.png"/>
+		<Res id="add2" path="Work/CPProjects/SiS_v_Zadnji/res/Icons/addd.png"/>
 	</Images>
 
 </DevRes>
