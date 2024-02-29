@@ -69,11 +69,9 @@ ViewFinalGrade::ViewFinalGrade(td::INT4 SubjectID) : _db(dp::getMainDatabase())
 void ViewFinalGrade::populateData()
 {
 
-	td::String strSet("SELECT DISTINCT Korisnici.ID AS ID, Korisnici.Ime AS Name, Korisnici.Prezime As Surname, Korisnici.Indeks AS Indeks,Korisnici.Adresa as Ocjena "
-		" FROM Korisnici, PolazniciAktivnosti WHERE PolazniciAktivnosti.ID_Korisnika = Korisnici.ID AND "
-		" PolazniciAktivnosti.ID_Aktivnosti IN(SELECT Aktivnosti.ID_Aktivnosti FROM Aktivnosti WHERE Aktivnosti.ID_Predmeta = ");
+	td::String strSet("SELECT Korisnici.ID AS ID, Korisnici.Ime AS Name, Korisnici.Prezime As Surname, Korisnici.Indeks AS Indeks,Korisnici.Adresa as Ocjena "
+		"FROM Korisnici, UpisPredmeta WHERE UpisPredmeta.ID_Studenta = Korisnici.ID AND UpisPredmeta.ID_Predmeta = ");
 	strSet.append(std::to_string(_SubjectID));
-	strSet.append(");");
 
 
 	_pDS = _db->createDataSet(strSet);
@@ -436,11 +434,10 @@ bool ViewFinalGrade::onClick(gui::Button* pBtn) {
 void ViewFinalGrade::reloadTable() {
 
 	
-	td::String strSet("SELECT DISTINCT Korisnici.ID AS ID, Korisnici.Ime AS Name, Korisnici.Prezime As Surname, Korisnici.Indeks AS Indeks,Korisnici.Adresa as Ocjena "
-		" FROM Korisnici, PolazniciAktivnosti WHERE PolazniciAktivnosti.ID_Korisnika = Korisnici.ID AND "
-		" PolazniciAktivnosti.ID_Aktivnosti IN(SELECT Aktivnosti.ID_Aktivnosti FROM Aktivnosti WHERE Aktivnosti.ID_Predmeta = ");
+	td::String strSet("SELECT Korisnici.ID AS ID, Korisnici.Ime AS Name, Korisnici.Prezime As Surname, Korisnici.Indeks AS Indeks,Korisnici.Adresa as Ocjena "
+		"FROM Korisnici, UpisPredmeta WHERE UpisPredmeta.ID_Studenta = Korisnici.ID AND UpisPredmeta.ID_Predmeta = ");
 	strSet.append(std::to_string(_SubjectID));
-	strSet.append(");");
+
 
 
 	auto pDStemp = _db->createDataSet(strSet);
@@ -452,7 +449,7 @@ void ViewFinalGrade::reloadTable() {
 
 	if (!pDStemp->execute())
 	{
-		showAlert("", "populateData greska");
+		showAlert("", "reloadTableData greska");
 		pDStemp = nullptr;
 		return;
 	}
@@ -502,7 +499,7 @@ void ViewFinalGrade::reloadTable() {
 
 	if (!pompDS->execute())
 	{
-		showAlert("", "populateData greska");
+		showAlert("", "populateData greska ovdje");
 		pompDS = nullptr;
 	}
 

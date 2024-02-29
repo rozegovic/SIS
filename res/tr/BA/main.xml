@@ -135,6 +135,8 @@
 		<Res id="alertCRSM" tr="Nije moguće unijeti maksimalan broj posjetilaca manji od 1."/>
 		<Res id="alertTSTF" tr="ID osoblja već postoji."/>
 		<Res id="succesEE" tr="Uspješno registrovane promjene u sistem."/>
+		<Res id="succesRequestEE" tr="Zahtjev uspješno poslan"/>
+		<Res id="succesRequest" tr="Poslano!"/>
 		<Res id="alertIND" tr="Indeks korisnika nije ispravno unesen."/>
 		<Res id="alertNp" tr="Nisu uneseni svi potrebni podaci."/>
 		<Res id="alertOver100" tr="Ukupan broj bodova ne može biti veći od 100."/>
@@ -399,6 +401,8 @@
 		  <Res id="On hold tickets:" tr="Zahtjevi na čekanju"/>
 		 <Res id="reload" tr="Osvježi"/>
 		 <Res id="reloadTT" tr="Ponovo učitaj poadatke"/>
+		 <Res id="processed" tr="Obrađen"/>
+		 <Res id="successUpdateTicket" tr="Zahtjev ponovo poslan!"/>
 		  
    
 	</Translations>

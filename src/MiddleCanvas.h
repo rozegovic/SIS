@@ -488,7 +488,6 @@ public:
         gui::Size sz;
         getSize(sz);
 
-
         dp::IDataSet* pDS = dp::getMainDatabase()->createDataSet("SELECT Korisnici.Ime as Name, Korisnici.Prezime as Surname,SAOStudentTicket.Indeks as StudentIndex,"
             " SAOStudentTicket.Ticket_Tip as TypeOfTicket, SAOStudentTicket.Req_Title as TitleofTicket, SAOStudentTicket.Status_ID as Status_ID,SAOTicket_Status.Status as Status,"
             " SAOStudentTicket.Request as Request,SAOStudentTicket.ID as IDTicket From Korisnici, SAOStudentTicket, SAOTicket_Status where Korisnici.Indeks=SAOStudentTicket.Indeks AND SAOTicket_Status.ID=SAOStudentTicket.Status_ID");
@@ -507,19 +506,19 @@ public:
 
         auto row = pDS->getRow(brojPoruke);
 
-          IDTicket = row[8].i4Val();
+        IDTicket = row[8].i4Val();
 
 
         td::String ime = row[0].getConstStr();
         ime.append(" ");
         ime.append(row[1].getConstStr());
 
-
         td::String req = row[7].getConstStr();
 
 
 
         td::INT4 maxLength = (int(sz.width - 200) / 8);
+
 
         if (req.length() > maxLength) {
 
@@ -603,7 +602,6 @@ public:
             rectt.setHeight(sz.height - 50);
 
 
-
         rectt.translate(50, 25);
 
         // gui::Shape::drawRect(rectt, td::ColorID::Silver, td::ColorID::MidnightBlue, 2, td::LinePattern::Solid);
@@ -612,7 +610,6 @@ public:
 
         visibleRect.createRoundedRect(rectt, 10);
         visibleRect.drawFillAndWire(td::ColorID::Silver, td::ColorID::MidnightBlue);
-
 
 
         Ime.draw({ 75,50 }, gui::Font::ID::SystemBold, td::ColorID::Black);//
@@ -624,13 +621,15 @@ public:
 
         szpom.height = skrolV;
 
-
         this->getScroller()->setContentSize(szpom);
 
         int bottomRightX = sz.width - 100; // X koordinata
         int bottomRightY = sz.height - 70; // Y koordinata
         int rectWidth = 80;
         int rectHeight = 30;
+
+        szpom.width = rectWidth;
+        szpom.height = rectHeight;
 
 
         if (skrolV > sz.height)
@@ -652,7 +651,6 @@ public:
 
         int x = mousePosition.x;
         int y = mousePosition.y;
-
 
         if (x > rectBottomRight.left && x < rectBottomRight.right && y < rectBottomRight.bottom && y > rectBottomRight.top)
         {
