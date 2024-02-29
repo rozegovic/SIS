@@ -16,6 +16,7 @@
 #include "ViewTicketForSAO.h"
 #include "ViewIDs.h"
 #include <vector>
+#include <gui/Transformation.h>
 
 
 
@@ -67,6 +68,9 @@ protected:
     td::String status;
     gui::Rect rectBottomRight;
     gui::Point mousePosition;
+    td::INT4 predmetID;
+    td::String _subjectname;
+
 
     std::vector <gui::Circle> _emojis;
 
