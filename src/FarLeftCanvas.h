@@ -592,9 +592,9 @@ public:
                     _middleCanvas->Reset(IdUserChat, users[i].first);
 
                     //auto mess = accessMiddleCanvas(_middleCanvas);
-                    td::INT4 firstfield = Globals::_currentUserID;
+                    /*td::INT4 firstfield = Globals::_currentUserID;
                     td::INT4 secondfield = IdUserChat;
-                    td::INT4 idA = 0;
+                    td::INT4 idA = 0;*/
                     //if (firstfield != secondfield) {
                     //----Provjera ima li neprocitanih poruka----
                     td::INT4 Kontrola = 0;
@@ -606,6 +606,9 @@ public:
                     //---Ako ima radi slijedece-----
                     if(Kontrola>0) {
                         //dp::IStatementPtr pSelect3 ( _db->createStatement("select ID from Messages where AuthorID = ?"));
+                        td::INT4 firstfield = Globals::_currentUserID;
+                        td::INT4 secondfield = IdUserChat;
+                        td::INT4 idA = 0;
                         dp::IStatementPtr pSelect3(_db->createStatement("select MsgID from MsgReceivers where UserID = ?"));
                         dp::Columns pCols3 = pSelect3->allocBindColumns(1);
                         dp::Params parDS3(pSelect3->allocParams());
@@ -622,15 +625,16 @@ public:
                         //int vv = 0;
                         while (pSelect3->moveNext()) {
                             // vv++;
-                            dp::IStatementPtr pUpdateGrade(_db->createStatement("UPDATE Messages SET Procitano=0 WHERE ID=?"));
+                            dp::IStatementPtr pUpdateGrade(_db->createStatement("UPDATE Messages SET Procitano=0 WHERE ID=? and AuthorID=?"));
                             dp::Params pParams2(pUpdateGrade->allocParams());
-                            pParams2 << idPoruke;
+                            pParams2 << idPoruke << IdUserChat;
 
                             if (!pUpdateGrade->execute())
                             {
                                 return;
                             }
-                            reset();
+                            //reset();
+                            reDraw();
                         }
                     }
                    
