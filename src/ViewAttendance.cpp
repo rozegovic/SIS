@@ -499,9 +499,9 @@ void ViewAttendance::AttendanceReport(const gui::Image* pImage){
    ++it;
     it.nextLayout();
     {
-        dp::IDataSet* pRep(pDB->createDataSet("SELECT k.Ime, k.Prezime FROM Korisnici k WHERE k.PozicijaID = 5 AND NOT EXISTS (SELECT 1 FROM TerminiStudenti p JOIN Termini t ON p.ID_termina = t.ID WHERE p.ID_studenta = k.ID AND t.Predmet_ID = ?);"));
+        dp::IDataSet* pRep(pDB->createDataSet("SELECT k.Ime, k.Prezime FROM Korisnici k, UpisPredmeta u WHERE  u.ID_Studenta = k.ID AND k.PozicijaID = 5 AND u.ID_Predmeta = ? AND NOT EXISTS(SELECT 1 FROM TerminiStudenti p JOIN Termini t ON p.ID_termina = t.ID WHERE p.ID_studenta = k.ID AND t.Predmet_ID = ? );"));
         dp::Params pParams1(pRep->allocParams());
-        pParams1 << _SubjectID;
+        pParams1 << _SubjectID<<_SubjectID;
         dp::DSColumns colsRep(pRep->allocBindColumns(2));
         colsRep << "Ime" << td::string8 << "Prezime" << td::string8;
            it << rpt::ContainerType::CNT_Body << pRep;
