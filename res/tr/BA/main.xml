@@ -126,6 +126,14 @@
 		<Res id="alertMB" tr="Neispravan JMBG korisnika."/>
 		<Res id="alertDR" tr="Neispravan datum rođenja korisnika."/>
 		<Res id="alertU" tr="Nije moguće ažurirati korisnika koji nije unesen."/>
+		
+		<Res id="alertClassroom" tr="Nije moguće ažurirati učionicu koja nije unesena."/>
+		<Res id="alertPBClassroom" tr="Već postoji učionica sa tim nazivom."/>
+		<Res id="alertClassroomSeats" tr="Broj mjesta ne može biti negativan."/>
+		<Res id="NoPwrd" tr="Niste unijeli šifru."/>
+		<Res id="DefaultPwrd" tr="Ne možete koristiti default šifru."/>
+		
+		
 		<Res id="alertNEG" tr="Nije moguće unijeti negativan ID."/>
 		<Res id="alertDEPE" tr="ID smjera već postoji."/>
 		<Res id="alertDEPN" tr="Ime smjera već postoji."/>
@@ -135,6 +143,8 @@
 		<Res id="alertCRSM" tr="Nije moguće unijeti maksimalan broj posjetilaca manji od 1."/>
 		<Res id="alertTSTF" tr="ID osoblja već postoji."/>
 		<Res id="succesEE" tr="Uspješno registrovane promjene u sistem."/>
+		<Res id="succesRequestEE" tr="Zahtjev uspješno poslan"/>
+		<Res id="succesRequest" tr="Poslano!"/>
 		<Res id="alertIND" tr="Indeks korisnika nije ispravno unesen."/>
 		<Res id="alertNp" tr="Nisu uneseni svi potrebni podaci."/>
 		<Res id="alertOver100" tr="Ukupan broj bodova ne može biti veći od 100."/>
@@ -170,7 +180,9 @@
 						  <Res id="Saturday" tr="Subota"/>
 						  <Res id="Sunday" tr="Nedelja"/>
 						  <Res id="AttDay" tr="Dan"/>
-						  <Res id="AttMaxNum" tr="Maksimalan broj studenata:"/>
+						  <Res id="AttMaxNum:" tr="Maksimalan broj studenata:"/>
+						  <Res id="AttMaxNum" tr="Maksimalan broj studenata"/>
+						  <Res id="AttDay" tr="Dan"/>
 						  <Res id="SubjWeek" tr="Sedmica:"/>
 						  <Res id="SubjName" tr="Ime:"/>
 						  <Res id="SubjSurname" tr="Prezime:"/>
@@ -186,15 +198,16 @@
 							  <Res id="alertStu" tr="Vec ste prijavljeni na ovaj tip termina"/>
 							 <Res id="alertAttNegative" tr="Broj mjesta ne može biti negativan"/>
 							<Res id="SubjTablePresent" tr="Prisutni za ovaj termin:"/>
-
+								<Res id="ChangePass" tr="Promjena lozinke"/>
 							<Res id="tablePresent" tr="Prisutni za ovaj termin:"/>
 							<Res id="alertNoTerm" tr="Niste odabrali ni jedan termin"/>
 									<Res id="Report" tr="Izvještaj"/>
 									<Res id="Report1" tr="Izvještaj ispita"/>
 		<Res id="ActivityRep" tr="Izvještaj aktivnosti"/>
 		<Res id="viewTimeSlot" tr="Prijava termina"/>
-		
-		
+		<Res id="PwrdOK" tr="Uspješno promijenjena lozinka"/>
+		<Res id="CloseWnd" tr="Zatvori prozor"/>
+		<Res id="PwrdErr" tr="Lozinke nisu iste!"/>
 		
 		
 		<Res id="courseCode:" tr="Šifra predmeta:"/>
@@ -370,19 +383,39 @@
         <Res id="grade" tr="Ocjena"/>
 
     <Res id="viewFinalGrade" tr="Konacne ocjene"/>
-	<Res id="open" tr="Otvori"/>
-	<Res id="On hold tickets" tr="Na cekanju"/>
-	<Res id="Answered tickets" tr="Odgovoreni"/>
-		<Res id="SaveAttachment" tr="Spremi dodatak"/>
 
+    	<Res id="open" tr="Otvori"/>
+		<Res id="openTT" tr="Otvori odabrani zahtjev"/>
+	<Res id="On hold tickets" tr="Na cekanju"/>
+		<Res id="SaveAttachment" tr="Spremi"/>
+		<Res id="SaveAttachmentTT" tr="Spremi dodatak"/>
+		<Res id="attachmentAddLbl" tr="Dodatak"/>
+		<Res id="attachmentlbl" tr="Dodatak"/>
+		<Res id="attachmentTT" tr="Dodaj privitak"/>
+		
            <Res id="Answer:" tr="Odgovor"/>
 		<Res id="typeOfTicket" tr="Tip"/>
 		<Res id="Answered tickets" tr="Odgovoreni"/>
 		<Res id="titleOfTicket" tr="Naslov"/>
-
-
-
-
+		<Res id="sendTT" tr="Pošalji odgovor"/>
+          <Res id="Ticket" tr="Zahtjev"/>
+		  <Res id="Student's ticket" tr="Zahtjev studenta"/>
+          <Res id="status" tr="Status"/>
+		  <Res id="NoAttachmentErr" tr="Zahtjev nema dodatak"/>
+		  <Res id="Successfully sent" tr="Odgovor poslan"/>
+		  <Res id="Empty body!" tr="Prazno tijelo poruke"/>
+		  <Res id="Do you want to enter your answer first?" tr="Da li želite unijeti odgovor prije slanja?"/>
+		  <Res id="Successfully saved" tr="Dodatak spašen"/>
+		  <Res id="Folder is not selected or file already exists with this filepath" tr="Nije izabran niti jedan folder ili dodatak već postoji na lokaciji"/>
+		  
+		  <Res id="Answered tickets:" tr="Obrađeni zahtjevi"/>
+		  <Res id="On hold tickets:" tr="Zahtjevi na čekanju"/>
+		 <Res id="reload" tr="Osvježi"/>
+		 <Res id="reloadTT" tr="Ponovo učitaj poadatke"/>
+		 <Res id="processed" tr="Obrađen"/>
+		 <Res id="successUpdateTicket" tr="Zahtjev ponovo poslan!"/>
+		  
+   
 	</Translations>
 </DevRes>
 

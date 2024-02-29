@@ -76,7 +76,11 @@ void ViewUsers::initTable()
     visCols << gui::ThSep::DoNotShowThSep << gui::Header(0, tr("IDUser"), "", 200) << gui::Header(4, tr("roleUser"), "", 200) << gui::Header(1, tr("nameUser"), "", 200) << gui::Header(2, tr("surnameUser"), "", 200) << gui::Header(8, tr("dateBUser"), "", 200) << gui::Header(5, tr("jmbgUser"), "", 200) << gui::Header(7, tr("addressUser"), "", 200) << gui::Header(9, tr("indexUser"), "", 200) << gui::Header(6, tr("dateEUser"), "", 200);
     _table.init(_pDS);
     if (_pDS->getNumberOfRows()) {
+       
         _table.selectRow(0, true);
+      
+        if (_role.getSelectedText().cCompare("Student") != 0)
+            _index.setText(_noChngIndex);
     }
 }
 
@@ -184,7 +188,7 @@ void ViewUsers::populateDSRow(dp::IDataSet::Row& row)
 
     td::Variant i;
     _index.getValue(i);
-    if (_role.getSelectedIndex() == USER_STUDENT) {
+    if (_role.getSelectedText().cCompare("Student")==0) {
         row[9].setValue(i);
     }
     else {
@@ -218,6 +222,8 @@ bool ViewUsers::saveUserRoles()
 
     if (tr.commit())
         return true;
+
+    return true;
 }
 
 bool ViewUsers::saveUsers()
@@ -230,7 +236,7 @@ bool ViewUsers::saveUsers()
     parDS << id << dp::toNCh(surname, 30) << dp::toNCh(name, 30) << dateE << pID << dp::toNCh(jmbg, 30) << dp::toNCh(address, 30) << dateB << dp::toNCh(index, 20);
     dp::Transaction tr1(dp::getMainDatabase());
 
-    dp::IStatementPtr pDel(dp::getMainDatabase()->createStatement("DELETE FROM Korisnici WHERE Korisnici.ID>0"));
+    dp::IStatementPtr pDel(dp::getMainDatabase()->createStatement("DELETE FROM Korisnici WHERE Korisnici.ID>-1"));
     if (!pDel->execute())
         return false;
     size_t nRows = _pDS->getNumberOfRows();
@@ -347,8 +353,9 @@ bool ViewUsers::onClick(gui::Button* pBtn)
     if (pBtn == &_btnPushBack)
     {
         td::Variant val, str, ind, v;
-        _id.getValue(val);
-        if (doesIDexist(val.i4Val()))
+     _id.getValue(val);
+     
+     if (doesIDexist(val.i4Val()))
         {
             showAlert(tr("error"), tr("alertPB")); // Vec postoji korisnik 
             return true;
@@ -458,7 +465,7 @@ bool ViewUsers::doesIndexExist(td::Variant index)
     for (size_t i = 0; i < nRows; ++i)
     {
         auto row = _pDS->getRow(i);
-        if ( index != _noChngIndex && row[9] == index)
+        if (index != _noChngIndex && row[9] == index && _role.getSelectedText().cCompare("Student")==0)
             return true;
     }
     return false;

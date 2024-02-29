@@ -58,6 +58,10 @@ ViewRequestUpdate::ViewRequestUpdate(td::String tipKarte, td::String naslov, gui
     _subject.setAsReadOnly();
     _attachPath.setAsReadOnly();
 
+    _btnSave.hide(true, false);
+    _btnAttachment.hide(true, true);
+    _attachPath.hide(true,true);
+    _attachlbl.hide(true, true);
 
     //populateDataForStudent();
 }
@@ -99,7 +103,7 @@ bool ViewRequestUpdate::onAnswer(td::UINT4 questionID, gui::Alert::Answer answer
 void ViewRequestUpdate::showOpenFileDialog()
 {
     //create OpenFile dialog and open it
-    auto pFD = new gui::OpenFileDialog(this, tr("OpenF"), { {tr("TxtDocs"),"*.txt"}, {tr("PDFDocs"),"*.pdf"}, {tr("JPGSlike"),"*.jpg"}, {tr("PNGSlike"),"*.png"} });
+    auto pFD = new gui::OpenFileDialog(this, tr("OpenF"), { {tr("Tekst dokument"),"*.txt"}, {tr("PDF Dokument"),"*.pdf"}, {tr("JPG Slika"),"*.jpg"}, {tr("PNG Slika"),"*.png"} });
 #ifdef USE_CALLBACKS
     pFD->openModal(&_callBackOpenFileDlg);
 #else
@@ -161,6 +165,8 @@ void ViewRequestUpdate::SaveToDatabase() {
 
     transactionpom.commit();
 
+    dp::Transaction transaction(pDB);
+
 
     dp::IStatementPtr pStatIns;
 
@@ -208,7 +214,7 @@ void ViewRequestUpdate::SaveToDatabase() {
         return;
     }
 
-    dp::Transaction transaction(pDB);
+
 
     bool insOK = pStatIns->execute();
 

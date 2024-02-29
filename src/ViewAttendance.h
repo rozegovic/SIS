@@ -42,6 +42,7 @@ protected:
     gui::Label _LblTime;
     gui::TimeEdit _time;
     
+    
     td::Time _Time;
     
     gui::Label _LblType;
@@ -78,13 +79,14 @@ protected:
     void populateRoleCombo(gui::DBComboBox &combo);
     void populateDayCombo(gui::ComboBox& combo);
     void populateData();
+    void initTable();
     bool onChangedSelection(gui::TableEdit* pTE);
     bool onChangedSelection(gui::ComboBox* pCmb) override;
     void populateDSRow(dp::IDataSet::Row& row);
     bool doesItDexist(td::Variant day, td::Time time);
     bool onClick(gui::Button* pBtn);
     void saveData();
-    void saveDataUpdate();
+    void saveDataUpdate(td::INT4 maxNum, td::INT4 IDterm);
     void SetCurrentSubject();
     void deleteRow(td::INT4 ID_Termina);
     //void SendAddMsg();

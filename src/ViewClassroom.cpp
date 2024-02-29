@@ -201,7 +201,12 @@ bool ViewClassroom::onClick(gui::Button* pBtn)
         _name.getValue(val);
         if (!doesIDexist(val))
         {
-            showAlert(tr("alert"), tr("alertU"));
+            showAlert(tr("alert"), tr("alertClassroom"));
+            return true;
+        }
+        _numSeats.getValue(val);
+        if (val < 0) {
+            showAlert(tr("alert"), tr("alertClassroomSeats"));
             return true;
         }
         int iRow = _table.getFirstSelectedRow();
@@ -224,7 +229,12 @@ bool ViewClassroom::onClick(gui::Button* pBtn)
         _name.getValue(val);
         if (doesIDexist(val))
         {
-            showAlert(tr("alert"), tr("alertPB"));
+            showAlert(tr("alert"), tr("alertPBClassroom"));
+            return true;
+        }
+        _numSeats.getValue(val);
+        if (val < 0) {
+            showAlert(tr("alert"), tr("alertClassroomSeats"));
             return true;
         }
         _table.beginUpdate();

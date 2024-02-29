@@ -9,6 +9,7 @@
 #include "ViewTeachingStaff.h"
 #include "ViewActivity.h"
 #include "ViewEnroll.h"
+#include "SetPasswordWindow.h"
 #include "DialogChooseSubject.h"
 #include "ViewCurriculum.h"
 #include "DialogChooseAllSubjects.h"
@@ -341,7 +342,7 @@ bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc)
         switch (actionID)
         {
         case 10:
-        { 
+        {
             if (_mainView.getNumberOfViews() > 0) return false;
             Globals::_currentUserRole = -1;
             Globals::_currentUserID = -1;
@@ -355,6 +356,14 @@ bool MainWindow::onActionItem(gui::ActionItemDescriptor& aiDesc)
             Globals::isSAO = false;
             _mainView.reset();
             showLogin();
+            return true;
+        }
+        case 20:
+        {
+            gui::Window* pParentWnd = getParentWindow();
+            auto pWnd = new SetPasswordWindow(pParentWnd, 2);
+            pWnd->keepOnTopOfParent();
+            pWnd->open();
             return true;
         }
         }

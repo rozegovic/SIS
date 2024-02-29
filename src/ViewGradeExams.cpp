@@ -258,6 +258,7 @@ bool ViewGradeExams::saveData()
 		_itemsToInsert.clear();
 		_itemsToUpdate.clear();
 	}
+
 	for (auto i : _useractivityids) {
 
 		td::String naslov = "Ocjena!";
@@ -290,6 +291,7 @@ bool ViewGradeExams::saveData()
 		poruka += naziv_predmeta;
 		MsgSender msg;
 		msg.sendSystemMsgtoUser(naslov, poruka, i.first, 1);
+
 	}
 	_useractivityids.clear();
 
@@ -317,6 +319,7 @@ bool ViewGradeExams::onClick(gui::Button* pBtn)
 		td::INT4 a = row[0].i4Val();
 		td::INT4 id_akt = row[1].i4Val();
 		_useractivityids.erase({ a, id_akt });
+
 		//	_table.updateRow(iRow);
 		_table.endUpdate();
 
@@ -357,8 +360,10 @@ bool ViewGradeExams::onClick(gui::Button* pBtn)
 		_table.beginUpdate();
 		auto& row = _table.getCurrentRow();
 		td::INT4 a = row[0].i4Val();
+
 		td::INT4 id_akt = row[1].i4Val();
 		_useractivityids.insert({ a, id_akt });
+
 		populateDSRow(row, itemid);
 		_table.updateRow(iRow);
 		_table.endUpdate();

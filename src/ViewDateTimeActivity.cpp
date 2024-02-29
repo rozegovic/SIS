@@ -320,6 +320,7 @@ bool  ViewDateTimeActivity::saveData()
        // poruka += ispit;
         poruka += naziv_predmeta;
         poruka += "!";
+
         MsgSender msg;
         msg.sendSystemMsgtoUsers(naslov, poruka, userIDs,1);
 

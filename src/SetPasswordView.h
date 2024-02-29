@@ -47,6 +47,7 @@ class SetPasswordView : public gui::View
     gui::Button _btnSave;
     
     gui::HorizontalLayout _headerLayout;
+    gui::HorizontalLayout _footerLayout;
     gui::GridLayout _gl;
     
     dp::IDatabase* _db;

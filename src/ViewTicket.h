@@ -46,16 +46,20 @@ protected:
 	//third row
 	gui::HorizontalLayout _hlBtnsDB;
 	gui::Button _btnSend;
-	gui::Button _btnOpen;
+	gui::Button _btnOpenOnHold;
+	gui::Button _btnOpenAnswered;
 	gui::HorizontalLayout _hlBtns;
 	gui::Button _btnAttach;
+	gui::Button _btnRefresh;
 
 	gui::TableEdit _tableTickets;
 	gui::TableEdit _answeredtickets;
 	gui::Label _answeredticketslbl;
+	gui::Label _OnholdticketsLbl;
 	gui::GridLayout _gl;
 	dp::IDatabase* _db;
 	dp::IDataSetPtr _pDS;
+	dp::IDataSetPtr _pDSAnswered;
 	gui::Label _attachedFile;
 	gui::Label _titleFile;
 	td::String _filePath;
@@ -79,4 +83,5 @@ protected:
 	bool onChangedSelection(gui::ComboBox* pCmb);
 	void populateAnsweredtickets();
 	void UpdateTable();
-};
+	void initTableAnswered();
+ };

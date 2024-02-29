@@ -298,6 +298,7 @@ bool ViewGradeLabHomework::saveData()
 
 	for (auto i : _useractivityids) {
 
+
 		td::String naslov = "Ocjena!";
 		td::String poruka = "Unesena je ocjena ";
 		dp::IStatementPtr pSelect2 = dp::getMainDatabase()->createStatement("SELECT Ocjena FROM OcjeneLabZadace WHERE ID_Korisnika = ? AND ID_Aktivnosti = ?");
@@ -328,6 +329,7 @@ bool ViewGradeLabHomework::saveData()
 		poruka += naziv_predmeta;
 		MsgSender msg;
 		msg.sendSystemMsgtoUser(naslov, poruka, i.first,1);
+
 	}
 	_useractivityids.clear();
 
@@ -351,6 +353,7 @@ bool ViewGradeLabHomework::onClick(gui::Button* pBtn)
 		td::INT4 a = row[0].i4Val();
 		//ovo je brisanje ako je uklonjena ocjena
 		_useractivityids.erase({ a, _ActivityID });
+
 		//	_table.updateRow(iRow);
 		_table.endUpdate();
 		onChangedSelection(&_table);
@@ -375,6 +378,7 @@ bool ViewGradeLabHomework::onClick(gui::Button* pBtn)
 		populateDSRow(row, itemid);
 		td::INT4 a = row[0].i4Val();
 		_useractivityids.insert({ a, _ActivityID });
+
 		_table.updateRow(iRow);
 		_table.endUpdate();
 		onChangedSelection(&_table);
@@ -392,7 +396,9 @@ bool ViewGradeLabHomework::onClick(gui::Button* pBtn)
 		auto& row = _table.getCurrentRow();
 		populateDSRow(row, itemid);
 		td::INT4 a = row[0].i4Val();
+
 		_useractivityids.insert({ a, _ActivityID });
+
 		_table.updateRow(iRow);
 		_table.endUpdate();
 		onChangedSelection(&_table);

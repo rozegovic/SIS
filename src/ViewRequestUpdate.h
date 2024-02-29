@@ -56,7 +56,7 @@ protected:
 	gui::Button _btnAttachment;
 
 	gui::GridLayout _gl;
-	dp::IDatabase* _db;
+	dp::IDatabasePtr _db;
 	dp::IDataSetPtr _pDS;
 	td::INT4 _IDBaza;
 
@@ -69,6 +69,9 @@ protected:
 public:
 
 	ViewRequestUpdate(td::String tipKarte, td::String naslov,gui::TextEdit body,td::INT4 id,td::String indeks);
+
+	~ViewRequestUpdate() {
+	}
 
 protected:
 

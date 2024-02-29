@@ -62,7 +62,9 @@ protected:
     gui::Image _imgExamGrades;
     gui::TableEdit _table;
 
+
     std::set<std::pair<td::INT4, td::INT4>> _useractivityids;
+
 
 
     std::vector<td::INT4> _itemsToDelete, _itemsToInsert, _itemsToUpdate;
