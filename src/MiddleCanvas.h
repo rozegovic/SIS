@@ -697,28 +697,28 @@ public:
 
 
     void onPrimaryButtonPressed(const gui::InputDevice& inputDevice) override {
-        if (Globals::_currentUserRole == 1 || Globals::_currentUserRole == 3 || openChatButtonPressed!=-1) {      //--->Dodano za chat
-
+        if (Globals::_currentUserRole == 1 || Globals::_currentUserRole == 3) {
+            gui::Size sz;
+            getSize(sz);
+            td::INT4 h1;
+            if (_h > sz.height) {
+                h1 = _h;
+            }
+            else {
+                h1 = sz.height;
+            }
             double tempk = 0;
             double x1 = 8 * x - x / 4;
-            double y1 = 7 * y + y / 2;
+            double y1 = h1 - y / 2;
             double yid = inputDevice.getModelPoint().y;
             double xid = inputDevice.getModelPoint().x;
             double xd = pow(xid - x1, 2);
             double yd = pow(yid - y1, 2);
             double d = sqrt(xd + yd);
 
-
-
-
-
             // if (tempk < int(inputDevice.getFramePoint().y) && inputDevice.getFramePoint().y < (tempk + _visinaChata)) {
             if (d <= 9 + x / 6) {
                 insertMessage();
-
-                td::INT4 a = _chatUserID;
-   
-               
                 str = "";
                 //  showChat();
                 red = 1;
@@ -728,9 +728,79 @@ public:
 
 
 
-            reDraw();
-        }
+            x1 = x / 4;
+            y1 = h1 - y / 2;
+            xd = pow(xid - x1, 2);
+            yd = pow(yid - y1, 2);
+            d = sqrt(xd + yd);
 
+            if (d <= x / 6) {
+                _otvoreno = !_otvoreno;
+                reDraw();
+            }
+            //za add dugme kad se klikne
+            //_otvoreno=!_otvoreno;
+            //reDraw()
+
+            if (_otvoreno) {
+
+                td::INT4 x1 = x / 4 + 20;
+                td::INT4 y1 = h1 - y - 77;
+
+
+                for (int i = 0; i < 5; i++) {
+
+
+
+                    xd = pow(xid - x1, 2);
+                    yd = pow(yid - y1, 2);
+                    d = sqrt(xd + yd);
+                    x1 += 40;
+                    if (d <= 20) {
+                      /*  char l[100];
+                        sprintf(l, "pritisnuto %d", i + 1);  
+                        showAlert("OK", l);*/
+                       // insertBlob(i + 1);
+                        char l1[100];
+                        sprintf(l1, "blob%d", i + 1);
+                        msg.sendMsgtoUser("chat", l1, _chatUserID);
+                        reDraw();
+                        return;
+                    }
+
+                }
+                x1 = x / 4 + 20;
+                y1 = h1 - y - 27;
+                for (int i = 5; i < 10; i++) {
+
+                    xd = pow(xid - x1, 2);
+                    yd = pow(yid - y1, 2);
+                    d = sqrt(xd + yd);
+                    x1 += 40;
+                    if (d <= 20) {
+                     /*   char l[100];
+                        sprintf(l, "pritisnuto %d", i + 1);
+                        showAlert("OK", l);*/
+                        //insertBlob(i + 1);
+                        char l1[100];
+                        sprintf(l1, "blob%d", i + 1);
+                        msg.sendMsgtoUser("chat", l1, _chatUserID);
+                        reDraw();
+                        return;
+                    }
+
+                }
+
+
+
+            }
+
+
+
+
+            reDraw();
+
+        }
         
       if (Globals::isSAO && inputDevice.getModelPoint().x>rectBottomRight.left && inputDevice.getModelPoint().x < rectBottomRight.right && 
       inputDevice.getModelPoint().y<rectBottomRight.bottom && inputDevice.getModelPoint().y > rectBottomRight.top) {
