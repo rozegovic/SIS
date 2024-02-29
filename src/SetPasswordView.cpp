@@ -11,12 +11,13 @@
 #include <gui/Window.h>
 
 SetPasswordView::SetPasswordView()
-:_lblPwrd(tr("NewPwrd"))
-,_lblRepeatPwrd(tr("RepeatPwrd"))
-,_header(tr("HNewPwrd"))
-,_btnSave(tr("save"))
-, _gl(5, 4)
-, _headerLayout(3)
+    :_lblPwrd(tr("NewPwrd"))
+    , _lblRepeatPwrd(tr("RepeatPwrd"))
+    , _header(tr("HNewPwrd"))
+    , _btnSave(tr("save"))
+    , _gl(5, 2)
+    , _headerLayout(3)
+    , _footerLayout(3)
 ,_db(dp::getMainDatabase())
 {
     _header.setAsReadOnly();
@@ -29,6 +30,9 @@ SetPasswordView::SetPasswordView()
     _headerLayout.append(_header);
     _headerLayout.appendSpacer();
     
+    _footerLayout.appendSpacer(2);
+    _footerLayout.append(_btnSave,td::HAlignment::Right);
+    
     gui::GridComposer gc(_gl);
     
     gc.appendRow(_headerLayout, 0);
@@ -39,8 +43,9 @@ SetPasswordView::SetPasswordView()
     
     gc.appendRow(_lblRepeatPwrd);
     gc.appendCol(_repeatPwrd);
-    
-    gc.appendRow(_btnSave,0);
+      
+    gc.appendRow(_footerLayout, 0);
+  
     gui::View::setLayout(&_gl);
     
 }

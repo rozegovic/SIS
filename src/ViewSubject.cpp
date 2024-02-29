@@ -179,25 +179,14 @@ void ViewSubject::populateTimeCombo(gui::DBComboBox& combo, td::String day)
 	}
 	combo.selectIndex(0);
 	_weekCombo.selectIndex(getMaxWeek());
-	/*td::INT4 terminID = getCurrentTerminID();
-	dp::IStatementPtr pSelect1 = dp::getMainDatabase()->createStatement("select TipPredavanja.Naziv as Naziv from Termini, TipPredavanja where Termini.Predmet_ID=? and Termini.ID=? and Termini.TipPredavanjaID=TipPredavanja.ID");
-	dp::Params pParams1(pSelect1->allocParams());
 
-	pParams1 << _SubjectID<<terminID;
-	dp::Columns pCols1 = pSelect1->allocBindColumns(1);
-	td::String type;
-	pCols1 << "Naziv" << type;
-	if (!pSelect1->execute())
-		return;
-	while(pSelect1->moveNext()){}
-	_type.setValue(type);*/
 }
 
 void ViewSubject::populateData()
 {
 	auto pDB = dp::getMainDatabase();
 	
-	if(typeID==3)
+	if(typeID==3 || typeID==2)
 	{ 
 		td::INT4 terminID = getCurrentTerminID();
 		_pDS = pDB->createDataSet("select Ime as Name, Prezime as Surname, Korisnici.ID as sID from Korisnici, UpisPredmeta, TerminiStudenti where Korisnici.PozicijaID==5 and Korisnici.ID=UpisPredmeta.Id_Studenta and Korisnici.ID=TerminiStudenti.ID_Studenta and UpisPredmeta.ID_Predmeta=? and TerminiStudenti.ID_Termina=?", dp::IDataSet::Execution::EX_MULT);
@@ -523,7 +512,7 @@ void ViewSubject::UpdateDataSet() {
 	{
 		auto pDB = dp::getMainDatabase();
 		dp::IDataSetPtr _pomDS;
-		if (typeID == 3)
+		if (typeID == 3 || typeID == 2)
 		{
 			td::INT4 terminID = getCurrentTerminID();
 			_pomDS = pDB->createDataSet("select Ime as Name, Prezime as Surname, Korisnici.ID as sID from Korisnici, UpisPredmeta, TerminiStudenti where Korisnici.PozicijaID==5 and Korisnici.ID=UpisPredmeta.Id_Studenta and Korisnici.ID=TerminiStudenti.ID_Studenta and UpisPredmeta.ID_Predmeta=? and TerminiStudenti.ID_Termina=?", dp::IDataSet::Execution::EX_MULT);

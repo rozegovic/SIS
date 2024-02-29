@@ -18,15 +18,16 @@ ViewAttendance::ViewAttendance(td::INT4 SubjectID, ViewSubject* subject) :
     _LblDay(tr("AttDay")),
     _LblTime(tr("AttTime"))
     , _LblType(tr("AttType"))
-    , _LblMaxNum(tr("AttMaxNum"))
+    , _LblMaxNum(tr("AttMaxNum:"))
     , _btnAdd(tr("add"), tr("AttAddBtnTT"))
     , _btnUpdate(tr("Update"), tr("AttUpdateTT"))
     , _btnDelete(tr("Delete"), tr("AttDelBtnTT"))
     , _btnReport(tr("AttReport"), tr("AttRepTT"))
-    , _Time("TimeOwnShortHMM")
+   // , _Time(td::Time::Format::TimeOwnShortHMM)
 //,_btnSave(tr("Save"), tr("SaveTT"))
 , _type(td::int4)
 ,_maxNum(td::int4)
+
 , _hlBtnsDB(6)
 ,_gl(5, 4)
 ,_SubjectID(SubjectID)
@@ -71,12 +72,13 @@ ViewAttendance::ViewAttendance(td::INT4 SubjectID, ViewSubject* subject) :
     gc.appendRow(_table, 0);
     gc.appendRow(_hlBtnsDB, 0);
 
-    gui::View::setLayout(&_gl);
+    gui::View::setLayout(&_gl); 
+   
     populateRoleCombo(_type);
     populateDayCombo(_dayCombo);
     populateData();
 
-    _table.init(_pDS, {0,1,2,4});
+  //  _table.init(_pDS, {0,1,2,4});
     if (_pDS->getNumberOfRows())
     {
        _table.selectRow(0, true);
@@ -150,7 +152,7 @@ bool ViewAttendance::onChangedSelection(gui::ComboBox* pCmb)
 void ViewAttendance::populateData()
 {
     auto pDB = dp::getMainDatabase();
-    _pDS = pDB->createDataSet("SELECT a.Dan AS dan, a.Vrijeme AS vrijeme, b.Naziv AS Tip, b.ID as ID, a.Max_br_pol as MaxBroj, a.Br_prijavljenih as brP, a.ID as IDterm FROM Termini a, TipPredavanja b WHERE a.TipPredavanjaID = b.ID and a.Predmet_ID = ?", dp::IDataSet::Execution::EX_MULT);
+    _pDS = pDB->createDataSet("SELECT a.Dan AS AttDay, a.Vrijeme AS Time, b.Naziv AS Type, b.ID as ID, a.Max_br_pol as AttMaxNum, a.Br_prijavljenih as brP, a.ID as IDterm FROM Termini a, TipPredavanja b WHERE a.TipPredavanjaID = b.ID and a.Predmet_ID = ?", dp::IDataSet::Execution::EX_MULT);
     
     dp::Params parDS(_pDS->allocParams());
     //td::INT4 IDPredmeta = Globals::_IDSubjectSelection;
@@ -159,13 +161,22 @@ void ViewAttendance::populateData()
     parDS << _SubjectID;
     
     dp::DSColumns cols(_pDS->allocBindColumns(7));
-    cols << "dan" << td::string8 << "vrijeme" << td::time<< "Tip" << td::string8 << "ID" << td::int4 << "MaxBroj" << td::int4<<"brP"<<td::int4<<"IDterm"<<td::int4;
+    cols << "AttDay" << td::string8 << "Time" << td::time<< "Type" << td::string8 << "ID" << td::int4 << "AttMaxNum" << td::int4<<"brP"<<td::int4<<"IDterm"<<td::int4;
 
     if (!_pDS->execute())
     {
         _pDS = nullptr;
         return;
     }
+    initTable();
+}
+
+void ViewAttendance::initTable()
+{
+    gui::Columns visCols(_table.allocBindColumns(4));
+    // visCols << gui::ThSep::DoNotShowThSep << gui::Header(0, tr("Type")) << gui::Header(1, tr("Time")) << gui::Header(2, tr("Date"));
+    visCols << gui::Header(0, tr("AttDay"))<<td::Time::Format::TimeOwnShortHMM << gui::Header(1, tr("Time")) << gui::Header(2, tr("Type")) << gui::Header(4, tr("AttMaxNum"));
+    _table.init(_pDS);
 }
 void ViewAttendance::populateDSRow(dp::IDataSet::Row& row)
 {
@@ -263,37 +274,16 @@ void ViewAttendance::saveData()
     tr.commit();
     return;
 }
-void ViewAttendance::saveDataUpdate()
+void ViewAttendance::saveDataUpdate(td::INT4 maxNum, td::INT4 IDterm)
 {
-    dp::IStatementPtr pInsStat(dp::getMainDatabase()->createStatement("INSERT INTO Termini ( Dan, TipPredavanjaID, Predmet_ID, Vrijeme,Max_br_pol,Br_prijavljenih) VALUES(?,?,?,?,?,?)"));
-    dp::Params parDS(pInsStat->allocParams());
+ 
+    dp::IStatementPtr pInstat(dp::getMainDatabase()->createStatement("UPDATE Termini SET Max_br_pol=?  WHERE ID = ? "));
+    dp::Params parDS(pInstat->allocParams());
     dp::Transaction tr(dp::getMainDatabase());
-
-    td::String day;
-    td::Time t;
-    td::INT4 tip, predmet, Max_br_pol, Tr_broj;
-    Tr_broj = 0;
-    td::Variant val;
-    parDS << dp::toNCh(day, 30) << tip << predmet << t << Max_br_pol << Tr_broj;
-    dp::IStatementPtr pDel(dp::getMainDatabase()->createStatement("DELETE FROM Termini"));
-    if (!pDel->execute())
+    parDS << maxNum << IDterm;
+    if (!pInstat->execute())
         return;
-    size_t nRows = _pDS->getNumberOfRows();
-    for (size_t i = 0; i < nRows; ++i)
-    {
-        auto row = _pDS->getRow(i);
-        //row[0].getValue (val);
-        day = row[0];
-        tip = row[3].i4Val();
-        predmet = _SubjectID;
-        t = row[1];
-        Max_br_pol = row[4].i4Val();
-        Tr_broj = row[5].i4Val();
-        if (!pInsStat->execute())
-            return;
-    }
     tr.commit();
-    return;
 }
 bool ViewAttendance::onClick(gui::Button* pBtn)
 {
@@ -313,7 +303,8 @@ bool ViewAttendance::onClick(gui::Button* pBtn)
         _subject->populateDayCombo(_subject->getDay());
         if(CheckTime())
             SendMsg(2);
-       // _table.reload();
+      //  _table.reload();
+       
         return true;
     }
    if (pBtn == &_btnUpdate)
@@ -334,16 +325,23 @@ bool ViewAttendance::onClick(gui::Button* pBtn)
             showAlert(tr("alert"), tr("alertAttNegative"));
             return true;
         }
+       
         int iRow = _table.getFirstSelectedRow();
         if (iRow < 0)
-            return true;
-        _table.beginUpdate();
+            return true; 
+        
         auto& row = _table.getCurrentRow();
+ if (val1.i4Val() < row[5].i4Val())
+        {
+
+            showAlert(tr("alert"), tr("alertAttNegative2"));
+            return true;
+        } 
         populateDSRow(row);
-        _table.updateRow(iRow);
-        _table.endUpdate();
-        saveDataUpdate();
-        _table.reload();
+        td::INT4 IDterm = row[6].i4Val();
+        saveDataUpdate(val1.i4Val(), IDterm);
+       _table.reload();
+       _table.selectRow(iRow);
         if(CheckTime())
             SendMsg(3);
         return true;
@@ -501,9 +499,9 @@ void ViewAttendance::AttendanceReport(const gui::Image* pImage){
    ++it;
     it.nextLayout();
     {
-        dp::IDataSet* pRep(pDB->createDataSet("SELECT k.Ime, k.Prezime FROM Korisnici k WHERE k.PozicijaID = 5 AND NOT EXISTS (SELECT 1 FROM TerminiStudenti p JOIN Termini t ON p.ID_termina = t.ID WHERE p.ID_studenta = k.ID AND t.Predmet_ID = ?);"));
+        dp::IDataSet* pRep(pDB->createDataSet("SELECT k.Ime, k.Prezime FROM Korisnici k, UpisPredmeta u WHERE  u.ID_Studenta = k.ID AND k.PozicijaID = 5 AND u.ID_Predmeta = ? AND NOT EXISTS(SELECT 1 FROM TerminiStudenti p JOIN Termini t ON p.ID_termina = t.ID WHERE p.ID_studenta = k.ID AND t.Predmet_ID = ? );"));
         dp::Params pParams1(pRep->allocParams());
-        pParams1 << _SubjectID;
+        pParams1 << _SubjectID<<_SubjectID;
         dp::DSColumns colsRep(pRep->allocBindColumns(2));
         colsRep << "Ime" << td::string8 << "Prezime" << td::string8;
            it << rpt::ContainerType::CNT_Body << pRep;
