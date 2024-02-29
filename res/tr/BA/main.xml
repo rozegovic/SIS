@@ -126,6 +126,14 @@
 		<Res id="alertMB" tr="Neispravan JMBG korisnika."/>
 		<Res id="alertDR" tr="Neispravan datum rođenja korisnika."/>
 		<Res id="alertU" tr="Nije moguće ažurirati korisnika koji nije unesen."/>
+		
+		<Res id="alertClassroom" tr="Nije moguće ažurirati učionicu koja nije unesena."/>
+		<Res id="alertPBClassroom" tr="Već postoji učionica sa tim nazivom."/>
+		<Res id="alertClassroomSeats" tr="Broj mjesta ne može biti negativan."/>
+		<Res id="NoPwrd" tr="Niste unijeli šifru."/>
+		<Res id="DefaultPwrd" tr="Ne možete koristiti default šifru."/>
+		
+		
 		<Res id="alertNEG" tr="Nije moguće unijeti negativan ID."/>
 		<Res id="alertDEPE" tr="ID smjera već postoji."/>
 		<Res id="alertDEPN" tr="Ime smjera već postoji."/>
@@ -172,7 +180,9 @@
 						  <Res id="Saturday" tr="Subota"/>
 						  <Res id="Sunday" tr="Nedelja"/>
 						  <Res id="AttDay" tr="Dan"/>
-						  <Res id="AttMaxNum" tr="Maksimalan broj studenata:"/>
+						  <Res id="AttMaxNum:" tr="Maksimalan broj studenata:"/>
+						  <Res id="AttMaxNum" tr="Maksimalan broj studenata"/>
+						  <Res id="AttDay" tr="Dan"/>
 						  <Res id="SubjWeek" tr="Sedmica:"/>
 						  <Res id="SubjName" tr="Ime:"/>
 						  <Res id="SubjSurname" tr="Prezime:"/>
@@ -188,15 +198,16 @@
 							  <Res id="alertStu" tr="Vec ste prijavljeni na ovaj tip termina"/>
 							 <Res id="alertAttNegative" tr="Broj mjesta ne može biti negativan"/>
 							<Res id="SubjTablePresent" tr="Prisutni za ovaj termin:"/>
-
+								<Res id="ChangePass" tr="Promjena lozinke"/>
 							<Res id="tablePresent" tr="Prisutni za ovaj termin:"/>
 							<Res id="alertNoTerm" tr="Niste odabrali ni jedan termin"/>
 									<Res id="Report" tr="Izvještaj"/>
 									<Res id="Report1" tr="Izvještaj ispita"/>
 		<Res id="ActivityRep" tr="Izvještaj aktivnosti"/>
 		<Res id="viewTimeSlot" tr="Prijava termina"/>
-		
-		
+		<Res id="PwrdOK" tr="Uspješno promijenjena lozinka"/>
+		<Res id="CloseWnd" tr="Zatvori prozor"/>
+		<Res id="PwrdErr" tr="Lozinke nisu iste!"/>
 		
 		
 		<Res id="courseCode:" tr="Šifra predmeta:"/>

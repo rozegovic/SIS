@@ -147,17 +147,6 @@ CREATE TABLE IF NOT EXISTS "Curriculum" (
 	FOREIGN KEY("ID_Predmeta") REFERENCES "Predmet"("ID_Predmeta"),
 	PRIMARY KEY("ID_Smjera","ID_Predmeta")
 );
-CREATE TABLE IF NOT EXISTS "SAOStudentTicket" (
-	"ID"	INTEGER NOT NULL,
-	"Indeks"	TEXT NOT NULL,
-	"Ticket_Tip"	TEXT NOT NULL,
-	"Req_Title"	TEXT NOT NULL,
-	"Request"	TEXT,
-	"Status"	TEXT,
-	"Attachment"	BLOB,
-	"Name_attachment"	TEXT,
-	PRIMARY KEY("ID")
-);
 
 CREATE TABLE "UpisPredmeta" (
 	"ID"	INTEGER,

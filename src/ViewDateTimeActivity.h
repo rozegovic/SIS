@@ -69,6 +69,7 @@ protected:
 
     gui::TableEdit _table;
     std::vector<td::INT4> _itemsToDelete, _itemsToInsert, _itemsToUpdate;
+
 public:
     ViewDateTimeActivity(td::INT4 SubjectID);
    void refresh();

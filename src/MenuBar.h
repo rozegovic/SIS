@@ -20,6 +20,8 @@ public:
         auto& items = application.getItems();
         items[0].initAsQuitAppActionItem(tr("Quit")); //prevedeno u natGUI
         items[1].initAsActionItem(tr("logout"), 10);
+        //sprint 6 g2
+        items[2].initAsActionItem(tr("ChangePass"), 20);
     }
 
     void populateSifMenu() {
@@ -55,7 +57,7 @@ public:
 public:
     MenuBar()
         : gui::MenuBar(2)
-        , application(10, tr("App"), 2)
+        , application(10, tr("App"), 3)
         , sifarnici(20, tr("Sif"), 19)
 
     {

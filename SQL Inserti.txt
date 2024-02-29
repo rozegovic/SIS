@@ -145,10 +145,6 @@ INSERT INTO "OcjeneLabZadace" ("ID","ID_Korisnika","ID_Aktivnosti","Ocjena") VAL
 INSERT INTO "OcjeneLabZadace" ("ID","ID_Korisnika","ID_Aktivnosti","Ocjena") VALUES (23,6,5,NULL);
 INSERT INTO "OcjeneLabZadace" ("ID","ID_Korisnika","ID_Aktivnosti","Ocjena") VALUES (24,2,8,NULL);
 INSERT INTO "OcjeneLabZadace" ("ID","ID_Korisnika","ID_Aktivnosti","Ocjena") VALUES (25,5,8,NULL);
-INSERT INTO "UpisPredmeta" ("ID","ID_Studenta","ID_Predmeta") VALUES (1,5,1);
-INSERT INTO "UpisPredmeta" ("ID","ID_Studenta","ID_Predmeta") VALUES (2,8,2);
-INSERT INTO "UpisPredmeta" ("ID","ID_Studenta","ID_Predmeta") VALUES (4,5,4);
-INSERT INTO "UpisPredmeta" ("ID","ID_Studenta","ID_Predmeta") VALUES (3,5,3);
 INSERT INTO "Prijavljeni_ispiti" ("ID_Predmeta","ID_Studenta","ID_Roka") VALUES (4,5,4);
 
 

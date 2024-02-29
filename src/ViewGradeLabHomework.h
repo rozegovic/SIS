@@ -24,6 +24,8 @@
 #include <fo/FileOperations.h>
 #include <gui/ImageView.h>
 #include <gui/Color.h>
+#include <utility>
+#include <set>
 
 class ViewGradeLabHomework : public gui::View {
 protected:
@@ -64,7 +66,9 @@ protected:
 
 
     gui::TableEdit _table;
-    std::set<std::tuple<td::INT4, td::INT4, td::String>> _userids;
+
+    std::set<std::pair<td::INT4, td::INT4>> _useractivityids; 
+
 
 
     std::vector<td::INT4> _itemsToDelete, _itemsToInsert, _itemsToUpdate;
