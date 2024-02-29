@@ -16,17 +16,20 @@ ViewTicket::ViewTicket()
 	, _btnSend(tr("send"), tr("sendRequestTT"))
 	, _btnOpenOnHold(tr("open"), tr("openTT"))
 	, _btnOpenAnswered(tr("open"), tr("openTT"))
+	,_btnRefresh(tr("reload"))
 	, _gl(9, 6)
 	, _answeredticketslbl(tr("Answered tickets:"))
-	, _OnholdticketsLbl(tr("Onhold tickets:"))
+	, _OnholdticketsLbl(tr("On hold tickets:"))
 	, _db(dp::create(dp::IDatabase::ConnType::CT_SQLITE, dp::IDatabase::ServerType::SER_SQLITE3))
 {
-
+	 
+	_hlBtnsDB.append(_btnRefresh);
 	_hlBtnsDB.appendSpacer();
 	_hlBtnsDB.append(_btnOpenAnswered);
 	//_hlBtnsDB.append(_btnSend);
 
 	_btnSend.setType(gui::Button::Type::Default);
+	_btnRefresh.setType(gui::Button::Type::Constructive);
 
 	gui::GridComposer gc(_gl);
 
@@ -39,7 +42,7 @@ ViewTicket::ViewTicket()
 
 	gc.appendRow(_body, 0);
 
-	
+
 
 	gc.appendRow(_attachedFile);
 	gc.appendCol(_titleFile, 3);
@@ -53,9 +56,9 @@ ViewTicket::ViewTicket()
 	gc.appendRow(_answeredticketslbl);
 	gc.appendEmptyCols(4);
 	gc.appendCol(_btnOpenOnHold);
-	gc.appendRow(_answeredtickets,0);
+	gc.appendRow(_answeredtickets, 0);
 
-	gc.appendRow(_hlBtnsDB,0);
+	gc.appendRow(_hlBtnsDB, 0);
 	gui::View::setLayout(&_gl);
 
 	_db = dp::getMainDatabase();
@@ -98,6 +101,14 @@ void ViewTicket::populateTypeTicketCombo(gui::ComboBox& combo)
 
 bool ViewTicket::onClick(gui::Button* pBtn)
 {
+	if (pBtn == &_btnRefresh)
+	{
+		_tableTickets.reload();
+		_answeredtickets.reload();
+
+		return true;
+	}
+
 	if (pBtn == &_btnSend)
 	{
 		showYesNoQuestionAsync(QuestionID::Save, this, tr("alert"), tr("saveSureTicket"), tr("Yes"), tr("No"));
@@ -132,7 +143,7 @@ bool ViewTicket::onClick(gui::Button* pBtn)
 		pWnd->keepOnTopOfParent();
 		pWnd->open();
 
-		UpdateTable();
+		//UpdateTable();
 
 		_tableTickets.reload();
 
@@ -162,7 +173,7 @@ bool ViewTicket::onClick(gui::Button* pBtn)
 		parDS << Globals::_currentUserID;
 
 		dp::Columns pCols = pSelect->allocBindColumns(2);
-		td::String name,sname;
+		td::String name, sname;
 		pCols << "name" << name << "sname" << sname;
 		if (!pSelect->execute()) {
 			name = "Greska";
@@ -172,7 +183,7 @@ bool ViewTicket::onClick(gui::Button* pBtn)
 		pSelect->moveNext();
 
 		gui::Window* pParentWnd = getParentWindow();
-		auto pWnd = new WindowCertainRequest(pParentWnd,ticketID, indeks, name, sname, tipKarte, row[2].getConstStr(),row[3].getConstStr(), naslov);
+		auto pWnd = new WindowCertainRequest(pParentWnd, ticketID, indeks, name, sname, tipKarte, row[2].getConstStr(), row[3].getConstStr(), naslov);
 		pWnd->keepOnTopOfParent();
 		pWnd->open();
 
@@ -232,7 +243,7 @@ bool ViewTicket::sendTicket()
 
 void ViewTicket::populateAnsweredtickets() {
 
-	
+
 	td::String setstr = "SELECT SAOStudentTicket.Ticket_Tip as type, SAOStudentTicket.Req_Title as title, (SELECT SAOTicket_Status.Status as status FROM SAOTicket_Status WHERE SAOStudentTicket.Status_ID=SAOTicket_Status.ID) as status, SAOStudentTicket.Request as request, SAOStudentTicket.ID as reqID, SAOStudentTicket.Indeks as indeks  FROM SAOStudentTicket WHERE SAOStudentTicket.Status_ID=2 AND SAOStudentTicket.Indeks=";
 	setstr.append(GetStudentIndeks().getConstStr());
 

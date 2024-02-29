@@ -6,6 +6,7 @@
 #include <fo/FileOperations.h>
 #include <td/BLOB.h>
 #include "Globals.h"
+#include "SendMessage.h"
 
 
 
@@ -88,15 +89,15 @@ ViewCertainRequest::ViewCertainRequest(td::INT4 IDTicket,td::String ime, td::Str
     //    _btnSaveAttachment.hide(true, true);
     //}
 
-    if (Globals::isStudent)
-    {
-        _answer.setAsReadOnly();
-        _btnSend.hide(true, true);
-    }
-
-
     SetAnswer();
 
+    if (Globals::isStudent)
+    {
+        _btnSend.setTitle(tr("Vrati"));
+        _btnSend.setToolTip(tr("Ponovno slanje zahtjeva")),
+        _answer.setAsReadOnly();
+       // _btnSend.hide(true, true);
+    }
 
 }
 
@@ -265,7 +266,7 @@ void ViewCertainRequest::showSaveFileDialog() {
 
 bool ViewCertainRequest::onClick(gui::Button* pBtn)
 {
-    if (pBtn == &_btnSend)
+    if (pBtn == &_btnSend && !Globals::isStudent)
     {
         if (_answer.isEmpty()) {
             showAlert(tr("Empty body!"),tr("Do you want to enter your answer first?"));
@@ -292,9 +293,52 @@ bool ViewCertainRequest::onClick(gui::Button* pBtn)
             return false;
         }
 
-        _status.setValue("Obrađen");
+        _status.setValue(tr("processed"));
 
         showAlert(tr("Successfully sent"), "");
+
+
+        td::String setstr2 = "SELECT Korisnici.ID AS id FROM Korisnici WHERE Korisnici.Indeks = '";
+        setstr2.append(_indeks.getText());
+        setstr2.append("'");
+        
+        dp::IStatementPtr pSelect2 = dp::getMainDatabase()->createStatement(setstr2);
+        dp::Columns pCols2 = pSelect2->allocBindColumns(1);
+        td::INT4 id;
+        pCols2 << "id" << id;
+        if (!pSelect2->execute())
+        {
+            td::String err;
+            pSelect2->getErrorStr(err);
+            showAlert("", err);
+        }
+
+        pSelect2->moveNext();
+
+        td::String poruka = "Dobili ste odgovor na zahtjev : ";
+        poruka.append(_titleOfTicket.getText());
+
+        MsgSender msg;
+        msg.sendSystemMsgtoUser("Odgovor", poruka, id, 1);
+
+        return true;
+
+    }
+    else if (pBtn == &_btnSend) {
+
+
+        td::String  insert = "UPDATE SAOStudentTicket SET Status_ID= 1 WHERE ID=";
+        insert.append(std::to_string(IDTicket));
+
+        dp::IStatementPtr pInsert(dp::getMainDatabase()->createStatement(insert));
+        if (!pInsert->execute()) {
+            showAlert("Error updating", "");
+            return false;
+        }
+
+        _status.setValue(tr("OnHold"));
+
+        showAlert(tr("successUpdateTicket"), "");
 
         return true;
 

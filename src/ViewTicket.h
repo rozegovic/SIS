@@ -50,6 +50,7 @@ protected:
 	gui::Button _btnOpenAnswered;
 	gui::HorizontalLayout _hlBtns;
 	gui::Button _btnAttach;
+	gui::Button _btnRefresh;
 
 	gui::TableEdit _tableTickets;
 	gui::TableEdit _answeredtickets;

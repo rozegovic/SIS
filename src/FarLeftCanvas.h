@@ -320,7 +320,7 @@ public:
             getSize(sz);
 
             //CITANJE IMENA IZ BAZE
-            dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT k.Ime , k.Prezime FROM Korisnici k, SAOStudentTicket p WHERE p.Indeks=k.Indeks;");
+            dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT k.Ime , k.Prezime FROM Korisnici k, SAOStudentTicket p, SAOTicket_Status WHERE p.Indeks=k.Indeks AND SAOTicket_Status.ID=p.Status_ID");
             dp::Columns pCols = pSelect->allocBindColumns(2);
             td::String name, sname;
             pCols << "Ime" << name << "Prezime" << sname;

@@ -58,6 +58,10 @@ ViewRequestUpdate::ViewRequestUpdate(td::String tipKarte, td::String naslov, gui
     _subject.setAsReadOnly();
     _attachPath.setAsReadOnly();
 
+    _btnSave.hide(true, false);
+    _btnAttachment.hide(true, true);
+    _attachPath.hide(true,true);
+    _attachlbl.hide(true, true);
 
     //populateDataForStudent();
 }
@@ -161,6 +165,8 @@ void ViewRequestUpdate::SaveToDatabase() {
 
     transactionpom.commit();
 
+    dp::Transaction transaction(pDB);
+
 
     dp::IStatementPtr pStatIns;
 
@@ -208,7 +214,7 @@ void ViewRequestUpdate::SaveToDatabase() {
         return;
     }
 
-    dp::Transaction transaction(pDB);
+
 
     bool insOK = pStatIns->execute();
 
