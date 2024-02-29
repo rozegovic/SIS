@@ -15,35 +15,31 @@
 #include "WindowCertainRequest.h"
 #include "ViewTicketForSAO.h"
 #include "ViewIDs.h"
-#include <utility>
 #include <vector>
 
 
-#include <gui/DrawableString.h>
-#include <gui/Transformation.h>
 
 class MiddleCanvas : public gui::Canvas
 {
 private:
-
-   
-
-   td::INT4 predmetID = -1; // grupa 2 
-   td::String _subjectname;
-
-
 protected:
     gui::Image _etf;
     gui::Shape _shapeCircle1;
     gui::Circle c;
+    gui::Rect r;
     gui::Rect r1;
     gui::Rect r2;
     gui::Rect r3;
+    gui::Rect r4;
+    gui::Rect r5;
     gui::Shape _roundedRect1;
     gui::Shape _roundedRect2;
     gui::Shape _roundedRect3;
+    gui::Shape _roundedRect4;
+    gui::Shape _roundedRect5;
     gui::Shape _shapeCircle;
     gui::Circle cc;
+    gui::Circle ccc;
     gui::Rect chat1;
     gui::Shape _chat1;
     gui::Rect chat2;
@@ -60,7 +56,7 @@ protected:
     dp::IDatabase* _db;
     MsgSender msg;
     gui::Image img;
-    td::INT4 red = 1;
+    td::INT4 red=1;
     td::INT4 skrolV = 0;
     td::String indeks;
     td::String Ime;
@@ -72,6 +68,23 @@ protected:
     gui::Rect rectBottomRight;
     gui::Point mousePosition;
 
+    std::vector <gui::Circle> _emojis;
+
+    
+
+    bool _otvoreno;
+
+    gui::Image _add;
+    gui::Image _e1;
+    gui::Image _e2;
+    gui::Image _e3;
+    gui::Image _e4;
+    gui::Image _e5;
+    gui::Image _e6;
+    gui::Image _e7;
+    gui::Image _e8;
+    gui::Image _e9;
+    gui::Image _e10;
     
     td::INT4 IDTicket=-1;
 
@@ -81,17 +94,29 @@ protected:
 
 public:
     MiddleCanvas()
-        : _etf(":ETF")
-        , gui::Canvas({ gui::InputDevice::Event::PrimaryClicks,  gui::InputDevice::Event::Keyboard ,gui::InputDevice::Event::CursorMove })
-        , _chatUserID(-2)
-        , _h(800)
-        , _db(dp::getMainDatabase())
-        , img(":circ")
-        , mousePosition(0, 0)
-    {
+     : _etf(":ETF")
+     , gui::Canvas({ gui::InputDevice::Event::PrimaryClicks,  gui::InputDevice::Event::Keyboard ,gui::InputDevice::Event::CursorMove})
+     , _chatUserID(-2)
+     , _h(450)
+     , _db(dp::getMainDatabase())
+     , img(":circ")
+     , mousePosition(0, 0)
+     , _add(":add")
+     , _otvoreno(false)
+     , _e1(":emoji1")
+     , _e2(":emoji2")
+     , _e3(":emoji3")
+     , _e4(":emoji4")
+     , _e5(":emoji5")
+     , _e6(":emoji6")
+     , _e7(":emoji7")
+     , _e8(":emoji8")
+     , _e9(":emoji9")
+     , _e10(":emoji10")
+ {
 
 
-    }
+ }
 
     void setSubjectID(td::INT4 id) { //grupa 2 - potreban subjectID
 
@@ -726,27 +751,27 @@ public:
 
     void onPrimaryButtonPressed(const gui::InputDevice& inputDevice) override {
         if (Globals::_currentUserRole == 1 || Globals::_currentUserRole == 3) {
-
+            gui::Size sz;
+            getSize(sz);
+            td::INT4 h1;
+            if (_h > sz.height) {
+               h1 = _h;
+            }
+            else {
+               h1 = sz.height;
+            }
             double tempk = 0;
             double x1 = 8 * x - x / 4;
-            double y1 = 7 * y + y / 2;
+            double y1 = h1 - y / 2;
             double yid = inputDevice.getModelPoint().y;
             double xid = inputDevice.getModelPoint().x;
             double xd = pow(xid - x1, 2);
             double yd = pow(yid - y1, 2);
             double d = sqrt(xd + yd);
 
-
-
-
-
             // if (tempk < int(inputDevice.getFramePoint().y) && inputDevice.getFramePoint().y < (tempk + _visinaChata)) {
             if (d <= 9 + x / 6) {
                 insertMessage();
-
-                td::INT4 a = _chatUserID;
-   
-              
                 str = "";
                 //  showChat();
                 red = 1;
@@ -755,11 +780,72 @@ public:
             }
 
 
+           
+              x1 = x / 4;
+            y1 = h1 - y / 2;
+            xd = pow(xid - x1, 2);
+             yd = pow(yid - y1, 2);
+             d = sqrt(xd + yd);
+
+            if (d <= x / 6) {
+                _otvoreno=!_otvoreno;
+                reDraw();
+            }
+            //za add dugme kad se klikne
+            //_otvoreno=!_otvoreno;
+            //reDraw()
+
+            if (_otvoreno) {
+
+                td::INT4 x1 = x / 4 + 20;
+                td::INT4 y1 =h1 - y - 77;
+
+
+                for(int i=0;i<5;i++){
+       
+               
+                   
+                    xd = pow(xid - x1, 2);
+                    yd = pow(yid - y1, 2);
+                    d = sqrt(xd + yd);
+                    x1 += 40;
+                    if (d <=20) {
+                        char l[100];
+                        sprintf(l, "pritisnuto %d", i+1);
+                        showAlert("OK",l);
+                       
+                        return;
+                    }
+               
+                }  
+                x1 = x / 4 + 20;
+                y1 = _h - y - 27;
+                for (int i = 5; i < 10; i++) {
+
+                    xd = pow(xid - x1, 2);
+                    yd = pow(yid - y1, 2);
+                    d = sqrt(xd + yd);
+                     x1 += 40;
+                     if (d <= 20) {
+                         char l[100];
+                         sprintf(l, "pritisnuto %d", i+1);
+                         showAlert("OK", l);
+
+                         return;
+                     }
+
+                }
+
+
+
+            }
+
+           
+
 
             reDraw();
 
         }
-
         
       if (Globals::isSAO && inputDevice.getModelPoint().x>rectBottomRight.left && inputDevice.getModelPoint().x < rectBottomRight.right && 
                   inputDevice.getModelPoint().y<rectBottomRight.bottom && inputDevice.getModelPoint().y > rectBottomRight.top)
