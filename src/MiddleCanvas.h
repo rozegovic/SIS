@@ -472,14 +472,17 @@ public:
                     Ocjene.push_back(ocjena.toINT4());
                     gui::DrawableString text4 = tip;
                     text4.draw(cp, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::DimGray);
-                    cp.x = cp.x + tip.length() + 55;
+                    cp.x = cp.x + 75;
                     gui::DrawableString text5 = ocjena;
                     text5.draw(cp, gui::Font::ID::SystemLargerBoldItalic, td::ColorID::DimGray);
-                    cp.x = cp.x - tip.length() - 55;
+                    cp.x = cp.x - 75;
                 }
                 for (int i = 0; i < Ocjene.size(); i++)
-                {
-                    prosjek += Ocjene[i] * 20; //skalirano
+                {   
+                    if (Ocjene[i] < 10)
+                        prosjek += Ocjene[i] * 20;//skalirano
+                    else
+                        prosjek += Ocjene[i]*2;
                 }
                 if (Ocjene.size() != 0)
                     prosjek = prosjek / Ocjene.size();
