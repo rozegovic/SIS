@@ -97,8 +97,6 @@ protected:
 
     td::INT4 IDTicket=-1;
 
-    gui::Canvas* farleft;
-
 
 
     td::INT4 openChatButtonPressed = -1;
@@ -885,7 +883,7 @@ public:
 
 
     void onPrimaryButtonPressed(const gui::InputDevice& inputDevice) override {
-        if (Globals::_currentUserRole == 1 || Globals::_currentUserRole == 3) {
+        if (Globals::_currentUserRole == 1 || Globals::_currentUserRole == 3 || openChatButtonPressed!=-1) {
             gui::Size sz;
             getSize(sz);
             td::INT4 h1;
@@ -991,7 +989,7 @@ public:
         }
         
       if (Globals::isSAO && inputDevice.getModelPoint().x>rectBottomRight.left && inputDevice.getModelPoint().x < rectBottomRight.right && 
-      inputDevice.getModelPoint().y<rectBottomRight.bottom && inputDevice.getModelPoint().y > rectBottomRight.top) {
+      inputDevice.getModelPoint().y<rectBottomRight.bottom && inputDevice.getModelPoint().y > rectBottomRight.top && openChatButtonPressed==-1) {
       gui::Window* pParentWnd = getParentWindow();
       auto pWnd = new WindowCertainRequest(pParentWnd,IDTicket, indeks, Ime, prezime, tipKarte, status, request, title);
       pWnd->keepOnTopOfParent();
@@ -1245,7 +1243,7 @@ public:
             mousePosition.x = x;
             mousePosition.y = y;
 
-            if (x > rectBottomRight.left && x < rectBottomRight.right && y < rectBottomRight.bottom && y > rectBottomRight.top)
+            if (x > rectBottomRight.left && x < rectBottomRight.right && y < rectBottomRight.bottom && y > rectBottomRight.top && openChatButtonPressed==-1)
                 setCursor(gui::Cursor::Type::Finger);
             else
                 setCursor(gui::Cursor::Type::Default);
