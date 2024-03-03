@@ -4,7 +4,7 @@
 #include "ViewCurriculumDialog.h"
 
 
-ViewCurriculum::ViewCurriculum(td::INT4 _departmentID, td::INT4 _semesterID) : 
+ViewCurriculum::ViewCurriculum(td::INT4 _departmentID, td::INT4 _semesterID) : _db(dp::getMainDatabase()),
  _lblDepartment(tr("Department"))
 , _lblSemester(tr("Semester"))
 , _semester(td::int4)
@@ -21,7 +21,6 @@ ViewCurriculum::ViewCurriculum(td::INT4 _departmentID, td::INT4 _semesterID) :
 , _btnPushBack(tr("PushBack"), tr("PushBackTT"))
 , _departmentID(_departmentID)
 , _semesterID(_semesterID)
-, _db(dp::getMainDatabase())
 , _gl(5, 4)
 {
     setVisualID(View_CURRICULUM);
@@ -82,15 +81,15 @@ bool ViewCurriculum::canDelete(int iRow)
 
 bool ViewCurriculum::saveData()
 {
-    dp::IStatementPtr pInsStat(dp::getMainDatabase()->createStatement("INSERT INTO Curriculum (ID_Smjera,  ID_Predmeta, Shortname, ECTS) VALUES(?,?,?,?)"));
+    dp::IStatementPtr pInsStat(_db->createStatement("INSERT INTO Curriculum (ID_Smjera,  ID_Predmeta, Shortname, ECTS) VALUES(?,?,?,?)"));
     dp::Params parDS(pInsStat->allocParams());
-    dp::Transaction tr(dp::getMainDatabase());
+    dp::Transaction tr(_db);
 
     td::INT4 predmet, ects, smjer;
     td::String shortname;
     td::Variant val;
     parDS << smjer << predmet << dp::toNCh(shortname, MESSAGE_HEADER_LEN) << ects;
-    dp::IStatementPtr pDel(dp::getMainDatabase()->createStatement("DELETE FROM Curriculum"));
+    dp::IStatementPtr pDel(_db->createStatement("DELETE FROM Curriculum"));
     if (!pDel->execute())
         return false;
     size_t nRows = _pDS->getNumberOfRows();
@@ -287,7 +286,7 @@ bool ViewCurriculum::doesIDexist(td::INT4 id)
 
 
 void ViewCurriculum::SetCurrentDepartment() {
-    dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT Naziv_Smjera FROM Smjer WHERE ID_Smjera = ?");
+    dp::IStatementPtr pSelect = _db->createStatement("SELECT Naziv_Smjera FROM Smjer WHERE ID_Smjera = ?");
     dp::Params parDS(pSelect->allocParams());
     //d::INT4 IDPredmeta = Globals::_IDSubjectSelection;
     parDS << _departmentID;
@@ -308,7 +307,7 @@ void ViewCurriculum::SetCurrentDepartment() {
 }
 
 void ViewCurriculum::SetCurrentECTS() {
-        dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement("SELECT ECTS_bodovi FROM Predmet WHERE ID_Predmeta = ?");
+        dp::IStatementPtr pSelect = _db->createStatement("SELECT ECTS_bodovi FROM Predmet WHERE ID_Predmeta = ?");
         dp::Params parDS(pSelect->allocParams());
         ////d::INT4 IDPredmeta = Globals::_IDSubjectSelection;
         td::Variant val(td::int4);

@@ -53,7 +53,7 @@ protected:
     gui::GridLayout _gl;
     //dp::IDatabase* _db;
     dp::IDatabase* _db;
-    dp::IDataSet* _pDS;
+    dp::IDataSetPtr _pDS = nullptr;
     //  td::INT4 _paramFrom;
      // td::INT4 _paramTo;
     td::INT4 _departmentID;
