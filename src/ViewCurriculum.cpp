@@ -135,8 +135,10 @@ bool ViewCurriculum::existsInDepartment(td::INT4 id)
 
 void ViewCurriculum::populateData()
 {
-    _pDS = _db->createDataSet("SELECT Predmet.ID_Predmeta as IDP, Curriculum.Shortname, Curriculum.ECTS from Curriculum, Predmet WHERE Curriculum.ID_Predmeta=Predmet.ID_Predmeta", dp::IDataSet::Execution::EX_MULT);
-
+    _pDS = _db->createDataSet("SELECT Predmet.ID_Predmeta as IDP, Curriculum.Shortname, Curriculum.ECTS from Curriculum, Predmet WHERE Curriculum.ID_Predmeta=Predmet.ID_Predmeta AND Predmet.Semestar=?", dp::IDataSet::Execution::EX_MULT);
+    dp::Params parDS(_pDS->allocParams());
+    //d::INT4 IDPredmeta = Globals::_IDSubjectSelection;
+    parDS << _semesterID;
 
     //specify columns to obtain from the data provider
     dp::DSColumns cols(_pDS->allocBindColumns(3));
@@ -356,9 +358,12 @@ bool ViewCurriculum::canUpdate(int iRow)
 }
 
 bool ViewCurriculum::onChangedSelection(gui::DBComboBox* pCmb) {
+    if (pCmb == &_course) {
+        _shortname.selectIndex(_course.getSelectedIndex());
+        return true;
+    }
     if (pCmb == &_course && !_ECTS.isEmpty()) {
         SetCurrentECTS();
-        _shortname.selectIndex(_course.getSelectedIndex());
         return true;
     }
     return false;

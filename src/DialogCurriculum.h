@@ -35,8 +35,30 @@ public:
     {
         
         setCentralView(&_viewCurriculum);
-        _viewCurriculum.getDepartment();
+        loadComboBox("select ID_Smjera as ID, Naziv_Smjera as Name from Smjer", _viewCurriculum.getCombobox());
         
+    }
+    bool loadComboBox(td::String select, gui::DBComboBox& combo)
+    {
+        dp::IStatementPtr pSelect = dp::getMainDatabase()->createStatement(select.c_str());
+        dp::Columns pCols = pSelect->allocBindColumns(2);
+        td::String name;
+        td::INT4 id;
+        pCols << "ID" << id << "Name" << name;
+        if (!pSelect->execute())
+            return false;
+
+        while (pSelect->moveNext())
+        {
+            combo.addItem(name, id);
+        }
+        combo.selectIndex(0);
+        return true;
+    }
+    gui::DBComboBox& getComboBox()
+    {
+        return _viewCurriculum.getCombobox();
+
     }
     ~DialogCurriculum() {}
 };

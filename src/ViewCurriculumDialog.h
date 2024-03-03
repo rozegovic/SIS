@@ -19,7 +19,6 @@ protected:
     gui::Label _lblSemester;
     gui::NumericEdit _semester;
     gui::GridLayout _gl;
-    dp::IDatabase* _db;
 
 public:
     ViewCurriculumDialog()
@@ -28,7 +27,6 @@ public:
         , _lblSemester(tr("Semester"))
         , _semester(td::int4)
         , _gl(2, 2)
-        ,_db(dp::getMainDatabase())
     {
 
         // _department.setToolTip(tr("Enter department:"));
@@ -40,32 +38,15 @@ public:
         gui::View::setLayout(&_gl);
     }
 
-    bool loadComboBox(td::String select, gui::DBComboBox& combo)
-    {
-        dp::IStatementPtr pSelect = _db->createStatement(select.c_str());
-        dp::Columns pCols = pSelect->allocBindColumns(2);
-        td::String name;
-        td::INT4 id;
-        pCols << "ID" << id << "Name" << name;
-        if (!pSelect->execute())
-            return false;
 
-        while (pSelect->moveNext())
-        {
-            combo.addItem(name, id);
-        }
-        combo.selectIndex(0);
-        return true;
+    gui::DBComboBox& getCombobox() {
+        return _department;
     }
 
-    //gui::DBComboBox& getCombobox() {
-    //    return _department;
-    //}
-
-    void getDepartment()
+  /*  void getDepartment()
     {
         loadComboBox("select ID_Smjera as ID, Naziv_Smjera as Name from Smjer", _department);
-    }
+    }*/
 
     td::INT4 getSemester() const
     {
