@@ -1,0 +1,2 @@
+Bazu trebate staviti na sljedeću lokaciju:
+%HOME%/Work/CPProjects/SiS_v_Zadnji/Temp_Baza.db
