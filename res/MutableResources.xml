@@ -55,10 +55,10 @@
 			<Color id="Warning" name="red" a="255"/>
 		</Colors>
 		<Images>
-			<Image id="ETF" file=":Work/CPProjects/SiS_v_Zadnji/res/Icons/UNSA/ETF_Logo.png"/>
-			<Image id="UNSA" file=":Work/CPProjects/SiS_v_Zadnji/res/Icons/UNSA/UNSA_Logo.png"/>
-			<Image id="Logo" file=":Work/CPProjects/SiS_v_Zadnji/res/Icons/UNSA/ETF_Logo.png"/>
-			<Image id="ISO9001" file="rep/res/ISO9001.png"/>
+            <Image id="ETF" file="Icons/UNSA/ETF_Logo.png"/>
+            <Image id="UNSA" file="Icons/UNSA/UNSA_Logo.png"/>
+            <Image id="Logo" file="Icons/UNSA/ETF_Logo.png"/>
+            <Image id="ISO9001" file="rep/res/ISO9001.png"/>
 		</Images>
 		<Memos>
 			<Memo id="MemoExportF" file="rep/res/MemoExportF.xml"/>
